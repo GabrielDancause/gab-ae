@@ -1,0 +1,398 @@
+[
+  {
+    "slug": "no-tax-on-overtime-calculator",
+    "title": "No Tax on Overtime Calculator - Calculate Tax Savings | gab.ae",
+    "description": "Calculate your take-home pay with overtime tax exemption. See how much you save when overtime hours aren't taxed. Free calculator with multiple tax rates.",
+    "category": "finance",
+    "config": {
+      "inputs": [
+        { "id": "hourlyRate", "label": "Hourly Rate", "type": "number", "default": 25, "prefix": "$", "step": 0.01 },
+        { "id": "regularHours", "label": "Regular Hours", "type": "number", "default": 40 },
+        { "id": "overtimeHours", "label": "Overtime Hours", "type": "number", "default": 10 },
+        { "id": "taxRate", "label": "Tax Rate", "type": "preset", "options": [12, 22, 24, 32], "default": 22, "suffix": "%" }
+      ],
+      "outputs": [
+        { "id": "regularPay", "label": "Regular Pay", "prefix": "$" },
+        { "id": "overtimePay", "label": "Overtime Pay", "prefix": "$" },
+        { "id": "taxSaved", "label": "Tax Saved", "prefix": "$" },
+        { "id": "totalTakeHome", "label": "Total Take-Home", "prefix": "$" }
+      ],
+      "formula": "var regularPay = hourlyRate * regularHours; var overtimePay = hourlyRate * 1.5 * overtimeHours; var taxOnOvertime = overtimePay * (taxRate / 100); var taxSaved = taxOnOvertime; var totalTakeHome = regularPay + overtimePay - (regularPay * (taxRate / 100)); return { regularPay: regularPay.toFixed(2), overtimePay: overtimePay.toFixed(2), taxSaved: taxSaved.toFixed(2), totalTakeHome: totalTakeHome.toFixed(2) };"
+    },
+    "content": [
+      { "heading": "How No Tax on Overtime Works", "body": "<p>Some jurisdictions offer overtime tax exemptions, allowing workers to keep more of their overtime earnings. This calculator shows the potential savings when overtime hours aren't subject to regular income tax rates.</p>" },
+      { "heading": "Calculate Your Overtime Tax Savings", "body": "<p>Enter your hourly rate, regular hours worked, overtime hours, and applicable tax rate. The calculator determines your regular pay, overtime pay at time-and-a-half, and how much you'd save if overtime wasn't taxed.</p>" },
+      { "heading": "Maximize Your Overtime Benefits", "body": "<p>Understanding overtime tax implications helps you make informed decisions about working extra hours. Use this tool to see the financial impact of overtime tax exemptions on your take-home pay.</p>" }
+    ],
+    "faqs": [
+      { "q": "What is overtime tax exemption?", "a": "Overtime tax exemption means overtime earnings aren't subject to regular income tax rates, allowing workers to keep more of their overtime pay." },
+      { "q": "How is overtime pay calculated?", "a": "Overtime pay is typically calculated at 1.5 times (time-and-a-half) the regular hourly rate for hours worked beyond the standard 40-hour work week." },
+      { "q": "Do all locations offer overtime tax exemptions?", "a": "No, overtime tax exemptions vary by jurisdiction. Check your local tax laws to see if this benefit applies to you." },
+      { "q": "How much can I save with overtime tax exemption?", "a": "Savings depend on your tax rate and overtime hours. Higher earners and those working more overtime hours see greater absolute savings." }
+    ],
+    "schema": {
+      "@context": "https://schema.org",
+      "@type": "WebApplication",
+      "name": "No Tax on Overtime Calculator",
+      "url": "https://gab.ae/no-tax-on-overtime-calculator",
+      "description": "Calculate take-home pay with overtime tax exemption and see potential tax savings",
+      "applicationCategory": "FinanceApplication",
+      "operatingSystem": "All",
+      "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" }
+    }
+  },
+  {
+    "slug": "peptide-calculator",
+    "title": "Peptide Reconstitution Calculator - Dosing Made Easy | gab.ae",
+    "description": "Calculate peptide dosing from reconstitution. Determine concentration and insulin syringe units needed for accurate peptide administration. Free calculator.",
+    "category": "health",
+    "config": {
+      "inputs": [
+        { "id": "peptideAmount", "label": "Peptide Amount", "type": "number", "default": 5, "suffix": "mg" },
+        { "id": "waterMl", "label": "Bacteriostatic Water", "type": "number", "default": 2, "suffix": "mL", "step": 0.1 },
+        { "id": "desiredDose", "label": "Desired Dose", "type": "number", "default": 250, "suffix": "mcg" }
+      ],
+      "outputs": [
+        { "id": "concentration", "label": "Concentration (mcg per unit)", "suffix": " mcg/unit" },
+        { "id": "unitsToInject", "label": "Units to Inject", "suffix": " units" }
+      ],
+      "formula": "var concentration = (peptideAmount * 1000) / (waterMl * 100); var unitsToInject = desiredDose / concentration; return { concentration: concentration.toFixed(1), unitsToInject: unitsToInject.toFixed(1) };"
+    },
+    "content": [
+      { "heading": "Peptide Reconstitution Basics", "body": "<p>Peptide reconstitution involves mixing lyophilized peptides with bacteriostatic water to create an injectable solution. Proper calculation ensures accurate dosing and optimal therapeutic effects.</p>" },
+      { "heading": "Calculate Your Peptide Dose", "body": "<p>Enter the peptide amount in milligrams, the volume of bacteriostatic water used, and your desired dose in micrograms. The calculator determines the concentration per insulin syringe unit and how many units to inject.</p>" },
+      { "heading": "Safe Peptide Administration", "body": "<p>Accurate dosing is crucial for peptide therapy safety and effectiveness. This calculator helps healthcare providers and patients ensure precise administration using standard insulin syringes.</p>" }
+    ],
+    "faqs": [
+      { "q": "What is peptide reconstitution?", "a": "Reconstitution is the process of mixing dry peptide powder with sterile water or bacteriostatic water to create an injectable solution." },
+      { "q": "Why use bacteriostatic water?", "a": "Bacteriostatic water contains preservatives that prevent bacterial growth, making it safer for multiple-use vials compared to sterile water." },
+      { "q": "How do I measure peptide doses?", "a": "Use insulin syringes marked in units. This calculator converts your desired microgram dose to the corresponding syringe units needed." },
+      { "q": "Can I store reconstituted peptides?", "a": "Yes, reconstituted peptides should be refrigerated and used within the timeframe specified by the manufacturer, typically 14-30 days." }
+    ],
+    "schema": {
+      "@context": "https://schema.org",
+      "@type": "WebApplication",
+      "name": "Peptide Calculator",
+      "url": "https://gab.ae/peptide-calculator",
+      "description": "Calculate peptide dosing from reconstitution with concentration and injection units",
+      "applicationCategory": "HealthApplication",
+      "operatingSystem": "All",
+      "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" }
+    }
+  },
+  {
+    "slug": "roth-ira-calculator",
+    "title": "Roth IRA Calculator - Project Retirement Growth | gab.ae",
+    "description": "Calculate Roth IRA growth projections with annual contributions. See total contributions, growth, and final balance at retirement. Free retirement calculator.",
+    "category": "finance",
+    "config": {
+      "inputs": [
+        { "id": "currentBalance", "label": "Current Balance", "type": "number", "default": 10000, "prefix": "$" },
+        { "id": "annualContribution", "label": "Annual Contribution", "type": "number", "default": 6500, "prefix": "$" },
+        { "id": "yearsToRetirement", "label": "Years Until Retirement", "type": "number", "default": 30 },
+        { "id": "expectedReturn", "label": "Expected Return", "type": "preset", "options": [6, 7, 8, 10, 12], "default": 8, "suffix": "%" }
+      ],
+      "outputs": [
+        { "id": "totalContributions", "label": "Total Contributions", "prefix": "$" },
+        { "id": "totalGrowth", "label": "Total Growth", "prefix": "$" },
+        { "id": "finalBalance", "label": "Final Balance", "prefix": "$" }
+      ],
+      "formula": "var totalContributions = currentBalance + (annualContribution * yearsToRetirement); var rate = expectedReturn / 100; var futureValueCurrent = currentBalance * Math.pow(1 + rate, yearsToRetirement); var futureValueAnnuity = annualContribution * ((Math.pow(1 + rate, yearsToRetirement) - 1) / rate); var finalBalance = futureValueCurrent + futureValueAnnuity; var totalGrowth = finalBalance - totalContributions; return { totalContributions: Math.round(totalContributions), totalGrowth: Math.round(totalGrowth), finalBalance: Math.round(finalBalance) };"
+    },
+    "content": [
+      { "heading": "Roth IRA Growth Projections", "body": "<p>A Roth IRA offers tax-free growth and withdrawals in retirement. This calculator projects your account balance based on current savings, annual contributions, and expected returns over time.</p>" },
+      { "heading": "Plan Your Retirement Savings", "body": "<p>Enter your current Roth IRA balance, planned annual contributions, years until retirement, and expected rate of return. See how compound growth can build substantial retirement wealth over time.</p>" },
+      { "heading": "Maximize Your Roth IRA Benefits", "body": "<p>Understanding growth projections helps you make informed contribution decisions. Consider maximizing annual contributions and starting early to take full advantage of tax-free compound growth.</p>" }
+    ],
+    "faqs": [
+      { "q": "What is a Roth IRA?", "a": "A Roth IRA is a retirement account where you contribute after-tax dollars, but enjoy tax-free growth and withdrawals in retirement." },
+      { "q": "What's the annual contribution limit?", "a": "For 2024, the Roth IRA contribution limit is $6,500, or $7,500 if you're 50 or older (catch-up contribution)." },
+      { "q": "What's a reasonable expected return?", "a": "Historical stock market returns average around 10% annually, but many advisors recommend using 6-8% for conservative projections." },
+      { "q": "When can I withdraw from a Roth IRA?", "a": "You can withdraw contributions anytime penalty-free. Earnings can be withdrawn tax-free after age 59½ if the account has been open for 5 years." }
+    ],
+    "schema": {
+      "@context": "https://schema.org",
+      "@type": "WebApplication",
+      "name": "Roth IRA Calculator",
+      "url": "https://gab.ae/roth-ira-calculator",
+      "description": "Project Roth IRA growth with compound interest and annual contributions",
+      "applicationCategory": "FinanceApplication",
+      "operatingSystem": "All",
+      "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" }
+    }
+  },
+  {
+    "slug": "height-calculator",
+    "title": "Child Height Calculator - Predict Adult Height | gab.ae",
+    "description": "Predict your child's adult height using mid-parental height method. Calculate expected height based on mother and father heights. Free height predictor.",
+    "category": "health",
+    "config": {
+      "inputs": [
+        { "id": "motherHeight", "label": "Mother's Height", "type": "number", "default": 64, "suffix": " inches" },
+        { "id": "fatherHeight", "label": "Father's Height", "type": "number", "default": 70, "suffix": " inches" },
+        { "id": "childGender", "label": "Child's Gender", "type": "preset", "options": [0, 1], "labels": ["Girl", "Boy"], "default": 0 }
+      ],
+      "outputs": [
+        { "id": "predictedHeight", "label": "Predicted Height", "suffix": " inches" },
+        { "id": "predictedHeightFeet", "label": "Predicted Height (Feet)", "suffix": "" }
+      ],
+      "formula": "var midParental = childGender === 1 ? (motherHeight + fatherHeight + 5) / 2 : (motherHeight + fatherHeight - 5) / 2; var predictedHeight = Math.round(midParental * 10) / 10; var feet = Math.floor(predictedHeight / 12); var inches = Math.round(predictedHeight % 12); var predictedHeightFeet = feet + \"'\" + inches + '\"'; return { predictedHeight: predictedHeight, predictedHeightFeet: predictedHeightFeet };"
+    },
+    "content": [
+      { "heading": "Child Height Prediction Method", "body": "<p>The mid-parental height method is a simple way to estimate a child's adult height based on their parents' heights. While not 100% accurate, it provides a reasonable prediction for most children.</p>" },
+      { "heading": "How Height Prediction Works", "body": "<p>For boys, add 5 inches to the average of both parents' heights. For girls, subtract 5 inches from the average. This accounts for typical gender differences in adult height.</p>" },
+      { "heading": "Factors Affecting Final Height", "body": "<p>While genetics play a major role, nutrition, health, and other factors can influence final adult height. This calculator provides an estimate based on genetic potential from parental heights.</p>" }
+    ],
+    "faqs": [
+      { "q": "How accurate is height prediction?", "a": "The mid-parental height method is accurate within about 2 inches for most children, but individual results can vary due to genetic variation and environmental factors." },
+      { "q": "When do children stop growing?", "a": "Girls typically stop growing around age 16, while boys may continue growing until age 18-20. Growth spurts usually occur during puberty." },
+      { "q": "Can nutrition affect final height?", "a": "Yes, proper nutrition during childhood and adolescence is crucial for reaching genetic height potential. Malnutrition can significantly impact final adult height." },
+      { "q": "What if parents are very different heights?", "a": "The child's height will likely fall somewhere between the parents' heights, adjusted for gender. Extreme differences may result in more variation from the prediction." }
+    ],
+    "schema": {
+      "@context": "https://schema.org",
+      "@type": "WebApplication",
+      "name": "Height Calculator",
+      "url": "https://gab.ae/height-calculator",
+      "description": "Predict child's adult height using mid-parental height method",
+      "applicationCategory": "HealthApplication",
+      "operatingSystem": "All",
+      "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" }
+    }
+  },
+  {
+    "slug": "mortgage-recast-calculator",
+    "title": "Mortgage Recast Calculator - Lower Your Payment | gab.ae",
+    "description": "Calculate new mortgage payment after lump sum principal payment. See monthly savings and total interest savings from mortgage recasting. Free calculator.",
+    "category": "finance",
+    "config": {
+      "inputs": [
+        { "id": "currentBalance", "label": "Current Balance", "type": "number", "default": 300000, "prefix": "$" },
+        { "id": "lumpSum", "label": "Lump Sum Payment", "type": "number", "default": 50000, "prefix": "$" },
+        { "id": "interestRate", "label": "Interest Rate", "type": "number", "default": 4.5, "suffix": "%", "step": 0.01 },
+        { "id": "remainingMonths", "label": "Remaining Months", "type": "number", "default": 300 }
+      ],
+      "outputs": [
+        { "id": "newBalance", "label": "New Balance", "prefix": "$" },
+        { "id": "newPayment", "label": "New Monthly Payment", "prefix": "$" },
+        { "id": "monthlySavings", "label": "Monthly Savings", "prefix": "$" },
+        { "id": "totalSavings", "label": "Total Interest Savings", "prefix": "$" }
+      ],
+      "formula": "var monthlyRate = (interestRate / 100) / 12; var newBalance = currentBalance - lumpSum; var oldPayment = (currentBalance * monthlyRate * Math.pow(1 + monthlyRate, remainingMonths)) / (Math.pow(1 + monthlyRate, remainingMonths) - 1); var newPayment = (newBalance * monthlyRate * Math.pow(1 + monthlyRate, remainingMonths)) / (Math.pow(1 + monthlyRate, remainingMonths) - 1); var monthlySavings = oldPayment - newPayment; var totalSavings = monthlySavings * remainingMonths; return { newBalance: Math.round(newBalance), newPayment: Math.round(newPayment), monthlySavings: Math.round(monthlySavings), totalSavings: Math.round(totalSavings) };"
+    },
+    "content": [
+      { "heading": "What is Mortgage Recasting?", "body": "<p>Mortgage recasting involves making a large principal payment and having your lender recalculate your monthly payment based on the new, lower balance while keeping the same interest rate and loan term.</p>" },
+      { "heading": "Benefits of Mortgage Recasting", "body": "<p>Recasting reduces your monthly payment without refinancing costs or extending your loan term. You'll save on interest over the life of the loan while maintaining the same payoff date.</p>" },
+      { "heading": "Calculate Your Recast Savings", "body": "<p>Enter your current mortgage balance, the lump sum you plan to pay, your interest rate, and remaining months. See how much you'll save monthly and over the loan's lifetime.</p>" }
+    ],
+    "faqs": [
+      { "q": "What's the difference between recasting and refinancing?", "a": "Recasting keeps your current loan terms and rate while lowering payments. Refinancing gets a new loan with potentially different rates and terms but includes closing costs." },
+      { "q": "How much does mortgage recasting cost?", "a": "Recasting fees are typically $150-500, much less than refinancing costs which can be thousands of dollars." },
+      { "q": "What's the minimum lump sum for recasting?", "a": "Most lenders require a minimum of $5,000-10,000 for recasting, but requirements vary by lender." },
+      { "q": "Do all lenders offer recasting?", "a": "No, not all lenders offer recasting. Check with your mortgage servicer to see if this option is available for your loan." }
+    ],
+    "schema": {
+      "@context": "https://schema.org",
+      "@type": "WebApplication",
+      "name": "Mortgage Recast Calculator",
+      "url": "https://gab.ae/mortgage-recast-calculator",
+      "description": "Calculate new mortgage payment and savings after lump sum principal payment",
+      "applicationCategory": "FinanceApplication",
+      "operatingSystem": "All",
+      "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" }
+    }
+  },
+  {
+    "slug": "corrected-calcium-calculator",
+    "title": "Corrected Calcium Calculator - Albumin Adjustment | gab.ae",
+    "description": "Calculate corrected calcium levels adjusted for albumin. Essential for accurate calcium assessment in medical diagnostics. Free medical calculator.",
+    "category": "health",
+    "config": {
+      "inputs": [
+        { "id": "measuredCalcium", "label": "Measured Calcium", "type": "number", "default": 9.0, "step": 0.1, "suffix": " mg/dL" },
+        { "id": "albumin", "label": "Albumin", "type": "number", "default": 4.0, "step": 0.1, "suffix": " g/dL" }
+      ],
+      "outputs": [
+        { "id": "correctedCalcium", "label": "Corrected Calcium", "suffix": " mg/dL" }
+      ],
+      "formula": "var correctedCalcium = measuredCalcium + 0.8 * (4.0 - albumin); return { correctedCalcium: correctedCalcium.toFixed(1) };"
+    },
+    "content": [
+      { "heading": "Why Correct Calcium for Albumin?", "body": "<p>About 40% of calcium in blood is bound to albumin. When albumin levels are abnormal, measured calcium doesn't reflect the true calcium status. Correction provides a more accurate assessment.</p>" },
+      { "heading": "The Calcium Correction Formula", "body": "<p>The standard formula adds 0.8 mg/dL to measured calcium for every 1 g/dL that albumin is below the normal reference of 4.0 g/dL. This adjusts for protein binding effects.</p>" },
+      { "heading": "Clinical Significance", "body": "<p>Corrected calcium is essential for proper diagnosis of hypocalcemia and hypercalcemia, especially in patients with altered protein levels due to illness, malnutrition, or liver disease.</p>" }
+    ],
+    "faqs": [
+      { "q": "When should calcium be corrected for albumin?", "a": "Calcium should be corrected whenever albumin levels are abnormal (below 3.5 or above 5.0 g/dL) to get an accurate assessment of calcium status." },
+      { "q": "What are normal calcium levels?", "a": "Normal total calcium is typically 8.5-10.5 mg/dL, but this can vary slightly between laboratories. Always use your lab's reference range." },
+      { "q": "Is ionized calcium better than corrected calcium?", "a": "Ionized calcium is the gold standard as it measures the physiologically active form, but corrected calcium is useful when ionized calcium testing isn't available." },
+      { "q": "What affects albumin levels?", "a": "Albumin levels can be affected by liver disease, kidney disease, malnutrition, inflammation, and fluid status. Low albumin can make calcium appear falsely low." }
+    ],
+    "schema": {
+      "@context": "https://schema.org",
+      "@type": "WebApplication",
+      "name": "Corrected Calcium Calculator",
+      "url": "https://gab.ae/corrected-calcium-calculator",
+      "description": "Calculate corrected calcium levels adjusted for albumin concentration",
+      "applicationCategory": "HealthApplication",
+      "operatingSystem": "All",
+      "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" }
+    }
+  },
+  {
+    "slug": "derivative-calculator",
+    "title": "Power Rule Derivative Calculator - Find Derivatives | gab.ae",
+    "description": "Calculate derivatives using the power rule. Enter coefficient and exponent to find derivative coefficient, exponent, and expression. Free math calculator.",
+    "category": "education",
+    "config": {
+      "inputs": [
+        { "id": "coefficient", "label": "Coefficient", "type": "number", "default": 3 },
+        { "id": "exponent", "label": "Exponent", "type": "number", "default": 2 }
+      ],
+      "outputs": [
+        { "id": "derivCoeff", "label": "Derivative Coefficient" },
+        { "id": "derivExp", "label": "Derivative Exponent" },
+        { "id": "derivExpression", "label": "Derivative Expression" }
+      ],
+      "formula": "var derivCoeff = coefficient * exponent; var derivExp = exponent - 1; var derivExpression = derivCoeff + 'x^' + derivExp; if (derivExp === 0) derivExpression = derivCoeff.toString(); if (derivExp === 1) derivExpression = derivCoeff + 'x'; return { derivCoeff: derivCoeff, derivExp: derivExp, derivExpression: derivExpression };"
+    },
+    "content": [
+      { "heading": "Understanding the Power Rule", "body": "<p>The power rule is one of the most fundamental derivative rules in calculus. For any term ax^n, the derivative is (n×a)x^(n-1). This rule applies to polynomial functions and many algebraic expressions.</p>" },
+      { "heading": "How to Use the Power Rule", "body": "<p>Enter the coefficient (the number in front) and exponent (the power) of your term. The calculator applies the power rule: multiply the coefficient by the exponent, then subtract 1 from the exponent.</p>" },
+      { "heading": "Applications in Calculus", "body": "<p>The power rule is essential for finding rates of change, slopes of tangent lines, and solving optimization problems. Master this rule to build a strong foundation for advanced calculus concepts.</p>" }
+    ],
+    "faqs": [
+      { "q": "What is the power rule in calculus?", "a": "The power rule states that the derivative of x^n is n×x^(n-1). For ax^n, the derivative is a×n×x^(n-1)." },
+      { "q": "Does the power rule work for negative exponents?", "a": "Yes, the power rule works for all real number exponents, including negative numbers, fractions, and decimals." },
+      { "q": "What's the derivative of a constant?", "a": "The derivative of any constant is 0, since constants don't change. This corresponds to using the power rule with exponent 0." },
+      { "q": "Can I use this for multiple terms?", "a": "This calculator handles one term at a time. For polynomials with multiple terms, apply the power rule to each term separately and add the results." }
+    ],
+    "schema": {
+      "@context": "https://schema.org",
+      "@type": "WebApplication",
+      "name": "Derivative Calculator",
+      "url": "https://gab.ae/derivative-calculator",
+      "description": "Calculate derivatives using the power rule for polynomial terms",
+      "applicationCategory": "EducationalApplication",
+      "operatingSystem": "All",
+      "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" }
+    }
+  },
+  {
+    "slug": "long-division-calculator",
+    "title": "Long Division Calculator - Divide Numbers Easily | gab.ae",
+    "description": "Divide two numbers and get quotient, remainder, and decimal result. Perfect for homework help and quick division calculations. Free math calculator.",
+    "category": "education",
+    "config": {
+      "inputs": [
+        { "id": "dividend", "label": "Dividend", "type": "number", "default": 144 },
+        { "id": "divisor", "label": "Divisor", "type": "number", "default": 12 }
+      ],
+      "outputs": [
+        { "id": "quotient", "label": "Quotient" },
+        { "id": "remainder", "label": "Remainder" },
+        { "id": "decimalResult", "label": "Decimal Result" }
+      ],
+      "formula": "if (divisor === 0) return { quotient: 'Error', remainder: 'Error', decimalResult: 'Cannot divide by zero' }; var quotient = Math.floor(dividend / divisor); var remainder = dividend % divisor; var decimalResult = (dividend / divisor).toFixed(4); return { quotient: quotient, remainder: remainder, decimalResult: parseFloat(decimalResult) };"
+    },
+    "content": [
+      { "heading": "Understanding Long Division", "body": "<p>Long division is a method for dividing large numbers by breaking the process into smaller, manageable steps. It produces both a quotient (whole number result) and remainder (what's left over).</p>" },
+      { "heading": "Components of Division", "body": "<p>When dividing, the dividend is the number being divided, and the divisor is the number you're dividing by. The quotient is the whole number result, and the remainder is what's left over when the division doesn't result in a whole number.</p>" },
+      { "heading": "Decimal vs Remainder Results", "body": "<p>This calculator shows both the traditional quotient and remainder format, as well as the decimal equivalent. Understanding both representations helps in different mathematical contexts.</p>" }
+    ],
+    "faqs": [
+      { "q": "What's the difference between quotient and remainder?", "a": "The quotient is the whole number part of the division result, while the remainder is what's left over. For example, 17 ÷ 5 = 3 remainder 2." },
+      { "q": "When would I use remainder vs decimal form?", "a": "Remainder form is useful for problems involving whole objects (like distributing items). Decimal form is better for measurements and precise calculations." },
+      { "q": "Can I divide by zero?", "a": "No, division by zero is undefined in mathematics. The calculator will show an error message if you try to divide by zero." },
+      { "q": "How accurate is the decimal result?", "a": "The calculator shows decimal results rounded to 4 decimal places for readability, which is sufficient for most practical applications." }
+    ],
+    "schema": {
+      "@context": "https://schema.org",
+      "@type": "WebApplication",
+      "name": "Long Division Calculator",
+      "url": "https://gab.ae/long-division-calculator",
+      "description": "Divide two numbers and get quotient, remainder, and decimal result",
+      "applicationCategory": "EducationalApplication",
+      "operatingSystem": "All",
+      "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" }
+    }
+  },
+  {
+    "slug": "period-calculator",
+    "title": "Period Calculator - Predict Next Period & Ovulation | gab.ae",
+    "description": "Calculate your next period date and ovulation timing based on last period and cycle length. Track menstrual cycle patterns. Free period tracker.",
+    "category": "health",
+    "config": {
+      "inputs": [
+        { "id": "lastPeriodDay", "label": "Last Period Day", "type": "number", "default": 1, "min": 1, "max": 31 },
+        { "id": "lastPeriodMonth", "label": "Last Period Month", "type": "number", "default": 1, "min": 1, "max": 12 },
+        { "id": "cycleLength", "label": "Cycle Length", "type": "number", "default": 28, "min": 21, "max": 40, "suffix": " days" }
+      ],
+      "outputs": [
+        { "id": "nextPeriodDays", "label": "Days Until Next Period" },
+        { "id": "ovulationDays", "label": "Days Until Ovulation" }
+      ],
+      "formula": "var currentDate = new Date(); var currentYear = currentDate.getFullYear(); var lastPeriodDate = new Date(currentYear, lastPeriodMonth - 1, lastPeriodDay); if (lastPeriodDate > currentDate) lastPeriodDate.setFullYear(currentYear - 1); var nextPeriodDate = new Date(lastPeriodDate.getTime() + (cycleLength * 24 * 60 * 60 * 1000)); var ovulationDate = new Date(lastPeriodDate.getTime() + ((cycleLength - 14) * 24 * 60 * 60 * 1000)); var nextPeriodDays = Math.ceil((nextPeriodDate - currentDate) / (24 * 60 * 60 * 1000)); var ovulationDays = Math.ceil((ovulationDate - currentDate) / (24 * 60 * 60 * 1000)); if (nextPeriodDays < 0) { nextPeriodDate = new Date(nextPeriodDate.getTime() + (cycleLength * 24 * 60 * 60 * 1000)); nextPeriodDays = Math.ceil((nextPeriodDate - currentDate) / (24 * 60 * 60 * 1000)); } if (ovulationDays < 0) { ovulationDate = new Date(ovulationDate.getTime() + (cycleLength * 24 * 60 * 60 * 1000)); ovulationDays = Math.ceil((ovulationDate - currentDate) / (24 * 60 * 60 * 1000)); } return { nextPeriodDays: nextPeriodDays, ovulationDays: ovulationDays };"
+    },
+    "content": [
+      { "heading": "Understanding Your Menstrual Cycle", "body": "<p>The menstrual cycle typically ranges from 21-40 days, with 28 days being average. Tracking your cycle helps predict when your next period will start and when you're most likely to ovulate.</p>" },
+      { "heading": "Ovulation Timing", "body": "<p>Ovulation usually occurs about 14 days before your next period starts. This calculator estimates ovulation timing based on your cycle length, which is helpful for family planning or fertility awareness.</p>" },
+      { "heading": "Cycle Tracking Benefits", "body": "<p>Regular cycle tracking helps you understand your body's patterns, plan activities, and notice any irregularities that might warrant medical attention. Knowledge of your cycle empowers better health decisions.</p>" }
+    ],
+    "faqs": [
+      { "q": "How accurate is period prediction?", "a": "Predictions are estimates based on your average cycle length. Actual timing can vary due to stress, illness, weight changes, or other factors affecting hormones." },
+      { "q": "What's a normal cycle length?", "a": "Normal cycles range from 21-40 days. Most women have cycles between 24-35 days. Consistency is more important than matching the \"average\" 28-day cycle." },
+      { "q": "When am I most fertile?", "a": "You're most fertile in the days around ovulation, typically 12-16 days before your next period. This includes the day of ovulation plus 5 days before." },
+      { "q": "Should I see a doctor about irregular periods?", "a": "Consult a healthcare provider if your cycles are consistently shorter than 21 days, longer than 40 days, or vary significantly in length month to month." }
+    ],
+    "schema": {
+      "@context": "https://schema.org",
+      "@type": "WebApplication",
+      "name": "Period Calculator",
+      "url": "https://gab.ae/period-calculator",
+      "description": "Predict next period date and ovulation timing based on menstrual cycle",
+      "applicationCategory": "HealthApplication",
+      "operatingSystem": "All",
+      "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" }
+    }
+  },
+  {
+    "slug": "discount-calculator",
+    "title": "Discount Calculator - Calculate Sale Prices & Savings | gab.ae",
+    "description": "Calculate discounted prices and savings. Enter original price and discount percentage to see final price and amount saved. Free shopping calculator.",
+    "category": "finance",
+    "config": {
+      "inputs": [
+        { "id": "originalPrice", "label": "Original Price", "type": "number", "default": 100, "prefix": "$", "step": 0.01 },
+        { "id": "discountPercent", "label": "Discount Percent", "type": "preset", "options": [10, 15, 20, 25, 30, 40, 50], "default": 20, "suffix": "%" }
+      ],
+      "outputs": [
+        { "id": "discountAmount", "label": "Discount Amount", "prefix": "$" },
+        { "id": "finalPrice", "label": "Final Price", "prefix": "$" },
+        { "id": "youSave", "label": "You Save", "prefix": "$" }
+      ],
+      "formula": "var discountAmount = originalPrice * discountPercent / 100; var finalPrice = originalPrice - discountAmount; var youSave = discountAmount; return { discountAmount: discountAmount.toFixed(2), finalPrice: finalPrice.toFixed(2), youSave: youSave.toFixed(2) };"
+    },
+    "content": [
+      { "heading": "How Discounts Work", "body": "<p>A discount is a reduction from the original price, typically expressed as a percentage. Understanding how to calculate discounts helps you make informed shopping decisions and budget effectively.</p>" },
+      { "heading": "Calculate Your Savings", "body": "<p>Enter the original price and discount percentage to instantly see the discount amount, final price you'll pay, and total savings. Perfect for comparing deals and planning purchases during sales.</p>" },
+      { "heading": "Smart Shopping with Discounts", "body": "<p>Use this calculator to compare different discount offers, calculate bulk purchase savings, or determine if a sale price represents good value. Knowledge of discount calculations helps you shop smarter.</p>" }
+    ],
+    "faqs": [
+      { "q": "How do I calculate a discount?", "a": "Multiply the original price by the discount percentage (as a decimal), then subtract that amount from the original price. For example, 20% off $100 = $100 - ($100 × 0.20) = $80." },
+      { "q": "What's the difference between percentage off and percentage of original price?", "a": "Percentage off (discount) is subtracted from 100%. If something is 30% off, you pay 70% of the original price." },
+      { "q": "Can I stack multiple discounts?", "a": "This depends on store policy. When allowed, apply discounts sequentially (not additively). A 20% discount followed by 10% off the sale price gives different results than 30% off." },
+      { "q": "How do I compare different discount offers?", "a": "Calculate the final price for each offer using this calculator. The lowest final price is usually the best deal, regardless of the discount percentage." }
+    ],
+    "schema": {
+      "@context": "https://schema.org",
+      "@type": "WebApplication",
+      "name": "Discount Calculator",
+      "url": "https://gab.ae/discount-calculator",
+      "description": "Calculate sale prices and savings from percentage discounts",
+      "applicationCategory": "FinanceApplication",
+      "operatingSystem": "All",
+      "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" }
+    }
+  }
+]
