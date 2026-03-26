@@ -1,0 +1,71 @@
+/**
+ * Shared HTML layout for all gab.ae pages
+ */
+export function layout({ title, description, canonical, schemaJson, body }) {
+  const schema = schemaJson ? `<script type="application/ld+json">${JSON.stringify(schemaJson)}</script>` : '';
+  
+  return `<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>${esc(title)}</title>
+  <meta name="description" content="${esc(description)}">
+  <link rel="canonical" href="${canonical}">
+  ${schema}
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: { sans: ['Inter', 'system-ui', 'sans-serif'] },
+          colors: {
+            surface: { DEFAULT: '#0a0a0a', card: '#141414', border: '#262626' },
+            accent: { DEFAULT: '#3b82f6', hover: '#2563eb' },
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    body { font-family: 'Inter', system-ui, sans-serif; }
+    @media print {
+      .no-print { display: none !important; }
+      body { background: white; color: black; }
+    }
+  </style>
+</head>
+<body class="bg-surface text-gray-200 min-h-screen">
+  <!-- Nav -->
+  <nav class="border-b border-surface-border px-4 py-3 no-print">
+    <div class="max-w-5xl mx-auto flex items-center justify-between">
+      <a href="/" class="text-xl font-bold text-white hover:text-accent transition-colors">gab.ae</a>
+      <div class="flex gap-6 text-sm text-gray-400">
+        <a href="/tools" class="hover:text-white transition-colors">Tools</a>
+        <a href="/news" class="hover:text-white transition-colors">News</a>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Main -->
+  <main class="max-w-5xl mx-auto px-4 py-8">
+    ${body}
+  </main>
+
+  <!-- Footer -->
+  <footer class="border-t border-surface-border px-4 py-6 mt-16 no-print">
+    <div class="max-w-5xl mx-auto text-center text-sm text-gray-500">
+      &copy; ${new Date().getFullYear()} gab.ae
+    </div>
+  </footer>
+</body>
+</html>`;
+}
+
+function esc(s) {
+  if (!s) return '';
+  return s.replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+}

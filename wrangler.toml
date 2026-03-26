@@ -1,0 +1,16 @@
+name = "gab-ae"
+main = "src/worker.js"
+compatibility_date = "2026-03-26"
+
+[vars]
+SITE_NAME = "gab.ae"
+
+[[d1_databases]]
+binding = "DB"
+database_name = "gab-ae-prod"
+database_id = "4e23e386-b430-4ffc-bf84-246a4e7bcdd1"
+
+# [[routes]]
+# pattern = "gab.ae/*"
+# zone_name = "gab.ae"
+# Uncomment above once gab.ae DNS is proxied through CF
