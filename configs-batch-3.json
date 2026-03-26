@@ -1,0 +1,640 @@
+[
+  {
+    "slug": "law-of-sines-calculator",
+    "title": "Law of Sines Calculator | gab.ae",
+    "description": "Calculate unknown sides and angles in triangles using the Law of Sines. Enter known side and angles to find missing triangle measurements quickly and accurately.",
+    "category": "education",
+    "config": {
+      "inputs": [
+        {"id": "sideA", "label": "Side A", "type": "number", "min": 0.1, "step": 0.01},
+        {"id": "angleA", "label": "Angle A (degrees)", "type": "number", "min": 0.1, "max": 179.9, "step": 0.1},
+        {"id": "angleB", "label": "Angle B (degrees)", "type": "number", "min": 0.1, "max": 179.9, "step": 0.1}
+      ],
+      "outputs": [
+        {"id": "sideB", "label": "Side B", "unit": "units"},
+        {"id": "angleC", "label": "Angle C", "unit": "degrees"},
+        {"id": "sideC", "label": "Side C", "unit": "units"}
+      ],
+      "formula": "var angleARad = angleA * Math.PI / 180; var angleBRad = angleB * Math.PI / 180; var angleC = 180 - angleA - angleB; var angleCRad = angleC * Math.PI / 180; var sideB = (sideA * Math.sin(angleBRad)) / Math.sin(angleARad); var sideC = (sideA * Math.sin(angleCRad)) / Math.sin(angleARad);",
+      "verdicts": []
+    },
+    "content": [
+      {
+        "title": "Understanding the Law of Sines",
+        "text": "The Law of Sines states that in any triangle, the ratio of each side to the sine of its opposite angle is constant. This fundamental trigonometric principle allows us to solve for unknown sides and angles when we have sufficient information about a triangle."
+      },
+      {
+        "title": "When to Use This Calculator",
+        "text": "Use this calculator when you know one side and two angles of a triangle (ASA or AAS cases). The calculator will find the remaining side lengths and the third angle, completing your triangle solution with precise mathematical accuracy."
+      }
+    ],
+    "faqs": [
+      {
+        "question": "What information do I need to use the Law of Sines?",
+        "answer": "You need to know at least one side length and two angles of the triangle. The calculator will then determine all remaining measurements."
+      },
+      {
+        "question": "Why might I get an error or invalid result?",
+        "answer": "Ensure your angles add up to less than 180 degrees and are all positive. Also, make sure the side length is a positive number."
+      },
+      {
+        "question": "Can this solve any triangle?",
+        "answer": "This calculator works for ASA (Angle-Side-Angle) and AAS (Angle-Angle-Side) triangle cases. For other cases, you may need different trigonometric approaches."
+      },
+      {
+        "question": "Are the results accurate for real-world applications?",
+        "answer": "Yes, the calculator provides mathematically precise results suitable for engineering, construction, navigation, and academic purposes."
+      }
+    ],
+    "schema": {
+      "@context": "https://schema.org",
+      "@type": "WebApplication",
+      "name": "Law of Sines Calculator",
+      "description": "Calculate unknown sides and angles in triangles using the Law of Sines formula",
+      "url": "https://gab.ae/law-of-sines-calculator",
+      "applicationCategory": "EducationalApplication",
+      "operatingSystem": "Any",
+      "permissions": "browser",
+      "offers": {
+        "@type": "Offer",
+        "price": "0",
+        "priceCurrency": "USD"
+      }
+    }
+  },
+  {
+    "slug": "concrete-calculator",
+    "title": "Concrete Calculator | gab.ae",
+    "description": "Calculate how much concrete you need for your project. Enter dimensions to get cubic feet, cubic yards, and number of 80lb concrete bags required for accurate ordering.",
+    "category": "lifestyle",
+    "config": {
+      "inputs": [
+        {"id": "length", "label": "Length (feet)", "type": "number", "min": 0.1, "step": 0.1},
+        {"id": "width", "label": "Width (feet)", "type": "number", "min": 0.1, "step": 0.1},
+        {"id": "depth", "label": "Depth (inches)", "type": "number", "min": 0.1, "step": 0.1, "default": 4}
+      ],
+      "outputs": [
+        {"id": "cubicFeet", "label": "Cubic Feet", "unit": "ft³"},
+        {"id": "cubicYards", "label": "Cubic Yards", "unit": "yd³"},
+        {"id": "bags80lb", "label": "80lb Concrete Bags", "unit": "bags"}
+      ],
+      "formula": "var cubicFeet = length * width * (depth / 12); var cubicYards = cubicFeet / 27; var bags80lb = Math.ceil(cubicFeet / 0.6);",
+      "verdicts": []
+    },
+    "content": [
+      {
+        "title": "Planning Your Concrete Project",
+        "text": "Proper concrete calculation is essential for any construction project. Whether you're pouring a driveway, patio, or foundation, knowing the exact amount of concrete needed helps you budget accurately and avoid costly over-ordering or project delays from under-ordering."
+      },
+      {
+        "title": "Understanding Concrete Measurements",
+        "text": "Concrete is typically sold by the cubic yard, but bags are measured differently. An 80-pound bag of concrete mix covers approximately 0.6 cubic feet when properly mixed. Always round up your bag count to ensure you have enough material to complete your project."
+      }
+    ],
+    "faqs": [
+      {
+        "question": "Should I order extra concrete beyond the calculated amount?",
+        "answer": "Yes, it's recommended to order 5-10% extra concrete to account for spillage, irregular depths, and ensuring you don't run short during the pour."
+      },
+      {
+        "question": "What's the difference between cubic feet and cubic yards?",
+        "answer": "There are 27 cubic feet in one cubic yard. Ready-mix concrete is typically ordered by cubic yards, while bagged concrete is calculated in cubic feet."
+      },
+      {
+        "question": "How many 80lb bags equal one cubic yard?",
+        "answer": "Approximately 45 bags of 80lb concrete mix equal one cubic yard, though this calculator accounts for the actual coverage per bag."
+      },
+      {
+        "question": "Can I use this for different concrete thicknesses?",
+        "answer": "Absolutely. Adjust the depth measurement for your specific project - driveways typically need 4-6 inches, while sidewalks might only need 3-4 inches."
+      }
+    ],
+    "schema": {
+      "@context": "https://schema.org",
+      "@type": "WebApplication",
+      "name": "Concrete Calculator",
+      "description": "Calculate concrete quantities needed for construction projects in cubic feet, cubic yards, and bag counts",
+      "url": "https://gab.ae/concrete-calculator",
+      "applicationCategory": "UtilityApplication",
+      "operatingSystem": "Any",
+      "permissions": "browser",
+      "offers": {
+        "@type": "Offer",
+        "price": "0",
+        "priceCurrency": "USD"
+      }
+    }
+  },
+  {
+    "slug": "macro-calculator",
+    "title": "Macro Calculator | gab.ae",
+    "description": "Calculate your daily macronutrient needs based on weight, goals, and activity level. Get personalized protein, carbs, and fat targets for optimal nutrition planning.",
+    "category": "health",
+    "config": {
+      "inputs": [
+        {"id": "weight", "label": "Weight (lbs)", "type": "number", "min": 50, "max": 500},
+        {"id": "goal", "label": "Goal", "type": "preset", "options": ["Lose Weight", "Maintain Weight", "Gain Weight"]},
+        {"id": "activityLevel", "label": "Activity Level", "type": "preset", "options": ["Sedentary (1.2)", "Light Activity (1.375)", "Moderate Activity (1.55)", "Very Active (1.725)"]}
+      ],
+      "outputs": [
+        {"id": "calories", "label": "Daily Calories", "unit": "cal"},
+        {"id": "protein", "label": "Protein", "unit": "g"},
+        {"id": "carbs", "label": "Carbohydrates", "unit": "g"},
+        {"id": "fat", "label": "Fat", "unit": "g"}
+      ],
+      "formula": "var activityMultipliers = [1.2, 1.375, 1.55, 1.725]; var bmr = weight * 10; var tdee = bmr * activityMultipliers[activityLevel]; var calorieAdjustments = [-500, 0, 300]; var calories = Math.round(tdee + calorieAdjustments[goal]); var protein = Math.round(weight * 0.8); var fat = Math.round(calories * 0.25 / 9); var carbs = Math.round((calories - (protein * 4) - (fat * 9)) / 4);",
+      "verdicts": []
+    },
+    "content": [
+      {
+        "title": "Understanding Macronutrients",
+        "text": "Macronutrients - proteins, carbohydrates, and fats - are the building blocks of your diet. Each plays a crucial role in your body's function, energy production, and achieving your fitness goals. Proper macro tracking helps optimize your nutrition for better results."
+      },
+      {
+        "title": "Customizing Your Macro Targets",
+        "text": "Your ideal macro distribution depends on your goals, activity level, and body composition. This calculator provides a starting point based on proven nutritional science, but you may need to adjust based on your individual response and preferences."
+      }
+    ],
+    "faqs": [
+      {
+        "question": "How accurate are these macro recommendations?",
+        "answer": "These calculations provide a scientifically-based starting point. Individual needs may vary based on metabolism, body composition, and other factors. Monitor your progress and adjust as needed."
+      },
+      {
+        "question": "Should I hit these numbers exactly every day?",
+        "answer": "Aim to get close to your targets, but don't stress about hitting them perfectly. Focus on weekly averages rather than daily perfection for better long-term success."
+      },
+      {
+        "question": "Can I adjust the protein amount?",
+        "answer": "The calculator uses 0.8g per pound of body weight, which is suitable for most people. Athletes or those building muscle may want to increase to 1-1.2g per pound."
+      },
+      {
+        "question": "What if I don't know my activity level?",
+        "answer": "Most people with desk jobs and light exercise fit 'Light Activity'. Choose 'Moderate' if you exercise 3-4 times per week, and 'Very Active' if you exercise intensely 5+ times per week."
+      }
+    ],
+    "schema": {
+      "@context": "https://schema.org",
+      "@type": "WebApplication",
+      "name": "Macro Calculator",
+      "description": "Calculate daily macronutrient targets based on weight, goals, and activity level for optimal nutrition planning",
+      "url": "https://gab.ae/macro-calculator",
+      "applicationCategory": "HealthApplication",
+      "operatingSystem": "Any",
+      "permissions": "browser",
+      "offers": {
+        "@type": "Offer",
+        "price": "0",
+        "priceCurrency": "USD"
+      }
+    }
+  },
+  {
+    "slug": "percentage-calculator",
+    "title": "Percentage Calculator | gab.ae",
+    "description": "Calculate percentages three ways: find what percent X is of Y, calculate X% of Y, or determine percentage change between two values. Quick and accurate results.",
+    "category": "education",
+    "config": {
+      "inputs": [
+        {"id": "value1", "label": "Value 1", "type": "number", "default": 25},
+        {"id": "value2", "label": "Value 2", "type": "number", "default": 200}
+      ],
+      "outputs": [
+        {"id": "percentOf", "label": "Value1% of Value2", "unit": ""},
+        {"id": "whatPercent", "label": "Value1 is what % of Value2", "unit": "%"},
+        {"id": "percentChange", "label": "% change from Value2 to Value1", "unit": "%"}
+      ],
+      "formula": "var percentOf = value1 / 100 * value2; var whatPercent = (value1 / value2) * 100; var percentChange = ((value1 - value2) / value2) * 100;",
+      "verdicts": []
+    },
+    "content": [
+      {
+        "title": "Three Essential Percentage Calculations",
+        "text": "This calculator handles the three most common percentage problems you encounter: finding a percentage of a number, determining what percentage one number is of another, and calculating percentage change between two values. Each calculation serves different practical purposes."
+      },
+      {
+        "title": "Practical Applications",
+        "text": "Use percentage calculations for discounts and tips, analyzing data and statistics, calculating tax and interest, measuring growth rates, and comparing values. These fundamental math skills are essential for financial literacy and data analysis."
+      }
+    ],
+    "faqs": [
+      {
+        "question": "What's the difference between the three calculations?",
+        "answer": "'X% of Y' multiplies, 'X is what % of Y' finds the ratio, and '% change' measures the difference between two values as a percentage."
+      },
+      {
+        "question": "Why might I get a negative percentage change?",
+        "answer": "A negative percentage change indicates a decrease from the second value to the first value. This is normal when the first value is smaller than the second."
+      },
+      {
+        "question": "Can I use this for calculating discounts?",
+        "answer": "Yes! For a 25% discount on $200, use 'Value1% of Value2' with 25 and 200 to get the discount amount ($50), leaving you with $150."
+      },
+      {
+        "question": "How do I calculate tips with this?",
+        "answer": "Enter the tip percentage (like 18) as Value1 and your bill total as Value2. The 'Value1% of Value2' result shows your tip amount."
+      },
+      {
+        "question": "What about percentage increases over 100%?",
+        "answer": "Percentage changes over 100% are possible and indicate that the first value is more than double the second value, which is mathematically correct."
+      }
+    ],
+    "schema": {
+      "@context": "https://schema.org",
+      "@type": "WebApplication",
+      "name": "Percentage Calculator",
+      "description": "Calculate percentages, percentage of numbers, and percentage changes between values",
+      "url": "https://gab.ae/percentage-calculator",
+      "applicationCategory": "EducationalApplication",
+      "operatingSystem": "Any",
+      "permissions": "browser",
+      "offers": {
+        "@type": "Offer",
+        "price": "0",
+        "priceCurrency": "USD"
+      }
+    }
+  },
+  {
+    "slug": "bac-calculator",
+    "title": "BAC Calculator | gab.ae",
+    "description": "Calculate blood alcohol content using the Widmark formula. Enter weight, gender, drinks consumed, and time elapsed for BAC estimation and sobriety timing.",
+    "category": "health",
+    "config": {
+      "inputs": [
+        {"id": "weight", "label": "Weight (lbs)", "type": "number", "min": 80, "max": 400},
+        {"id": "gender", "label": "Gender", "type": "preset", "options": ["Female", "Male"]},
+        {"id": "drinks", "label": "Number of Drinks", "type": "number", "min": 0, "max": 20, "default": 3, "step": 0.5},
+        {"id": "hours", "label": "Hours Since Drinking", "type": "number", "min": 0, "max": 24, "default": 2, "step": 0.5}
+      ],
+      "outputs": [
+        {"id": "bac", "label": "Blood Alcohol Content", "unit": "%"},
+        {"id": "timeToSober", "label": "Time to Sober", "unit": "hours"}
+      ],
+      "formula": "var r = gender == 1 ? 0.73 : 0.66; var bac = Math.max(0, (drinks * 14 / (weight * 453.592 * r) * 100) - (0.015 * hours)); var timeToSober = Math.max(0, bac / 0.015);",
+      "verdicts": []
+    },
+    "content": [
+      {
+        "title": "Understanding Blood Alcohol Content",
+        "text": "Blood Alcohol Content (BAC) measures the amount of alcohol in your bloodstream. This calculator uses the Widmark formula, a scientifically recognized method for estimating BAC based on body weight, gender, alcohol consumption, and time elapsed."
+      },
+      {
+        "title": "Important Safety Disclaimer",
+        "text": "This calculator provides estimates only and should never be used to determine if you're safe to drive or operate machinery. BAC can vary significantly based on factors like food intake, medications, and individual metabolism. Always err on the side of caution and use designated drivers or ride-sharing services."
+      }
+    ],
+    "faqs": [
+      {
+        "question": "How accurate is this BAC calculator?",
+        "answer": "This calculator provides estimates based on the Widmark formula, but actual BAC can vary significantly due to individual factors. Only professional testing devices provide accurate readings."
+      },
+      {
+        "question": "What constitutes 'one drink' in this calculator?",
+        "answer": "One standard drink equals 14 grams of pure alcohol: 12 oz beer (5% alcohol), 5 oz wine (12% alcohol), or 1.5 oz spirits (40% alcohol)."
+      },
+      {
+        "question": "Can I use this to determine if I'm safe to drive?",
+        "answer": "No, never use this calculator to make driving decisions. Legal limits vary by location, and impairment can occur below legal limits. Always use alternative transportation after drinking."
+      },
+      {
+        "question": "Why does gender affect the calculation?",
+        "answer": "Men and women process alcohol differently due to differences in body composition and water content. Women typically have lower water content, leading to higher BAC from the same amount of alcohol."
+      },
+      {
+        "question": "How long does alcohol stay in your system?",
+        "answer": "The body typically metabolizes alcohol at about 0.015% BAC per hour, but this can vary significantly between individuals based on numerous factors."
+      }
+    ],
+    "schema": {
+      "@context": "https://schema.org",
+      "@type": "WebApplication",
+      "name": "BAC Calculator",
+      "description": "Estimate blood alcohol content using scientific formulas based on weight, gender, drinks consumed, and time elapsed",
+      "url": "https://gab.ae/bac-calculator",
+      "applicationCategory": "HealthApplication",
+      "operatingSystem": "Any",
+      "permissions": "browser",
+      "offers": {
+        "@type": "Offer",
+        "price": "0",
+        "priceCurrency": "USD"
+      }
+    }
+  },
+  {
+    "slug": "subnet-calculator",
+    "title": "Subnet Calculator | gab.ae",
+    "description": "Calculate subnet mask, total hosts, and usable hosts from IP address and CIDR notation. Essential tool for network administrators and IT professionals.",
+    "category": "tech",
+    "config": {
+      "inputs": [
+        {"id": "ip1", "label": "First Octet", "type": "number", "min": 0, "max": 255, "default": 192},
+        {"id": "ip2", "label": "Second Octet", "type": "number", "min": 0, "max": 255, "default": 168},
+        {"id": "ip3", "label": "Third Octet", "type": "number", "min": 0, "max": 255, "default": 1},
+        {"id": "ip4", "label": "Fourth Octet", "type": "number", "min": 0, "max": 255, "default": 0},
+        {"id": "cidr", "label": "CIDR Prefix", "type": "number", "min": 0, "max": 32, "default": 24}
+      ],
+      "outputs": [
+        {"id": "subnetMask", "label": "Subnet Mask", "unit": ""},
+        {"id": "totalHosts", "label": "Total Hosts", "unit": "hosts"},
+        {"id": "usableHosts", "label": "Usable Hosts", "unit": "hosts"}
+      ],
+      "formula": "var bits = 32 - cidr; var totalHosts = Math.pow(2, bits); var usableHosts = Math.max(0, totalHosts - 2); var maskBits = Array(32).fill(0); for(var i = 0; i < cidr; i++) maskBits[i] = 1; var octet1 = parseInt(maskBits.slice(0,8).join(''), 2); var octet2 = parseInt(maskBits.slice(8,16).join(''), 2); var octet3 = parseInt(maskBits.slice(16,24).join(''), 2); var octet4 = parseInt(maskBits.slice(24,32).join(''), 2); var subnetMask = octet1 + '.' + octet2 + '.' + octet3 + '.' + octet4;",
+      "verdicts": []
+    },
+    "content": [
+      {
+        "title": "Understanding Subnetting",
+        "text": "Subnetting divides a network into smaller, more manageable sub-networks. This practice improves network performance, security, and organization. The CIDR (Classless Inter-Domain Routing) notation specifies how many bits are used for the network portion of the address."
+      },
+      {
+        "title": "Network Planning and Administration",
+        "text": "Proper subnet calculation is crucial for network design, IP address allocation, and security configuration. Understanding host counts helps plan network capacity and avoid IP address conflicts in enterprise environments."
+      }
+    ],
+    "faqs": [
+      {
+        "question": "What does CIDR notation mean?",
+        "answer": "CIDR notation (like /24) indicates how many bits are used for the network portion of an IP address. /24 means the first 24 bits are for the network, leaving 8 bits for host addresses."
+      },
+      {
+        "question": "Why are there fewer usable hosts than total hosts?",
+        "answer": "Two addresses are reserved in each subnet: the network address (all host bits 0) and broadcast address (all host bits 1), leaving the remaining addresses for actual host assignment."
+      },
+      {
+        "question": "What's the difference between /24 and /25 subnets?",
+        "answer": "A /24 subnet has 256 total addresses (254 usable), while a /25 subnet has 128 total addresses (126 usable). Higher CIDR numbers create smaller subnets."
+      },
+      {
+        "question": "Can I use this for IPv6 networks?",
+        "answer": "This calculator is designed for IPv4 networks. IPv6 uses a 128-bit address space and different subnetting principles, requiring specialized IPv6 calculators."
+      }
+    ],
+    "schema": {
+      "@context": "https://schema.org",
+      "@type": "WebApplication",
+      "name": "Subnet Calculator",
+      "description": "Calculate subnet masks, host counts, and network details from IP addresses and CIDR notation",
+      "url": "https://gab.ae/subnet-calculator",
+      "applicationCategory": "DeveloperApplication",
+      "operatingSystem": "Any",
+      "permissions": "browser",
+      "offers": {
+        "@type": "Offer",
+        "price": "0",
+        "priceCurrency": "USD"
+      }
+    }
+  },
+  {
+    "slug": "army-body-fat-calculator",
+    "title": "Army Body Fat Calculator | gab.ae",
+    "description": "Calculate body fat percentage using US Army standards and measurement protocol. Enter gender, height, neck, waist, and hip measurements for accurate estimation.",
+    "category": "health",
+    "config": {
+      "inputs": [
+        {"id": "gender", "label": "Gender", "type": "preset", "options": ["Female", "Male"]},
+        {"id": "height", "label": "Height (inches)", "type": "number", "min": 48, "max": 84},
+        {"id": "neck", "label": "Neck Circumference (inches)", "type": "number", "min": 8, "max": 25, "step": 0.1},
+        {"id": "waist", "label": "Waist Circumference (inches)", "type": "number", "min": 20, "max": 60, "step": 0.1},
+        {"id": "hip", "label": "Hip Circumference (inches)", "type": "number", "min": 20, "max": 60, "step": 0.1}
+      ],
+      "outputs": [
+        {"id": "bodyFatPercent", "label": "Body Fat Percentage", "unit": "%"}
+      ],
+      "formula": "var bodyFatPercent; if (gender == 1) { bodyFatPercent = 86.010 * Math.log10(waist - neck) - 70.041 * Math.log10(height) + 36.76; } else { bodyFatPercent = 163.205 * Math.log10(waist + hip - neck) - 97.684 * Math.log10(height) - 78.387; } bodyFatPercent = Math.max(0, Math.min(50, bodyFatPercent));",
+      "verdicts": []
+    },
+    "content": [
+      {
+        "title": "US Army Body Fat Standards",
+        "text": "The US Army uses specific measurement protocols to assess body composition for military personnel. This scientifically-validated method uses circumference measurements at key body points to estimate body fat percentage, providing a practical alternative to more expensive testing methods."
+      },
+      {
+        "title": "Accurate Measurement Guidelines",
+        "text": "For accurate results, measurements should be taken with a flexible tape measure while standing upright. Neck measurement is taken just below the larynx, waist at the narrowest point, and hips at the widest point. Take measurements multiple times and use the average for best accuracy."
+      }
+    ],
+    "faqs": [
+      {
+        "question": "How accurate is the Army body fat calculation method?",
+        "answer": "The Army method correlates well with DEXA scans and other gold-standard measurements, typically within 3-4% accuracy when measurements are taken correctly."
+      },
+      {
+        "question": "Why do men and women use different formulas?",
+        "answer": "Men and women have different body fat distribution patterns. The formulas account for these physiological differences to provide more accurate estimates for each gender."
+      },
+      {
+        "question": "Where exactly should I measure my waist?",
+        "answer": "For men, measure at the narrowest point of the torso, usually just above the navel. For women, measure at the narrowest point, typically at the natural waistline."
+      },
+      {
+        "question": "What's considered a healthy body fat percentage?",
+        "answer": "Healthy ranges vary by gender and age. Generally, 10-20% for men and 18-28% for women are considered healthy, though individual needs may vary."
+      }
+    ],
+    "schema": {
+      "@context": "https://schema.org",
+      "@type": "WebApplication",
+      "name": "Army Body Fat Calculator",
+      "description": "Calculate body fat percentage using US Army measurement standards and formulas",
+      "url": "https://gab.ae/army-body-fat-calculator",
+      "applicationCategory": "HealthApplication",
+      "operatingSystem": "Any",
+      "permissions": "browser",
+      "offers": {
+        "@type": "Offer",
+        "price": "0",
+        "priceCurrency": "USD"
+      }
+    }
+  },
+  {
+    "slug": "half-life-calculator",
+    "title": "Half Life Calculator | gab.ae",
+    "description": "Calculate radioactive decay or drug elimination using half-life formula. Enter initial amount, half-life period, and elapsed time for accurate decay calculations.",
+    "category": "science",
+    "config": {
+      "inputs": [
+        {"id": "initialAmount", "label": "Initial Amount", "type": "number", "min": 0.01, "default": 100},
+        {"id": "halfLife", "label": "Half-Life Period", "type": "number", "min": 0.01, "default": 6},
+        {"id": "elapsedTime", "label": "Elapsed Time", "type": "number", "min": 0, "default": 24}
+      ],
+      "outputs": [
+        {"id": "remainingAmount", "label": "Remaining Amount", "unit": "units"},
+        {"id": "percentRemaining", "label": "Percent Remaining", "unit": "%"},
+        {"id": "halvesElapsed", "label": "Half-Lives Elapsed", "unit": "periods"}
+      ],
+      "formula": "var halvesElapsed = elapsedTime / halfLife; var remainingAmount = initialAmount * Math.pow(0.5, halvesElapsed); var percentRemaining = (remainingAmount / initialAmount) * 100;",
+      "verdicts": []
+    },
+    "content": [
+      {
+        "title": "Understanding Half-Life",
+        "text": "Half-life is the time required for half of a substance to decay or be eliminated. This concept applies to radioactive elements, medications in the body, and various chemical processes. The exponential decay follows a predictable mathematical pattern useful in many scientific fields."
+      },
+      {
+        "title": "Applications in Science and Medicine",
+        "text": "Half-life calculations are essential in nuclear physics for radioactive dating, in pharmacology for drug dosing schedules, in environmental science for pollution cleanup timelines, and in chemistry for reaction kinetics. Understanding decay rates helps predict safety timelines and effectiveness periods."
+      }
+    ],
+    "faqs": [
+      {
+        "question": "What units should I use for time measurements?",
+        "answer": "Use consistent time units for both half-life and elapsed time. If half-life is in hours, elapsed time should also be in hours. The calculator works with any time unit as long as they match."
+      },
+      {
+        "question": "Can this calculate drug elimination from the body?",
+        "answer": "Yes, many drugs follow first-order kinetics with predictable half-lives. However, consult healthcare providers for medical decisions as individual factors can affect drug metabolism."
+      },
+      {
+        "question": "What if my elapsed time is less than one half-life?",
+        "answer": "The calculator handles any time period. If elapsed time is less than the half-life period, you'll see that less than 50% has decayed, which is mathematically correct."
+      },
+      {
+        "question": "How is this different from linear decay?",
+        "answer": "Half-life represents exponential decay where the rate depends on the current amount, not linear decay where a fixed amount disappears per time period. This creates the characteristic curved decay pattern."
+      }
+    ],
+    "schema": {
+      "@context": "https://schema.org",
+      "@type": "WebApplication",
+      "name": "Half Life Calculator",
+      "description": "Calculate exponential decay using half-life formulas for radioactive materials, drugs, and other substances",
+      "url": "https://gab.ae/half-life-calculator",
+      "applicationCategory": "EducationalApplication",
+      "operatingSystem": "Any",
+      "permissions": "browser",
+      "offers": {
+        "@type": "Offer",
+        "price": "0",
+        "priceCurrency": "USD"
+      }
+    }
+  },
+  {
+    "slug": "significant-figures-calculator",
+    "title": "Significant Figures Calculator | gab.ae",
+    "description": "Count significant figures in any number and convert to scientific notation. Essential tool for chemistry, physics, and engineering calculations requiring precision.",
+    "category": "education",
+    "config": {
+      "inputs": [
+        {"id": "inputNumber", "label": "Enter Number", "type": "number", "default": 1200, "step": "any"}
+      ],
+      "outputs": [
+        {"id": "sigFigs", "label": "Significant Figures", "unit": "digits"},
+        {"id": "scientificNotation", "label": "Scientific Notation", "unit": ""}
+      ],
+      "formula": "var str = String(Math.abs(inputNumber)); if (str.includes('.')) { var beforeDecimal = str.split('.')[0]; var afterDecimal = str.split('.')[1]; var sigFigs = beforeDecimal.replace(/^0+/, '').length + afterDecimal.replace(/0+$/, '').length; if (beforeDecimal.replace(/^0+/, '') === '') sigFigs = afterDecimal.replace(/^0+/, '').length; } else { var trimmed = str.replace(/0+$/, ''); sigFigs = trimmed.length; if (trimmed === '') sigFigs = 1; } var exponent = Math.floor(Math.log10(Math.abs(inputNumber))); var coefficient = inputNumber / Math.pow(10, exponent); var scientificNotation = coefficient.toPrecision(sigFigs) + 'e' + exponent;",
+      "verdicts": []
+    },
+    "content": [
+      {
+        "title": "Understanding Significant Figures",
+        "text": "Significant figures represent the precision of a measurement or calculation. They include all certain digits plus one uncertain digit. Proper significant figure counting is crucial in scientific work to maintain accuracy and avoid false precision in calculations and measurements."
+      },
+      {
+        "title": "Rules for Counting Significant Figures",
+        "text": "All non-zero digits are significant. Zeros between non-zero digits are significant. Leading zeros are never significant. Trailing zeros in decimal numbers are significant. Trailing zeros in whole numbers without decimals may or may not be significant, depending on context."
+      }
+    ],
+    "faqs": [
+      {
+        "question": "Why do trailing zeros in 1200 not count as significant?",
+        "answer": "Without a decimal point, trailing zeros in whole numbers are ambiguous. 1200 could represent 2, 3, or 4 significant figures depending on measurement precision. Use scientific notation or decimals for clarity."
+      },
+      {
+        "question": "How do I know if a zero is significant?",
+        "answer": "Zeros between non-zero digits are always significant. Leading zeros never count. Trailing zeros count only if there's a decimal point or if explicitly indicated by scientific notation."
+      },
+      {
+        "question": "What's the difference between precision and accuracy?",
+        "answer": "Precision refers to the number of significant figures or decimal places. Accuracy refers to how close a measurement is to the true value. You can have precise but inaccurate measurements."
+      },
+      {
+        "question": "When should I use scientific notation?",
+        "answer": "Use scientific notation for very large or small numbers, when you need to clearly indicate the number of significant figures, or when performing calculations with numbers of different magnitudes."
+      }
+    ],
+    "schema": {
+      "@context": "https://schema.org",
+      "@type": "WebApplication",
+      "name": "Significant Figures Calculator",
+      "description": "Count significant figures in numbers and convert to scientific notation for precise scientific calculations",
+      "url": "https://gab.ae/significant-figures-calculator",
+      "applicationCategory": "EducationalApplication",
+      "operatingSystem": "Any",
+      "permissions": "browser",
+      "offers": {
+        "@type": "Offer",
+        "price": "0",
+        "priceCurrency": "USD"
+      }
+    }
+  },
+  {
+    "slug": "tire-size-calculator",
+    "title": "Tire Size Calculator | gab.ae",
+    "description": "Calculate tire diameter, circumference, sidewall height, and revolutions per mile from tire size specifications. Essential for automotive modifications and comparisons.",
+    "category": "lifestyle",
+    "config": {
+      "inputs": [
+        {"id": "width1", "label": "Tire Width (mm)", "type": "number", "min": 125, "max": 400, "default": 225},
+        {"id": "ratio1", "label": "Aspect Ratio (%)", "type": "number", "min": 25, "max": 90, "default": 45},
+        {"id": "rim1", "label": "Rim Diameter (inches)", "type": "number", "min": 13, "max": 24, "default": 17}
+      ],
+      "outputs": [
+        {"id": "diameter", "label": "Overall Diameter", "unit": "inches"},
+        {"id": "circumference", "label": "Circumference", "unit": "inches"},
+        {"id": "sidewall", "label": "Sidewall Height", "unit": "inches"},
+        {"id": "revPerMile", "label": "Revolutions per Mile", "unit": "revs"}
+      ],
+      "formula": "var sidewall = (width1 * ratio1 / 100) / 25.4; var diameter = rim1 + 2 * sidewall; var circumference = diameter * Math.PI; var revPerMile = Math.round(63360 / circumference);",
+      "verdicts": []
+    },
+    "content": [
+      {
+        "title": "Understanding Tire Specifications",
+        "text": "Tire sizes are expressed as width/aspect ratio/rim diameter (e.g., 225/45R17). The width is in millimeters, aspect ratio is the sidewall height as a percentage of width, and rim diameter is in inches. These measurements determine the tire's overall dimensions and performance characteristics."
+      },
+      {
+        "title": "Impact on Vehicle Performance",
+        "text": "Changing tire sizes affects speedometer accuracy, fuel economy, acceleration, and handling. Larger diameter tires typically improve handling but may reduce acceleration and fuel economy. Understanding these calculations helps make informed decisions about tire upgrades or replacements."
+      }
+    ],
+    "faqs": [
+      {
+        "question": "How does tire size affect my speedometer?",
+        "answer": "Larger overall diameter tires will make your speedometer read slower than actual speed, while smaller tires make it read faster. The difference is proportional to the diameter change."
+      },
+      {
+        "question": "What's the difference between tire width and rim width?",
+        "answer": "Tire width is the tread width in millimeters. Rim width is the wheel width in inches. They must be compatible - wider tires generally need wider rims for proper mounting and performance."
+      },
+      {
+        "question": "Can I use this to compare different tire sizes?",
+        "answer": "Yes, calculate the specifications for different sizes to compare overall diameter, circumference, and revolutions per mile. Try to keep overall diameter within 3% of original for minimal impact on speedometer and performance."
+      },
+      {
+        "question": "What does aspect ratio mean for ride quality?",
+        "answer": "Lower aspect ratios (lower profile) provide better handling but harsher ride quality. Higher aspect ratios offer more cushioning but less precise handling. It's a trade-off between comfort and performance."
+      }
+    ],
+    "schema": {
+      "@context": "https://schema.org",
+      "@type": "WebApplication",
+      "name": "Tire Size Calculator",
+      "description": "Calculate tire dimensions, circumference, and performance characteristics from tire size specifications",
+      "url": "https://gab.ae/tire-size-calculator",
+      "applicationCategory": "UtilityApplication",
+      "operatingSystem": "Any",
+      "permissions": "browser",
+      "offers": {
+        "@type": "Offer",
+        "price": "0",
+        "priceCurrency": "USD"
+      }
+    }
+  }
+]
