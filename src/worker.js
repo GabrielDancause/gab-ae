@@ -649,6 +649,67 @@ async function seoDashboardAPI(env) {
       "SELECT apex_slug, domain, COUNT(*) as pages FROM tracked_pages WHERE apex_slug IS NOT NULL GROUP BY apex_slug, domain ORDER BY apex_slug, pages DESC"
     ).all();
 
+    // GSC aggregate per apex
+    const gscApexRows = await env.DB.prepare(
+      `SELECT tp.apex_slug, 
+              SUM(pm.gsc_impressions) as impressions, 
+              SUM(pm.gsc_clicks) as clicks,
+              CASE WHEN SUM(pm.gsc_impressions) > 0 THEN ROUND(CAST(SUM(pm.gsc_clicks) AS REAL) / SUM(pm.gsc_impressions) * 100, 2) ELSE 0 END as ctr,
+              ROUND(AVG(CASE WHEN pm.gsc_position > 0 THEN pm.gsc_position END), 1) as avg_position
+       FROM page_metrics pm
+       INNER JOIN tracked_pages tp ON pm.domain = tp.domain AND pm.path = tp.path
+       WHERE tp.apex_slug IS NOT NULL
+       GROUP BY tp.apex_slug`
+    ).all();
+
+    // GA aggregate per apex
+    const gaApexRows = await env.DB.prepare(
+      `SELECT tp.apex_slug,
+              SUM(pm.ga_sessions) as sessions,
+              SUM(pm.ga_users) as users,
+              SUM(pm.ga_pageviews) as pageviews,
+              ROUND(AVG(CASE WHEN pm.ga_bounce_rate > 0 THEN pm.ga_bounce_rate END) * 100, 1) as avg_bounce,
+              ROUND(AVG(CASE WHEN pm.ga_avg_duration > 0 THEN pm.ga_avg_duration END), 0) as avg_duration
+       FROM page_metrics pm
+       INNER JOIN tracked_pages tp ON pm.domain = tp.domain AND pm.path = tp.path
+       WHERE tp.apex_slug IS NOT NULL
+       GROUP BY tp.apex_slug`
+    ).all();
+
+    // GSC per domain
+    const gscDomainRows = await env.DB.prepare(
+      `SELECT pm.domain,
+              SUM(pm.gsc_impressions) as impressions, 
+              SUM(pm.gsc_clicks) as clicks,
+              CASE WHEN SUM(pm.gsc_impressions) > 0 THEN ROUND(CAST(SUM(pm.gsc_clicks) AS REAL) / SUM(pm.gsc_impressions) * 100, 2) ELSE 0 END as ctr
+       FROM page_metrics pm
+       INNER JOIN tracked_pages tp ON pm.domain = tp.domain AND pm.path = tp.path
+       WHERE tp.apex_slug IS NOT NULL
+       GROUP BY pm.domain
+       ORDER BY impressions DESC`
+    ).all();
+
+    // GA per domain
+    const gaDomainRows = await env.DB.prepare(
+      `SELECT pm.domain,
+              SUM(pm.ga_sessions) as sessions,
+              SUM(pm.ga_users) as users,
+              SUM(pm.ga_pageviews) as pageviews
+       FROM page_metrics pm
+       INNER JOIN tracked_pages tp ON pm.domain = tp.domain AND pm.path = tp.path
+       WHERE tp.apex_slug IS NOT NULL
+       GROUP BY pm.domain
+       ORDER BY sessions DESC`
+    ).all();
+
+    // Network totals
+    const networkGsc = await env.DB.prepare(
+      `SELECT SUM(gsc_impressions) as impressions, SUM(gsc_clicks) as clicks FROM page_metrics`
+    ).first();
+    const networkGa = await env.DB.prepare(
+      `SELECT SUM(ga_sessions) as sessions, SUM(ga_users) as users, SUM(ga_pageviews) as pageviews FROM page_metrics`
+    ).first();
+
     // Build apex map
     const apexNames = {
       'capital-markets-wealth-guide-2026': 'Capital Markets & Wealth',
@@ -665,7 +726,21 @@ async function seoDashboardAPI(env) {
 
     const apexMap = {};
     for (const slug of Object.keys(apexNames)) {
-      apexMap[slug] = { slug, name: apexNames[slug], pages: 0, domains: [], clusters: [], top_pages: [] };
+      apexMap[slug] = { slug, name: apexNames[slug], pages: 0, domains: [], clusters: [], top_pages: [], gsc: {}, ga: {} };
+    }
+
+    // Fill GSC per apex
+    for (const r of (gscApexRows?.results || [])) {
+      if (apexMap[r.apex_slug]) {
+        apexMap[r.apex_slug].gsc = { impressions: r.impressions || 0, clicks: r.clicks || 0, ctr: r.ctr || 0, avg_position: r.avg_position || 0 };
+      }
+    }
+
+    // Fill GA per apex
+    for (const r of (gaApexRows?.results || [])) {
+      if (apexMap[r.apex_slug]) {
+        apexMap[r.apex_slug].ga = { sessions: r.sessions || 0, users: r.users || 0, pageviews: r.pageviews || 0, avg_bounce: r.avg_bounce || 0, avg_duration: r.avg_duration || 0 };
+      }
     }
 
     // Fill clusters
@@ -696,14 +771,26 @@ async function seoDashboardAPI(env) {
 
     const apexes = Object.values(apexMap).sort((a, b) => b.pages - a.pages);
 
+    // Build domain metrics map
+    const domainMetrics = {};
+    for (const r of (gscDomainRows?.results || [])) {
+      domainMetrics[r.domain] = { ...(domainMetrics[r.domain] || {}), gsc_impressions: r.impressions || 0, gsc_clicks: r.clicks || 0, gsc_ctr: r.ctr || 0 };
+    }
+    for (const r of (gaDomainRows?.results || [])) {
+      domainMetrics[r.domain] = { ...(domainMetrics[r.domain] || {}), ga_sessions: r.sessions || 0, ga_users: r.users || 0, ga_pageviews: r.pageviews || 0 };
+    }
+
     const response = {
       summary: {
         total_pages: totalResult?.total_pages || 0,
         total_domains: totalResult?.total_domains || 0,
         total_with_metrics: metricsResult?.total || 0,
         total_issues: issuesResult?.total || 0,
+        network_gsc: { impressions: networkGsc?.impressions || 0, clicks: networkGsc?.clicks || 0 },
+        network_ga: { sessions: networkGa?.sessions || 0, users: networkGa?.users || 0, pageviews: networkGa?.pageviews || 0 },
       },
       apexes,
+      domain_metrics: domainMetrics,
       generated_at: new Date().toISOString(),
     };
 

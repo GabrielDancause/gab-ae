@@ -34,7 +34,7 @@
   .summary-bar {
     display: grid;
     grid-template-columns: repeat(4, 1fr);
-    gap: 1rem;
+    gap: 0.75rem;
     margin-bottom: 2.5rem;
   }
   .summary-card {
@@ -209,6 +209,72 @@
     color: #64748b;
   }
 
+  /* Metrics row in apex cards */
+  .apex-metrics {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0.5rem;
+    margin-top: 0.75rem;
+    padding-top: 0.75rem;
+    border-top: 1px solid rgba(255,255,255,0.04);
+  }
+  .metric-item {
+    text-align: center;
+  }
+  .metric-val {
+    font-size: 0.9rem;
+    font-weight: 700;
+    color: #fff;
+  }
+  .metric-val.blue { color: #60a5fa; }
+  .metric-val.purple { color: #a78bfa; }
+  .metric-lbl {
+    font-size: 0.65rem;
+    color: #475569;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+  }
+
+  /* Domain metrics table */
+  .domain-metrics-table {
+    width: 100%;
+    font-size: 0.75rem;
+    border-collapse: collapse;
+    margin-top: 0.5rem;
+  }
+  .domain-metrics-table th {
+    text-align: left;
+    color: #475569;
+    font-weight: 600;
+    padding: 0.3rem 0.4rem;
+    border-bottom: 1px solid rgba(255,255,255,0.06);
+    font-size: 0.65rem;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+  }
+  .domain-metrics-table th:not(:first-child) { text-align: right; }
+  .domain-metrics-table td {
+    padding: 0.3rem 0.4rem;
+    border-bottom: 1px solid rgba(255,255,255,0.03);
+    color: #94a3b8;
+  }
+  .domain-metrics-table td:not(:first-child) { text-align: right; color: #cbd5e1; }
+  .domain-metrics-table td.highlight { color: #818cf8; font-weight: 600; }
+
+  /* Domain section in dashboard */
+  .domain-section {
+    margin-top: 2.5rem;
+    background: #12121a;
+    border: 1px solid rgba(255,255,255,0.06);
+    border-radius: 14px;
+    padding: 1.5rem;
+  }
+  .domain-section h2 {
+    color: #fff;
+    font-size: 1.1rem;
+    margin: 0 0 1rem;
+  }
+
   /* Loading */
   .dash-loading {
     text-align: center;
@@ -287,6 +353,8 @@
 
     // Summary bar
     const s = data.summary;
+    const ng = s.network_gsc || {};
+    const na = s.network_ga || {};
     document.getElementById('summary-bar').innerHTML = `
       <div class="summary-card">
         <div class="summary-value accent">${s.total_pages.toLocaleString()}</div>
@@ -295,6 +363,22 @@
       <div class="summary-card">
         <div class="summary-value green">${s.total_domains}</div>
         <div class="summary-label">Domains</div>
+      </div>
+      <div class="summary-card">
+        <div class="summary-value amber">${(ng.impressions || 0).toLocaleString()}</div>
+        <div class="summary-label">GSC Impressions</div>
+      </div>
+      <div class="summary-card">
+        <div class="summary-value green">${(ng.clicks || 0).toLocaleString()}</div>
+        <div class="summary-label">GSC Clicks</div>
+      </div>
+      <div class="summary-card">
+        <div class="summary-value accent">${(na.sessions || 0).toLocaleString()}</div>
+        <div class="summary-label">GA Sessions</div>
+      </div>
+      <div class="summary-card">
+        <div class="summary-value green">${(na.pageviews || 0).toLocaleString()}</div>
+        <div class="summary-label">GA Pageviews</div>
       </div>
       <div class="summary-card">
         <div class="summary-value amber">${s.total_with_metrics.toLocaleString()}</div>
@@ -340,13 +424,34 @@
         return '<span class="domain-tag">' + esc(d) + '</span>';
       }).join('');
 
+      var gsc = a.gsc || {};
+      var ga = a.ga || {};
+
+      var metricsHtml = '<div class="apex-metrics">'
+        + '<div class="metric-item"><div class="metric-val blue">' + (gsc.impressions || 0).toLocaleString() + '</div><div class="metric-lbl">Impressions</div></div>'
+        + '<div class="metric-item"><div class="metric-val purple">' + (gsc.clicks || 0).toLocaleString() + '</div><div class="metric-lbl">Clicks</div></div>'
+        + '<div class="metric-item"><div class="metric-val">' + (ga.sessions || 0).toLocaleString() + '</div><div class="metric-lbl">Sessions</div></div>'
+        + '</div>';
+
+      var detailMetrics = '<div class="apex-metrics" style="grid-template-columns:repeat(6,1fr)">'
+        + '<div class="metric-item"><div class="metric-val blue">' + (gsc.impressions || 0).toLocaleString() + '</div><div class="metric-lbl">GSC Imp</div></div>'
+        + '<div class="metric-item"><div class="metric-val purple">' + (gsc.clicks || 0).toLocaleString() + '</div><div class="metric-lbl">GSC Clicks</div></div>'
+        + '<div class="metric-item"><div class="metric-val">' + (gsc.ctr || 0) + '%</div><div class="metric-lbl">CTR</div></div>'
+        + '<div class="metric-item"><div class="metric-val">' + (ga.sessions || 0).toLocaleString() + '</div><div class="metric-lbl">Sessions</div></div>'
+        + '<div class="metric-item"><div class="metric-val">' + (ga.pageviews || 0).toLocaleString() + '</div><div class="metric-lbl">Pageviews</div></div>'
+        + '<div class="metric-item"><div class="metric-val">' + (ga.avg_bounce || 0) + '%</div><div class="metric-lbl">Bounce</div></div>'
+        + '</div>';
+
       return '<div class="apex-card" data-slug="' + a.slug + '">'
         + '<div class="apex-card-header" onclick="this.parentElement.classList.toggle(\'expanded\')">'
         + '<div class="apex-name">' + icon + ' ' + esc(a.name) + '<span class="chevron">▶</span></div>'
         + '<div class="apex-meta"><span><span class="count">' + a.pages.toLocaleString() + '</span> pages</span><span>' + a.domains.length + ' domains</span><span>' + a.clusters.length + ' clusters</span></div>'
         + '<div class="cluster-preview">' + pillsHtml + '</div>'
+        + metricsHtml
         + '</div>'
         + '<div class="apex-detail">'
+        + '<div class="detail-section-title">Performance Metrics</div>'
+        + detailMetrics
         + '<div class="detail-section-title">Domains</div>'
         + '<div class="domains-list">' + domainsHtml + '</div>'
         + '<div class="detail-section-title">All Clusters</div>'
@@ -355,6 +460,28 @@
         + '<ul class="top-pages-list">' + topPagesHtml + '</ul>'
         + '</div></div>';
     }).join('');
+
+    // Domain metrics table
+    var dm = data.domain_metrics || {};
+    var domainKeys = Object.keys(dm).sort(function(a,b) { return (dm[b].ga_sessions || 0) - (dm[a].ga_sessions || 0); });
+    if (domainKeys.length) {
+      var tableHtml = '<div class="domain-section"><h2>📡 Domain Performance</h2>'
+        + '<table class="domain-metrics-table"><thead><tr>'
+        + '<th>Domain</th><th>Sessions</th><th>Pageviews</th><th>Users</th><th>GSC Imp</th><th>GSC Clicks</th><th>CTR</th>'
+        + '</tr></thead><tbody>';
+      domainKeys.forEach(function(d) {
+        var m = dm[d];
+        tableHtml += '<tr><td>' + esc(d) + '</td>'
+          + '<td class="highlight">' + (m.ga_sessions || 0).toLocaleString() + '</td>'
+          + '<td>' + (m.ga_pageviews || 0).toLocaleString() + '</td>'
+          + '<td>' + (m.ga_users || 0).toLocaleString() + '</td>'
+          + '<td>' + (m.gsc_impressions || 0).toLocaleString() + '</td>'
+          + '<td>' + (m.gsc_clicks || 0).toLocaleString() + '</td>'
+          + '<td>' + (m.gsc_ctr || 0) + '%</td></tr>';
+      });
+      tableHtml += '</tbody></table></div>';
+      grid.insertAdjacentHTML('afterend', tableHtml);
+    }
 
   } catch (e) {
     loading.style.display = 'none';
