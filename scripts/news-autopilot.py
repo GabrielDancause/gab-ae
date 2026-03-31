@@ -317,7 +317,11 @@ def fetch_article_content(url):
             skip_phrases = ['cookie', 'subscribe', 'sign up', 'advertisement', 'copyright',
                 'all rights reserved', 'read more', 'click here', 'sign in', 'newsletter',
                 'follow us', 'share this', 'related stories', 'more from', 'here are more',
-                'updates from', 'live updates']
+                'updates from', 'live updates', 'verify access', 'patience while',
+                'already a subscriber', 'create a free account', 'log in to continue',
+                'paywall', 'members only', 'premium content', 'full access',
+                'to read the full', 'continue reading', 'unlock this article',
+                'support our journalism', 'become a member']
             is_link_list = text.count('|') >= 3  # "Topic1 | Topic2 | Topic3" = nav
             is_short_frag = len(text) < 60 and ':' in text  # "Section: subtitle"
             if len(text) > 50 and not is_link_list and not is_short_frag \
@@ -375,7 +379,23 @@ def build_article(story, paragraphs):
             'paragraphs': [description] if description else ['Breaking story — details emerging.'],
         })
     
-    # Add internal links as inline text in the last section (not a separate section)
+    # Fallback: if no keyword-matched links, link to the apex guide for this category
+    if not internal_links:
+        category_apex = {
+            'business': {'slug': '/capital-markets-wealth-guide-2026', 'name': 'Capital Markets & Wealth Guide'},
+            'tech': {'slug': '/software-ai-infrastructure-guide-2026', 'name': 'Software & AI Guide'},
+            'world': {'slug': '/global-mobility-geo-arbitrage-guide-2026', 'name': 'Global Mobility Guide'},
+            'politics': {'slug': '/capital-markets-wealth-guide-2026', 'name': 'Capital Markets & Wealth Guide'},
+            'health': {'slug': '/human-optimization-health-guide-2026', 'name': 'Health & Optimization Guide'},
+            'science': {'slug': '/software-ai-infrastructure-guide-2026', 'name': 'Software & AI Guide'},
+            'travel': {'slug': '/global-mobility-geo-arbitrage-guide-2026', 'name': 'Global Mobility Guide'},
+            'sports': {'slug': '/digital-media-creator-economy-guide-2026', 'name': 'Digital Media Guide'},
+            'entertainment': {'slug': '/digital-media-creator-economy-guide-2026', 'name': 'Digital Media Guide'},
+        }
+        if category in category_apex:
+            internal_links = [category_apex[category]]
+    
+    # Add internal links as inline text in the last section
     if internal_links and sections:
         link_texts = [f'<a href="https://gab.ae{l["slug"]}">{l["name"]}</a>' for l in internal_links]
         sections[-1]['paragraphs'].append('Explore more: ' + ' · '.join(link_texts))
