@@ -1,0 +1,370 @@
+<style>
+  .dash-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 2rem 1rem;
+    color: #e2e8f0;
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  }
+  .dash-header {
+    text-align: center;
+    margin-bottom: 2.5rem;
+    padding-top: 2rem;
+  }
+  .dash-title {
+    font-size: clamp(1.8rem, 4vw, 2.8rem);
+    font-weight: 800;
+    background: linear-gradient(135deg, #ffffff 0%, #a5b4fc 50%, #818cf8 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    margin: 0 0 0.5rem;
+    letter-spacing: -0.02em;
+  }
+  .dash-subtitle {
+    color: #64748b;
+    font-size: 0.9rem;
+  }
+  .dash-updated {
+    color: #475569;
+    font-size: 0.8rem;
+    margin-top: 0.5rem;
+  }
+
+  /* Summary bar */
+  .summary-bar {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1rem;
+    margin-bottom: 2.5rem;
+  }
+  .summary-card {
+    background: #12121a;
+    border: 1px solid rgba(255,255,255,0.06);
+    border-radius: 12px;
+    padding: 1.25rem;
+    text-align: center;
+  }
+  .summary-value {
+    font-size: 2rem;
+    font-weight: 800;
+    color: #fff;
+    line-height: 1.1;
+  }
+  .summary-value.accent { color: #818cf8; }
+  .summary-value.green { color: #34d399; }
+  .summary-value.amber { color: #fbbf24; }
+  .summary-value.red { color: #f87171; }
+  .summary-label {
+    font-size: 0.75rem;
+    color: #64748b;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-top: 0.3rem;
+  }
+
+  /* Apex grid */
+  .apex-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1rem;
+  }
+  .apex-card {
+    background: #12121a;
+    border: 1px solid rgba(255,255,255,0.06);
+    border-radius: 14px;
+    overflow: hidden;
+    transition: border-color 0.2s;
+  }
+  .apex-card:hover {
+    border-color: rgba(129, 140, 248, 0.3);
+  }
+  .apex-card-header {
+    padding: 1.25rem;
+    cursor: pointer;
+    user-select: none;
+  }
+  .apex-card-header:hover {
+    background: rgba(255,255,255,0.02);
+  }
+  .apex-name {
+    font-size: 1.05rem;
+    font-weight: 700;
+    color: #fff;
+    margin: 0 0 0.25rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+  .apex-name .chevron {
+    font-size: 0.7rem;
+    color: #475569;
+    transition: transform 0.2s;
+    margin-left: auto;
+  }
+  .apex-card.expanded .chevron {
+    transform: rotate(90deg);
+  }
+  .apex-meta {
+    display: flex;
+    gap: 1rem;
+    font-size: 0.8rem;
+    color: #64748b;
+    margin-bottom: 0.75rem;
+  }
+  .apex-meta span {
+    display: flex;
+    align-items: center;
+    gap: 0.3rem;
+  }
+  .apex-meta .count {
+    color: #818cf8;
+    font-weight: 700;
+  }
+
+  /* Cluster pills (top 3) */
+  .cluster-preview {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+  }
+  .cluster-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    background: rgba(129, 140, 248, 0.1);
+    border: 1px solid rgba(129, 140, 248, 0.15);
+    border-radius: 20px;
+    padding: 0.25rem 0.7rem;
+    font-size: 0.75rem;
+    color: #a5b4fc;
+  }
+  .cluster-pill .pill-count {
+    font-weight: 700;
+    color: #818cf8;
+  }
+
+  /* Expanded detail */
+  .apex-detail {
+    display: none;
+    padding: 0 1.25rem 1.25rem;
+    border-top: 1px solid rgba(255,255,255,0.04);
+  }
+  .apex-card.expanded .apex-detail {
+    display: block;
+  }
+  .detail-section-title {
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: #475569;
+    margin: 1rem 0 0.5rem;
+    font-weight: 600;
+  }
+  .cluster-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    gap: 0.4rem;
+  }
+  .cluster-row {
+    display: flex;
+    justify-content: space-between;
+    padding: 0.35rem 0.6rem;
+    background: rgba(255,255,255,0.02);
+    border-radius: 6px;
+    font-size: 0.8rem;
+  }
+  .cluster-row .cl-name { color: #94a3b8; }
+  .cluster-row .cl-count { color: #818cf8; font-weight: 600; }
+
+  .top-pages-list { list-style: none; padding: 0; margin: 0; }
+  .top-pages-list li {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.4rem 0;
+    border-bottom: 1px solid rgba(255,255,255,0.03);
+    font-size: 0.8rem;
+  }
+  .top-pages-list li:last-child { border-bottom: none; }
+  .tp-domain { color: #64748b; min-width: 160px; }
+  .tp-path { color: #cbd5e1; flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .tp-sessions {
+    color: #34d399;
+    font-weight: 700;
+    font-size: 0.75rem;
+    min-width: 50px;
+    text-align: right;
+  }
+
+  .domains-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.3rem;
+  }
+  .domain-tag {
+    background: rgba(255,255,255,0.04);
+    border-radius: 4px;
+    padding: 0.2rem 0.5rem;
+    font-size: 0.7rem;
+    color: #64748b;
+  }
+
+  /* Loading */
+  .dash-loading {
+    text-align: center;
+    padding: 4rem;
+    color: #475569;
+  }
+  .dash-loading .spinner {
+    display: inline-block;
+    width: 28px;
+    height: 28px;
+    border: 3px solid rgba(129, 140, 248, 0.2);
+    border-top-color: #818cf8;
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  .dash-error {
+    text-align: center;
+    padding: 3rem;
+    color: #f87171;
+    background: rgba(248, 113, 113, 0.05);
+    border-radius: 12px;
+    border: 1px solid rgba(248, 113, 113, 0.15);
+  }
+
+  @media (max-width: 768px) {
+    .summary-bar { grid-template-columns: repeat(2, 1fr); }
+    .apex-grid { grid-template-columns: 1fr; }
+    .cluster-list { grid-template-columns: 1fr; }
+    .top-pages-list li { flex-wrap: wrap; }
+    .tp-domain { min-width: auto; width: 100%; }
+  }
+</style>
+
+<div class="dash-container">
+  <div class="dash-header">
+    <h1 class="dash-title">SEO Network Dashboard</h1>
+    <p class="dash-subtitle">4,000+ pages mapped across 10 apex guides and 17 domains</p>
+    <p class="dash-updated" id="dash-updated"></p>
+  </div>
+
+  <div id="dash-loading" class="dash-loading">
+    <div class="spinner"></div>
+    <p style="margin-top:1rem">Loading dashboard data…</p>
+  </div>
+
+  <div id="dash-content" style="display:none">
+    <div class="summary-bar" id="summary-bar"></div>
+    <div class="apex-grid" id="apex-grid"></div>
+  </div>
+
+  <div id="dash-error" style="display:none" class="dash-error"></div>
+</div>
+
+<script>
+(async function() {
+  const loading = document.getElementById('dash-loading');
+  const content = document.getElementById('dash-content');
+  const errorEl = document.getElementById('dash-error');
+
+  try {
+    const resp = await fetch('/api/seo-dashboard');
+    if (!resp.ok) throw new Error('API returned ' + resp.status);
+    const data = await resp.json();
+    if (data.error) throw new Error(data.error);
+
+    loading.style.display = 'none';
+    content.style.display = 'block';
+
+    // Updated timestamp
+    if (data.generated_at) {
+      const d = new Date(data.generated_at);
+      document.getElementById('dash-updated').textContent = 'Last updated: ' + d.toLocaleString();
+    }
+
+    // Summary bar
+    const s = data.summary;
+    document.getElementById('summary-bar').innerHTML = `
+      <div class="summary-card">
+        <div class="summary-value accent">${s.total_pages.toLocaleString()}</div>
+        <div class="summary-label">Total Pages</div>
+      </div>
+      <div class="summary-card">
+        <div class="summary-value green">${s.total_domains}</div>
+        <div class="summary-label">Domains</div>
+      </div>
+      <div class="summary-card">
+        <div class="summary-value amber">${s.total_with_metrics.toLocaleString()}</div>
+        <div class="summary-label">With Metrics</div>
+      </div>
+      <div class="summary-card">
+        <div class="summary-value red">${s.total_issues}</div>
+        <div class="summary-label">Open Issues</div>
+      </div>
+    `;
+
+    // Apex cards
+    const grid = document.getElementById('apex-grid');
+    const icons = {
+      'capital-markets-wealth-guide-2026': '📊',
+      'software-ai-infrastructure-guide-2026': '⚡',
+      'digital-media-creator-economy-guide-2026': '🎮',
+      'interpersonal-dynamics-intimacy-guide-2026': '💜',
+      'ecommerce-supply-chain-guide-2026': '🛒',
+      'real-estate-hospitality-guide-2026': '🏠',
+      'human-optimization-health-guide-2026': '❤️',
+      'fine-arts-design-creative-guide-2026': '🎨',
+      'education-knowledge-commerce-guide-2026': '📚',
+      'global-mobility-geo-arbitrage-guide-2026': '🌍',
+    };
+
+    grid.innerHTML = data.apexes.map(function(a) {
+      const icon = icons[a.slug] || '📁';
+      const top3 = a.clusters.slice(0, 3);
+      const pillsHtml = top3.map(function(c) {
+        return '<span class="cluster-pill"><span class="pill-count">' + c.pages + '</span> ' + esc(c.name) + '</span>';
+      }).join('');
+
+      const allClustersHtml = a.clusters.map(function(c) {
+        return '<div class="cluster-row"><span class="cl-name">' + esc(c.name) + '</span><span class="cl-count">' + c.pages + '</span></div>';
+      }).join('');
+
+      const topPagesHtml = a.top_pages.length ? a.top_pages.map(function(p) {
+        return '<li><span class="tp-domain">' + esc(p.domain) + '</span><span class="tp-path">' + esc(p.path) + '</span><span class="tp-sessions">' + (p.sessions || 0) + ' sess</span></li>';
+      }).join('') : '<li style="color:#475569;padding:0.5rem 0">No session data yet</li>';
+
+      const domainsHtml = a.domains.map(function(d) {
+        return '<span class="domain-tag">' + esc(d) + '</span>';
+      }).join('');
+
+      return '<div class="apex-card" data-slug="' + a.slug + '">'
+        + '<div class="apex-card-header" onclick="this.parentElement.classList.toggle(\'expanded\')">'
+        + '<div class="apex-name">' + icon + ' ' + esc(a.name) + '<span class="chevron">▶</span></div>'
+        + '<div class="apex-meta"><span><span class="count">' + a.pages.toLocaleString() + '</span> pages</span><span>' + a.domains.length + ' domains</span><span>' + a.clusters.length + ' clusters</span></div>'
+        + '<div class="cluster-preview">' + pillsHtml + '</div>'
+        + '</div>'
+        + '<div class="apex-detail">'
+        + '<div class="detail-section-title">Domains</div>'
+        + '<div class="domains-list">' + domainsHtml + '</div>'
+        + '<div class="detail-section-title">All Clusters</div>'
+        + '<div class="cluster-list">' + allClustersHtml + '</div>'
+        + '<div class="detail-section-title">Top Pages by Sessions</div>'
+        + '<ul class="top-pages-list">' + topPagesHtml + '</ul>'
+        + '</div></div>';
+    }).join('');
+
+  } catch (e) {
+    loading.style.display = 'none';
+    errorEl.style.display = 'block';
+    errorEl.textContent = 'Failed to load dashboard: ' + e.message;
+  }
+
+  function esc(s) {
+    if (!s) return '';
+    return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+  }
+})();
+</script>

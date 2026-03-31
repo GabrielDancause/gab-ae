@@ -29,6 +29,11 @@ export default {
       return stats(env);
     }
 
+    // SEO Dashboard API
+    if (path === '/api/seo-dashboard') {
+      return seoDashboardAPI(env);
+    }
+
     // Search API
     if (path === '/_search') {
       const q = url.searchParams.get('q')?.toLowerCase() || '';
@@ -600,6 +605,112 @@ function notFound() {
       </div>`,
   });
   return new Response(html, { status: 404, headers: { 'content-type': 'text/html;charset=UTF-8' } });
+}
+
+async function seoDashboardAPI(env) {
+  const headers = {
+    'content-type': 'application/json',
+    'cache-control': 'public, max-age=300',
+    'access-control-allow-origin': '*',
+  };
+  try {
+    // Total pages and domains
+    const totalResult = await env.DB.prepare(
+      "SELECT COUNT(*) as total_pages, COUNT(DISTINCT domain) as total_domains FROM tracked_pages WHERE apex_slug IS NOT NULL"
+    ).first();
+
+    // Pages with metrics
+    const metricsResult = await env.DB.prepare(
+      "SELECT COUNT(DISTINCT pm.domain || pm.path) as total FROM page_metrics pm INNER JOIN tracked_pages tp ON pm.domain = tp.domain AND pm.path = tp.path WHERE tp.apex_slug IS NOT NULL"
+    ).first();
+
+    // Open issues
+    const issuesResult = await env.DB.prepare(
+      "SELECT COUNT(*) as total FROM seo_issues WHERE status != 'resolved'"
+    ).first();
+
+    // Clusters per apex
+    const clusterRows = await env.DB.prepare(
+      "SELECT apex_slug, cluster, COUNT(*) as pages FROM tracked_pages WHERE apex_slug IS NOT NULL GROUP BY apex_slug, cluster ORDER BY apex_slug, pages DESC"
+    ).all();
+
+    // Top pages by sessions per apex
+    const topPagesRows = await env.DB.prepare(
+      `SELECT tp.apex_slug, pm.domain, pm.path, MAX(pm.ga_sessions) as sessions
+       FROM page_metrics pm
+       INNER JOIN tracked_pages tp ON pm.domain = tp.domain AND pm.path = tp.path
+       WHERE tp.apex_slug IS NOT NULL AND pm.ga_sessions > 0
+       GROUP BY tp.apex_slug, pm.domain, pm.path
+       ORDER BY tp.apex_slug, sessions DESC`
+    ).all();
+
+    // Domains per apex
+    const domainRows = await env.DB.prepare(
+      "SELECT apex_slug, domain, COUNT(*) as pages FROM tracked_pages WHERE apex_slug IS NOT NULL GROUP BY apex_slug, domain ORDER BY apex_slug, pages DESC"
+    ).all();
+
+    // Build apex map
+    const apexNames = {
+      'capital-markets-wealth-guide-2026': 'Capital Markets & Wealth',
+      'software-ai-infrastructure-guide-2026': 'Software & AI Infrastructure',
+      'digital-media-creator-economy-guide-2026': 'Digital Media & Creator Economy',
+      'interpersonal-dynamics-intimacy-guide-2026': 'Interpersonal Dynamics & Intimacy',
+      'ecommerce-supply-chain-guide-2026': 'E-Commerce & Supply Chain',
+      'real-estate-hospitality-guide-2026': 'Real Estate & Hospitality',
+      'human-optimization-health-guide-2026': 'Human Optimization & Health',
+      'fine-arts-design-creative-guide-2026': 'Fine Arts, Design & Creative',
+      'education-knowledge-commerce-guide-2026': 'Education & Knowledge Commerce',
+      'global-mobility-geo-arbitrage-guide-2026': 'Global Mobility & Geo-Arbitrage',
+    };
+
+    const apexMap = {};
+    for (const slug of Object.keys(apexNames)) {
+      apexMap[slug] = { slug, name: apexNames[slug], pages: 0, domains: [], clusters: [], top_pages: [] };
+    }
+
+    // Fill clusters
+    for (const r of (clusterRows?.results || [])) {
+      if (apexMap[r.apex_slug]) {
+        apexMap[r.apex_slug].clusters.push({ name: r.cluster, pages: r.pages });
+        apexMap[r.apex_slug].pages += r.pages;
+      }
+    }
+
+    // Fill domains
+    for (const r of (domainRows?.results || [])) {
+      if (apexMap[r.apex_slug] && !apexMap[r.apex_slug].domains.includes(r.domain)) {
+        apexMap[r.apex_slug].domains.push(r.domain);
+      }
+    }
+
+    // Fill top pages (limit 5 per apex)
+    const topPageCounts = {};
+    for (const r of (topPagesRows?.results || [])) {
+      if (apexMap[r.apex_slug]) {
+        topPageCounts[r.apex_slug] = (topPageCounts[r.apex_slug] || 0) + 1;
+        if (topPageCounts[r.apex_slug] <= 5) {
+          apexMap[r.apex_slug].top_pages.push({ domain: r.domain, path: r.path, sessions: r.sessions });
+        }
+      }
+    }
+
+    const apexes = Object.values(apexMap).sort((a, b) => b.pages - a.pages);
+
+    const response = {
+      summary: {
+        total_pages: totalResult?.total_pages || 0,
+        total_domains: totalResult?.total_domains || 0,
+        total_with_metrics: metricsResult?.total || 0,
+        total_issues: issuesResult?.total || 0,
+      },
+      apexes,
+      generated_at: new Date().toISOString(),
+    };
+
+    return new Response(JSON.stringify(response), { headers });
+  } catch (e) {
+    return new Response(JSON.stringify({ error: e.message }), { status: 500, headers });
+  }
 }
 
 // esc imported from templates/layout.js
