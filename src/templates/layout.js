@@ -34,7 +34,14 @@ export function layout({ title, description, canonical, schemaJson, body }) {
     }
   </script>
   <style>
-    body { font-family: 'Inter', system-ui, sans-serif; }
+    *, *::before, *::after { box-sizing: border-box; }
+    html { overflow-x: hidden; }
+    body { font-family: 'Inter', system-ui, sans-serif; overflow-x: hidden; max-width: 100vw; }
+    p, li, td, th, span, h1, h2, h3, h4, h5, h6, div, a, strong, em, blockquote {
+      overflow-wrap: break-word;
+      word-break: break-word;
+    }
+    img, video, canvas, svg { max-width: 100%; height: auto; }
     article a, .prose a, p a { color: #3b82f6; text-decoration: underline; text-underline-offset: 2px; }
     article a:hover, .prose a:hover, p a:hover { color: #60a5fa; }
     @media print {

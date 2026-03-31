@@ -150,7 +150,6 @@
     font-size: 0.95rem;
     display: block;
     overflow-x: auto;
-    white-space: nowrap;
   }
   .roi-table table {
     width: 100%;
@@ -169,13 +168,11 @@
     text-transform: uppercase;
     letter-spacing: 0.06em;
     border-bottom: 1px solid rgba(255,255,255,0.1);
-    white-space: nowrap;
   }
   .roi-table td {
     padding: 0.8rem 1rem;
     color: #cbd5e1;
     border-bottom: 1px solid rgba(255,255,255,0.04);
-    white-space: nowrap;
   }
   .roi-table tbody tr:hover {
     background: rgba(255,255,255,0.02);
@@ -398,6 +395,7 @@
 
   /* Mobile responsive */
   @media (max-width: 1024px) {
+    .roi-container { max-width: 100%; padding: 1rem; }
     .roi-layout { 
       grid-template-columns: 1fr !important; 
       gap: 2rem; 
