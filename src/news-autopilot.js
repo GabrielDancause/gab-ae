@@ -359,7 +359,10 @@ function extractParagraphs(data) {
   const pRegex = /<p[^>]*>([\s\S]*?)<\/p>/gi;
   let pMatch;
   while ((pMatch = pRegex.exec(content)) !== null) {
-    const text = stripHtml(pMatch[1]);
+    let text = stripHtml(pMatch[1]);
+
+    // Strip author bylines like "Francisco Velasquez Updated" or "John Doe Published"
+    text = text.replace(/^(?:By\s+)?(?:[A-Z][a-zA-Z']*\s+){2,3}(?:Updated|Published|Reporting)\b[\s\:\-\,]*/, '');
 
     // Filters
     const isLinkList = (text.match(/\|/g) || []).length >= 3;

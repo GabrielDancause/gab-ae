@@ -88,8 +88,15 @@ const SEED_CSS = `
 }
 </style>`;
 
+const ACRONYMS = ['ETF', 'REIT', 'IRA', '401k', 'FIRE', 'CEO', 'IPO', 'AI', 'API', 'SEO', 'CSS', 'HTML', 'NFT', 'GPU', 'CPU', 'DIY', 'HIIT', 'BMI', 'HPV', 'IUD', 'HVAC', 'ROI', 'DPI', 'FPS'];
+
 function titleCase(str) {
-  return str.replace(/\b\w/g, c => c.toUpperCase());
+  if (!str) return '';
+  let cased = str.replace(/\b\w/g, c => c.toUpperCase());
+  ACRONYMS.forEach(acc => {
+    cased = cased.replace(new RegExp(`\\b${acc}\\b`, 'gi'), acc);
+  });
+  return cased;
 }
 
 function esc(str) {
@@ -250,6 +257,109 @@ const LISTICLE_STRUCTURES = [
   (n, pk, desc) => `<li><strong>Option ${n}</strong> — ${desc}. A rock-solid contender in the ${esc(pk)} space.</li>`
 ];
 
+const EDUCATIONAL_CONTENT = {
+  finance: {
+    what: "A {keyword} is a foundational financial concept that plays a critical role in strategic capital allocation and wealth preservation. Investors use them to mitigate risk, optimize their portfolios, and ensure long-term stability in volatile markets. The market for {keyword} has grown significantly, with increasing institutional adoption and regulatory clarity driving mainstream interest.",
+    how: "The mechanics of {keyword} involve complex interplay between market forces, economic indicators, and investor sentiment. Key factors include prevailing interest rates, inflation expectations, and macroeconomic policy shifts. Most experts recommend approaching {keyword} with a diversified strategy and a long-term perspective.",
+    facts: [
+      "Historically provides a reliable hedge against broader market downturns.",
+      "Often heavily influenced by central bank policy and interest rate adjustments.",
+      "Tax implications can vary significantly depending on the holding period and jurisdiction.",
+      "Considered a core component of modern portfolio theory and asset allocation."
+    ]
+  },
+  tech: {
+    what: "A {keyword} is an essential tool in the modern technology stack, enabling developers and enterprises to build, scale, and deploy robust applications. Engineering teams use them to streamline workflows, reduce technical debt, and accelerate time-to-market. The market for {keyword} has grown significantly, with cloud-native architectures and open-source ecosystems driving rapid innovation.",
+    how: "The mechanics of {keyword} involve defining clear interfaces, managing state across distributed systems, and ensuring high availability. Key factors include computational efficiency, memory management, and network latency. Most experts recommend implementing {keyword} alongside rigorous automated testing and continuous integration pipelines.",
+    facts: [
+      "Often designed to scale horizontally across multiple global availability zones.",
+      "Relies heavily on robust API design and strict backwards compatibility.",
+      "Security vulnerabilities must be patched quickly due to the large attack surface.",
+      "Community support and comprehensive documentation are primary adoption drivers."
+    ]
+  },
+  health: {
+    what: "A {keyword} is a key element of comprehensive human optimization and preventative health protocols. Medical professionals and individuals use them to improve baseline biomarkers, enhance recovery, and maximize overall longevity. The market for {keyword} has grown significantly, with cutting-edge clinical research validating long-held hypotheses about human physiology.",
+    how: "The mechanics of {keyword} involve complex biochemical pathways, systemic inflammatory responses, and cellular metabolic function. Key factors include individual genetic predispositions, environmental stressors, and dietary consistency. Most experts recommend approaching {keyword} as part of a holistic lifestyle intervention rather than a standalone cure.",
+    facts: [
+      "Efficacy is highly dependent on consistent adherence and proper dosage protocols.",
+      "Often interacts synergistically with other dietary or pharmacological interventions.",
+      "Clinical outcomes can vary widely based on baseline metabolic health.",
+      "Safety profiles are established through rigorous, long-term peer-reviewed studies."
+    ]
+  },
+  food: {
+    what: "A {keyword} is a fundamental component of culinary science, providing the necessary flavor profile, texture, and structural integrity to complex dishes. Chefs and home cooks use them to elevate traditional recipes, balance macronutrients, and create unique gastronomic experiences. The market for {keyword} has grown significantly, with a renewed focus on organic sourcing and sustainable agriculture.",
+    how: "The mechanics of {keyword} involve precise temperature control, chemical reactions like the Maillard response, and accurate hydration ratios. Key factors include ingredient freshness, preparation technique, and environmental humidity. Most experts recommend sourcing the highest quality {keyword} available to ensure the best possible end result.",
+    facts: [
+      "Flavor compounds can degrade rapidly if improperly stored or exposed to light.",
+      "Preparation methods significantly alter the bioavailability of specific nutrients.",
+      "Often serves as an emulsifier or stabilizing agent in complex recipes.",
+      "Sourcing origin heavily dictates the final aromatic and flavor characteristics."
+    ]
+  },
+  gaming: {
+    what: "A {keyword} is a critical element of the modern gaming ecosystem, directly impacting player immersion, competitive viability, and overall user experience. Enthusiasts use them to gain a competitive edge, streamline their setups, and enjoy high-fidelity digital worlds. The market for {keyword} has grown significantly, with esports and streaming pushing hardware and software limits.",
+    how: "The mechanics of {keyword} involve rendering pipelines, input latency optimization, and network synchronization. Key factors include frame pacing, polling rates, and thermal management. Most experts recommend configuring {keyword} specifically to match the requirements of the titles you play most frequently.",
+    facts: [
+      "Hardware requirements often scale non-linearly with increased resolution and framerate.",
+      "Firmware and driver updates can dramatically alter baseline performance.",
+      "Ergonomics and physical design are just as important as technical specifications.",
+      "Compatibility across different operating systems and console generations can vary."
+    ]
+  },
+  lifestyle: {
+    what: "A {keyword} is a practical solution for optimizing daily routines, managing physical spaces, and improving overall quality of life. Homeowners and professionals use them to increase efficiency, reduce clutter, and create a more aesthetically pleasing environment. The market for {keyword} has grown significantly, with smart-home integrations and minimalist design trends driving demand.",
+    how: "The mechanics of {keyword} involve thoughtful spatial planning, durable material selection, and intuitive user design. Key factors include build quality, ease of maintenance, and long-term versatility. Most experts recommend investing in high-quality {keyword} that can adapt to changing personal needs over time.",
+    facts: [
+      "Longevity is largely determined by the quality of initial construction materials.",
+      "Proper installation and setup are critical for maximizing functional utility.",
+      "Often requires periodic maintenance to ensure optimal performance.",
+      "Design trends frequently cycle, making timeless aesthetics highly desirable."
+    ]
+  },
+  education: {
+    what: "A {keyword} is an essential educational framework designed to rapidly accelerate skill acquisition and knowledge retention. Students and professionals use them to stay competitive in a rapidly evolving job market, pivot into new careers, and master complex subjects. The market for {keyword} has grown significantly, with online learning platforms democratizing access to high-level instruction.",
+    how: "The mechanics of {keyword} involve structured curriculum design, active recall methodologies, and practical, hands-on application. Key factors include the quality of instruction, peer engagement, and the frequency of assessment. Most experts recommend approaching {keyword} with a disciplined, consistent study schedule.",
+    facts: [
+      "Retention rates improve drastically when theoretical concepts are applied practically.",
+      "Mentorship and community feedback are primary drivers of long-term success.",
+      "Accreditation and industry recognition vary widely between different programs.",
+      "Continuous learning and adaptation are required to maintain mastery over time."
+    ]
+  },
+  auto: {
+    what: "A {keyword} is a critical component of automotive engineering, responsible for ensuring safety, efficiency, and reliable performance on the road. Drivers and mechanics use them to optimize fuel economy, enhance vehicle dynamics, and maintain long-term operational integrity. The market for {keyword} has grown significantly, with the transition to electric powertrains driving unprecedented innovation.",
+    how: "The mechanics of {keyword} involve complex mechanical linkages, fluid dynamics, and sophisticated electronic control units. Key factors include material fatigue, thermal stress, and strict adherence to maintenance schedules. Most experts recommend using OEM-certified {keyword} to guarantee compatibility and prevent catastrophic failure.",
+    facts: [
+      "Regular preventative maintenance drastically extends the expected lifespan.",
+      "Performance metrics are highly dependent on environmental operating conditions.",
+      "Aftermarket modifications can inadvertently void manufacturer warranties.",
+      "Safety standards and emissions regulations dictate base engineering constraints."
+    ]
+  },
+  tools: {
+    what: "A {keyword} is an indispensable instrument designed to multiply human effort, enabling precision work across a wide variety of trades and disciplines. Professionals and DIY enthusiasts use them to execute complex projects, ensure structural integrity, and work more efficiently. The market for {keyword} has grown significantly, with advancements in battery technology and brushless motors leading the charge.",
+    how: "The mechanics of {keyword} involve torque transfer, material hardness ratings, and ergonomic force distribution. Key factors include motor efficiency, bit or blade sharpness, and user safety mechanisms. Most experts recommend selecting {keyword} based on the specific requirements of the material being worked.",
+    facts: [
+      "Industrial-grade variants often feature vastly superior internal components.",
+      "Battery ecosystems heavily influence long-term brand loyalty and adoption.",
+      "Proper calibration and storage are essential for maintaining accurate tolerances.",
+      "Safety features and vibration dampening reduce long-term occupational hazards."
+    ]
+  },
+  default: {
+    what: "A {keyword} is a vital concept that helps individuals and organizations achieve their goals efficiently and effectively. People use them to solve specific problems, streamline processes, and unlock new capabilities. The market for {keyword} has grown significantly, with increased awareness and technological advancements making it more accessible than ever.",
+    how: "The mechanics of {keyword} involve a combination of established best practices, strategic planning, and consistent execution. Key factors include user adaptability, environmental constraints, and resource availability. Most experts recommend a structured, methodical approach to implementing {keyword} for maximum success.",
+    facts: [
+      "Consistent application over time yields the most significant long-term results.",
+      "Initial setup and familiarization are often the most challenging phases.",
+      "Evolves rapidly as new methodologies and technologies are introduced.",
+      "Highly scalable depending on the specific scope and requirements of the user."
+    ]
+  }
+};
+
 function generateEducational(kw) {
   const { month, year } = getMonthYear();
   const pk = kw.primary_keyword;
@@ -258,6 +368,12 @@ function generateEducational(kw) {
   const apexSlug = SITE_TO_APEX[kw.target_site] || 'software-ai-infrastructure-guide-2026';
   const apexName = APEX_NAMES[apexSlug] || 'Guide';
 
+  const category = SITE_TO_CATEGORY[kw.target_site] || 'default';
+  const content = EDUCATIONAL_CONTENT[category] || EDUCATIONAL_CONTENT['default'];
+
+  const whatText = content.what.replace(/\{keyword\}/g, pk);
+  const howText = content.how.replace(/\{keyword\}/g, pk);
+
   return `${SEED_CSS}
 <div class="seed-page">
   <h1>${esc(pkTitle)} — Complete Guide</h1>
@@ -265,7 +381,7 @@ function generateEducational(kw) {
 
   <div class="seed-section">
     <h2>What is ${esc(pkTitle)}?</h2>
-    <p>${esc(pkTitle)} is an important topic that many people search for when looking to optimize their workflow or improve their knowledge base. This comprehensive guide covers all the essential information you need to know about ${esc(pk)}, including foundational concepts, advanced practical tips, and expert-verified best practices.</p>
+    <p>${esc(whatText)}</p>
   </div>
 
   <div class="seed-section">
@@ -273,12 +389,13 @@ function generateEducational(kw) {
     <ul>
       <li>Search volume: ${(kw.total_volume || 0).toLocaleString()} searches per month</li>
       ${secondaries.length ? `<li>Related topics: ${secondaries.map(s => esc(s)).join(', ')}</li>` : ''}
+      ${content.facts.map(fact => `<li>${esc(fact)}</li>`).join('\n      ')}
     </ul>
   </div>
 
   <div class="seed-section">
     <h2>How ${esc(pkTitle)} Works</h2>
-    <p>Understanding ${esc(pk)} requires a solid grasp of several key underlying mechanisms and theoretical concepts. Below, we break down the most critical aspects that affect how ${esc(pk)} operates in real-world scenarios, giving you the actionable insights necessary to master the subject.</p>
+    <p>${esc(howText)}</p>
   </div>
 
   <div class="seed-section">
@@ -300,7 +417,15 @@ function generateEducational(kw) {
 function generateListicle(kw) {
   const { month, year } = getMonthYear();
   const pk = kw.primary_keyword;
-  const pkTitle = titleCase(pk);
+
+  const hasPrefix = /^(best|top|how to|what is)\s/i.test(pk);
+  const isBestOrTop = /^(best|top)\s/i.test(pk);
+
+  const h1Text = hasPrefix ? `${titleCase(pk)} (${year})` : `Top 10 ${titleCase(pk)} (${year})`;
+
+  const baseKeyword = isBestOrTop ? pk.replace(/^(best|top)\s/i, '') : pk;
+  const baseKeywordTitle = titleCase(baseKeyword);
+
   const secondaries = JSON.parse(kw.secondary_keywords || '[]');
   const apexSlug = SITE_TO_APEX[kw.target_site] || 'software-ai-infrastructure-guide-2026';
   const apexName = APEX_NAMES[apexSlug] || 'Guide';
@@ -310,18 +435,18 @@ function generateListicle(kw) {
 
   return `${SEED_CSS}
 <div class="seed-page">
-  <h1>Top 10 ${esc(pkTitle)} (${year})</h1>
+  <h1>${esc(h1Text)}</h1>
   <p class="seed-meta">Updated ${month} ${year} · ${(kw.total_volume || 0).toLocaleString()}+ monthly searches</p>
 
   <div class="seed-section">
-    <h2>Best ${esc(pkTitle)} Overview</h2>
-    <p>Looking for the best ${esc(pk)}? We've thoroughly researched and compiled the top options to help you make an informed decision. Finding the right choice can be challenging given the variety of features available, but this curated selection highlights the most highly recommended solutions in the market today.</p>
+    <h2>Best ${esc(baseKeywordTitle)} Overview</h2>
+    <p>Looking for the best ${esc(baseKeyword)}? We've thoroughly researched and compiled the top options to help you make an informed decision. Finding the right choice can be challenging given the variety of features available, but this curated selection highlights the most highly recommended solutions in the market today.</p>
   </div>
 
   <div class="seed-section">
-    <h2>Top 10 ${esc(pkTitle)}</h2>
+    <h2>Top 10 ${esc(baseKeywordTitle)}</h2>
     <ol>
-      ${[0,1,2,3,4,5,6,7,8,9].map(i => LISTICLE_STRUCTURES[i](i + 1, pk, descriptors[i])).join('\n      ')}
+      ${[0,1,2,3,4,5,6,7,8,9].map(i => LISTICLE_STRUCTURES[i](i + 1, baseKeyword, descriptors[i])).join('\n      ')}
     </ol>
   </div>
 
@@ -337,11 +462,11 @@ function generateListicle(kw) {
   <div class="seed-section">
     <h2>Frequently Asked Questions</h2>
     <div class="faq-item">
-      <h3>What is the best ${esc(pk)}?</h3>
-      <p>The best ${esc(pk)} depends entirely on your specific needs, budget, and long-term goals. Our comprehensive top 10 list covers a wide range of options, ensuring that whether you are a beginner or a seasoned professional, you will find a solution that fits your requirements perfectly.</p>
+      <h3>What is the best ${esc(baseKeyword)}?</h3>
+      <p>The best ${esc(baseKeyword)} depends entirely on your specific needs, budget, and long-term goals. Our comprehensive top 10 list covers a wide range of options, ensuring that whether you are a beginner or a seasoned professional, you will find a solution that fits your requirements perfectly.</p>
     </div>
     <div class="faq-item">
-      <h3>How do I choose the right ${esc(pk)}?</h3>
+      <h3>How do I choose the right ${esc(baseKeyword)}?</h3>
       <p>When choosing, it is crucial to consider your budget, specific operational requirements, and long-term strategic goals. We highly recommend comparing core features, reading user testimonials, and evaluating long-term value before making your final commitment.</p>
     </div>
   </div>
@@ -497,9 +622,12 @@ export async function seedPages(env) {
 
   // 4. Build page metadata
   const pkTitle = titleCase(kw.primary_keyword);
+  const hasPrefix = /^(best|top|how to|what is)\s/i.test(kw.primary_keyword);
+  const listicleTitle = hasPrefix ? `${pkTitle} (${new Date().getFullYear()})` : `Top 10 ${pkTitle} (${new Date().getFullYear()})`;
+
   const titleSuffix = {
     educational: `${pkTitle} — Complete Guide`,
-    listicle: `Top 10 ${pkTitle} (${new Date().getFullYear()})`,
+    listicle: listicleTitle,
     calculator: `${pkTitle} Calculator`,
     comparison: `${pkTitle} — Comparison`,
   };
