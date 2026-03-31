@@ -1,0 +1,242 @@
+<style>
+  .ao-container {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 2rem 1rem;
+  }
+  .ao-header {
+    text-align: center;
+    margin-bottom: 3rem;
+  }
+  .ao-title {
+    font-size: clamp(2rem, 5vw, 3rem);
+    font-weight: 800;
+    background: linear-gradient(135deg, #fff 0%, #a5b4fc 50%, #818cf8 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    margin: 0 0 0.75rem;
+    letter-spacing: -0.02em;
+  }
+  .ao-subtitle {
+    color: #64748b;
+    font-size: 1.05rem;
+    line-height: 1.6;
+    max-width: 600px;
+    margin: 0 auto;
+  }
+  .ao-total {
+    margin-top: 1.5rem;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    background: rgba(129, 140, 248, 0.08);
+    border: 1px solid rgba(129, 140, 248, 0.15);
+    border-radius: 24px;
+    padding: 0.5rem 1.25rem;
+    font-size: 0.9rem;
+    color: #a5b4fc;
+  }
+  .ao-total strong {
+    color: #fff;
+    font-size: 1.1rem;
+  }
+
+  .ao-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+
+  .ao-card {
+    background: #12121a;
+    border: 1px solid rgba(255,255,255,0.06);
+    border-radius: 14px;
+    padding: 1.5rem;
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    align-items: center;
+    gap: 1.25rem;
+    transition: border-color 0.2s, transform 0.15s;
+    text-decoration: none;
+    cursor: pointer;
+  }
+  .ao-card:hover {
+    border-color: rgba(129, 140, 248, 0.35);
+    transform: translateY(-1px);
+  }
+
+  .ao-icon {
+    font-size: 2rem;
+    width: 56px;
+    height: 56px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(129, 140, 248, 0.06);
+    border-radius: 14px;
+  }
+
+  .ao-info {
+    min-width: 0;
+  }
+  .ao-name {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: #fff;
+    margin: 0 0 0.3rem;
+    line-height: 1.3;
+  }
+  .ao-domains {
+    font-size: 0.78rem;
+    color: #64748b;
+    line-height: 1.4;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .ao-count-wrap {
+    text-align: right;
+    min-width: 80px;
+  }
+  .ao-count {
+    font-size: 1.8rem;
+    font-weight: 800;
+    color: #818cf8;
+    line-height: 1;
+  }
+  .ao-count-label {
+    font-size: 0.65rem;
+    color: #475569;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    margin-top: 0.2rem;
+  }
+
+  .ao-bar-bg {
+    height: 4px;
+    background: rgba(255,255,255,0.04);
+    border-radius: 2px;
+    margin-top: 0.6rem;
+    overflow: hidden;
+  }
+  .ao-bar-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #818cf8, #a78bfa);
+    border-radius: 2px;
+    transition: width 0.6s ease;
+  }
+
+  .ao-loading {
+    text-align: center;
+    padding: 4rem;
+    color: #475569;
+  }
+  .ao-spinner {
+    display: inline-block;
+    width: 24px;
+    height: 24px;
+    border: 3px solid rgba(129, 140, 248, 0.2);
+    border-top-color: #818cf8;
+    border-radius: 50%;
+    animation: ao-spin 0.8s linear infinite;
+  }
+  @keyframes ao-spin { to { transform: rotate(360deg); } }
+
+  @media (max-width: 640px) {
+    .ao-card {
+      grid-template-columns: auto 1fr;
+      gap: 1rem;
+    }
+    .ao-count-wrap {
+      grid-column: 1 / -1;
+      text-align: left;
+      display: flex;
+      align-items: baseline;
+      gap: 0.4rem;
+    }
+    .ao-count { font-size: 1.4rem; }
+    .ao-count-label { margin-top: 0; }
+    .ao-icon { width: 44px; height: 44px; font-size: 1.5rem; }
+  }
+</style>
+
+<div class="ao-container">
+  <div class="ao-header">
+    <h1 class="ao-title">The Apex Guides</h1>
+    <p class="ao-subtitle">10 comprehensive guides covering everything from capital markets to creative expression — backed by a network of specialized domains.</p>
+    <div class="ao-total" id="ao-total">
+      <div class="ao-spinner"></div>
+    </div>
+  </div>
+
+  <div class="ao-grid" id="ao-grid">
+    <div class="ao-loading"><div class="ao-spinner"></div><p style="margin-top:1rem">Loading…</p></div>
+  </div>
+</div>
+
+<script>
+(async function() {
+  var CONFIG = [
+    { slug: 'capital-markets-wealth-guide-2026', name: 'Capital Markets & Wealth', icon: '📊', desc: 'Stocks, ETFs, dividends, portfolio strategy' },
+    { slug: 'software-ai-infrastructure-guide-2026', name: 'Software & AI Infrastructure', icon: '⚡', desc: 'Developer tools, APIs, DevOps, security' },
+    { slug: 'digital-media-creator-economy-guide-2026', name: 'Digital Media & Creator Economy', icon: '🎮', desc: 'Gaming, generators, timers, streaming' },
+    { slug: 'human-optimization-health-guide-2026', name: 'Human Optimization & Health', icon: '❤️', desc: 'Fitness, nutrition, body metrics, sleep' },
+    { slug: 'fine-arts-design-creative-guide-2026', name: 'Fine Arts, Design & Creative', icon: '🎨', desc: 'Cooking, baking, kitchen tools, beverages' },
+    { slug: 'global-mobility-geo-arbitrage-guide-2026', name: 'Global Mobility & Geo-Arbitrage', icon: '🌍', desc: 'Travel, nomad life, visas, cost of living' },
+    { slug: 'education-knowledge-commerce-guide-2026', name: 'Education & Knowledge Commerce', icon: '📚', desc: 'Math calculators, study tools, academic' },
+    { slug: 'real-estate-hospitality-guide-2026', name: 'Real Estate & Hospitality', icon: '🏠', desc: 'Home improvement, DIY, energy, real estate' },
+    { slug: 'interpersonal-dynamics-intimacy-guide-2026', name: 'Interpersonal Dynamics & Intimacy', icon: '💜', desc: 'Relationships, dating, sexual health' },
+    { slug: 'ecommerce-supply-chain-guide-2026', name: 'E-Commerce & Supply Chain', icon: '🛒', desc: 'Career tools, automotive, business' },
+  ];
+
+  try {
+    var resp = await fetch('/api/seo-dashboard');
+    var data = await resp.json();
+    if (data.error) throw new Error(data.error);
+
+    var apexMap = {};
+    (data.apexes || []).forEach(function(a) { apexMap[a.slug] = a; });
+
+    var total = 0;
+    var maxPages = 0;
+    CONFIG.forEach(function(c) {
+      var a = apexMap[c.slug];
+      var p = a ? a.pages : 0;
+      total += p;
+      if (p > maxPages) maxPages = p;
+    });
+
+    document.getElementById('ao-total').innerHTML = '<strong>' + total.toLocaleString() + '</strong> pages across <strong>10</strong> apex guides';
+
+    var grid = document.getElementById('ao-grid');
+    grid.innerHTML = CONFIG.map(function(c) {
+      var a = apexMap[c.slug] || {};
+      var pages = a.pages || 0;
+      var domains = (a.domains || []).join(' · ');
+      var pct = maxPages > 0 ? Math.round(pages / maxPages * 100) : 0;
+
+      return '<a class="ao-card" href="/' + c.slug + '">'
+        + '<div class="ao-icon">' + c.icon + '</div>'
+        + '<div class="ao-info">'
+        + '<div class="ao-name">' + esc(c.name) + '</div>'
+        + '<div class="ao-domains">' + esc(domains || c.desc) + '</div>'
+        + '<div class="ao-bar-bg"><div class="ao-bar-fill" style="width:' + pct + '%"></div></div>'
+        + '</div>'
+        + '<div class="ao-count-wrap">'
+        + '<div class="ao-count">' + pages.toLocaleString() + '</div>'
+        + '<div class="ao-count-label">pages</div>'
+        + '</div>'
+        + '</a>';
+    }).join('');
+
+  } catch(e) {
+    document.getElementById('ao-grid').innerHTML = '<p style="color:#f87171;text-align:center">Failed to load: ' + e.message + '</p>';
+  }
+
+  function esc(s) {
+    if (!s) return '';
+    return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+  }
+})();
+</script>
