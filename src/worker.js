@@ -3,6 +3,8 @@ import { renderCalculator } from './engines/calculator.js';
 import { renderNews } from './engines/news.js';
 import { renderChangelog } from './engines/changelog.js';
 import { newsAutopilot } from './news-autopilot.js';
+import { seedPages } from './seed-pages.js';
+import { upgradeTrigger } from './upgrade-trigger.js';
 
 const ENGINES = {
   calculator: renderCalculator,
@@ -26,10 +28,32 @@ function timeAgo(dateStr) {
 
 export default {
   async scheduled(event, env, ctx) {
-    try {
-      await newsAutopilot(env);
-    } catch (e) {
-      console.log(`❌ News Autopilot cron error: ${e.message}`);
+    // Alternate between news autopilot and seed pages every cron run
+    const cycle = Math.floor(Date.now() / 300000) % 2;
+
+    if (cycle === 0) {
+      // News autopilot
+      try {
+        await newsAutopilot(env);
+      } catch (e) {
+        console.log(`❌ News Autopilot cron error: ${e.message}`);
+      }
+    } else {
+      // Seed pages
+      try {
+        await seedPages(env);
+      } catch (e) {
+        console.log(`❌ Seed Pages cron error: ${e.message}`);
+      }
+    }
+
+    // Upgrade trigger — run on news autopilot cycles (every ~10 min)
+    if (cycle === 0) {
+      try {
+        await upgradeTrigger(env);
+      } catch (e) {
+        console.log(`❌ Upgrade Trigger cron error: ${e.message}`);
+      }
     }
   },
 
@@ -52,6 +76,21 @@ export default {
     // Stats endpoint
     if (path === '/_stats') {
       return stats(env);
+    }
+
+    // Seed test endpoint
+    if (path === '/api/seed-test') {
+      try {
+        const result = await seedPages(env);
+        return new Response(JSON.stringify(result, null, 2), {
+          headers: { 'content-type': 'application/json' },
+        });
+      } catch (e) {
+        return new Response(JSON.stringify({ error: e.message, stack: e.stack }), {
+          status: 500,
+          headers: { 'content-type': 'application/json' },
+        });
+      }
     }
 
     // SEO Dashboard API
