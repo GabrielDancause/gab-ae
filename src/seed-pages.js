@@ -56,6 +56,129 @@ const SITE_TO_CATEGORY = {
   'justonemoment': 'tools',
 };
 
+const LIST_ITEMS = {
+  'finance': [
+    "Blue-Chip Monthly Payer — Known for consistent monthly payouts backed by decades of dividend history.",
+    "High-Yield REIT Fund — Offers above-average yields from diversified real estate holdings.",
+    "Covered Call Income ETF — Generates monthly income through options strategies on major indexes.",
+    "Dividend Aristocrat — A reliable large-cap company with a long track record of dividend growth.",
+    "Tax-Advantaged Muni Bond — Provides tax-free income for high-bracket investors.",
+    "Global Infrastructure Fund — Invests in stable, cash-flowing assets worldwide.",
+    "Preferred Stock ETF — Offers higher yields than common stock with less volatility.",
+    "Real Estate Crowdfunding — Allows direct investment in commercial properties for income.",
+    "Master Limited Partnership (MLP) — Generates high yields from energy infrastructure.",
+    "High-Dividend Value Stock — A mature company returning significant capital to shareholders."
+  ],
+  'tech': [
+    "Enterprise SaaS Leader — Provides scalable cloud infrastructure for Fortune 500 companies.",
+    "Emerging AI Startup — Revolutionizing workflows with cutting-edge machine learning models.",
+    "Cybersecurity Pioneer — Offers comprehensive zero-trust network protection.",
+    "Next-Gen Fintech App — Streamlines digital payments and wealth management.",
+    "Developer Tools Innovator — Accelerates software delivery with modern CI/CD pipelines.",
+    "E-commerce Platform — Empowers global merchants with seamless online storefronts.",
+    "Data Analytics Powerhouse — Transforms big data into actionable business intelligence.",
+    "IoT Solutions Provider — Connects smart devices for industrial automation.",
+    "Blockchain Protocol — Enables decentralized applications and smart contracts.",
+    "EdTech Disrupter — Democratizes access to high-quality online education."
+  ],
+  'gaming': [
+    "Top-Tier Peripherals — Built for competitive play with ultra-low latency.",
+    "AAA Game Studio Release — A critically acclaimed narrative with stunning graphics.",
+    "Indie Darling — A unique, handcrafted experience with innovative mechanics.",
+    "Esports Organization — Fields championship-winning teams across multiple titles.",
+    "Streaming Platform — Connects millions of gamers with live, interactive content.",
+    "VR Headset — Offers immersive, room-scale virtual reality experiences.",
+    "Cloud Gaming Service — Streams high-end games to any device without a console.",
+    "Mobile Gaming Hit — A casual, addictive title with massive global appeal.",
+    "Retro Console Revival — Brings classic games to modern audiences.",
+    "Game Engine Provider — Powers the next generation of interactive entertainment."
+  ],
+  'health': [
+    "Clinically Backed Supplement — Formulated for optimal absorption and efficacy.",
+    "Holistic Wellness Routine — Integrates seamlessly into daily life for balanced health.",
+    "Fitness Tracking Wearable — Monitors heart rate, sleep, and activity levels accurately.",
+    "Telehealth Platform — Connects patients with doctors for convenient virtual care.",
+    "Personalized Nutrition Plan — Tailors dietary recommendations based on individual needs.",
+    "Mental Health App — Offers guided meditation and cognitive behavioral therapy tools.",
+    "Home Workout Equipment — Provides gym-quality resistance training in a compact footprint.",
+    "Organic Skincare Line — Uses natural ingredients for healthy, glowing skin.",
+    "Sleep Optimization System — Improves rest and recovery with advanced tracking.",
+    "Ergonomic Office Furniture — Promotes proper posture and reduces strain during work."
+  ],
+  'food': [
+    "Artisan Crafted Ingredient — Sourced from sustainable farms for exceptional flavor.",
+    "Gourmet Kitchen Essential — Elevates home cooking with professional-grade quality.",
+    "Meal Delivery Kit — Provides convenient, chef-designed recipes with pre-portioned ingredients.",
+    "Specialty Coffee Roaster — Offers ethically sourced, small-batch beans.",
+    "Plant-Based Alternative — Delivers delicious, sustainable options without compromising taste.",
+    "Craft Brewery — Produces innovative, award-winning beers with unique flavor profiles.",
+    "High-End Cookware Set — Ensures even heat distribution and long-lasting durability.",
+    "Gourmet Snack Box — Curates premium treats from around the world.",
+    "Boutique Winery — Crafts exceptional vintages focusing on terroir.",
+    "Farm-to-Table Restaurant — Highlights local, seasonal ingredients in every dish."
+  ],
+  'lifestyle': [
+    "Minimalist Daily Carry — Combines form and function for everyday convenience.",
+    "Sustainable Travel Gear — Durable and eco-friendly equipment for the conscious explorer.",
+    "Luxury Watch Brand — Blends timeless design with precision craftsmanship.",
+    "Bespoke Tailoring — Offers custom-fit clothing for a perfect, personalized look.",
+    "High-End Audio System — Delivers audiophile-quality sound for an immersive listening experience.",
+    "Curated Art Collection — Features emerging artists to elevate any living space.",
+    "Smart Home Automation — Integrates lighting, climate, and security for ultimate convenience.",
+    "Boutique Hotel Stay — Provides a unique, personalized hospitality experience.",
+    "Premium Luggage Set — Ensures stylish, durable travel with intelligent organization.",
+    "Exclusive Members Club — Offers networking and luxury amenities for discerning individuals."
+  ],
+  'education': [
+    "Comprehensive Course Bundle — Covers everything from basics to advanced topics with expert instruction.",
+    "Interactive Learning Platform — Engaging and effective modules that adapt to your pace.",
+    "Language Learning App — Uses gamification and spaced repetition for rapid fluency.",
+    "Professional Certification Program — Provides industry-recognized credentials for career advancement.",
+    "Online Tutoring Service — Connects students with expert educators for personalized help.",
+    "Coding Bootcamp — Offers intensive, project-based training for aspiring developers.",
+    "Creative Skills Workshop — Teaches practical techniques in design, writing, and art.",
+    "Financial Literacy Course — Empowers individuals with essential money management skills.",
+    "Leadership Training Seminar — Develops crucial management and communication abilities.",
+    "Test Prep Material — Delivers comprehensive review and practice for standardized exams."
+  ],
+  'auto': [
+    "Reliable Commuter Option — Fuel efficient and dependable for daily driving.",
+    "High-Performance Upgrade — Enhances speed and handling for driving enthusiasts.",
+    "Electric Vehicle Pioneer — Leads the transition to sustainable transportation.",
+    "Luxury Sedan — Offers premium comfort and advanced technology features.",
+    "Rugged Off-Road Vehicle — Built to tackle any terrain with confidence.",
+    "Advanced Driver Assistance System — Improves safety with cutting-edge sensors and software.",
+    "Premium Car Care Kit — Keeps vehicles looking showroom new.",
+    "Aftermarket Exhaust System — Increases horsepower and delivers an aggressive tone.",
+    "High-Grip Tires — Provides exceptional traction and handling in all conditions.",
+    "Custom Interior Accessories — Personalizes the cabin for style and comfort."
+  ],
+  'tools': [
+    "Pro-Grade Equipment — Built for heavy-duty use and long-lasting durability.",
+    "Versatile Multi-Tool — Essential for any DIY project or quick repair.",
+    "Precision Measuring Device — Ensures accurate readings for critical tasks.",
+    "High-Torque Power Drill — Delivers exceptional performance for demanding applications.",
+    "Compact Tool Set — Provides a comprehensive selection in a portable case.",
+    "Advanced Diagnostic Scanner — Quickly identifies and clears vehicle fault codes.",
+    "Heavy-Duty Work Bench — Offers a stable, durable surface for complex projects.",
+    "Specialty Hand Tool — Designed specifically for niche applications and efficiency.",
+    "Laser Level — Projects perfectly straight lines for precise alignment.",
+    "Protective Safety Gear — Ensures user safety in hazardous work environments."
+  ],
+  'default': [
+    "Top Rated Option — Highly recommended by users for its consistent performance.",
+    "Premium Choice — Excellent quality and durability that justifies the investment.",
+    "Value Pick — Offers a great balance of features and affordability.",
+    "Editor's Choice — Selected by experts as the best overall in its category.",
+    "Budget-Friendly — Provides essential functionality without breaking the bank.",
+    "Innovative Design — Features unique capabilities that set it apart from the competition.",
+    "User-Friendly — Easy to set up and use, even for beginners.",
+    "Durable Construction — Built to withstand heavy use and last for years.",
+    "Versatile Solution — Adaptable for a wide variety of tasks and applications.",
+    "Reliable Performer — Consistently delivers results you can count on."
+  ]
+};
+
 const SEED_CSS = `
 <style>
 .seed-page { max-width: 780px; margin: 0 auto; padding: 1.5rem 1rem; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; color: #e2e8f0; }
@@ -96,6 +219,10 @@ function esc(str) {
   return (str || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 }
 
+function getBaseKeyword(str) {
+  return (str || '').replace(/^(?:best|top(?:\s+10)?|how to|what is|guide to|the)\s+/i, '');
+}
+
 function getMonthYear() {
   const d = new Date();
   const months = ['January','February','March','April','May','June','July','August','September','October','November','December'];
@@ -105,7 +232,9 @@ function getMonthYear() {
 function generateEducational(kw) {
   const { month, year } = getMonthYear();
   const pk = kw.primary_keyword;
+  const pkBase = getBaseKeyword(pk);
   const pkTitle = titleCase(pk);
+  const pkBaseTitle = titleCase(pkBase);
   const secondaries = JSON.parse(kw.secondary_keywords || '[]');
   const apexSlug = SITE_TO_APEX[kw.target_site] || 'software-ai-infrastructure-guide-2026';
   const apexName = APEX_NAMES[apexSlug] || 'Guide';
@@ -116,12 +245,12 @@ function generateEducational(kw) {
   <p class="seed-meta">Updated ${month} ${year} · ${(kw.total_volume || 0).toLocaleString()}+ monthly searches</p>
 
   <div class="seed-section">
-    <h2>What is ${esc(pkTitle)}?</h2>
-    <p>${esc(pkTitle)} is a topic that many people search for. This guide covers the essential information you need to know about ${esc(pk)}, including key concepts, practical tips, and frequently asked questions.</p>
+    <h2>What is ${esc(pkBaseTitle)}?</h2>
+    <p>${esc(pkBaseTitle)} is a topic that many people search for. This guide covers the essential information you need to know about ${esc(pkBase)}, including key concepts, practical tips, and frequently asked questions.</p>
   </div>
 
   <div class="seed-section">
-    <h2>Key Facts About ${esc(pkTitle)}</h2>
+    <h2>Key Facts About ${esc(pkBaseTitle)}</h2>
     <ul>
       <li>Search volume: ${(kw.total_volume || 0).toLocaleString()} searches per month</li>
       ${secondaries.length ? `<li>Related topics: ${secondaries.map(s => esc(s)).join(', ')}</li>` : ''}
@@ -129,19 +258,19 @@ function generateEducational(kw) {
   </div>
 
   <div class="seed-section">
-    <h2>How ${esc(pkTitle)} Works</h2>
-    <p>Understanding ${esc(pk)} requires knowledge of several key concepts. Below we break down the most important aspects that affect how ${esc(pk)} works in practice.</p>
+    <h2>How ${esc(pkBaseTitle)} Works</h2>
+    <p>Understanding ${esc(pkBase)} requires knowledge of several key concepts. Below we break down the most important aspects that affect how ${esc(pkBase)} works in practice.</p>
   </div>
 
   <div class="seed-section">
     <h2>Frequently Asked Questions</h2>
     <div class="faq-item">
-      <h3>What is ${esc(pk)}?</h3>
-      <p>${esc(pkTitle)} is a commonly searched topic with ${(kw.total_volume || 0).toLocaleString()}+ monthly searches. This guide covers everything you need to know.</p>
+      <h3>What is the main purpose of ${esc(pkBaseTitle)}?</h3>
+      <p>The primary goal is to provide a comprehensive solution and deep understanding of ${esc(pk)}. Whether you are a beginner or an expert, mastering these fundamentals is crucial for success.</p>
     </div>
     <div class="faq-item">
-      <h3>Why is ${esc(pk)} important?</h3>
-      <p>Understanding ${esc(pk)} can help you make better decisions. Many people search for this topic to learn practical strategies and tips.</p>
+      <h3>How does ${esc(pkBaseTitle)} compare to alternatives?</h3>
+      <p>While there are other options available, ${esc(pkBaseTitle)} stands out due to its specific features, ease of use, and targeted benefits tailored to this niche.</p>
     </div>
   </div>
 
@@ -152,25 +281,30 @@ function generateEducational(kw) {
 function generateListicle(kw) {
   const { month, year } = getMonthYear();
   const pk = kw.primary_keyword;
+  const pkBase = getBaseKeyword(pk);
   const pkTitle = titleCase(pk);
+  const pkBaseTitle = titleCase(pkBase);
   const secondaries = JSON.parse(kw.secondary_keywords || '[]');
   const apexSlug = SITE_TO_APEX[kw.target_site] || 'software-ai-infrastructure-guide-2026';
   const apexName = APEX_NAMES[apexSlug] || 'Guide';
 
   return `${SEED_CSS}
 <div class="seed-page">
-  <h1>Top 10 ${esc(pkTitle)} (${year})</h1>
+  <h1>Top 10 ${esc(pkBaseTitle)} (${year})</h1>
   <p class="seed-meta">Updated ${month} ${year} · ${(kw.total_volume || 0).toLocaleString()}+ monthly searches</p>
 
   <div class="seed-section">
-    <h2>Best ${esc(pkTitle)} Overview</h2>
-    <p>Looking for the best ${esc(pk)}? We've researched and compiled the top options to help you make an informed decision.</p>
+    <h2>Best ${esc(pkBaseTitle)} Overview</h2>
+    <p>Looking for the best ${esc(pkBase)}? We've researched and compiled the top options to help you make an informed decision.</p>
   </div>
 
   <div class="seed-section">
-    <h2>Top 10 ${esc(pkTitle)}</h2>
+    <h2>Top 10 ${esc(pkBaseTitle)}</h2>
     <ol>
-      ${[1,2,3,4,5,6,7,8,9,10].map(n => `<li><strong>Option ${n}</strong> — A popular choice for ${esc(pk)} with strong performance and reliability.</li>`).join('\n      ')}
+      ${(LIST_ITEMS[SITE_TO_CATEGORY[kw.target_site]] || LIST_ITEMS['default']).map((item, index) => {
+        const [title, desc] = item.split(' — ');
+        return `<li><strong>${esc(title)}</strong> — ${esc(desc)}</li>`;
+      }).join('\n      ')}
     </ol>
   </div>
 
@@ -186,12 +320,12 @@ function generateListicle(kw) {
   <div class="seed-section">
     <h2>Frequently Asked Questions</h2>
     <div class="faq-item">
-      <h3>What is the best ${esc(pk)}?</h3>
-      <p>The best ${esc(pk)} depends on your specific needs. Our top 10 list covers options for various use cases and budgets.</p>
+      <h3>What is the absolute best ${esc(pkBaseTitle)}?</h3>
+      <p>The "best" ${esc(pkBaseTitle)} depends entirely on your specific needs, budget, and use case. Review the top options listed above to find the perfect match for your situation.</p>
     </div>
     <div class="faq-item">
-      <h3>How do I choose the right ${esc(pk)}?</h3>
-      <p>Consider your budget, specific requirements, and long-term goals. Compare features and read reviews before deciding.</p>
+      <h3>Are premium ${esc(pkBaseTitle)} options worth the cost?</h3>
+      <p>In many cases, investing in a higher-end ${esc(pkBaseTitle)} provides better durability, advanced features, and stronger support, making it a worthwhile long-term choice.</p>
     </div>
   </div>
 
@@ -202,18 +336,20 @@ function generateListicle(kw) {
 function generateCalculator(kw) {
   const { month, year } = getMonthYear();
   const pk = kw.primary_keyword;
+  const pkBase = getBaseKeyword(pk);
   const pkTitle = titleCase(pk);
+  const pkBaseTitle = titleCase(pkBase);
   const apexSlug = SITE_TO_APEX[kw.target_site] || 'software-ai-infrastructure-guide-2026';
   const apexName = APEX_NAMES[apexSlug] || 'Guide';
 
   return `${SEED_CSS}
 <div class="seed-page">
-  <h1>${esc(pkTitle)} Calculator</h1>
+  <h1>${esc(pkBaseTitle)} Calculator</h1>
   <p class="seed-meta">Updated ${month} ${year} · ${(kw.total_volume || 0).toLocaleString()}+ monthly searches</p>
 
   <div class="seed-section">
-    <h2>Calculate ${esc(pkTitle)}</h2>
-    <p>Use this calculator to quickly compute ${esc(pk)}. Enter your values below for instant results.</p>
+    <h2>Calculate ${esc(pkBaseTitle)}</h2>
+    <p>Use this calculator to quickly compute ${esc(pkBase)}. Enter your values below for instant results.</p>
     <div class="seed-calc-grid">
       <div class="seed-calc-input">
         <label>Value A</label>
@@ -238,15 +374,19 @@ function generateCalculator(kw) {
   </div>
 
   <div class="seed-section">
-    <h2>How to Calculate ${esc(pkTitle)}</h2>
-    <p>Understanding how to calculate ${esc(pk)} is straightforward. Enter your values above and the calculator will provide instant results based on standard formulas.</p>
+    <h2>How to Calculate ${esc(pkBaseTitle)}</h2>
+    <p>Understanding how to calculate ${esc(pkBase)} is straightforward. Enter your values above and the calculator will provide instant results based on standard formulas.</p>
   </div>
 
   <div class="seed-section">
     <h2>Frequently Asked Questions</h2>
     <div class="faq-item">
-      <h3>How do I use this ${esc(pk)} calculator?</h3>
-      <p>Simply enter your values in the input fields above. The calculator will automatically compute and display the result.</p>
+      <h3>How accurate is this ${esc(pkBaseTitle)} calculator?</h3>
+      <p>This calculator uses standard industry formulas to estimate ${esc(pkBaseTitle)}. However, actual results may vary based on specific conditions and variables not included here.</p>
+    </div>
+    <div class="faq-item">
+      <h3>What should I do after calculating my ${esc(pkBaseTitle)}?</h3>
+      <p>Once you have your result, use it as a baseline to make informed decisions regarding your ${esc(pk)} strategy and future planning.</p>
     </div>
   </div>
 
@@ -257,19 +397,21 @@ function generateCalculator(kw) {
 function generateComparison(kw) {
   const { month, year } = getMonthYear();
   const pk = kw.primary_keyword;
+  const pkBase = getBaseKeyword(pk);
   const pkTitle = titleCase(pk);
+  const pkBaseTitle = titleCase(pkBase);
   const secondaries = JSON.parse(kw.secondary_keywords || '[]');
   const apexSlug = SITE_TO_APEX[kw.target_site] || 'software-ai-infrastructure-guide-2026';
   const apexName = APEX_NAMES[apexSlug] || 'Guide';
 
   return `${SEED_CSS}
 <div class="seed-page">
-  <h1>${esc(pkTitle)} — Side-by-Side Comparison</h1>
+  <h1>${esc(pkBaseTitle)} — Side-by-Side Comparison</h1>
   <p class="seed-meta">Updated ${month} ${year} · ${(kw.total_volume || 0).toLocaleString()}+ monthly searches</p>
 
   <div class="seed-section">
-    <h2>${esc(pkTitle)} Comparison</h2>
-    <p>Compare the top options for ${esc(pk)} side by side. See how they stack up on key factors.</p>
+    <h2>${esc(pkBaseTitle)} Comparison</h2>
+    <p>Compare the top options for ${esc(pkBase)} side by side. See how they stack up on key factors.</p>
     <table class="seed-compare-table">
       <thead>
         <tr><th>Feature</th><th>Option A</th><th>Option B</th><th>Option C</th></tr>
@@ -295,8 +437,12 @@ function generateComparison(kw) {
   <div class="seed-section">
     <h2>Frequently Asked Questions</h2>
     <div class="faq-item">
-      <h3>Which ${esc(pk)} is best?</h3>
-      <p>The best option depends on your priorities — whether you value price, quality, or specific features. Compare the table above to find your match.</p>
+      <h3>Which ${esc(pkBaseTitle)} offers the best value?</h3>
+      <p>Value is subjective. If you need premium features, the higher-priced option may be best. For basic needs, the more affordable ${esc(pkBaseTitle)} is likely sufficient.</p>
+    </div>
+    <div class="faq-item">
+      <h3>Can I switch between different ${esc(pkBaseTitle)} later?</h3>
+      <p>Depending on the specific type of ${esc(pk)}, migrating between platforms or tools can be complex. It is generally best to choose the right option from the start to avoid future friction.</p>
     </div>
   </div>
 
