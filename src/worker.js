@@ -34,6 +34,11 @@ export default {
       return seoDashboardAPI(env);
     }
 
+    // Site Tree API — full apex → cluster → page hierarchy
+    if (path === '/api/site-tree') {
+      return siteTreeAPI(env);
+    }
+
     // Search API
     if (path === '/_search') {
       const q = url.searchParams.get('q')?.toLowerCase() || '';
@@ -605,6 +610,63 @@ function notFound() {
       </div>`,
   });
   return new Response(html, { status: 404, headers: { 'content-type': 'text/html;charset=UTF-8' } });
+}
+
+async function siteTreeAPI(env) {
+  const headers = {
+    'content-type': 'application/json',
+    'cache-control': 'public, max-age=600',
+    'access-control-allow-origin': '*',
+  };
+
+  const APEX_META = {
+    'capital-markets-wealth-guide-2026': { name: 'Capital Markets & Wealth', icon: '📊' },
+    'software-ai-infrastructure-guide-2026': { name: 'Software & AI Infrastructure', icon: '⚡' },
+    'digital-media-creator-economy-guide-2026': { name: 'Digital Media & Creator Economy', icon: '🎮' },
+    'human-optimization-health-guide-2026': { name: 'Human Optimization & Health', icon: '❤️' },
+    'fine-arts-design-creative-guide-2026': { name: 'Fine Arts, Design & Creative', icon: '🎨' },
+    'global-mobility-geo-arbitrage-guide-2026': { name: 'Global Mobility & Geo-Arbitrage', icon: '🌍' },
+    'education-knowledge-commerce-guide-2026': { name: 'Education & Knowledge Commerce', icon: '📚' },
+    'real-estate-hospitality-guide-2026': { name: 'Real Estate & Hospitality', icon: '🏠' },
+    'interpersonal-dynamics-intimacy-guide-2026': { name: 'Interpersonal Dynamics & Intimacy', icon: '💜' },
+    'ecommerce-supply-chain-guide-2026': { name: 'E-Commerce & Supply Chain', icon: '🛒' },
+  };
+
+  try {
+    const { results } = await env.DB.prepare(
+      `SELECT tp.apex_slug, tp.cluster, tp.domain, tp.path, tp.title
+       FROM tracked_pages tp
+       WHERE tp.apex_slug IS NOT NULL
+       ORDER BY tp.apex_slug, tp.cluster, tp.domain, tp.path`
+    ).all();
+
+    // Group: apex → cluster → pages
+    const apexMap = {};
+    for (const row of results) {
+      if (!apexMap[row.apex_slug]) {
+        const meta = APEX_META[row.apex_slug] || { name: row.apex_slug, icon: '📄' };
+        apexMap[row.apex_slug] = { slug: row.apex_slug, name: meta.name, icon: meta.icon, clusterMap: {} };
+      }
+      const apex = apexMap[row.apex_slug];
+      const clusterName = row.cluster || 'uncategorized';
+      if (!apex.clusterMap[clusterName]) {
+        apex.clusterMap[clusterName] = [];
+      }
+      apex.clusterMap[clusterName].push({ domain: row.domain, path: row.path, title: row.title || `${row.domain}${row.path}` });
+    }
+
+    // Convert to array format
+    const apexes = Object.values(apexMap).map(a => ({
+      slug: a.slug,
+      name: a.name,
+      icon: a.icon,
+      clusters: Object.entries(a.clusterMap).map(([name, pages]) => ({ name, pages })),
+    }));
+
+    return new Response(JSON.stringify({ apexes }), { headers });
+  } catch (e) {
+    return new Response(JSON.stringify({ error: e.message }), { status: 500, headers });
+  }
 }
 
 async function seoDashboardAPI(env) {

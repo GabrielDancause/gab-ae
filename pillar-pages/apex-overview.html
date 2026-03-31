@@ -240,3 +240,248 @@
   }
 })();
 </script>
+
+<!-- ═══════════════ FULL SITE TREE ═══════════════ -->
+<style>
+  .st-section { max-width: 900px; margin: 3rem auto 0; padding: 0 1rem 3rem; }
+  .st-title { font-size: 1.5rem; font-weight: 700; color: #fff; margin: 0 0 0.25rem; }
+  .st-subtitle { color: #64748b; font-size: 0.85rem; margin: 0 0 1.25rem; }
+  .st-search {
+    width: 100%; padding: 0.65rem 1rem 0.65rem 2.5rem;
+    background: #12121a; border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 10px; color: #e2e8f0; font-size: 0.9rem;
+    outline: none; margin-bottom: 1rem;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='%23475569' viewBox='0 0 16 16'%3E%3Cpath d='M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85zm-5.242.156a5 5 0 1 1 0-10 5 5 0 0 1 0 10z'/%3E%3C/svg%3E");
+    background-repeat: no-repeat; background-position: 0.75rem center;
+  }
+  .st-search:focus { border-color: rgba(129,140,248,0.4); }
+  .st-search::placeholder { color: #475569; }
+
+  .st-tree { display: flex; flex-direction: column; gap: 0.5rem; }
+
+  /* Apex row */
+  .st-apex { background: #12121a; border-radius: 10px; border: 1px solid rgba(255,255,255,0.06); overflow: hidden; }
+  .st-apex-hdr {
+    display: flex; align-items: center; gap: 0.75rem; padding: 0.9rem 1.1rem;
+    cursor: pointer; user-select: none; transition: background 0.15s;
+  }
+  .st-apex-hdr:hover { background: rgba(129,140,248,0.04); }
+  .st-chev { font-size: 0.65rem; color: #475569; transition: transform 0.2s; min-width: 12px; }
+  .st-apex.open > .st-apex-hdr > .st-chev { transform: rotate(90deg); }
+  .st-apex-icon { font-size: 1.3rem; }
+  .st-apex-name { font-weight: 700; color: #fff; font-size: 0.95rem; flex: 1; }
+  .st-badge {
+    font-size: 0.7rem; color: #818cf8; background: rgba(129,140,248,0.1);
+    padding: 0.15rem 0.55rem; border-radius: 10px; font-weight: 600;
+  }
+  .st-apex-body { display: none; padding: 0 0 0.5rem; }
+  .st-apex.open > .st-apex-body { display: block; }
+
+  /* Cluster row */
+  .st-cluster { margin-left: 1.25rem; border-left: 2px solid rgba(129,140,248,0.15); }
+  .st-cluster-hdr {
+    display: flex; align-items: center; gap: 0.6rem; padding: 0.55rem 1rem;
+    cursor: pointer; user-select: none; font-size: 0.85rem; transition: background 0.15s;
+  }
+  .st-cluster-hdr:hover { background: rgba(129,140,248,0.03); }
+  .st-cluster-name { color: #cbd5e1; font-weight: 600; flex: 1; }
+  .st-cluster-body { display: none; }
+  .st-cluster.open > .st-cluster-body { display: block; }
+  .st-cluster.open > .st-cluster-hdr > .st-chev { transform: rotate(90deg); }
+
+  /* Page row */
+  .st-page {
+    display: block; margin-left: 1.5rem; border-left: 2px solid rgba(129,140,248,0.08);
+    padding: 0.35rem 0.75rem; font-size: 0.78rem; text-decoration: none;
+    transition: background 0.12s; line-height: 1.4;
+  }
+  .st-page:hover { background: rgba(129,140,248,0.05); }
+  .st-page-domain { color: #475569; }
+  .st-page-path { color: #a5b4fc; }
+  .st-page-title { color: #94a3b8; display: block; font-size: 0.72rem; margin-top: 1px; }
+
+  .st-more-btn {
+    display: inline-block; margin: 0.4rem 0 0.4rem 1.5rem; padding: 0.3rem 0.8rem;
+    font-size: 0.75rem; color: #818cf8; background: rgba(129,140,248,0.08);
+    border: 1px solid rgba(129,140,248,0.15); border-radius: 8px;
+    cursor: pointer; transition: background 0.15s;
+  }
+  .st-more-btn:hover { background: rgba(129,140,248,0.15); }
+
+  .st-no-results { text-align: center; color: #475569; padding: 2rem; font-size: 0.9rem; }
+  .st-hidden { display: none !important; }
+
+  @media (max-width: 640px) {
+    .st-cluster { margin-left: 0.75rem; }
+    .st-page { margin-left: 1rem; }
+  }
+</style>
+
+<div class="st-section">
+  <h2 class="st-title">📂 Full Site Tree</h2>
+  <p class="st-subtitle" id="st-count">Loading site tree…</p>
+  <input type="text" class="st-search" id="st-search" placeholder="Search pages…" autocomplete="off">
+  <div class="st-tree" id="st-tree">
+    <div class="ao-loading"><div class="ao-spinner"></div></div>
+  </div>
+</div>
+
+<script>
+(async function() {
+  var PAGE_LIMIT = 20;
+
+  try {
+    var resp = await fetch('/api/site-tree');
+    var data = await resp.json();
+    if (data.error) throw new Error(data.error);
+
+    var apexes = data.apexes || [];
+    var totalPages = 0, totalClusters = 0;
+    apexes.forEach(function(a) {
+      a.clusters.forEach(function(c) { totalPages += c.pages.length; totalClusters++; });
+    });
+
+    document.getElementById('st-count').textContent =
+      totalPages.toLocaleString() + ' pages across ' + apexes.length + ' guides and ' + totalClusters + ' clusters';
+
+    var tree = document.getElementById('st-tree');
+    tree.innerHTML = '';
+
+    apexes.forEach(function(apex) {
+      var apexPages = 0;
+      apex.clusters.forEach(function(c) { apexPages += c.pages.length; });
+
+      var el = document.createElement('div');
+      el.className = 'st-apex';
+      el.dataset.name = apex.name.toLowerCase();
+
+      var hdr = document.createElement('div');
+      hdr.className = 'st-apex-hdr';
+      hdr.innerHTML = '<span class="st-chev">▶</span>'
+        + '<span class="st-apex-icon">' + apex.icon + '</span>'
+        + '<span class="st-apex-name">' + esc(apex.name) + '</span>'
+        + '<span class="st-badge">' + apexPages.toLocaleString() + ' pages</span>';
+      hdr.onclick = function() { el.classList.toggle('open'); };
+      el.appendChild(hdr);
+
+      var body = document.createElement('div');
+      body.className = 'st-apex-body';
+
+      apex.clusters.forEach(function(cluster) {
+        var cEl = document.createElement('div');
+        cEl.className = 'st-cluster';
+        cEl.dataset.name = cluster.name.toLowerCase();
+
+        var cHdr = document.createElement('div');
+        cHdr.className = 'st-cluster-hdr';
+        cHdr.innerHTML = '<span class="st-chev">▶</span>'
+          + '<span class="st-cluster-name">' + esc(cluster.name.replace(/-/g, ' ')) + '</span>'
+          + '<span class="st-badge">' + cluster.pages.length + '</span>';
+        cHdr.onclick = function(e) { e.stopPropagation(); cEl.classList.toggle('open'); };
+        cEl.appendChild(cHdr);
+
+        var cBody = document.createElement('div');
+        cBody.className = 'st-cluster-body';
+
+        var pages = cluster.pages;
+        var limit = Math.min(pages.length, PAGE_LIMIT);
+        for (var i = 0; i < limit; i++) {
+          cBody.appendChild(makePageEl(pages[i]));
+        }
+
+        if (pages.length > PAGE_LIMIT) {
+          var remaining = pages.length - PAGE_LIMIT;
+          var moreBtn = document.createElement('div');
+          moreBtn.className = 'st-more-btn';
+          moreBtn.textContent = 'Show all ' + pages.length + ' pages (' + remaining + ' more)';
+          moreBtn.onclick = function(e) {
+            e.stopPropagation();
+            for (var j = PAGE_LIMIT; j < pages.length; j++) {
+              cBody.insertBefore(makePageEl(pages[j]), moreBtn);
+            }
+            moreBtn.remove();
+          };
+          cBody.appendChild(moreBtn);
+        }
+
+        cEl.appendChild(cBody);
+        body.appendChild(cEl);
+      });
+
+      el.appendChild(body);
+      tree.appendChild(el);
+    });
+
+    // Search
+    var searchInput = document.getElementById('st-search');
+    var debounce;
+    searchInput.addEventListener('input', function() {
+      clearTimeout(debounce);
+      debounce = setTimeout(doSearch, 200);
+    });
+
+    function doSearch() {
+      var q = searchInput.value.trim().toLowerCase();
+      var allApexes = tree.querySelectorAll('.st-apex');
+      var noResults = tree.querySelector('.st-no-results');
+      if (noResults) noResults.remove();
+
+      if (!q) {
+        allApexes.forEach(function(a) {
+          a.classList.remove('st-hidden', 'open');
+          a.querySelectorAll('.st-cluster').forEach(function(c) { c.classList.remove('st-hidden', 'open'); });
+          a.querySelectorAll('.st-page').forEach(function(p) { p.classList.remove('st-hidden'); });
+        });
+        return;
+      }
+
+      var anyVisible = false;
+      allApexes.forEach(function(a) {
+        var apexMatch = false;
+        a.querySelectorAll('.st-cluster').forEach(function(c) {
+          var clusterMatch = false;
+          c.querySelectorAll('.st-page').forEach(function(p) {
+            var text = (p.dataset.search || '').toLowerCase();
+            if (text.indexOf(q) >= 0) { p.classList.remove('st-hidden'); clusterMatch = true; }
+            else { p.classList.add('st-hidden'); }
+          });
+          if (clusterMatch || c.dataset.name.indexOf(q) >= 0) {
+            c.classList.remove('st-hidden'); c.classList.add('open'); apexMatch = true;
+          } else { c.classList.add('st-hidden'); }
+        });
+        if (apexMatch || a.dataset.name.indexOf(q) >= 0) {
+          a.classList.remove('st-hidden'); a.classList.add('open'); anyVisible = true;
+        } else { a.classList.add('st-hidden'); }
+      });
+
+      if (!anyVisible) {
+        var nr = document.createElement('div');
+        nr.className = 'st-no-results';
+        nr.textContent = 'No pages match "' + q + '"';
+        tree.appendChild(nr);
+      }
+    }
+
+  } catch(e) {
+    document.getElementById('st-tree').innerHTML = '<p style="color:#f87171;text-align:center">Failed to load site tree: ' + e.message + '</p>';
+  }
+
+  function makePageEl(page) {
+    var a = document.createElement('a');
+    a.className = 'st-page';
+    a.href = 'https://' + page.domain + page.path;
+    a.target = '_blank';
+    a.rel = 'noopener';
+    a.dataset.search = (page.title + ' ' + page.domain + page.path).toLowerCase();
+    a.innerHTML = '<span class="st-page-domain">' + esc(page.domain) + '</span>'
+      + '<span class="st-page-path">' + esc(page.path) + '</span>'
+      + '<span class="st-page-title">' + esc(page.title) + '</span>';
+    return a;
+  }
+
+  function esc(s) {
+    if (!s) return '';
+    return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+  }
+})();
+</script>
