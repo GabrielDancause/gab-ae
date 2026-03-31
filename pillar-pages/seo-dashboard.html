@@ -324,6 +324,7 @@
 
   <div id="dash-content" style="display:none">
     <div class="summary-bar" id="summary-bar"></div>
+    <div id="top-pages-section"></div>
     <div class="apex-grid" id="apex-grid"></div>
   </div>
 
@@ -389,6 +390,27 @@
         <div class="summary-label">Open Issues</div>
       </div>
     `;
+
+    // Top pages (last 48h, no homepages, no ali)
+    var topNet = data.top_pages_network || [];
+    if (topNet.length) {
+      var tpHtml = '<div class="domain-section" style="margin-top:0;margin-bottom:1.5rem"><h2>🔥 Top Pages (Last 48h)</h2>'
+        + '<table class="domain-metrics-table"><thead><tr>'
+        + '<th>Page</th><th>Sessions</th><th>Pageviews</th><th>Bounce</th><th>Avg Duration</th>'
+        + '</tr></thead><tbody>';
+      topNet.forEach(function(p) {
+        var bounce = p.bounce ? (p.bounce * 100).toFixed(0) + '%' : '—';
+        var dur = p.duration ? Math.round(p.duration) + 's' : '—';
+        tpHtml += '<tr><td style="color:#cbd5e1;max-width:400px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">'
+          + '<span style="color:#475569">' + esc(p.domain) + '</span>' + esc(p.path) + '</td>'
+          + '<td class="highlight">' + (p.sessions || 0) + '</td>'
+          + '<td>' + (p.pageviews || 0) + '</td>'
+          + '<td>' + bounce + '</td>'
+          + '<td>' + dur + '</td></tr>';
+      });
+      tpHtml += '</tbody></table></div>';
+      document.getElementById('top-pages-section').innerHTML = tpHtml;
+    }
 
     // Apex cards
     const grid = document.getElementById('apex-grid');

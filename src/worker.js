@@ -710,6 +710,18 @@ async function seoDashboardAPI(env) {
       `SELECT SUM(ga_sessions) as sessions, SUM(ga_users) as users, SUM(ga_pageviews) as pageviews FROM page_metrics`
     ).first();
 
+    // Top pages network-wide (exclude homepages and ali)
+    const topPagesNetwork = await env.DB.prepare(
+      `SELECT pm.domain, pm.path, pm.ga_sessions as sessions, pm.ga_pageviews as pageviews, pm.ga_bounce_rate as bounce, pm.ga_avg_duration as duration
+       FROM page_metrics pm
+       WHERE pm.path != '/' 
+         AND pm.domain NOT LIKE '%ali%'
+         AND pm.ga_sessions > 0
+         AND pm.date >= date('now', '-2 days')
+       ORDER BY pm.ga_sessions DESC
+       LIMIT 25`
+    ).all();
+
     // Build apex map
     const apexNames = {
       'capital-markets-wealth-guide-2026': 'Capital Markets & Wealth',
@@ -791,6 +803,7 @@ async function seoDashboardAPI(env) {
       },
       apexes,
       domain_metrics: domainMetrics,
+      top_pages_network: (topPagesNetwork?.results || []),
       generated_at: new Date().toISOString(),
     };
 
