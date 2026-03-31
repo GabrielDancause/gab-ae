@@ -1,0 +1,1227 @@
+<style>
+  .cyber-container {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 2rem;
+    color: #e2e8f0;
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    line-height: 1.8;
+  }
+  .cyber-header {
+    text-align: center;
+    margin-bottom: 4rem;
+    padding-top: 3rem;
+  }
+  .gradient-h1 {
+    font-size: clamp(2.2rem, 5vw, 3.5rem);
+    font-weight: 800;
+    background: linear-gradient(135deg, #ffffff 0%, #a5b4fc 50%, #818cf8 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    margin-bottom: 1rem;
+    line-height: 1.15;
+    letter-spacing: -0.02em;
+  }
+  .cyber-subtitle {
+    font-size: 1.2rem;
+    color: #94a3b8;
+    max-width: 750px;
+    margin: 0 auto;
+  }
+  .breadcrumb {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    justify-content: center;
+    margin-bottom: 2rem;
+    font-size: 0.85rem;
+  }
+  .breadcrumb a {
+    color: #818cf8;
+    text-decoration: none;
+  }
+  .breadcrumb a:hover { text-decoration: underline; }
+  .breadcrumb span { color: #475569; }
+  .updated-badge {
+    display: inline-block;
+    background: rgba(129, 140, 248, 0.15);
+    color: #a5b4fc;
+    padding: 0.4rem 1rem;
+    border-radius: 20px;
+    font-size: 0.85rem;
+    margin-bottom: 1.5rem;
+    border: 1px solid rgba(129, 140, 248, 0.3);
+  }
+
+  /* Sticky TOC */
+  .cyber-layout {
+    display: grid;
+    grid-template-columns: 260px 1fr;
+    gap: 4rem;
+    align-items: start;
+  }
+  .sticky-toc {
+    position: sticky;
+    top: 2rem;
+    background: #12121a;
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 14px;
+    padding: 1.5rem;
+  }
+  .sticky-toc h3 {
+    margin: 0 0 1rem;
+    color: #fff;
+    font-size: 0.9rem;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    padding-bottom: 0.8rem;
+    border-bottom: 1px solid rgba(255,255,255,0.08);
+  }
+  .sticky-toc ul { list-style: none; padding: 0; margin: 0; }
+  .sticky-toc li { margin-bottom: 0.7rem; }
+  .sticky-toc a {
+    color: #94a3b8;
+    text-decoration: none;
+    font-size: 0.88rem;
+    transition: all 0.2s;
+    display: block;
+  }
+  .sticky-toc a:hover { color: #818cf8; transform: translateX(3px); }
+
+  /* Content sections */
+  .section { margin-bottom: 5rem; scroll-margin-top: 2rem; }
+  .section h2 {
+    font-size: 2rem;
+    color: #fff;
+    margin-bottom: 1.2rem;
+    padding-bottom: 0.8rem;
+    border-bottom: 1px solid rgba(255,255,255,0.08);
+    letter-spacing: -0.02em;
+  }
+  .section h3 {
+    font-size: 1.35rem;
+    color: #e2e8f0;
+    margin-top: 2.5rem;
+    margin-bottom: 0.8rem;
+  }
+  .section p {
+    margin-bottom: 1.3rem;
+    font-size: 1.05rem;
+    color: #cbd5e1;
+  }
+  .section ul, .section ol {
+    margin-bottom: 1.5rem;
+    padding-left: 1.5rem;
+    color: #cbd5e1;
+    font-size: 1.05rem;
+  }
+  .section li { margin-bottom: 0.5rem; }
+
+  /* Callout boxes */
+  .callout {
+    border-left: 4px solid #818cf8;
+    background: linear-gradient(90deg, rgba(129, 140, 248, 0.1) 0%, rgba(129, 140, 248, 0.02) 100%);
+    padding: 1.3rem 1.8rem;
+    border-radius: 0 12px 12px 0;
+    margin: 2rem 0;
+    font-size: 1.05rem;
+    color: #e2e8f0;
+  }
+  .callout.warning {
+    border-left-color: #f59e0b;
+    background: linear-gradient(90deg, rgba(245, 158, 11, 0.1) 0%, rgba(245, 158, 11, 0.02) 100%);
+  }
+  .callout.success {
+    border-left-color: #10b981;
+    background: linear-gradient(90deg, rgba(16, 185, 129, 0.1) 0%, rgba(16, 185, 129, 0.02) 100%);
+  }
+  .callout strong { color: #fff; }
+
+  /* Data tables */
+  .data-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 2rem 0;
+    font-size: 0.95rem;
+  }
+  .data-table thead {
+    background: rgba(129, 140, 248, 0.1);
+  }
+  .data-table th {
+    padding: 0.8rem 1rem;
+    text-align: left;
+    color: #a5b4fc;
+    font-weight: 600;
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    border-bottom: 1px solid rgba(255,255,255,0.1);
+  }
+  .data-table td {
+    padding: 0.8rem 1rem;
+    color: #cbd5e1;
+    border-bottom: 1px solid rgba(255,255,255,0.04);
+  }
+  .data-table tbody tr:hover {
+    background: rgba(255,255,255,0.02);
+  }
+  .val-good { color: #4ade80; font-weight: 600; }
+  .val-great { color: #22d3ee; font-weight: 700; }
+  .val-meh { color: #fbbf24; }
+  .val-bad { color: #f87171; }
+
+  /* Interactive security assessment */
+  .assessment-box {
+    background: #12121a;
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 16px;
+    padding: 2.5rem;
+    margin: 2.5rem 0;
+  }
+  .assessment-box h3 {
+    color: #fff;
+    margin: 0 0 1.5rem;
+    font-size: 1.4rem;
+  }
+  .assessment-question {
+    margin-bottom: 1.5rem;
+    padding: 1rem;
+    background: rgba(255,255,255,0.02);
+    border-radius: 8px;
+  }
+  .assessment-question label {
+    display: block;
+    font-size: 1rem;
+    color: #e2e8f0;
+    margin-bottom: 0.5rem;
+    cursor: pointer;
+  }
+  .assessment-options {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+  }
+  .assessment-options input[type="radio"] {
+    margin-right: 0.5rem;
+  }
+  .assessment-options label {
+    font-size: 0.9rem;
+    color: #cbd5e1;
+    cursor: pointer;
+  }
+  .assessment-btn {
+    display: inline-block;
+    background: #818cf8;
+    color: #fff;
+    border: none;
+    padding: 0.8rem 2rem;
+    border-radius: 10px;
+    font-weight: 600;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: all 0.2s;
+    font-family: inherit;
+    margin-top: 1rem;
+  }
+  .assessment-btn:hover { background: #6366f1; transform: translateY(-2px); }
+  .assessment-result {
+    margin-top: 1.5rem;
+    padding: 1.5rem;
+    background: rgba(129, 140, 248, 0.08);
+    border-radius: 12px;
+    display: none;
+  }
+  .assessment-score {
+    font-size: 2.5rem;
+    font-weight: 800;
+    color: #4ade80;
+    line-height: 1;
+  }
+  .assessment-score.medium { color: #fbbf24; }
+  .assessment-score.poor { color: #f87171; }
+  .assessment-label {
+    font-size: 0.85rem;
+    color: #94a3b8;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    margin-top: 0.3rem;
+  }
+  .assessment-feedback {
+    margin-top: 1rem;
+    font-size: 0.95rem;
+    color: #cbd5e1;
+  }
+
+  /* Security tool cards */
+  .tool-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 1.2rem;
+    margin: 2rem 0;
+  }
+  .tool-card {
+    background: #12121a;
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 14px;
+    padding: 1.8rem;
+    transition: border-color 0.2s;
+  }
+  .tool-card:hover { border-color: rgba(129, 140, 248, 0.4); }
+  .tool-card h4 {
+    color: #fff;
+    font-size: 1.15rem;
+    margin: 0 0 0.5rem;
+  }
+  .tool-card .tool-type {
+    font-size: 0.75rem;
+    color: #818cf8;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    font-weight: 600;
+    margin-bottom: 0.6rem;
+  }
+  .tool-card p {
+    color: #94a3b8;
+    font-size: 0.95rem;
+    margin: 0 0 0.8rem;
+    line-height: 1.5;
+  }
+  .tool-card .tool-price {
+    font-size: 0.85rem;
+    color: #64748b;
+  }
+
+  /* Threat landscape cards */
+  .threat-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+    gap: 1.5rem;
+    margin: 2rem 0;
+  }
+  .threat-card {
+    background: #12121a;
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 14px;
+    padding: 2rem;
+    transition: border-color 0.2s;
+  }
+  .threat-card:hover { border-color: rgba(255,255,255,0.2); }
+  .threat-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+  }
+  .threat-name {
+    font-size: 1.3rem;
+    font-weight: 700;
+    color: #fff;
+    margin: 0;
+  }
+  .threat-level {
+    padding: 0.3rem 0.8rem;
+    border-radius: 20px;
+    font-size: 0.85rem;
+    font-weight: 700;
+  }
+  .threat-level.critical { background: #f87171; color: #0d1117; }
+  .threat-level.high { background: #fbbf24; color: #0d1117; }
+  .threat-level.medium { background: #4ade80; color: #0d1117; }
+  .threat-stat {
+    display: flex;
+    justify-content: space-between;
+    padding: 0.5rem 0;
+    border-top: 1px solid rgba(255,255,255,0.04);
+    font-size: 0.9rem;
+  }
+  .threat-stat-label { color: #94a3b8; }
+  .threat-stat-value { color: #e2e8f0; font-weight: 600; }
+
+  /* Strategy cards */
+  .strategy-card {
+    background: #12121a;
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 14px;
+    padding: 2rem;
+    margin: 1.5rem 0;
+    position: relative;
+    overflow: hidden;
+  }
+  .strategy-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0;
+    width: 4px; height: 100%;
+    background: #818cf8;
+  }
+  .strategy-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+  .strategy-title { color: #fff; font-size: 1.25rem; font-weight: 700; margin: 0; }
+  .strategy-tags { display: flex; gap: 0.5rem; flex-wrap: wrap; }
+  .strategy-tag {
+    font-size: 0.7rem;
+    padding: 0.2rem 0.5rem;
+    border-radius: 4px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+  .tag-priority { background: rgba(248, 113, 113, 0.15); color: #f87171; }
+  .tag-privacy { background: rgba(168, 85, 247, 0.15); color: #a855f7; }
+  .tag-difficulty { background: rgba(251, 191, 36, 0.15); color: #fbbf24; }
+  .strategy-body { color: #cbd5e1; font-size: 1rem; }
+  .strategy-body p { margin-bottom: 0.8rem; }
+
+  /* CTA */
+  .cta-card {
+    display: block;
+    background: #12121a;
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 16px;
+    padding: 2rem;
+    text-decoration: none;
+    transition: all 0.3s;
+    position: relative;
+    overflow: hidden;
+    margin: 2.5rem 0;
+  }
+  .cta-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0;
+    width: 4px; height: 100%;
+    background: #818cf8;
+  }
+  .cta-card:hover { transform: translateY(-4px); border-color: #818cf8; }
+  .cta-card h4 { color: #fff; font-size: 1.3rem; margin: 0 0 0.5rem; }
+  .cta-card p { color: #94a3b8; margin: 0; font-size: 1rem; }
+
+  /* FAQ */
+  .faq-section {
+    margin-top: 5rem;
+    border-top: 1px solid rgba(255,255,255,0.08);
+    padding-top: 4rem;
+  }
+  .faq-section h2 {
+    font-size: 2rem;
+    color: #fff;
+    margin-bottom: 2rem;
+    text-align: center;
+  }
+  .faq-item {
+    background: #12121a;
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 14px;
+    padding: 1.5rem;
+    margin-bottom: 1rem;
+  }
+  .faq-item:hover { border-color: rgba(129, 140, 248, 0.3); }
+  .faq-item h3 { margin: 0 0 0.7rem; color: #fff; font-size: 1.1rem; }
+  .faq-item p { margin: 0; color: #94a3b8; font-size: 1rem; }
+
+  @media (max-width: 1024px) {
+    .cyber-layout { grid-template-columns: 1fr; gap: 2rem; }
+    .sticky-toc { position: relative; top: 0; }
+    .threat-grid { grid-template-columns: 1fr; }
+  }
+  @media (max-width: 768px) {
+    .gradient-h1 { font-size: 2rem; }
+    .cyber-container { padding: 1rem; }
+    .tool-grid { grid-template-columns: 1fr; }
+  }
+</style>
+
+<div class="cyber-container">
+  <div class="cyber-header">
+    <div class="breadcrumb">
+      <a href="/apex-guides">Apex Guides</a>
+      <span>›</span>
+      <a href="/software-ai-infrastructure-guide-2026">Software, AI & Digital Infrastructure</a>
+      <span>›</span>
+      <span style="color: #cbd5e1;">Current</span>
+    </div>
+    <span class="updated-badge">🔒 Updated March 2026</span>
+    <h1 class="gradient-h1">Cybersecurity & Privacy — The Complete Playbook</h1>
+    <p class="cyber-subtitle">Protect your digital life, business, and financial assets. Comprehensive security frameworks for individuals and businesses — from basic hygiene to advanced threat protection in 2026.</p>
+  </div>
+
+  <div class="cyber-layout">
+    <aside>
+      <nav class="sticky-toc">
+        <h3>Contents</h3>
+        <ul>
+          <li><a href="#foundation">1. Security Foundation</a></li>
+          <li><a href="#threats">2. Threat Landscape 2026</a></li>
+          <li><a href="#assessment">3. Security Assessment</a></li>
+          <li><a href="#personal-security">4. Personal Protection</a></li>
+          <li><a href="#business-security">5. Business Security</a></li>
+          <li><a href="#privacy">6. Privacy Optimization</a></li>
+          <li><a href="#incident-response">7. Incident Response</a></li>
+          <li><a href="#tools">8. Security Tools</a></li>
+          <li><a href="#faq">9. FAQ</a></li>
+        </ul>
+      </nav>
+    </aside>
+
+    <main>
+
+      <!-- SECTION 1: FOUNDATION -->
+      <section id="foundation" class="section">
+        <h2>1. Cybersecurity Foundation Principles</h2>
+        <p>Effective cybersecurity operates on layers of defense, risk management, and behavioral security practices. The goal isn't perfect security (impossible), but making yourself a harder target than the next person while maintaining usability and productivity.</p>
+        
+        <p>Modern cybersecurity threats have evolved from opportunistic viruses to sophisticated, targeted attacks by state actors, organized crime, and AI-powered threat systems. Personal and business security now requires the same professional-grade approaches previously reserved for enterprises.</p>
+
+        <div class="callout">
+          <strong>The key insight:</strong> Security is about managing risk, not eliminating it. Perfect security would make technology unusable. The optimal approach balances convenience with protection based on your specific threat model and the value of what you're protecting.
+        </div>
+
+        <p>The cybersecurity landscape in 2026 is characterized by AI-powered attacks, supply chain vulnerabilities, social engineering sophistication, and the expansion of attack surfaces through IoT devices, cloud services, and remote work infrastructure.</p>
+
+        <h3>The Five Pillars of Modern Cybersecurity</h3>
+        <ul>
+          <li><strong>Identity & Access Management:</strong> Multi-factor authentication, password hygiene, and privilege management across all accounts and systems</li>
+          <li><strong>Data Protection:</strong> Encryption, backup strategies, and secure storage both locally and in cloud environments</li>
+          <li><strong>Network Security:</strong> Secure communications, VPN usage, firewall configuration, and network segmentation</li>
+          <li><strong>Device Security:</strong> Endpoint protection, software updates, device management, and secure configurations</li>
+          <li><strong>Human Factors:</strong> Security awareness, social engineering defense, and incident response training</li>
+        </ul>
+
+        <h3>Security Investment vs Risk Matrix</h3>
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>Risk Level</th>
+              <th>Target Profile</th>
+              <th>Recommended Investment</th>
+              <th>Key Protections</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>Low Risk</strong></td>
+              <td class="val-great">Average consumers</td>
+              <td class="val-great">$50-200/year</td>
+              <td>Password manager, 2FA, basic antivirus</td>
+            </tr>
+            <tr>
+              <td><strong>Medium Risk</strong></td>
+              <td class="val-good">Online businesses, freelancers</td>
+              <td class="val-good">$200-800/year</td>
+              <td>Business-grade tools, VPN, backup systems</td>
+            </tr>
+            <tr>
+              <td><strong>High Risk</strong></td>
+              <td class="val-meh">High-net-worth, public figures</td>
+              <td class="val-meh">$1,000-5,000/year</td>
+              <td>Advanced threat protection, monitoring</td>
+            </tr>
+            <tr>
+              <td><strong>Critical Risk</strong></td>
+              <td class="val-bad">Executives, sensitive data handlers</td>
+              <td class="val-bad">$5,000-25,000/year</td>
+              <td>Enterprise security, security consulting</td>
+            </tr>
+          </tbody>
+        </table>
+      </section>
+
+      <!-- SECTION 2: THREATS -->
+      <section id="threats" class="section">
+        <h2>2. 2026 Threat Landscape</h2>
+        <p>Understanding current threats helps prioritize security investments and develop appropriate defensive strategies. Threat actors have become more sophisticated while attack methods have democratized through automated tools and AI assistance.</p>
+
+        <div class="threat-grid">
+          <div class="threat-card">
+            <div class="threat-header">
+              <h3 class="threat-name">🤖 AI-Powered Attacks</h3>
+              <div class="threat-level critical">Critical</div>
+            </div>
+            <div class="threat-stat"><span class="threat-stat-label">Prevalence</span><span class="threat-stat-value">Rapidly increasing</span></div>
+            <div class="threat-stat"><span class="threat-stat-label">Target</span><span class="threat-stat-value">All user types</span></div>
+            <div class="threat-stat"><span class="threat-stat-label">Method</span><span class="threat-stat-value">Deepfakes, voice cloning</span></div>
+            <div class="threat-stat"><span class="threat-stat-label">Defense</span><span class="threat-stat-value">Verification protocols</span></div>
+          </div>
+
+          <div class="threat-card">
+            <div class="threat-header">
+              <h3 class="threat-name">💰 Ransomware-as-a-Service</h3>
+              <div class="threat-level critical">Critical</div>
+            </div>
+            <div class="threat-stat"><span class="threat-stat-label">Prevalence</span><span class="threat-stat-value">Very high</span></div>
+            <div class="threat-stat"><span class="threat-stat-label">Target</span><span class="threat-stat-value">Businesses, individuals</span></div>
+            <div class="threat-stat"><span class="threat-stat-label">Method</span><span class="threat-stat-value">Email, web exploits</span></div>
+            <div class="threat-stat"><span class="threat-stat-label">Defense</span><span class="threat-stat-value">Backups, endpoint protection</span></div>
+          </div>
+
+          <div class="threat-card">
+            <div class="threat-header">
+              <h3 class="threat-name">🎣 Social Engineering</h3>
+              <div class="threat-level high">High</div>
+            </div>
+            <div class="threat-stat"><span class="threat-stat-label">Prevalence</span><span class="threat-stat-value">Extremely high</span></div>
+            <div class="threat-stat"><span class="threat-stat-label">Target</span><span class="threat-stat-value">All demographics</span></div>
+            <div class="threat-stat"><span class="threat-stat-label">Method</span><span class="threat-stat-value">Psychology manipulation</span></div>
+            <div class="threat-stat"><span class="threat-stat-label">Defense</span><span class="threat-stat-value">Training, verification</span></div>
+          </div>
+
+          <div class="threat-card">
+            <div class="threat-header">
+              <h3 class="threat-name">🔗 Supply Chain Attacks</h3>
+              <div class="threat-level high">High</div>
+            </div>
+            <div class="threat-stat"><span class="threat-stat-label">Prevalence</span><span class="threat-stat-value">Increasing</span></div>
+            <div class="threat-stat"><span class="threat-stat-label">Target</span><span class="threat-stat-value">Software users</span></div>
+            <div class="threat-stat"><span class="threat-stat-label">Method</span><span class="threat-stat-value">Compromised dependencies</span></div>
+            <div class="threat-stat"><span class="threat-stat-label">Defense</span><span class="threat-stat-value">Software verification</span></div>
+          </div>
+
+          <div class="threat-card">
+            <div class="threat-header">
+              <h3 class="threat-name">📱 Mobile Malware</h3>
+              <div class="threat-level medium">Medium</div>
+            </div>
+            <div class="threat-stat"><span class="threat-stat-label">Prevalence</span><span class="threat-stat-value">Growing</span></div>
+            <div class="threat-stat"><span class="threat-stat-label">Target</span><span class="threat-stat-value">Mobile users</span></div>
+            <div class="threat-stat"><span class="threat-stat-label">Method</span><span class="threat-stat-value">Malicious apps, SMS</span></div>
+            <div class="threat-stat"><span class="threat-stat-label">Defense</span><span class="threat-stat-value">App store hygiene</span></div>
+          </div>
+
+          <div class="threat-card">
+            <div class="threat-header">
+              <h3 class="threat-name">🌐 IoT Vulnerabilities</h3>
+              <div class="threat-level medium">Medium</div>
+            </div>
+            <div class="threat-stat"><span class="threat-stat-label">Prevalence</span><span class="threat-stat-value">Very high</span></div>
+            <div class="threat-stat-label">Target</span><span class="threat-stat-value">Smart devices</span></div>
+            <div class="threat-stat"><span class="threat-stat-label">Method</span><span class="threat-stat-value">Default credentials</span></div>
+            <div class="threat-stat"><span class="threat-stat-label">Defense</span><span class="threat-stat-value">Network segmentation</span></div>
+          </div>
+        </div>
+
+        <h3>Attack Vector Evolution</h3>
+        <ul>
+          <li><strong>AI-enhanced phishing:</strong> Personalized attacks using AI analysis of social media and public data</li>
+          <li><strong>Voice cloning scams:</strong> Real-time voice synthesis for phone-based fraud and social engineering</li>
+          <li><strong>Deepfake extortion:</strong> AI-generated compromising content for blackmail and reputation damage</li>
+          <li><strong>Supply chain infiltration:</strong> Compromising legitimate software updates and dependencies</li>
+          <li><strong>Living-off-the-land techniques:</strong> Using legitimate system tools for malicious purposes</li>
+          <li><strong>Cloud misconfiguration exploitation:</strong> Attacking poorly configured cloud services and databases</li>
+        </ul>
+
+        <div class="callout warning">
+          <strong>Threat evolution warning:</strong> Traditional security approaches focused on malware detection are insufficient against modern threats. Social engineering, legitimate credential theft, and insider threats now dominate the landscape. Focus security efforts on identity protection, access controls, and human factors training rather than solely on antivirus software.
+        </div>
+      </section>
+
+      <!-- SECTION 3: ASSESSMENT -->
+      <section id="assessment" class="section">
+        <h2>3. Personal Security Assessment</h2>
+        <p>Evaluate your current security posture to identify the highest-impact improvements for your specific situation and risk profile.</p>
+
+        <div class="assessment-box">
+          <h3>🔒 Security Readiness Assessment</h3>
+          
+          <div class="assessment-question">
+            <label>1. How do you manage passwords?</label>
+            <div class="assessment-options">
+              <label><input type="radio" name="passwords" value="3"> Use a password manager for all accounts</label>
+              <label><input type="radio" name="passwords" value="2"> Use a password manager for some accounts</label>
+              <label><input type="radio" name="passwords" value="1"> Reuse passwords but make them complex</label>
+              <label><input type="radio" name="passwords" value="0"> Use simple, memorable passwords</label>
+            </div>
+          </div>
+
+          <div class="assessment-question">
+            <label>2. Two-factor authentication usage:</label>
+            <div class="assessment-options">
+              <label><input type="radio" name="twofactor" value="3"> Enabled on all important accounts</label>
+              <label><input type="radio" name="twofactor" value="2"> Enabled on financial and email accounts</label>
+              <label><input type="radio" name="twofactor" value="1"> Enabled on a few accounts</label>
+              <label><input type="radio" name="twofactor" value="0"> Not used or rarely used</label>
+            </div>
+          </div>
+
+          <div class="assessment-question">
+            <label>3. Software update practices:</label>
+            <div class="assessment-options">
+              <label><input type="radio" name="updates" value="3"> Automatic updates enabled everywhere</label>
+              <label><input type="radio" name="updates" value="2"> Manual updates applied promptly</label>
+              <label><input type="radio" name="updates" value="1"> Updates applied occasionally</label>
+              <label><input type="radio" name="updates" value="0"> Updates avoided or delayed</label>
+            </div>
+          </div>
+
+          <div class="assessment-question">
+            <label>4. Backup strategy:</label>
+            <div class="assessment-options">
+              <label><input type="radio" name="backups" value="3"> Automated 3-2-1 backup strategy</label>
+              <label><input type="radio" name="backups" value="2"> Regular cloud and local backups</label>
+              <label><input type="radio" name="backups" value="1"> Occasional manual backups</label>
+              <label><input type="radio" name="backups" value="0"> No regular backup system</label>
+            </div>
+          </div>
+
+          <div class="assessment-question">
+            <label>5. Public WiFi usage:</label>
+            <div class="assessment-options">
+              <label><input type="radio" name="wifi" value="3"> Always use VPN on public WiFi</label>
+              <label><input type="radio" name="wifi" value="2"> Avoid sensitive activities on public WiFi</label>
+              <label><input type="radio" name="wifi" value="1"> Use public WiFi with caution</label>
+              <label><input type="radio" name="wifi" value="0"> Use public WiFi freely</label>
+            </div>
+          </div>
+
+          <button class="assessment-btn" onclick="calculateSecurity()">Assess My Security</button>
+
+          <div class="assessment-result" id="securityResult">
+            <div class="assessment-score" id="securityScore"></div>
+            <div class="assessment-label">Security Score out of 15</div>
+            <div class="assessment-feedback" id="securityFeedback"></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- SECTION 4: PERSONAL SECURITY -->
+      <section id="personal-security" class="section">
+        <h2>4. Personal Digital Protection</h2>
+        <p>Individual cybersecurity focuses on protecting personal data, financial accounts, and digital identity through layered security controls and good operational practices.</p>
+
+        <div class="strategy-card">
+          <div class="strategy-header">
+            <h3 class="strategy-title">Password & Authentication Security</h3>
+            <div class="strategy-tags">
+              <span class="strategy-tag tag-priority">Critical priority</span>
+              <span class="strategy-tag tag-difficulty">Easy implementation</span>
+            </div>
+          </div>
+          <div class="strategy-body">
+            <p>Strong authentication is the first line of defense against most cyberattacks. Implement comprehensive password management and multi-factor authentication across all accounts.</p>
+            <p><strong>Password manager:</strong> Use a reputable password manager (1Password, Bitwarden, Dashlane) to generate and store unique, complex passwords for every account.</p>
+            <p><strong>Multi-factor authentication:</strong> Enable 2FA/MFA on all accounts that support it, prioritizing financial, email, and work accounts. Use authenticator apps rather than SMS when possible.</p>
+            <p><strong>Security keys:</strong> For high-value accounts, use hardware security keys (YubiKey, Google Titan) for phishing-resistant authentication.</p>
+          </div>
+        </div>
+
+        <div class="strategy-card">
+          <div class="strategy-header">
+            <h3 class="strategy-title">Device & Data Protection</h3>
+            <div class="strategy-tags">
+              <span class="strategy-tag tag-privacy">Data security</span>
+              <span class="strategy-tag tag-difficulty">Medium complexity</span>
+            </div>
+          </div>
+          <div class="strategy-body">
+            <p>Secure your devices and data through encryption, access controls, and backup systems that protect against both digital threats and physical device loss.</p>
+            <p><strong>Device encryption:</strong> Enable full-disk encryption on all computers and mobile devices. Use FileVault (Mac), BitLocker (Windows), or built-in encryption (iOS/Android).</p>
+            <p><strong>Screen locks:</strong> Use strong PINs, passwords, or biometric authentication on all devices. Set automatic lock timeouts of 5 minutes or less.</p>
+            <p><strong>Backup strategy:</strong> Implement 3-2-1 backups: 3 copies of data, 2 different storage types, 1 offsite backup. Test restore procedures quarterly.</p>
+          </div>
+        </div>
+
+        <div class="strategy-card">
+          <div class="strategy-header">
+            <h3 class="strategy-title">Network & Communication Security</h3>
+            <div class="strategy-tags">
+              <span class="strategy-tag tag-privacy">Communication privacy</span>
+              <span class="strategy-tag tag-difficulty">Low complexity</span>
+            </div>
+          </div>
+          <div class="strategy-body">
+            <p>Protect your communications and network traffic from interception, monitoring, and man-in-the-middle attacks through encrypted channels and secure network practices.</p>
+            <p><strong>VPN usage:</strong> Use a reputable VPN service for all internet activity on public networks and for general privacy enhancement at home.</p>
+            <p><strong>Encrypted messaging:</strong> Use Signal, Wire, or iMessage for sensitive communications rather than SMS or unencrypted email.</p>
+            <p><strong>Email security:</strong> Use email providers with encryption support (ProtonMail, Tutanota) for sensitive communications. Enable email encryption when available.</p>
+          </div>
+        </div>
+
+        <h3>Personal Security Checklist by Priority</h3>
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>Priority Level</th>
+              <th>Security Action</th>
+              <th>Time Investment</th>
+              <th>Cost</th>
+              <th>Risk Reduction</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>Critical (Do First)</strong></td>
+              <td class="val-great">Password manager + unique passwords</td>
+              <td class="val-good">2-4 hours</td>
+              <td class="val-great">$36-60/year</td>
+              <td class="val-great">Very High</td>
+            </tr>
+            <tr>
+              <td><strong>Critical (Do First)</strong></td>
+              <td class="val-great">2FA on all major accounts</td>
+              <td class="val-good">1-2 hours</td>
+              <td class="val-great">Free</td>
+              <td class="val-great">Very High</td>
+            </tr>
+            <tr>
+              <td><strong>High Priority</strong></td>
+              <td class="val-good">Automatic software updates</td>
+              <td class="val-great">30 minutes</td>
+              <td class="val-great">Free</td>
+              <td class="val-good">High</td>
+            </tr>
+            <tr>
+              <td><strong>High Priority</strong></td>
+              <td class="val-good">Device encryption + screen locks</td>
+              <td class="val-good">1 hour</td>
+              <td class="val-great">Free</td>
+              <td class="val-good">High</td>
+            </tr>
+            <tr>
+              <td><strong>Medium Priority</strong></td>
+              <td class="val-meh">VPN subscription</td>
+              <td class="val-good">1 hour</td>
+              <td class="val-meh">$60-120/year</td>
+              <td class="val-good">Medium</td>
+            </tr>
+            <tr>
+              <td><strong>Medium Priority</strong></td>
+              <td class="val-meh">Comprehensive backup system</td>
+              <td class="val-meh">3-5 hours</td>
+              <td class="val-meh">$60-200/year</td>
+              <td class="val-good">Medium</td>
+            </tr>
+          </tbody>
+        </table>
+      </section>
+
+      <!-- SECTION 5: BUSINESS SECURITY -->
+      <section id="business-security" class="section">
+        <h2>5. Business Cybersecurity Framework</h2>
+        <p>Business cybersecurity requires comprehensive policies, employee training, and technical controls that scale with organizational growth while maintaining operational efficiency.</p>
+
+        <h3>Business Security Maturity Levels</h3>
+        <p><strong>Level 1: Basic Compliance (1-10 employees)</strong></p>
+        <ul>
+          <li>Business-grade password management with admin controls</li>
+          <li>Mandatory 2FA for all business accounts and systems</li>
+          <li>Basic endpoint protection on all devices</li>
+          <li>Regular automated backups with tested recovery procedures</li>
+          <li>Basic employee security awareness training</li>
+          <li>Incident response contact list and basic procedures</li>
+        </ul>
+
+        <p><strong>Level 2: Intermediate Security (10-50 employees)</strong></p>
+        <ul>
+          <li>Centralized identity management and single sign-on (SSO)</li>
+          <li>Mobile device management (MDM) for BYOD policies</li>
+          <li>Network segmentation and firewall management</li>
+          <li>Security information and event monitoring (SIEM)</li>
+          <li>Formal security policies and procedures documentation</li>
+          <li>Regular penetration testing and vulnerability assessments</li>
+          <li>Cyber insurance coverage appropriate to business size</li>
+        </ul>
+
+        <p><strong>Level 3: Advanced Security (50+ employees)</strong></p>
+        <ul>
+          <li>Zero-trust network architecture implementation</li>
+          <li>Advanced threat protection and behavioral analytics</li>
+          <li>Dedicated security personnel or managed security services</li>
+          <li>Comprehensive security awareness and phishing simulation programs</li>
+          <li>Business continuity and disaster recovery planning</li>
+          <li>Supply chain security assessments for vendors</li>
+          <li>Compliance with industry-specific security frameworks</li>
+        </ul>
+
+        <h3>Employee Security Training Topics</h3>
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>Training Topic</th>
+              <th>Frequency</th>
+              <th>Duration</th>
+              <th>Effectiveness Rating</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>Phishing Recognition</strong></td>
+              <td class="val-great">Monthly simulations</td>
+              <td class="val-good">15 minutes</td>
+              <td class="val-great">Very High</td>
+            </tr>
+            <tr>
+              <td><strong>Password Security</strong></td>
+              <td class="val-good">Quarterly</td>
+              <td class="val-good">30 minutes</td>
+              <td class="val-great">High</td>
+            </tr>
+            <tr>
+              <td><strong>Social Engineering Defense</strong></td>
+              <td class="val-good">Bi-annually</td>
+              <td class="val-meh">45 minutes</td>
+              <td class="val-good">High</td>
+            </tr>
+            <tr>
+              <td><strong>Incident Reporting</strong></td>
+              <td class="val-good">Annually</td>
+              <td class="val-good">20 minutes</td>
+              <td class="val-good">Medium</td>
+            </tr>
+            <tr>
+              <td><strong>Data Handling Policies</strong></td>
+              <td class="val-good">Annually</td>
+              <td class="val-meh">60 minutes</td>
+              <td class="val-good">Medium</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <div class="callout success">
+          <strong>Business security ROI:</strong> Effective cybersecurity programs typically cost 2-5% of IT budget but prevent losses averaging 10-15% of annual revenue. The most effective programs focus on employee training and access controls rather than purely technical solutions. Small businesses see the highest ROI from managed security services rather than building internal capabilities.
+        </div>
+      </section>
+
+      <!-- SECTION 6: PRIVACY -->
+      <section id="privacy" class="section">
+        <h2>6. Digital Privacy Optimization</h2>
+        <p>Privacy protection involves controlling personal data collection, limiting surveillance, and maintaining anonymity when desired. Modern privacy requires both technical measures and behavioral changes.</p>
+
+        <h3>Privacy Threat Categories</h3>
+        <ul>
+          <li><strong>Corporate surveillance:</strong> Data collection by tech giants, advertising networks, and service providers for profiling and monetization</li>
+          <li><strong>Government monitoring:</strong> Mass surveillance programs, data requests, and location tracking by law enforcement and intelligence agencies</li>
+          <li><strong>Criminal tracking:</strong> Identity theft, financial fraud, and physical security threats from publicly available personal information</li>
+          <li><strong>Social surveillance:</strong> Employers, insurance companies, and social contacts monitoring online activity and personal behavior</li>
+        </ul>
+
+        <h3>Privacy Protection Strategies</h3>
+        <p><strong>Browser & Search Privacy</strong></p>
+        <ul>
+          <li>Use privacy-focused browsers: Firefox with privacy extensions, Brave, or Tor Browser for sensitive activities</li>
+          <li>Search engines: DuckDuckGo, Startpage, or Searx instead of Google for private searching</li>
+          <li>Browser extensions: uBlock Origin, Privacy Badger, and ClearURLs to block trackers and advertisements</li>
+          <li>DNS privacy: Use Cloudflare (1.1.1.1), Quad9, or other privacy-focused DNS providers</li>
+        </ul>
+
+        <p><strong>Communication Privacy</strong></p>
+        <ul>
+          <li>Encrypted messaging: Signal for personal communication, Element/Matrix for group collaboration</li>
+          <li>Email privacy: ProtonMail or Tutanota for sensitive communication, temporary emails for signups</li>
+          <li>Voice/video calls: Signal, Wire, or Jami for private conversations rather than mainstream platforms</li>
+          <li>Anonymous communication: Tor network for high-privacy communication needs</li>
+        </ul>
+
+        <p><strong>Data Minimization</strong></p>
+        <ul>
+          <li>Social media: Limit personal information sharing, use privacy settings, consider alternatives like Mastodon</li>
+          <li>Location services: Disable location tracking except when necessary, use precise location sparingly</li>
+          <li>Data brokers: Use services like DeleteMe or Privacy.com to remove personal information from data brokers</li>
+          <li>Financial privacy: Use privacy-focused payment methods, separate cards for different activities</li>
+        </ul>
+
+        <div class="callout">
+          <strong>Privacy vs. convenience tradeoff:</strong> Perfect privacy often conflicts with convenience and functionality. Develop a threat model based on your specific privacy needs, risk tolerance, and lifestyle requirements. Most people benefit from "privacy by default" settings with selective convenience exceptions for trusted services.
+        </div>
+      </section>
+
+      <!-- SECTION 7: INCIDENT RESPONSE -->
+      <section id="incident-response" class="section">
+        <h2>7. Incident Response & Recovery</h2>
+        <p>Despite preventive measures, security incidents will occur. Effective incident response minimizes damage, speeds recovery, and prevents similar future incidents.</p>
+
+        <h3>Personal Incident Response Procedures</h3>
+        <p><strong>Suspected Account Compromise</strong></p>
+        <ol>
+          <li><strong>Immediate isolation:</strong> Disconnect affected device from internet if possible</li>
+          <li><strong>Password changes:</strong> Change passwords for affected accounts from a clean device</li>
+          <li><strong>2FA review:</strong> Check and refresh all two-factor authentication settings</li>
+          <li><strong>Session termination:</strong> Log out of all active sessions on compromised accounts</li>
+          <li><strong>Activity review:</strong> Check account activity, recent logins, and connected applications</li>
+          <li><strong>Monitoring setup:</strong> Enable account monitoring and security alerts</li>
+        </ol>
+
+        <p><strong>Malware Detection</strong></p>
+        <ol>
+          <li><strong>Network isolation:</strong> Disconnect from internet to prevent data exfiltration</li>
+          <li><strong>System scanning:</strong> Run comprehensive antivirus and anti-malware scans</li>
+          <li><strong>Boot from clean media:</strong> Use rescue disks or clean OS installations for scanning</li>
+          <li><strong>Data assessment:</strong> Determine what data may have been compromised</li>
+          <li><strong>Credential rotation:</strong> Change all passwords accessed from infected devices</li>
+          <li><strong>System rebuild:</strong> Consider complete OS reinstallation for severe infections</li>
+        </ol>
+
+        <p><strong>Financial Fraud</strong></p>
+        <ol>
+          <li><strong>Financial institution contact:</strong> Immediately notify banks and credit card companies</li>
+          <li><strong>Account freezing:</strong> Freeze affected accounts to prevent further unauthorized access</li>
+          <li><strong>Credit monitoring:</strong> Place fraud alerts and consider credit freezes</li>
+          <li><strong>Documentation:</strong> Document all fraudulent activities with timestamps and amounts</li>
+          <li><strong>Law enforcement:</strong> File police reports and IC3 complaints for cybercrime</li>
+          <li><strong>Recovery tracking:</strong> Monitor recovery progress and maintain incident records</li>
+        </ol>
+
+        <h3>Business Incident Response Plan</h3>
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>Response Phase</th>
+              <th>Timeline</th>
+              <th>Key Actions</th>
+              <th>Responsible Party</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>Detection & Analysis</strong></td>
+              <td class="val-great">0-1 hours</td>
+              <td>Incident identification, initial assessment</td>
+              <td>IT Team, Security Team</td>
+            </tr>
+            <tr>
+              <td><strong>Containment</strong></td>
+              <td class="val-good">1-4 hours</td>
+              <td>Isolate affected systems, prevent spread</td>
+              <td>IT Team, Management</td>
+            </tr>
+            <tr>
+              <td><strong>Eradication</strong></td>
+              <td class="val-meh">4-24 hours</td>
+              <td>Remove threats, patch vulnerabilities</td>
+              <td>IT Team, Vendors</td>
+            </tr>
+            <tr>
+              <td><strong>Recovery</strong></td>
+              <td class="val-meh">24-72 hours</td>
+              <td>Restore systems, validate security</td>
+              <td>IT Team, Management</td>
+            </tr>
+            <tr>
+              <td><strong>Lessons Learned</strong></td>
+              <td class="val-meh">1-2 weeks</td>
+              <td>Document incident, improve procedures</td>
+              <td>All Stakeholders</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <div class="callout warning">
+          <strong>Incident response preparedness:</strong> Most security incidents are handled poorly due to lack of preparation and panic responses. Create incident response procedures before you need them, practice with tabletop exercises, and maintain updated contact lists for vendors, law enforcement, and legal counsel. The first hour of incident response often determines the overall impact and recovery timeline.
+        </div>
+      </section>
+
+      <!-- SECTION 8: TOOLS -->
+      <section id="tools" class="section">
+        <h2>8. Essential Security Tools & Services</h2>
+        <p>Invest in security tools that provide the highest protection for your specific risk profile and usage patterns. Focus on tools that integrate well and provide ongoing value rather than one-time security audits.</p>
+
+        <div class="tool-grid">
+          <div class="tool-card">
+            <div class="tool-type">Password Management</div>
+            <h4>1Password</h4>
+            <p>Premium password manager with business features, secure sharing, and travel mode. Excellent user experience and cross-platform synchronization.</p>
+            <div class="tool-price">$3-8/month per user</div>
+          </div>
+          <div class="tool-card">
+            <div class="tool-type">Password Management</div>
+            <h4>Bitwarden</h4>
+            <p>Open-source password manager with free tier and affordable premium features. Self-hosting option for maximum control and privacy.</p>
+            <div class="tool-price">Free / $3/month premium</div>
+          </div>
+          <div class="tool-card">
+            <div class="tool-type">VPN Service</div>
+            <h4>Mullvad VPN</h4>
+            <p>Privacy-focused VPN with anonymous account creation, no-logs policy, and transparent privacy practices. Excellent for privacy-conscious users.</p>
+            <div class="tool-price">€5/month flat rate</div>
+          </div>
+          <div class="tool-card">
+            <div class="tool-type">VPN Service</div>
+            <h4>ExpressVPN</h4>
+            <p>High-performance VPN with large server network and reliable connections. Good balance of privacy, performance, and usability.</p>
+            <div class="tool-price">$8-12/month</div>
+          </div>
+          <div class="tool-card">
+            <div class="tool-type">Endpoint Protection</div>
+            <h4>CrowdStrike Falcon Go</h4>
+            <p>Business-grade endpoint protection with AI-powered threat detection. Excellent for small businesses needing enterprise-level protection.</p>
+            <div class="tool-price">$8.99/endpoint/month</div>
+          </div>
+          <div class="tool-card">
+            <div class="tool-type">Endpoint Protection</div>
+            <h4>Windows Defender</h4>
+            <p>Built-in Windows protection that's significantly improved and provides good baseline security for most users without additional cost.</p>
+            <div class="tool-price">Free (included)</div>
+          </div>
+          <div class="tool-card">
+            <div class="tool-type">Email Security</div>
+            <h4>ProtonMail</h4>
+            <p>Encrypted email service with zero-access encryption, based in privacy-friendly Switzerland. Good for sensitive communication.</p>
+            <div class="tool-price">Free / $5-30/month</div>
+          </div>
+          <div class="tool-card">
+            <div class="tool-type">Security Monitoring</div>
+            <h4>HaveIBeenPwned Monitor</h4>
+            <p>Breach monitoring service that alerts you when your email appears in data breaches. Essential for proactive account security.</p>
+            <div class="tool-price">Free basic / $3.50/month</div>
+          </div>
+          <div class="tool-card">
+            <div class="tool-type">Backup Service</div>
+            <h4>Backblaze B2</h4>
+            <p>Unlimited cloud backup for personal computers with continuous data protection and easy recovery options.</p>
+            <div class="tool-price">$6/month unlimited</div>
+          </div>
+        </div>
+
+        <h3>Security Tool Investment Priority</h3>
+        <p>Implement security tools in this order for maximum protection:</p>
+        <ol>
+          <li><strong>Password manager:</strong> 1Password or Bitwarden ($0-96/year) - highest impact security improvement</li>
+          <li><strong>Endpoint protection:</strong> CrowdStrike or built-in protection ($0-108/year) - protect against malware</li>
+          <li><strong>VPN service:</strong> Mullvad or ExpressVPN ($60-144/year) - network privacy and security</li>
+          <li><strong>Backup solution:</strong> Backblaze or similar ($72/year) - data protection and recovery</li>
+          <li><strong>Breach monitoring:</strong> HaveIBeenPwned or similar ($42/year) - proactive account security</li>
+        </ol>
+
+        <a href="/digital-marketing-seo" class="cta-card">
+          <h4>🔍 Digital Marketing & SEO Security</h4>
+          <p>Protect your digital marketing assets, SEO investments, and online business presence from cyber threats and competitors.</p>
+        </a>
+      </section>
+
+    </main>
+  </div>
+
+  <!-- FAQ -->
+  <section id="faq" class="faq-section">
+    <h2>Frequently Asked Questions</h2>
+
+    <div class="faq-item">
+      <h3>What's the most important cybersecurity step for beginners?</h3>
+      <p>Start with a password manager and enable two-factor authentication on all important accounts. These two steps prevent 80%+ of common cyberattacks. A password manager like 1Password or Bitwarden costs $36-96/year but prevents account takeovers, identity theft, and financial fraud that can cost thousands. Enable 2FA on email, banking, social media, and work accounts first.</p>
+    </div>
+
+    <div class="faq-item">
+      <h3>Is antivirus software still necessary in 2026?</h3>
+      <p>Built-in protection (Windows Defender, macOS XProtect) provides adequate baseline security for most users. However, businesses and high-risk users benefit from advanced endpoint protection like CrowdStrike or SentinelOne. Focus your security budget on password management, VPNs, and backup solutions rather than consumer antivirus products, which provide limited additional value.</p>
+    </div>
+
+    <div class="faq-item">
+      <h3>How do I know if my business needs cyber insurance?</h3>
+      <p>Any business handling customer data, processing payments, or dependent on digital operations should consider cyber insurance. Coverage typically costs 0.5-2% of annual revenue and covers incident response, data breach notification, business interruption, and legal liability. Compare policies carefully - many exclude common attack types or have low coverage limits.</p>
+    </div>
+
+    <div class="faq-item">
+      <h3>What should I do if I think my identity has been stolen?</h3>
+      <p>Immediately freeze credit reports at all three bureaus (Experian, Equifax, TransUnion), change passwords on financial accounts, enable account monitoring, and file identity theft reports with FTC and local police. Monitor bank and credit card statements daily. Consider identity monitoring services, but focus first on immediate containment and account security.</p>
+    </div>
+
+    <div class="faq-item">
+      <h3>How can I protect my privacy from big tech companies?</h3>
+      <p>Use privacy-focused alternatives: DuckDuckGo for search, Signal for messaging, Firefox with privacy extensions for browsing, and ProtonMail for email. Review and limit app permissions, disable location tracking when not needed, and use VPN services to mask your internet traffic. Consider paying for services rather than using "free" platforms that monetize your data.</p>
+    </div>
+
+    <div class="faq-item">
+      <h3>Are public WiFi networks safe to use?</h3>
+      <p>Public WiFi is inherently insecure, but modern encryption (HTTPS) protects most web traffic. Always use a VPN on public networks, avoid accessing sensitive accounts, and ensure websites show HTTPS padlocks. Consider using phone hotspots instead of hotel or airport WiFi for better security. Never connect to open networks for sensitive work.</p>
+    </div>
+
+    <div class="faq-item">
+      <h3>What's the difference between privacy and security?</h3>
+      <p>Security protects against unauthorized access and attacks (hackers, malware, fraud). Privacy protects against unwanted surveillance and data collection (advertising, tracking, profiling). You need both: security tools prevent criminals from stealing your data, while privacy tools prevent legitimate companies from collecting and selling your personal information. Many tools provide both benefits.</p>
+    </div>
+
+    <div class="faq-item">
+      <h3>How often should I update my security practices?</h3>
+      <p>Review and update security practices quarterly. Check for new account breaches monthly using HaveIBeenPwned, update software automatically or weekly, rotate high-value passwords annually, and review account permissions and connected apps every 6 months. Stay informed about new threats through security newsletters and update your practices as the threat landscape evolves.</p>
+    </div>
+  </section>
+
+</div>
+
+<script>
+function calculateSecurity() {
+  const questions = ['passwords', 'twofactor', 'updates', 'backups', 'wifi'];
+  let totalScore = 0;
+  let answeredQuestions = 0;
+
+  questions.forEach(question => {
+    const selected = document.querySelector(`input[name="${question}"]:checked`);
+    if (selected) {
+      totalScore += parseInt(selected.value);
+      answeredQuestions++;
+    }
+  });
+
+  if (answeredQuestions < questions.length) {
+    alert('Please answer all questions to get your security assessment.');
+    return;
+  }
+
+  const resultEl = document.getElementById('securityResult');
+  const scoreEl = document.getElementById('securityScore');
+  const feedbackEl = document.getElementById('securityFeedback');
+
+  resultEl.style.display = 'block';
+  scoreEl.textContent = totalScore;
+
+  // Determine security level and feedback
+  let securityLevel = '';
+  let feedback = '';
+  let recommendations = '';
+
+  if (totalScore >= 12) {
+    securityLevel = 'excellent';
+    scoreEl.className = 'assessment-score';
+    feedback = '<p><strong>Excellent Security Posture!</strong> You have strong cybersecurity practices in place.</p>';
+    recommendations = '<p><strong>Next steps:</strong> Consider advanced security measures like hardware security keys, security monitoring services, and regular security audits. Focus on business security if applicable and stay updated on emerging threats.</p>';
+  } else if (totalScore >= 8) {
+    securityLevel = 'good';
+    scoreEl.className = 'assessment-score medium';
+    feedback = '<p><strong>Good Security Foundation.</strong> You have solid basic security practices but room for improvement.</p>';
+    recommendations = '<p><strong>Priority improvements:</strong> Fill gaps in password management, enable 2FA on all accounts, implement automated backups, and establish consistent security practices. Consider VPN usage and advanced endpoint protection.</p>';
+  } else if (totalScore >= 4) {
+    securityLevel = 'fair';
+    scoreEl.className = 'assessment-score medium';
+    feedback = '<p><strong>Fair Security Practices.</strong> You have some security measures but significant vulnerabilities remain.</p>';
+    recommendations = '<p><strong>Critical actions needed:</strong> Implement password manager immediately, enable 2FA on financial and email accounts, enable automatic updates, and establish backup procedures. Focus on the fundamentals before advanced security measures.</p>';
+  } else {
+    securityLevel = 'poor';
+    scoreEl.className = 'assessment-score poor';
+    feedback = '<p><strong>Poor Security Posture.</strong> You are at high risk for cyberattacks and data loss.</p>';
+    recommendations = '<p><strong>Urgent actions required:</strong> Start with password manager and 2FA setup this week. Enable automatic updates immediately. You are likely already compromised - consider professional security consultation and comprehensive security overhaul.</p>';
+  }
+
+  feedbackEl.innerHTML = feedback + recommendations;
+
+  // Add specific recommendations based on individual answers
+  const specificRecommendations = [];
+  
+  if (document.querySelector('input[name="passwords"]:checked').value < 2) {
+    specificRecommendations.push('• Set up a password manager (1Password, Bitwarden) and generate unique passwords for all accounts');
+  }
+  
+  if (document.querySelector('input[name="twofactor"]:checked').value < 2) {
+    specificRecommendations.push('• Enable two-factor authentication on email, banking, and social media accounts');
+  }
+  
+  if (document.querySelector('input[name="updates"]:checked').value < 2) {
+    specificRecommendations.push('• Enable automatic updates for operating system and applications');
+  }
+  
+  if (document.querySelector('input[name="backups"]:checked').value < 2) {
+    specificRecommendations.push('• Implement 3-2-1 backup strategy with cloud and local backups');
+  }
+  
+  if (document.querySelector('input[name="wifi"]:checked').value < 2) {
+    specificRecommendations.push('• Subscribe to VPN service and use on all public WiFi connections');
+  }
+
+  if (specificRecommendations.length > 0) {
+    feedbackEl.innerHTML += '<p><strong>Specific action items:</strong></p><div style="text-align: left; margin-left: 1rem;">' + specificRecommendations.join('<br>') + '</div>';
+  }
+}
+</script>

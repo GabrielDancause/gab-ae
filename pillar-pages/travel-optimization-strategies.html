@@ -1,0 +1,1397 @@
+<style>
+  .tos-container {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 2rem;
+    color: #e2e8f0;
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    line-height: 1.8;
+  }
+  .tos-header {
+    text-align: center;
+    margin-bottom: 4rem;
+    padding-top: 3rem;
+  }
+  .gradient-h1 {
+    font-size: clamp(2.2rem, 5vw, 3.5rem);
+    font-weight: 800;
+    background: linear-gradient(135deg, #ffffff 0%, #a5b4fc 50%, #818cf8 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    margin-bottom: 1rem;
+    line-height: 1.15;
+    letter-spacing: -0.02em;
+  }
+  .tos-subtitle {
+    font-size: 1.2rem;
+    color: #94a3b8;
+    max-width: 750px;
+    margin: 0 auto;
+  }
+  .breadcrumb {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    justify-content: center;
+    margin-bottom: 2rem;
+    font-size: 0.85rem;
+  }
+  .breadcrumb a {
+    color: #818cf8;
+    text-decoration: none;
+  }
+  .breadcrumb a:hover { text-decoration: underline; }
+  .breadcrumb span { color: #475569; }
+  .updated-badge {
+    display: inline-block;
+    background: rgba(129, 140, 248, 0.15);
+    color: #a5b4fc;
+    padding: 0.4rem 1rem;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    margin-bottom: 2rem;
+  }
+  .content-wrapper {
+    display: grid;
+    grid-template-columns: 1fr 280px;
+    gap: 4rem;
+    margin-top: 3rem;
+  }
+  .main-content {
+    min-width: 0;
+  }
+  .sidebar {
+    position: sticky;
+    top: 2rem;
+    height: fit-content;
+    background: #12121a;
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 16px;
+    padding: 1.5rem;
+  }
+  .sidebar h3 {
+    color: #ffffff;
+    font-size: 0.9rem;
+    font-weight: 600;
+    margin: 0 0 1rem 0;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+  .sidebar ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+  .sidebar li {
+    margin: 0;
+  }
+  .sidebar a {
+    display: block;
+    color: #94a3b8;
+    text-decoration: none;
+    padding: 0.5rem 0;
+    border-bottom: 1px solid rgba(255,255,255,0.05);
+    font-size: 0.85rem;
+    transition: color 0.2s;
+  }
+  .sidebar a:hover {
+    color: #a5b4fc;
+  }
+  .section {
+    margin: 4rem 0;
+    scroll-margin-top: 2rem;
+  }
+  .section h2 {
+    color: #ffffff;
+    font-size: 1.8rem;
+    font-weight: 700;
+    margin-bottom: 1.5rem;
+  }
+  .section h3 {
+    color: #e2e8f0;
+    font-size: 1.3rem;
+    font-weight: 600;
+    margin: 2rem 0 1rem 0;
+  }
+  .stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1.5rem;
+    margin: 2rem 0;
+  }
+  .stat-card {
+    background: #12121a;
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 14px;
+    padding: 1.5rem;
+    text-align: center;
+  }
+  .stat-number {
+    font-size: 2.5rem;
+    font-weight: 800;
+    color: #818cf8;
+    display: block;
+    line-height: 1;
+  }
+  .stat-label {
+    color: #94a3b8;
+    font-size: 0.9rem;
+    margin-top: 0.5rem;
+  }
+  .travel-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 2rem;
+    margin: 2rem 0;
+  }
+  .travel-card {
+    background: #12121a;
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 16px;
+    padding: 2rem;
+    position: relative;
+    overflow: hidden;
+  }
+  .travel-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, #818cf8, #a5b4fc);
+  }
+  .travel-card h4 {
+    color: #ffffff;
+    font-size: 1.2rem;
+    font-weight: 600;
+    margin-bottom: 1rem;
+  }
+  .tier-badge {
+    background: rgba(129, 140, 248, 0.15);
+    color: #a5b4fc;
+    padding: 0.3rem 0.8rem;
+    border-radius: 8px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    display: inline-block;
+    margin-bottom: 1rem;
+  }
+  .tier-badge.economy { background: rgba(74, 222, 128, 0.15); color: #4ade80; }
+  .tier-badge.premium { background: rgba(251, 191, 36, 0.15); color: #fbbf24; }
+  .tier-badge.luxury { background: rgba(248, 113, 113, 0.15); color: #f87171; }
+  .tier-badge.elite { background: rgba(147, 51, 234, 0.15); color: #9333ea; }
+  .callout {
+    background: rgba(34, 211, 238, 0.1);
+    border-left: 4px solid #22d3ee;
+    border-radius: 0 8px 8px 0;
+    padding: 1.5rem;
+    margin: 2rem 0;
+  }
+  .callout.warning {
+    background: rgba(251, 191, 36, 0.1);
+    border-left-color: #fbbf24;
+  }
+  .callout.success {
+    background: rgba(74, 222, 128, 0.1);
+    border-left-color: #4ade80;
+  }
+  .callout.danger {
+    background: rgba(239, 68, 68, 0.1);
+    border-left-color: #ef4444;
+  }
+  .callout h4 {
+    color: #ffffff;
+    font-size: 1rem;
+    font-weight: 600;
+    margin: 0 0 0.5rem 0;
+  }
+  .comparison-table {
+    width: 100%;
+    background: #12121a;
+    border-radius: 16px;
+    overflow: hidden;
+    border: 1px solid rgba(255,255,255,0.08);
+    margin: 2rem 0;
+  }
+  .comparison-table th {
+    background: #1e293b;
+    color: #ffffff;
+    padding: 1rem;
+    text-align: left;
+    font-weight: 600;
+  }
+  .comparison-table td {
+    padding: 1rem;
+    border-bottom: 1px solid rgba(255,255,255,0.05);
+    color: #e2e8f0;
+  }
+  .comparison-table tr:last-child td {
+    border-bottom: none;
+  }
+  .tier-high { color: #4ade80; }
+  .tier-medium { color: #fbbf24; }
+  .tier-low { color: #f87171; }
+  .savings-calculator {
+    background: #12121a;
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 16px;
+    padding: 2rem;
+    margin: 3rem 0;
+  }
+  .savings-calculator h3 {
+    color: #ffffff;
+    font-size: 1.3rem;
+    font-weight: 600;
+    margin-bottom: 1.5rem;
+    text-align: center;
+  }
+  .calc-inputs {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1rem;
+    margin-bottom: 2rem;
+  }
+  .calc-input {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+  .calc-input label {
+    color: #94a3b8;
+    font-size: 0.85rem;
+    font-weight: 500;
+  }
+  .calc-input input, .calc-input select {
+    background: #1e293b;
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 8px;
+    padding: 0.75rem;
+    color: #e2e8f0;
+    font-size: 0.9rem;
+  }
+  .calc-input input:focus, .calc-input select:focus {
+    outline: none;
+    border-color: #818cf8;
+  }
+  .calc-button {
+    background: #818cf8;
+    color: #ffffff;
+    border: none;
+    border-radius: 8px;
+    padding: 0.75rem 2rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s;
+    width: 100%;
+  }
+  .calc-button:hover {
+    background: #6366f1;
+  }
+  .calc-results {
+    background: rgba(129, 140, 248, 0.1);
+    border-radius: 12px;
+    padding: 1.5rem;
+    margin-top: 1.5rem;
+    display: none;
+  }
+  .calc-results h4 {
+    color: #a5b4fc;
+    font-size: 1.1rem;
+    margin-bottom: 1rem;
+  }
+  .result-breakdown {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 1rem;
+    margin-top: 1rem;
+  }
+  .breakdown-item {
+    background: rgba(255,255,255,0.02);
+    padding: 1rem;
+    border-radius: 8px;
+    text-align: center;
+  }
+  .breakdown-label {
+    color: #94a3b8;
+    font-size: 0.8rem;
+    margin-bottom: 0.25rem;
+  }
+  .breakdown-value {
+    color: #e2e8f0;
+    font-weight: 600;
+    font-size: 0.9rem;
+  }
+  .breakdown-status {
+    color: #818cf8;
+    font-size: 0.75rem;
+    margin-top: 0.25rem;
+  }
+  .strategy-cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 1.5rem;
+    margin: 2rem 0;
+  }
+  .strategy-card {
+    background: #12121a;
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 14px;
+    padding: 1.5rem;
+  }
+  .strategy-card h4 {
+    color: #ffffff;
+    font-size: 1.1rem;
+    font-weight: 600;
+    margin-bottom: 1rem;
+  }
+  .tool-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1.5rem;
+    margin: 2rem 0;
+  }
+  .tool-card {
+    background: #12121a;
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 12px;
+    padding: 1.5rem;
+    text-align: center;
+  }
+  .tool-card h5 {
+    color: #ffffff;
+    margin-bottom: 0.5rem;
+    font-size: 1rem;
+  }
+  .tool-description {
+    font-size: 0.9rem;
+    color: #94a3b8;
+    margin-bottom: 1rem;
+  }
+  .tool-pricing {
+    font-size: 0.8rem;
+    color: #818cf8;
+    font-weight: 600;
+  }
+  .faq-section {
+    margin: 4rem 0;
+  }
+  .faq-item {
+    background: #12121a;
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 14px;
+    margin-bottom: 1rem;
+    overflow: hidden;
+  }
+  .faq-question {
+    padding: 1.5rem;
+    color: #ffffff;
+    font-weight: 600;
+    cursor: pointer;
+    border-bottom: 1px solid rgba(255,255,255,0.05);
+  }
+  .faq-answer {
+    padding: 1.5rem;
+    color: #94a3b8;
+  }
+  .cta-cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1.5rem;
+    margin: 3rem 0;
+  }
+  .cta-card {
+    background: linear-gradient(135deg, #1e293b, #334155);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 16px;
+    padding: 2rem;
+    text-align: center;
+  }
+  .cta-card h4 {
+    color: #ffffff;
+    font-size: 1.1rem;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+  }
+  .cta-card p {
+    color: #94a3b8;
+    font-size: 0.9rem;
+    margin-bottom: 1.5rem;
+  }
+  .cta-button {
+    display: inline-block;
+    background: #818cf8;
+    color: #ffffff;
+    padding: 0.7rem 1.5rem;
+    border-radius: 8px;
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 0.9rem;
+    transition: background 0.2s;
+  }
+  .cta-button:hover {
+    background: #6366f1;
+  }
+  
+  @media (max-width: 1024px) {
+    .content-wrapper {
+      grid-template-columns: 1fr;
+      gap: 2rem;
+    }
+    .sidebar {
+      position: relative;
+      top: 0;
+      order: -1;
+    }
+  }
+  
+  @media (max-width: 768px) {
+    .tos-container {
+      padding: 1rem;
+    }
+    .breadcrumb {
+      flex-wrap: wrap;
+    }
+    .stats-grid {
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    }
+    .travel-grid {
+      grid-template-columns: 1fr;
+    }
+    .strategy-cards {
+      grid-template-columns: 1fr;
+    }
+    .tool-grid {
+      grid-template-columns: 1fr;
+    }
+    .cta-cards {
+      grid-template-columns: 1fr;
+    }
+    .calc-inputs {
+      grid-template-columns: 1fr;
+    }
+    .result-breakdown {
+      grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+    }
+  }
+</style>
+
+<div class="tos-container">
+  <div class="tos-header">
+    <div class="breadcrumb">
+      <a href="/apex-guides">Apex Guides</a>
+      <span>›</span>
+      <a href="/global-mobility-geo-arbitrage-guide-2026">Global Mobility & Geo-Arbitrage</a>
+      <span>›</span>
+      <span style="color: #cbd5e1;">Current</span>
+    </div>
+    
+    <div class="updated-badge">
+      ✈️ Updated March 2026
+    </div>
+    
+    <h1 class="gradient-h1">Travel Optimization Strategies</h1>
+    <p class="tos-subtitle">Master advanced travel hacking, loyalty programs, destination optimization, and efficient travel systems for maximum value, comfort, and memorable experiences.</p>
+  </div>
+
+  <div class="content-wrapper">
+    <main class="main-content">
+      <div class="stats-grid">
+        <div class="stat-card">
+          <span class="stat-number">60%</span>
+          <div class="stat-label">Potential travel cost reduction with optimization</div>
+        </div>
+        <div class="stat-card">
+          <span class="stat-number">2.4M</span>
+          <div class="stat-label">Miles/points earned by elite travelers annually</div>
+        </div>
+        <div class="stat-card">
+          <span class="stat-number">15</span>
+          <div class="stat-label">Average countries visited by optimized travelers</div>
+        </div>
+        <div class="stat-card">
+          <span class="stat-number">$4,200</span>
+          <div class="stat-label">Average savings per year with travel optimization</div>
+        </div>
+      </div>
+
+      <section id="travel-fundamentals" class="section">
+        <h2>Travel Optimization Fundamentals</h2>
+        <p>Travel optimization combines strategic planning, rewards maximization, and systematic execution to achieve premium travel experiences at economy prices. Advanced travelers treat loyalty programs like investment portfolios: diversified, data-driven, and optimized for long-term value creation.</p>
+
+        <div class="callout">
+          <h4>✈️ The Travel Optimization Advantage</h4>
+          <p>Elite travel optimizers save 40-70% on travel costs while upgrading their experiences significantly. The key is treating travel as a system: strategic credit card usage, loyalty program mastery, booking optimization, and destination selection based on value arbitrage.</p>
+        </div>
+
+        <h3>Travel Optimization Hierarchy</h3>
+        <div class="travel-grid">
+          <div class="travel-card">
+            <div class="tier-badge economy">Foundation</div>
+            <h4>💳 Credit Card Strategy</h4>
+            <p><strong>ROI:</strong> Highest impact, lowest effort</p>
+            <p><strong>Key Benefits:</strong> Sign-up bonuses, category multipliers, travel protections</p>
+            <p><strong>Strategy:</strong> 2-4 cards optimized for spending patterns</p>
+            <p><strong>Annual Value:</strong> $2,000-8,000 in benefits</p>
+            <p><strong>Timeline:</strong> 3-6 months to optimize portfolio</p>
+          </div>
+
+          <div class="travel-card">
+            <div class="tier-badge premium">Loyalty Programs</div>
+            <h4>🏆 Elite Status Strategy</h4>
+            <p><strong>ROI:</strong> High impact, moderate effort</p>
+            <p><strong>Key Benefits:</strong> Upgrades, priority service, bonus earning</p>
+            <p><strong>Strategy:</strong> Status matching, challenges, strategic booking</p>
+            <p><strong>Annual Value:</strong> $3,000-12,000 in upgrades</p>
+            <p><strong>Timeline:</strong> 1-2 years to achieve top tier status</p>
+          </div>
+
+          <div class="travel-card">
+            <div class="tier-badge luxury">Booking Optimization</div>
+            <h4>📊 Advanced Booking</h4>
+            <p><strong>ROI:</strong> Medium-high impact, high skill</p>
+            <p><strong>Key Benefits:</strong> Mistake fares, positioning flights, hidden city</p>
+            <p><strong>Strategy:</strong> Award availability, price tracking, flexible dates</p>
+            <p><strong>Annual Value:</strong> $1,500-5,000 in savings</p>
+            <p><strong>Timeline:</strong> 6-12 months to master techniques</p>
+          </div>
+
+          <div class="travel-card">
+            <div class="tier-badge elite">Lifestyle Design</div>
+            <h4>🌍 Travel Lifestyle</h4>
+            <p><strong>ROI:</strong> Life enhancement, variable costs</p>
+            <p><strong>Key Benefits:</strong> Experiences, personal growth, networks</p>
+            <p><strong>Strategy:</strong> Slow travel, geo-arbitrage, remote work integration</p>
+            <p><strong>Annual Value:</strong> Immeasurable life quality</p>
+            <p><strong>Timeline:</strong> Ongoing lifestyle optimization</p>
+          </div>
+        </travel-grid>
+
+        <div class="callout danger">
+          <h4>🚨 Travel Optimization Pitfalls</h4>
+          <p><strong>Churning Addiction:</strong> Obsessing over points instead of experiences<br>
+          <strong>Complexity Overwhelm:</strong> Managing too many programs simultaneously<br>
+          <strong>Inflexibility:</strong> Sacrificing convenience for minimal savings<br>
+          <strong>Status Obsession:</strong> Pursuing elite status without value calculation<br>
+          <strong>Credit Mismanagement:</strong> Overspending to earn rewards<br>
+          <strong>Analysis Paralysis:</strong> Over-researching instead of booking and traveling</p>
+        </div>
+
+        <div class="callout success">
+          <h4>✅ Travel Optimization Principles</h4>
+          <p><strong>Value-First Mindset:</strong> Optimize for experiences and value, not just savings<br>
+          <strong>Strategic Planning:</strong> Plan 6-18 months ahead for best redemptions<br>
+          <strong>Diversified Approach:</strong> Use multiple programs to avoid dependencies<br>
+          <strong>Systematic Execution:</strong> Automate tracking and routine tasks<br>
+          <strong>Continuous Learning:</strong> Stay updated on program changes and opportunities<br>
+          <strong>Experience Focus:</strong> Remember that travel is about life enhancement</p>
+        </div>
+      </section>
+
+      <section id="credit-card-strategy" class="section">
+        <h2>Strategic Credit Card Portfolio</h2>
+
+        <div class="callout">
+          <h4>💳 Credit Cards: The Foundation of Travel Optimization</h4>
+          <p>A well-optimized credit card portfolio generates 100K+ points annually through sign-up bonuses and strategic spending. The key is aligning cards with your spending patterns while maximizing welcome offers and category bonuses.</p>
+        </div>
+
+        <div class="savings-calculator">
+          <h3>💰 Travel Rewards Calculator</h3>
+          <p>Calculate your potential annual rewards and travel savings based on spending and strategy.</p>
+          
+          <div class="calc-inputs">
+            <div class="calc-input">
+              <label for="annualSpending">Annual Credit Card Spending ($)</label>
+              <input type="number" id="annualSpending" placeholder="50000">
+            </div>
+            
+            <div class="calc-input">
+              <label for="optimizationLevel">Optimization Level</label>
+              <select id="optimizationLevel">
+                <option value="basic">Basic (1-2 cards)</option>
+                <option value="intermediate">Intermediate (3-5 cards)</option>
+                <option value="advanced">Advanced (6+ cards + churning)</option>
+                <option value="expert">Expert (Full optimization)</option>
+              </select>
+            </div>
+            
+            <div class="calc-input">
+              <label for="travelFrequency">Annual Travel Frequency</label>
+              <select id="travelFrequency">
+                <option value="occasional">Occasional (1-3 trips/year)</option>
+                <option value="regular">Regular (4-8 trips/year)</option>
+                <option value="frequent">Frequent (9-15 trips/year)</option>
+                <option value="constant">Constant (16+ trips/year)</option>
+              </select>
+            </div>
+            
+            <div class="calc-input">
+              <label for="spendingCategories">Primary Spending Category</label>
+              <select id="spendingCategories">
+                <option value="general">General spending</option>
+                <option value="dining">Dining & restaurants</option>
+                <option value="travel">Travel & transportation</option>
+                <option value="business">Business expenses</option>
+                <option value="mixed">Mixed categories</option>
+              </select>
+            </div>
+            
+            <div class="calc-input">
+              <label for="currentStrategy">Current Rewards Strategy</label>
+              <select id="currentStrategy">
+                <option value="none">No strategy (basic cashback)</option>
+                <option value="single">Single travel card</option>
+                <option value="multiple">Multiple travel cards</option>
+                <option value="optimized">Fully optimized portfolio</option>
+              </select>
+            </div>
+            
+            <div class="calc-input">
+              <label for="creditScore">Credit Score Range</label>
+              <select id="creditScore">
+                <option value="excellent">Excellent (750+)</option>
+                <option value="good">Good (700-749)</option>
+                <option value="fair">Fair (650-699)</option>
+                <option value="poor">Poor (Below 650)</option>
+              </select>
+            </div>
+          </div>
+          
+          <button class="calc-button" onclick="calculateTravelSavings()">Calculate Travel Rewards</button>
+          
+          <div class="calc-results" id="travelResults">
+            <h4>Your Travel Optimization Analysis</h4>
+            <div class="result-breakdown" id="travelBreakdown">
+              <!-- Results will be populated here -->
+            </div>
+          </div>
+        </div>
+
+        <h3>Optimal Credit Card Categories</h3>
+        <div class="comparison-table">
+          <table>
+            <thead>
+              <tr>
+                <th>Card Category</th>
+                <th>Best For</th>
+                <th>Annual Fee</th>
+                <th>Key Benefits</th>
+                <th>Earning Rate</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>Premium Travel</strong></td>
+                <td>Frequent travelers, high spenders</td>
+                <td>$450-695</td>
+                <td>Airport lounges, elite status, credits</td>
+                <td class="tier-high">3-5x on travel</td>
+              </tr>
+              <tr>
+                <td><strong>Airline Co-Brand</strong></td>
+                <td>Loyalty to specific airline</td>
+                <td>$95-450</td>
+                <td>Elite qualifying miles, free bags</td>
+                <td class="tier-high">2-3x on airline</td>
+              </tr>
+              <tr>
+                <td><strong>Hotel Co-Brand</strong></td>
+                <td>Loyalty to hotel chain</td>
+                <td>$95-450</td>
+                <td>Elite status, free nights</td>
+                <td class="tier-high">3-6x at hotels</td>
+              </tr>
+              <tr>
+                <td><strong>Dining/Grocery</strong></td>
+                <td>High category spending</td>
+                <td>$95-250</td>
+                <td>Category multipliers, flexibility</td>
+                <td class="tier-high">3-4x on categories</td>
+              </tr>
+              <tr>
+                <td><strong>Business Cards</strong></td>
+                <td>Business expenses, churning</td>
+                <td>$0-595</td>
+                <td>Higher limits, different bonuses</td>
+                <td class="tier-medium">1.5-3x various</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <h3>Credit Card Strategy Framework</h3>
+        <div class="strategy-cards">
+          <div class="strategy-card">
+            <h4>🎯 Portfolio Planning</h4>
+            <p><strong>Core Strategy:</strong> 1-2 premium cards for main spending</p>
+            <p><strong>Category Cards:</strong> 2-3 cards for specific multipliers</p>
+            <p><strong>Churning Cards:</strong> 1-2 new cards every 3-6 months</p>
+            <p><strong>Business Cards:</strong> Separate business credit profile</p>
+            <p><strong>Backup Cards:</strong> No foreign transaction fee options</p>
+          </div>
+
+          <div class="strategy-card">
+            <h4>📊 Spending Optimization</h4>
+            <p><strong>Category Mapping:</strong> Match cards to spending categories</p>
+            <p><strong>Timing Strategy:</strong> Plan large purchases around sign-ups</p>
+            <p><strong>Manufactured Spending:</strong> MS techniques for bonuses</p>
+            <p><strong>Referrals:</strong> Leverage referral bonuses strategically</p>
+            <p><strong>Retention Offers:</strong> Negotiate to keep valuable cards</p>
+          </div>
+
+          <div class="strategy-card">
+            <h4>🔄 Churning Strategy</h4>
+            <p><strong>Application Timing:</strong> Space applications 2-3 months apart</p>
+            <p><strong>Credit Impact:</strong> Monitor credit score and utilization</p>
+            <p><strong>Bonus Tracking:</strong> Track all minimum spending requirements</p>
+            <p><strong>Cancellation Timing:</strong> Cancel before second annual fee</p>
+            <p><strong>Cooling Off:</strong> Wait 24 months between same-card applications</p>
+          </div>
+
+          <div class="strategy-card">
+            <h4>🛡️ Risk Management</h4>
+            <p><strong>Credit Health:</strong> Maintain low utilization and on-time payments</p>
+            <p><strong>Application Pace:</strong> Don't exceed 5 cards per 24 months</p>
+            <p><strong>Bank Relationships:</strong> Maintain good standing with major banks</p>
+            <p><strong>Documentation:</strong> Track all applications and bonuses</p>
+            <p><strong>Exit Strategy:</strong> Plan for scaling back if needed</p>
+          </div>
+        </strategy-cards>
+      </section>
+
+      <section id="loyalty-programs" class="section">
+        <h2>Loyalty Program Mastery</h2>
+
+        <div class="callout warning">
+          <h4>⚠️ Loyalty Program Complexity</h4>
+          <p>Modern loyalty programs are increasingly complex and devalued. Success requires strategic focus on 2-3 primary programs rather than spreading efforts across many. Elite status benefits have diminished, but still provide significant value for frequent travelers.</p>
+        </div>
+
+        <h3>Airline Loyalty Strategy</h3>
+        <div class="travel-grid">
+          <div class="travel-card">
+            <h4>🇺🇸 US Legacy Airlines</h4>
+            <p><strong>American AAdvantage:</strong> Strong domestic network, Oneworld alliance</p>
+            <p><strong>Delta SkyMiles:</strong> Premium experience, extensive partnerships</p>
+            <p><strong>United MileagePlus:</strong> Global reach, Star Alliance access</p>
+            <p><strong>Status Strategy:</strong> Focus on one primary program + credit card</p>
+            <p><strong>Sweet Spots:</strong> Partner awards, upgrade availability</p>
+          </div>
+
+          <div class="travel-card">
+            <h4>✈️ International Airlines</h4>
+            <p><strong>Lufthansa Miles & More:</strong> Strong European network</p>
+            <p><strong>Air France-KLM Flying Blue:</strong> Good award availability</p>
+            <p><strong>Singapore KrisFlyer:</strong> Premium service, Suites access</p>
+            <p><strong>Status Strategy:</strong> Consider for specific routes or experiences</p>
+            <p><strong>Benefits:</strong> Often better award space than US airlines</p>
+          </div>
+
+          <div class="travel-card">
+            <h4>💺 Low-Cost & Hybrid</h4>
+            <p><strong>Southwest Rapid Rewards:</strong> No blackout dates, companion pass</p>
+            <p><strong>JetBlue TrueBlue:</strong> Mint class awards, no expiration</p>
+            <p><strong>Alaska Mileage Plan:</strong> Diverse partners, generous awards</p>
+            <p><strong>Status Strategy:</strong> Focus on value over traditional elite perks</p>
+            <p><strong>Advantages:</strong> Often better value than legacy programs</p>
+          </div>
+        </travel-grid>
+
+        <h3>Hotel Loyalty Programs</h3>
+        <div class="comparison-table">
+          <table>
+            <thead>
+              <tr>
+                <th>Hotel Program</th>
+                <th>Strength</th>
+                <th>Elite Benefits</th>
+                <th>Award Value</th>
+                <th>Best For</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>Marriott Bonvoy</strong></td>
+                <td>Largest portfolio, global reach</td>
+                <td>Suite upgrades, late checkout</td>
+                <td class="tier-medium">0.8-1.0¢/point</td>
+                <td>Business travel, luxury properties</td>
+              </tr>
+              <tr>
+                <td><strong>Hilton Honors</strong></td>
+                <td>Generous earning, easy elite status</td>
+                <td>Room upgrades, free breakfast</td>
+                <td class="tier-low">0.5-0.7¢/point</td>
+                <td>High-frequency travelers</td>
+              </tr>
+              <tr>
+                <td><strong>World of Hyatt</strong></td>
+                <td>High-value awards, guest benefits</td>
+                <td>Suite upgrades, club access</td>
+                <td class="tier-high">1.5-2.0¢/point</td>
+                <td>Luxury travel, quality focus</td>
+              </tr>
+              <tr>
+                <td><strong>IHG One Rewards</strong></td>
+                <td>Global reach, good promotions</td>
+                <td>Room upgrades, points bonus</td>
+                <td class="tier-medium">0.7-1.0¢/point</td>
+                <td>International travel</td>
+              </tr>
+              <tr>
+                <td><strong>Wyndham Rewards</strong></td>
+                <td>Flat redemption rate, no blackouts</td>
+                <td>Room upgrades, late checkout</td>
+                <td class="tier-medium">1.0-1.3¢/point</td>
+                <td>Road trips, budget travel</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <h3>Status Achievement Strategies</h3>
+        <div class="strategy-cards">
+          <div class="strategy-card">
+            <h4>🎯 Direct Earning</h4>
+            <p><strong>Qualifying Flights:</strong> Book directly with preferred airline</p>
+            <p><strong>Spending Requirements:</strong> Meet minimum spend thresholds</p>
+            <p><strong>Base Fare Focus:</strong> Higher base fares = more qualifying points</p>
+            <p><strong>Route Planning:</strong> Choose routes that maximize earning</p>
+            <p><strong>Timing:</strong> Complete status runs early in status year</p>
+          </div>
+
+          <div class="strategy-card">
+            <h4>💳 Credit Card Contributions</h4>
+            <p><strong>Elite Qualifying:</strong> Some cards offer EQMs/EQDs</p>
+            <p><strong>Bonus Categories:</strong> Maximize airline/hotel spending</p>
+            <p><strong>Welcome Bonuses:</strong> Large bonuses toward status</p>
+            <p><strong>Annual Benefits:</strong> Automatic elite credits</p>
+            <p><strong>Spending Bonuses:</strong> Reach spend thresholds for status</p>
+          </div>
+
+          <div class="strategy-card">
+            <h4>🔄 Status Matching</h4>
+            <p><strong>Initial Match:</strong> Leverage status with competing program</p>
+            <p><strong>Challenges:</strong> Complete soft challenges to cement status</p>
+            <p><strong>Documentation:</strong> Prepare status proof materials</p>
+            <p><strong>Timing:</strong> Apply at beginning of status year</p>
+            <p><strong>Follow-up:</strong> Maintain matched status through activity</p>
+          </div>
+
+          <div class="strategy-card">
+            <h4>🚀 Advanced Strategies</h4>
+            <p><strong>Mattress Runs:</strong> Book stays solely for status</p>
+            <p><strong>Mileage Runs:</strong> Flights purely for elite status</p>
+            <p><strong>Double Dips:</strong> Earn status in multiple programs</p>
+            <p><strong>Status Extensions:</strong> Leverage rollover and extensions</p>
+            <p><strong>Partner Earning:</strong> Maximize alliance and partner earning</p>
+          </div>
+        </strategy-cards>
+
+        <div class="callout success">
+          <h4>✅ Loyalty Program ROI Analysis</h4>
+          <p>Before pursuing elite status, calculate the return on investment:<br>
+          <strong>Value Calculation:</strong> Upgrades received × average upgrade value<br>
+          <strong>Cost Analysis:</strong> Extra spending/travel required for status<br>
+          <strong>Time Investment:</strong> Hours spent optimizing and traveling<br>
+          <strong>Break-even Point:</strong> Minimum travel frequency to justify effort<br>
+          <strong>Alternative Comparison:</strong> Compare to paying for premium directly</p>
+        </div>
+      </section>
+
+      <section id="booking-optimization" class="section">
+        <h2>Advanced Booking Strategies</h2>
+
+        <div class="callout">
+          <h4>🎯 Booking Optimization: The Art and Science</h4>
+          <p>Advanced booking combines data analysis, timing strategy, and creative routing to achieve exceptional value. The best deals require flexibility with dates, routes, and booking methods. Master these techniques to consistently save 30-60% on premium travel.</p>
+        </div>
+
+        <h3>Flight Booking Mastery</h3>
+        <div class="strategy-cards">
+          <div class="strategy-card">
+            <h4>📅 Timing Optimization</h4>
+            <p><strong>Best Booking Time:</strong> 6-8 weeks ahead for domestic, 8-12 weeks international</p>
+            <p><strong>Price Drop Windows:</strong> Tuesday 3 PM ET, late Sunday nights</p>
+            <p><strong>Seasonal Patterns:</strong> Avoid peak seasons, target shoulder periods</p>
+            <p><strong>Day-of-Week:</strong> Tuesday/Wednesday departures often cheapest</p>
+            <p><strong>Monitoring Tools:</strong> Google Flights alerts, Scott's Cheap Flights, Secret Flying</p>
+          </div>
+
+          <div class="strategy-card">
+            <h4>🗺️ Creative Routing</h4>
+            <p><strong>Hidden City:</strong> Book longer routes, exit at connection (risks involved)</p>
+            <p><strong>Positioning Flights:</strong> Cheap flights to better departure cities</p>
+            <p><strong>Open Jaws:</strong> Fly into one city, out of another</p>
+            <p><strong>Multi-City:</strong> Combine destinations for better value</p>
+            <p><strong>Fifth Freedom:</strong> Foreign airlines on non-home routes</p>
+          </div>
+
+          <div class="strategy-card">
+            <h4>💰 Award Booking</h4>
+            <p><strong>Sweet Spots:</strong> Underpriced partner awards</p>
+            <p><strong>Mixed Cabin:</strong> First class legs with economy pricing</p>
+            <p><strong>Stopover Strategy:</strong> Free stopovers on international awards</p>
+            <p><strong>Availability Tracking:</strong> Expert Flyer, AwardWallet alerts</p>
+            <p><strong>Transfer Timing:</strong> Move points only when award is available</p>
+          </div>
+
+          <div class="strategy-card">
+            <h4>🔄 Flexibility Tactics</h4>
+            <p><strong>Date Flexibility:</strong> +/- 3 days search windows</p>
+            <p><strong>Airport Options:</strong> Check all nearby airports</p>
+            <p><strong>Airline Flexibility:</strong> Don't limit to preferred carriers</p>
+            <p><strong>Mistake Fares:</strong> Quick booking on obvious pricing errors</p>
+            <p><strong>Last-Minute:</strong> Apps for same-day deals</p>
+          </div>
+        </strategy-cards>
+
+        <h3>Hotel Booking Optimization</h3>
+        <div class="tool-grid">
+          <div class="tool-card">
+            <h5>💳 Direct Booking Benefits</h5>
+            <div class="tool-description">
+              Elite recognition, room upgrades, loyalty points, flexible cancellation
+            </div>
+            <div class="tool-pricing">Strategy: Book direct when status matters</div>
+          </div>
+
+          <div class="tool-card">
+            <h5>🔍 Price Comparison</h5>
+            <div class="tool-description">
+              Google Hotels, Trivago, Kayak for initial research
+            </div>
+            <div class="tool-pricing">Strategy: Compare then book direct</div>
+          </div>
+
+          <div class="tool-card">
+            <h5>📱 Last-Minute Apps</h5>
+            <div class="tool-description">
+              HotelTonight, Tonight, LastMinute for spontaneous deals
+            </div>
+            <div class="tool-pricing">Savings: 20-60% on premium hotels</div>
+          </div>
+
+          <div class="tool-card">
+            <h5>🏆 Award Redemptions</h5>
+            <div class="tool-description">
+              Points for luxury properties, cash for budget options
+            </div>
+            <div class="tool-pricing">Value: 1-3¢ per point when optimized</div>
+          </div>
+
+          <div class="tool-card">
+            <h5>🔄 Cancellation Strategy</h5>
+            <div class="tool-description">
+              Book refundable rates, monitor for price drops
+            </div>
+            <div class="tool-pricing">Risk: Minimal with free cancellation</div>
+          </div>
+
+          <div class="tool-card">
+            <h5>📞 Direct Negotiation</h5>
+            <div class="tool-description">
+              Call hotels directly for unpublished rates and upgrades
+            </div>
+            <div class="tool-pricing">Strategy: Leverage status and loyalty</div>
+          </div>
+        </tool-grid>
+
+        <h3>Technology Stack for Booking</h3>
+        <div class="comparison-table">
+          <table>
+            <thead>
+              <tr>
+                <th>Tool Category</th>
+                <th>Primary Tools</th>
+                <th>Use Case</th>
+                <th>Cost</th>
+                <th>Value</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>Flight Search</strong></td>
+                <td>Google Flights, ITA Matrix</td>
+                <td>Comprehensive search, flexible dates</td>
+                <td>Free</td>
+                <td class="tier-high">Very High</td>
+              </tr>
+              <tr>
+                <td><strong>Deal Alerts</strong></td>
+                <td>Scott's Cheap Flights, Secret Flying</td>
+                <td>Mistake fares, flash sales</td>
+                <td>$50-100/year</td>
+                <td class="tier-high">High</td>
+              </tr>
+              <tr>
+                <td><strong>Award Search</strong></td>
+                <td>ExpertFlyer, AwardWallet</td>
+                <td>Award availability, seat alerts</td>
+                <td>$100-200/year</td>
+                <td class="tier-medium">Medium-High</td>
+              </tr>
+              <tr>
+                <td><strong>Price Tracking</strong></td>
+                <td>Hopper, Skyscanner</td>
+                <td>Price predictions, drop alerts</td>
+                <td>Free</td>
+                <td class="tier-medium">Medium</td>
+              </tr>
+              <tr>
+                <td><strong>Hotel Deals</strong></td>
+                <td>HotelTonight, Booking.com</td>
+                <td>Last-minute deals, comparison</td>
+                <td>Free</td>
+                <td class="tier-medium">Medium</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="callout warning">
+          <h4>⚠️ Booking Strategy Risks</h4>
+          <p><strong>Hidden City Risks:</strong> Airline penalties, checked bag issues, one-way only<br>
+          <strong>Mistake Fare Risks:</strong> Cancellation by airline, no recourse<br>
+          <strong>Third-Party Booking:</strong> No elite benefits, difficult changes<br>
+          <strong>Over-Optimization:</strong> Spending more time than money saved<br>
+          <strong>Flexibility Trade-offs:</strong> Savings often come with restrictions</p>
+        </div>
+      </section>
+
+      <section id="destination-optimization" class="section">
+        <h2>Destination & Experience Optimization</h2>
+
+        <div class="callout success">
+          <h4>🌍 Strategic Destination Selection</h4>
+          <p>The most successful travel optimizers choose destinations based on value arbitrage: maximum experiences per dollar spent. This means visiting expensive destinations during off-peak times, leveraging geographic arbitrage, and timing visits to cultural/seasonal events for optimal experiences.</p>
+        </div>
+
+        <h3>Value-Based Destination Framework</h3>
+        <div class="strategy-cards">
+          <div class="strategy-card">
+            <h4>💎 Luxury for Less</h4>
+            <p><strong>Off-Season Strategy:</strong> Visit expensive destinations during shoulder seasons</p>
+            <p><strong>Currency Arbitrage:</strong> Travel when exchange rates are favorable</p>
+            <p><strong>Upgrade Timing:</strong> Use points for luxury when cash prices peak</p>
+            <p><strong>Local Experiences:</strong> Avoid tourist traps, seek authentic local value</p>
+            <p><strong>Examples:</strong> Japan in winter, Europe in late fall, luxury resorts off-season</p>
+          </div>
+
+          <div class="strategy-card">
+            <h4>🗓️ Event-Based Travel</h4>
+            <p><strong>Cultural Events:</strong> Time visits to festivals, art shows, seasonal celebrations</p>
+            <p><strong>Sporting Events:</strong> Plan around major tournaments or seasons</p>
+            <p><strong>Business Conferences:</strong> Leverage work travel for personal exploration</p>
+            <p><strong>Natural Phenomena:</strong> Aurora, migration patterns, seasonal blooms</p>
+            <p><strong>Strategy:</strong> Book early when events are announced, premium value</p>
+          </div>
+
+          <div class="strategy-card">
+            <h4>📍 Geographic Clustering</h4>
+            <p><strong>Multi-Destination Trips:</strong> Combine nearby countries/regions</p>
+            <p><strong>Hub Strategy:</strong> Use major cities as bases for regional exploration</p>
+            <p><strong>Open Jaw Routing:</strong> Fly into one city, out of another</p>
+            <p><strong>Overland Travel:</strong> Trains, buses for scenic continental journeys</p>
+            <p><strong>Island Hopping:</strong> Regional passes for archipelagos</p>
+          </div>
+
+          <div class="strategy-card">
+            <h4>⏰ Timing Optimization</h4>
+            <p><strong>Weather Windows:</strong> Optimal climate periods for outdoor activities</p>
+            <p><strong>Tourist Seasonality:</strong> Avoid peak crowds while maintaining good weather</p>
+            <p><strong>Business Cycles:</strong> Travel during local off-seasons for better service</p>
+            <p><strong>Currency Fluctuations:</strong> Monitor and time trips to favorable rates</p>
+            <p><strong>Personal Schedule:</strong> Align travel with work/life calendar</p>
+          </div>
+        </strategy-cards>
+
+        <h3>Experience Optimization</h3>
+        <div class="tool-grid">
+          <div class="tool-card">
+            <h5>🎯 Local Connections</h5>
+            <div class="tool-description">
+              Leverage local contacts, expat communities, business networks
+            </div>
+            <div class="tool-pricing">Value: Insider access, authentic experiences</div>
+          </div>
+
+          <div class="tool-card">
+            <h5>📚 Cultural Preparation</h5>
+            <div class="tool-description">
+              Language basics, cultural norms, historical context
+            </div>
+            <div class="tool-pricing">Investment: 10-20 hours pre-trip learning</div>
+          </div>
+
+          <div class="tool-card">
+            <h5>🍴 Culinary Strategy</h5>
+            <div class="tool-description">
+              Food markets, cooking classes, local specialties, wine regions
+            </div>
+            <div class="tool-pricing">Budget: 30-40% of travel budget for food experiences</div>
+          </div>
+
+          <div class="tool-card">
+            <h5>🎨 Arts & Culture</h5>
+            <div class="tool-description">
+              Museums, galleries, performance venues, architectural tours
+            </div>
+            <div class="tool-pricing">Strategy: Museum passes, advance reservations</div>
+          </div>
+
+          <div class="tool-card">
+            <h5>🏃‍♂️ Active Adventures</h5>
+            <div class="tool-description">
+              Hiking, cycling, water sports, unique local activities
+            </div>
+            <div class="tool-pricing">Gear: Bring vs. rent vs. buy decisions</div>
+          </div>
+
+          <div class="tool-card">
+            <h5>📱 Digital Tools</h5>
+            <div class="tool-description">
+              Translation apps, navigation, local transportation, recommendations
+            </div>
+            <div class="tool-pricing">Essential: Google Translate, Maps, local apps</div>
+          </div>
+        </tool-grid>
+
+        <div class="callout">
+          <h4>💡 Slow Travel Philosophy</h4>
+          <p>Optimize for depth over breadth: spending more time in fewer places creates richer experiences and often costs less per day. The sweet spot for most destinations is 5-10 days minimum, allowing for deeper cultural immersion, better local connections, and reduced transportation costs.</p>
+        </div>
+      </section>
+
+      <section id="faq" class="faq-section">
+        <h2>Frequently Asked Questions</h2>
+
+        <div class="faq-item">
+          <div class="faq-question">How many credit cards should I have for optimal travel rewards?</div>
+          <div class="faq-answer">Start with 2-3 cards: one premium travel card for main spending and status benefits, one category-specific card for dining/groceries, and one no-foreign-fee card for international travel. Advanced optimizers manage 5-10 cards by adding churning cards for welcome bonuses, but this requires excellent organization and credit management.</div>
+        </div>
+
+        <div class="faq-item">
+          <div class="faq-question">Is pursuing airline elite status worth it in 2026?</div>
+          <div class="faq-answer">Elite status value has decreased but remains worthwhile for travelers taking 10+ flights annually or those prioritizing comfort over cost. Calculate ROI: if you value upgrades at $200+ per flight and receive them 30-50% of the time, status pays off. Consider credit card status as an alternative to flying for status.</div>
+        </div>
+
+        <div class="faq-item">
+          <div class="faq-question">What's the best strategy for booking international first-class flights?</div>
+          <div class="faq-answer">Use points for premium international flights where cash prices exceed $5,000+. Best value strategies: leverage partner airlines' sweet spots (ANA for Lufthansa first), book 11+ months ahead when award space opens, consider mixed-cabin awards, and transfer points only when award space is confirmed available.</div>
+        </div>
+
+        <div class="faq-item">
+          <div class="faq-question">How far in advance should I book flights for the best prices?</div>
+          <div class="faq-answer">Domestic flights: 6-8 weeks ahead. International flights: 8-12 weeks ahead. However, flexibility trumps timing—being flexible with dates saves more than perfect timing. Monitor prices using Google Flights alerts and book when you see a good deal, regardless of timing "rules."</div>
+        </div>
+
+        <div class="faq-item">
+          <div class="faq-question">Should I book hotels through third-party sites or directly?</div>
+          <div class="faq-answer">Compare prices on third-party sites but book direct when the price is similar (within $20-50/night). Direct bookings provide elite benefits, easier changes, room upgrades, and better customer service. Use hotel price-matching policies when third-party rates are significantly lower.</div>
+        </div>
+
+        <div class="faq-item">
+          <div class="faq-question">What's the biggest mistake travel optimizers make?</div>
+          <div class="faq-answer">Optimizing for points/status over experiences and value. The goal is better travel at lower costs, not maximum points accumulation. Other mistakes: over-engineering simple trips, sacrificing too much convenience for savings, and not calculating the time investment required for complex strategies.</div>
+        </div>
+
+        <div class="faq-item">
+          <div class="faq-question">How do I get started with travel optimization if I'm a beginner?</div>
+          <div class="faq-answer">Start simple: Get one good travel credit card with a welcome bonus, sign up for one airline and one hotel loyalty program, and use Google Flights for basic flight search. Focus on fundamentals for 6-12 months before adding complexity. Master the basics before attempting advanced churning or routing strategies.</div>
+        </div>
+
+        <div class="faq-item">
+          <div class="faq-question">Is travel hacking still viable with recent program devaluations?</div>
+          <div class="faq-answer">Yes, but requires more sophistication. While programs have devalued, competition has also increased options. Focus on: flexible point currencies (Chase, Amex), cash back alternatives, mistake fares and sales, geographic arbitrage, and experience optimization rather than just cost savings.</div>
+        </div>
+      </section>
+
+      <div class="cta-cards">
+        <div class="cta-card">
+          <h4>🌍 Digital Nomad Guide</h4>
+          <p>Integrate travel optimization with location-independent work and lifestyle design strategies.</p>
+          <a href="/digital-nomad-lifestyle" class="cta-button">Nomad Lifestyle</a>
+        </div>
+
+        <div class="cta-card">
+          <h4>💰 Personal Finance</h4>
+          <p>Build the financial foundation to support optimized travel and lifestyle experiences.</p>
+          <a href="/personal-finance-budgeting" class="cta-button">Finance Guide</a>
+        </div>
+
+        <div class="cta-card">
+          <h4>🏠 Remote Work</h4>
+          <p>Master remote work strategies to enable location independence and travel flexibility.</p>
+          <a href="/remote-work-career-strategies" class="cta-button">Remote Work</a>
+        </div>
+      </div>
+    </main>
+
+    <aside class="sidebar">
+      <h3>Contents</h3>
+      <ul>
+        <li><a href="#travel-fundamentals">Travel Fundamentals</a></li>
+        <li><a href="#credit-card-strategy">Credit Card Strategy</a></li>
+        <li><a href="#loyalty-programs">Loyalty Programs</a></li>
+        <li><a href="#booking-optimization">Booking Optimization</a></li>
+        <li><a href="#destination-optimization">Destination Optimization</a></li>
+        <li><a href="#faq">FAQ</a></li>
+      </ul>
+    </aside>
+  </div>
+</div>
+
+<script>
+function calculateTravelSavings() {
+  const annualSpending = parseFloat(document.getElementById('annualSpending').value) || 0;
+  const optimizationLevel = document.getElementById('optimizationLevel').value;
+  const travelFrequency = document.getElementById('travelFrequency').value;
+  const spendingCategories = document.getElementById('spendingCategories').value;
+  const currentStrategy = document.getElementById('currentStrategy').value;
+  const creditScore = document.getElementById('creditScore').value;
+  
+  if (annualSpending === 0) {
+    alert('Please enter your annual spending amount');
+    return;
+  }
+  
+  // Base earning rates by optimization level
+  const optimizationRates = {
+    basic: { baseRate: 1.5, bonusCards: 1, signupBonuses: 1 },
+    intermediate: { baseRate: 2.2, bonusCards: 3, signupBonuses: 2 },
+    advanced: { baseRate: 3.1, bonusCards: 5, signupBonuses: 4 },
+    expert: { baseRate: 4.2, bonusCards: 8, signupBonuses: 6 }
+  };
+  
+  // Travel frequency multipliers for benefits
+  const frequencyMultipliers = {
+    occasional: { statusValue: 0.3, upgradeValue: 500 },
+    regular: { statusValue: 0.7, upgradeValue: 1200 },
+    frequent: { statusValue: 1.0, upgradeValue: 2000 },
+    constant: { statusValue: 1.3, upgradeValue: 3500 }
+  };
+  
+  // Spending category bonuses
+  const categoryBonuses = {
+    general: 1.0,
+    dining: 1.3,
+    travel: 1.5,
+    business: 1.4,
+    mixed: 1.2
+  };
+  
+  // Current strategy baseline
+  const currentValue = {
+    none: 1.0,
+    single: 1.8,
+    multiple: 2.5,
+    optimized: 3.8
+  };
+  
+  // Credit score impact on approval odds
+  const creditScoreMultipliers = {
+    excellent: 1.0,
+    good: 0.9,
+    fair: 0.7,
+    poor: 0.4
+  };
+  
+  const optimization = optimizationRates[optimizationLevel];
+  const frequency = frequencyMultipliers[travelFrequency];
+  const categoryBonus = categoryBonuses[spendingCategories];
+  const currentMultiplier = currentValue[currentStrategy];
+  const creditMultiplier = creditScoreMultipliers[creditScore];
+  
+  // Calculate points earning potential
+  const adjustedEarningRate = optimization.baseRate * categoryBonus * creditMultiplier;
+  const annualPoints = annualSpending * adjustedEarningRate;
+  
+  // Calculate sign-up bonuses (assuming one new card every 4-6 months)
+  const annualSignupBonuses = optimization.signupBonuses * 75000; // Average bonus
+  
+  // Total annual points/miles
+  const totalAnnualPoints = annualPoints + annualSignupBonuses;
+  
+  // Calculate travel value (assuming 1.2-2.5¢ per point depending on usage)
+  const pointValue = 0.015 + (optimization.baseRate - 1) * 0.003; // 1.5¢ to 2.4¢ per point
+  const annualTravelValue = totalAnnualPoints * pointValue;
+  
+  // Calculate current system value for comparison
+  const currentAnnualValue = annualSpending * currentMultiplier * 0.012; // Current earning at 1.2¢/point
+  
+  // Calculate net improvement
+  const annualImprovement = annualTravelValue - currentAnnualValue;
+  
+  // Calculate status benefits value
+  const statusBenefitsValue = frequency.upgradeValue * frequency.statusValue;
+  
+  // Calculate credit card annual fees (estimate)
+  const annualFees = optimization.bonusCards * 200; // Average $200 per premium card
+  
+  // Net annual value
+  const netAnnualValue = annualTravelValue + statusBenefitsValue - annualFees;
+  const netImprovement = netAnnualValue - currentAnnualValue;
+  
+  // Calculate effort score (1-10 scale)
+  const effortScores = { basic: 2, intermediate: 4, advanced: 7, expert: 9 };
+  const effortScore = effortScores[optimizationLevel];
+  
+  // ROI calculation
+  const timeInvestment = effortScore * 2; // Hours per month
+  const annualTimeValue = timeInvestment * 12 * 50; // Assume $50/hour time value
+  const trueROI = netImprovement - annualTimeValue;
+  
+  // Determine optimization recommendation
+  const getRecommendation = (roi, effort) => {
+    if (roi > 3000 && effort <= 5) return { level: 'Highly Recommended', color: '#4ade80' };
+    if (roi > 1500 && effort <= 7) return { level: 'Recommended', color: '#fbbf24' };
+    if (roi > 500) return { level: 'Consider', color: '#a5b4fc' };
+    if (roi > 0) return { level: 'Marginal Benefit', color: '#f87171' };
+    return { level: 'Not Recommended', color: '#ef4444' };
+  };
+  
+  const recommendation = getRecommendation(trueROI, effortScore);
+  
+  // Calculate 5-year projection
+  const fiveYearValue = netImprovement * 5;
+  
+  // Display results
+  const breakdown = document.getElementById('travelBreakdown');
+  breakdown.innerHTML = `
+    <div class="breakdown-item">
+      <div class="breakdown-label">Annual Points/Miles</div>
+      <div class="breakdown-value">${(totalAnnualPoints/1000).toFixed(0)}K</div>
+      <div class="breakdown-status">From spending + bonuses</div>
+    </div>
+    <div class="breakdown-item">
+      <div class="breakdown-label">Travel Value</div>
+      <div class="breakdown-value">$${annualTravelValue.toLocaleString()}</div>
+      <div class="breakdown-status">Annual redemption value</div>
+    </div>
+    <div class="breakdown-item">
+      <div class="breakdown-label">Net Improvement</div>
+      <div class="breakdown-value">$${netImprovement.toLocaleString()}</div>
+      <div class="breakdown-status">Over current strategy</div>
+    </div>
+    <div class="breakdown-item">
+      <div class="breakdown-label">Annual Fees</div>
+      <div class="breakdown-value">$${annualFees.toLocaleString()}</div>
+      <div class="breakdown-status">${optimization.bonusCards} premium cards</div>
+    </div>
+    <div class="breakdown-item">
+      <div class="breakdown-label">Effort Level</div>
+      <div class="breakdown-value">${effortScore}/10</div>
+      <div class="breakdown-status">${timeInvestment} hours/month</div>
+    </div>
+    <div class="breakdown-item">
+      <div class="breakdown-label">Recommendation</div>
+      <div class="breakdown-value">${recommendation.level}</div>
+      <div class="breakdown-status" style="color: ${recommendation.color}">Based on ROI analysis</div>
+    </div>
+  `;
+  
+  document.getElementById('travelResults').style.display = 'block';
+}
+</script>

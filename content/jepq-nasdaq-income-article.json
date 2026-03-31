@@ -1,0 +1,55 @@
+[
+  {
+    "slug": "jepq-nasdaq-income-etf-tech-selloff-opportunity-2026",
+    "title": "JEPQ Yields 11.4% While Nasdaq Drops — Is This the Best Way to Get Paid to Hold Tech?",
+    "description": "JPMorgan's JEPQ ETF pays 11.4% yield from Nasdaq 100 covered calls. With tech stocks in selloff mode, here's why income investors are looking at JEPQ as a way to get paid while waiting for a recovery.",
+    "category": "business",
+    "image": "",
+    "imageAlt": "",
+    "lede": "The Nasdaq is down over 2% this week and tech stocks are getting hammered by Meta's legal losses, tariff fears, and a broader risk-off rotation. But one group of investors isn't panicking — they're collecting $0.51 per share per month from JPMorgan's NASDAQ Equity Premium Income ETF (JEPQ), which yields 11.4% annually by selling covered call options on the same tech stocks everyone else is dumping.",
+    "tags": ["jepq", "nasdaq", "covered-call", "etf", "jpmorgan", "income-investing", "tech-stocks"],
+    "sources": [
+      {"name": "Stock Analysis", "url": "https://stockanalysis.com/etf/jepq/dividend/"},
+      {"name": "JPMorgan Asset Management", "url": "https://am.jpmorgan.com"}
+    ],
+    "faqs": [
+      {
+        "q": "What is JEPQ and how does it work?",
+        "a": "JEPQ (JPMorgan NASDAQ Equity Premium Income ETF) holds Nasdaq 100 stocks and sells covered call options against them to generate monthly income. It launched in May 2022, has ~$20 billion in assets, and currently yields 11.4% — paying investors roughly $0.51/month per share."
+      },
+      {
+        "q": "Is JEPQ better than JEPI?",
+        "a": "JEPQ and JEPI are sister funds from JPMorgan with different underlying indexes. JEPQ tracks Nasdaq 100 (tech-heavy, higher growth potential, more volatile) while JEPI tracks the S&P 500 (broader, more defensive). JEPQ yields more (11.4% vs 7.9%) but carries more downside risk in tech selloffs."
+      },
+      {
+        "q": "Does JEPQ's covered call strategy cap upside?",
+        "a": "Yes. By selling call options, JEPQ generates income but gives up some upside when the Nasdaq rallies strongly. In flat or slightly up markets, JEPQ outperforms the Nasdaq on total return. In strong bull runs, it underperforms. The tradeoff is predictable monthly income vs maximum capital appreciation."
+      }
+    ],
+    "sections": [
+      {
+        "heading": "Getting Paid 11% to Hold the Nasdaq",
+        "paragraphs": [
+          "JEPQ's pitch is simple: own the biggest tech companies in the world — Apple, Microsoft, Nvidia, Amazon, Meta, Alphabet — and get paid 11.4% per year in monthly income. The income comes from selling equity-linked notes (ELNs) tied to the Nasdaq 100, which function similarly to covered calls.",
+          "With $20 billion in assets and distributions growing 9% year-over-year, JEPQ has become one of the fastest-growing ETFs in history. Launched in May 2022, it hit $10B in assets in under two years. The appeal is obvious: tech exposure with an income stream that most tech stocks don't provide."
+        ]
+      },
+      {
+        "heading": "Why the Selloff Makes JEPQ More Attractive",
+        "paragraphs": [
+          "When the Nasdaq drops, two things happen for JEPQ investors. First, the yield goes up mechanically — same dollar payout on a lower share price. Second, option premiums tend to increase during volatile markets, meaning JEPQ can generate more income from its covered call strategy when volatility is elevated.",
+          "This is the counterintuitive logic of covered call ETFs: they're actually better income generators in choppy, sideways, or mildly declining markets than in strong bull markets. The selloff doesn't feel good for existing holders, but for new buyers, it's a chance to lock in an 11.4% yield on tech stocks that were yielding 8% six months ago.",
+          "Dive into JEPQ's full payment history and run income projections with our <a href=\"https://westmountfundamentals.com/jepq-dividend\" style=\"color:#4a8fe7;font-weight:600;\">JEPQ Dividend Analysis</a> — including a head-to-head comparison with sister fund JEPI."
+        ]
+      },
+      {
+        "heading": "The Tradeoff: Income vs Growth",
+        "paragraphs": [
+          "JEPQ won't make you rich in a Nasdaq bull run. When tech stocks surge 30%, JEPQ might return 15-20% because the sold call options cap the upside. That's the cost of the income stream — you're trading potential capital gains for predictable monthly cash flow.",
+          "But in the current environment — where the Nasdaq is in correction and nobody knows when the bottom comes — getting paid 11.4% to wait is a compelling proposition. You're essentially being compensated for the volatility that's making everyone else sell. The question is whether you believe tech will recover (which historically it always has) or whether this time is structurally different.",
+          "Compare JEPQ against other income strategies using our <a href=\"https://westmountfundamentals.com/schd-dividend\" style=\"color:#4a8fe7;\">SCHD analysis</a> (quality dividends, 3.5% yield) or <a href=\"https://westmountfundamentals.com/list-best-monthly-dividend-stocks\" style=\"color:#4a8fe7;\">monthly dividend stocks list</a> (40+ payers compared)."
+        ]
+      }
+    ]
+  }
+]

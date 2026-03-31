@@ -1,0 +1,58 @@
+[
+  {
+    "slug": "compounded-glp1-peptides-fda-shortage-2026",
+    "title": "The Compounded GLP-1 Gray Market: Why Millions Are Turning to Research Peptides as Ozempic Shortages Persist",
+    "description": "With Ozempic and Mounjaro still in shortage and prices exceeding $1,000/month, a massive gray market for compounded semaglutide and tirzepatide has emerged. Here's what you need to know about dosing, safety, and reconstitution.",
+    "category": "health",
+    "image": "",
+    "imageAlt": "",
+    "lede": "The FDA has been playing whack-a-mole with compounded semaglutide and tirzepatide for over two years now. Despite Novo Nordisk and Eli Lilly claiming their supply shortages are resolved, pharmacies continue to back-order brand-name GLP-1 medications, and millions of Americans are turning to compounding pharmacies and research peptide suppliers to access the same active ingredients at a fraction of the cost.",
+    "tags": ["peptides", "glp-1", "semaglutide", "tirzepatide", "ozempic", "compounding", "health"],
+    "sources": [
+      {"name": "FDA Drug Shortages", "url": "https://www.accessdata.fda.gov/scripts/drugshortages/"},
+      {"name": "American Society of Health-System Pharmacists", "url": "https://www.ashp.org"}
+    ],
+    "faqs": [
+      {
+        "q": "Is compounded semaglutide the same as Ozempic?",
+        "a": "Compounded semaglutide contains the same active ingredient as Ozempic and Wegovy, but it's mixed by compounding pharmacies rather than manufactured by Novo Nordisk. The FDA allows compounding during drug shortages, but quality control varies significantly between pharmacies."
+      },
+      {
+        "q": "How much does compounded semaglutide cost vs Ozempic?",
+        "a": "Brand-name Ozempic costs $900-1,400/month without insurance. Compounded semaglutide from licensed pharmacies typically runs $150-400/month. Research-grade peptide suppliers charge even less, but carry more regulatory and quality uncertainty."
+      },
+      {
+        "q": "How do you dose compounded peptides?",
+        "a": "Compounded peptides require reconstitution with bacteriostatic water and precise dosing calculations based on the concentration. A peptide reconstitution calculator converts the vial amount and water volume into exact syringe units for each dose."
+      },
+      {
+        "q": "Are research peptides safe?",
+        "a": "Research peptides are sold 'for research purposes only' and are not FDA-approved for human use. Quality varies dramatically between suppliers. Users should verify third-party testing (COA), proper storage, and sterile reconstitution practices. This is not medical advice — consult a healthcare provider."
+      }
+    ],
+    "sections": [
+      {
+        "heading": "The Supply Gap That Created a Market",
+        "paragraphs": [
+          "At peak shortage in 2024, every dose of Ozempic and Mounjaro was back-ordered for months. Patients who had started these medications for diabetes or weight management — and were seeing life-changing results — suddenly couldn't access them. The pharmaceutical companies blamed unprecedented demand. The patients blamed a system that prices essential medications at $1,000+ per month.",
+          "Into that gap stepped compounding pharmacies, which the FDA permits to produce copies of drugs during certified shortages. And behind them, a larger gray market of research peptide suppliers selling semaglutide and tirzepatide as 'research chemicals' — technically legal, practically used by millions of people for weight loss and metabolic health."
+        ]
+      },
+      {
+        "heading": "The Dosing Problem",
+        "paragraphs": [
+          "Brand-name Ozempic comes in a pre-filled pen with precise dosing. Compounded and research peptides come as lyophilized powder in a vial. Users must reconstitute the powder with bacteriostatic water, calculate the concentration, and draw the correct number of units on an insulin syringe. Get the math wrong, and you're either underdosing (wasting money) or overdosing (risking severe nausea, vomiting, or worse).",
+          "The standard semaglutide escalation schedule starts at 0.25mg weekly for four weeks, then increases to 0.5mg, 1mg, and eventually up to 2.4mg. Converting those milligram doses into insulin syringe units requires knowing the exact concentration after reconstitution — which depends on how much water you added to the vial.",
+          "Our <a href=\"https://bodycount.photonbuilder.com/peptide-calculator\" style=\"color:#4a8fe7;font-weight:600;\">Peptide Reconstitution Calculator</a> does this math automatically — input your vial size, water volume, and desired dose, and it tells you exactly how many units to draw. Includes presets for BPC-157, semaglutide, tirzepatide, and 6 other common peptides."
+        ]
+      },
+      {
+        "heading": "Quality and Safety Concerns",
+        "paragraphs": [
+          "Not all compounded semaglutide is created equal. The FDA has issued warnings about products containing salt forms (semaglutide sodium vs semaglutide base) that may have different potency profiles. Some compounding pharmacies have been cited for sterility failures. And research peptide suppliers operate with no pharmaceutical oversight whatsoever.",
+          "If you're using compounded or research peptides, minimum safety practices include: verifying the supplier provides a Certificate of Analysis (COA) with third-party purity testing, using bacteriostatic water (not sterile water — bac water contains a preservative), refrigerating reconstituted peptides, using each vial within 28 days, and never reusing needles. This is harm reduction information, not medical advice."
+        ]
+      }
+    ]
+  }
+]

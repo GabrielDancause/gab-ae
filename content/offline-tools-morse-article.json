@@ -1,0 +1,60 @@
+[
+  {
+    "slug": "analog-communication-tools-resurgence-morse-code-ham-radio-2026",
+    "title": "Ham Radio Licenses Hit a 30-Year High — Why Analog Communication Tools Are Making a Comeback",
+    "description": "In an era of AI and 5G, ham radio licenses and morse code interest are surging. Emergency preparedness, off-grid living, and privacy concerns are driving the resurgence of analog communication.",
+    "category": "tech",
+    "image": "",
+    "imageAlt": "",
+    "lede": "While Silicon Valley chases AI and 5G, a quieter trend is accelerating in the opposite direction. Amateur radio (ham) license applications have hit their highest levels in three decades, morse code searches are up 40% year-over-year, and emergency preparedness communities are rediscovering that the most reliable communication network is one that doesn't need the internet, cell towers, or electricity from the grid.",
+    "tags": ["morse-code", "ham-radio", "emergency-communications", "analog", "off-grid", "privacy", "tools"],
+    "sources": [
+      {"name": "ARRL (American Radio Relay League)", "url": "https://www.arrl.org"},
+      {"name": "FCC Amateur Radio Service", "url": "https://www.fcc.gov/amateur-radio-service"}
+    ],
+    "faqs": [
+      {
+        "q": "Why is morse code still relevant in 2026?",
+        "a": "Morse code can be transmitted with minimal equipment — a flashlight, a mirror, a simple radio circuit, or even tapping on a wall. It works when all digital infrastructure fails, which is why military, maritime, and emergency services still train operators in CW (continuous wave) communication."
+      },
+      {
+        "q": "How do I get a ham radio license?",
+        "a": "The FCC offers three license levels: Technician (entry-level, 35 questions), General (expanded privileges), and Amateur Extra (full access). Study materials are free online, and exam sessions are held regularly by local radio clubs. The license costs $35 and is valid for 10 years."
+      },
+      {
+        "q": "Can morse code work without electricity?",
+        "a": "Yes. Morse code can be communicated visually (flashlight, mirror, flag signals), acoustically (tapping, whistling), or via radio with a battery-powered transmitter drawing as little as 1 watt. During natural disasters, ham operators with small solar-powered rigs have been the only communication link for affected communities."
+      },
+      {
+        "q": "Is morse code required for ham radio?",
+        "a": "No. The FCC eliminated the morse code requirement for all amateur radio licenses in 2007. However, many operators still learn CW voluntarily because it's the most efficient mode for low-power, long-distance communication and works in conditions where voice and digital modes fail."
+      }
+    ],
+    "sections": [
+      {
+        "heading": "Why Analog Is Coming Back",
+        "paragraphs": [
+          "Three forces are driving the resurgence. First, natural disasters and geopolitical instability have exposed the fragility of digital communication networks. When hurricanes knock out cell towers and internet infrastructure, ham radio operators are often the first — and sometimes only — communication link. The Hormuz crisis has put this vulnerability in sharp focus.",
+          "Second, privacy concerns are pushing technically literate people toward communication methods that don't route through corporate servers. Morse code over radio leaves no metadata, no logs, no account to subpoena. In an era of pervasive digital surveillance, analog simplicity has become a feature, not a bug.",
+          "Third, the maker and off-grid communities have embraced radio as a practical skill. Building a morse code transmitter from basic components is a weekend project. Operating it requires no subscription, no monthly fee, and no infrastructure beyond a wire antenna."
+        ]
+      },
+      {
+        "heading": "The Technology That Refuses to Die",
+        "paragraphs": [
+          "Morse code was invented in the 1830s. It has survived the telephone, television, the internet, smartphones, and now AI. The reason is simple: it is the most efficient way to communicate with minimal resources. A morse code signal can be decoded by the human ear at distances where voice transmission is unintelligible. A QRP (low-power) morse transmitter running on 5 watts can reach thousands of miles under the right atmospheric conditions.",
+          "The SOS distress signal (··· −−− ···) remains the international standard for emergency situations. Every maritime vessel still carries equipment capable of transmitting it. Aviation uses morse code identifiers for navigation beacons. Military forces worldwide train signals operators in CW as a fallback communication method.",
+          "Try it yourself with our <a href=\"https://siliconbased.dev/morse-code-generator\" style=\"color:#4a8fe7;font-weight:600;\">Morse Code Generator</a> — type any message to see and hear it in morse code, with adjustable speed and frequency. Includes a reference chart and practice mode."
+        ]
+      },
+      {
+        "heading": "Getting Started",
+        "paragraphs": [
+          "The barrier to entry is remarkably low. Learning the morse code alphabet takes a few hours of practice. A basic handheld radio (Baofeng UV-5R) costs under $30. A Technician-class ham license requires passing a 35-question multiple-choice exam — study materials are free at hamstudy.org.",
+          "For those who just want to learn morse code without getting into radio, there are dozens of apps and web tools for practice. The key is learning by ear, not by sight — experienced operators don't look up letters in a chart, they recognize the rhythm of each character instantly, like learning a musical instrument.",
+          "For developers and tech enthusiasts, our <a href=\"https://siliconbased.dev/morse-code-generator\" style=\"color:#4a8fe7;\">morse code generator</a> includes a Web Audio API-powered audio playback system with speed and frequency controls — turn any text into audible morse code directly in your browser."
+        ]
+      }
+    ]
+  }
+]

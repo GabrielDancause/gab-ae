@@ -50,8 +50,52 @@ ENGINE_PATTERNS = {
     ],
 }
 
+# ── Allowed categories (15 total — NO "general" fallback) ──
+VALID_CATEGORIES = [
+    "finance", "math", "health", "education", "lifestyle", "gaming",
+    "construction", "productivity", "science", "food", "tools", "shipping",
+    "tech", "auto", "sports",
+]
+
 # ── Category classification rules ──
+# Order matters: more specific patterns first to avoid mis-classification.
 CATEGORY_PATTERNS = {
+    "gaming": [
+        r"\bgame\b", r"\bgaming\b", r"\btier\s*list\b", r"\bwiki\b",
+        r"\bminecraft\b", r"\bfortnite\b", r"\broblox\b", r"\bpokemon\b",
+        r"\bpalworld\b", r"\bblox\s*fruit\b", r"\bwordle\b", r"\bdunk\b",
+        r"\bedpi\b", r"\bbottleneck\b", r"\bpoint\s*buy\b", r"\bfantasy\s*trade\b",
+        r"\bdynasty\s*trade\b", r"\bgrow\s*a\s*garden\b", r"\bthe\s*forge\b",
+        r"\bcp\s*calculator\b",  # Combat Power (Pokemon)
+    ],
+    "food": [
+        r"\bchipotle\b", r"\bstarbucks\b", r"\brecipe\b.*\bcalorie\b",
+        r"\bfood\b.*\bcalorie\b", r"\bcooking\b", r"\brecipe\b", r"\bkitchen\b",
+        r"\bnutrition\b.*\bcalculator\b",
+    ],
+    "construction": [
+        r"\basphalt\b", r"\bboard\s*foot\b", r"\bconcrete\b", r"\bconstruction\b",
+        r"\bcubic\s*(feet|yard|ft|yd)\b", r"\bgravel\b", r"\bmulch\b",
+        r"\broof\b.*\bpitch\b", r"\bsoil\b", r"\bstair\b", r"\bgear\s*ratio\b",
+        r"\blumber\b", r"\bdrywall\b", r"\binsulation\b", r"\bfencing\b",
+        r"\bpaint\b.*\bcalc\b", r"\btile\b.*\bcalc\b", r"\bflooring\b",
+    ],
+    "shipping": [
+        r"\bshipping\b", r"\bfreight\b", r"\busps\b", r"\bups\b.*\bship\b",
+        r"\bfedex\b", r"\bebay\b.*\bship\b", r"\bmail\b.*\bzip\b",
+        r"\bpostage\b", r"\bdelivery\b.*\bcost\b",
+    ],
+    "auto": [
+        r"\btire\b", r"\bcar\b.*\b(mpg|mileage|fuel)\b", r"\bvehicle\b",
+        r"\bautomotive\b", r"\bengine\b.*\b(hp|horsepower|cc)\b",
+        r"\btowing\b", r"\bgas\s*mileage\b",
+    ],
+    "productivity": [
+        r"\btimesheet\b", r"\btime\s*card\b", r"\btime\s*clock\b",
+        r"\bwork\s*hours\b", r"\bhours?\s*calculator\b", r"\btime\s*sheet\b",
+        r"\btime\s*duration\b", r"\btime\s*and\s*a\s*half\b",
+        r"\btime\s*calculator\b", r"\bovertime\b",
+    ],
     "finance": [
         r"\bmortgage\b", r"\bloan\b", r"\btax\b", r"\binterest\b", r"\binvest\b",
         r"\bstock\b", r"\betf\b", r"\bdividend\b", r"\b401k\b", r"\brrsp\b",
@@ -59,20 +103,73 @@ CATEGORY_PATTERNS = {
         r"\bdebt\b", r"\bsaving\b", r"\bcompound\b", r"\binflation\b", r"\bequity\b",
         r"\bappreci\b", r"\bmoat\b", r"\breturn\b", r"\bbalance.sheet\b",
         r"\brevenue\b", r"\bprofit\b", r"\bcurrency\b", r"\bcrypto\b", r"\bbitcoin\b",
-        r"\bgpa\b.*\bcalc\b",  # financial GPA? No, academic — handled below
-    ],
-    "education": [
-        r"\bgrade\b", r"\bgpa\b", r"\bmath\b", r"\bmultiplication\b", r"\bcalculus\b",
-        r"\balgebra\b", r"\bgeometry\b", r"\bexam\b", r"\bfinal\b.*\bgrade\b",
-        r"\bstudy\b", r"\bcollege\b", r"\buniversity\b", r"\bschool\b",
-        r"\bspelling\b", r"\bgrammar\b", r"\bvocabulary\b", r"\bquiz\b",
-        r"\bperiodic\s*table\b", r"\belement\b",
+        r"\bpaycheck\b", r"\bpayroll\b", r"\bpaypal\b", r"\bfee\b.*\bcalc\b",
+        r"\brefinance\b", r"\bretirement\b", r"\bsocial\s*security\b",
+        r"\brmd\b", r"\bcap\s*rate\b", r"\bheloc\b", r"\bamortiz\b",
+        r"\bannuity\b", r"\bfire\b.*\bcalc\b", r"\bincome\b", r"\bpay\b.*\bcalc\b",
+        r"\bcar\s*payment\b", r"\bhouse\s*payment\b", r"\bmonthly\s*payment\b",
+        r"\bmarkup\b", r"\bmargin\b", r"\bdiscount\b", r"\bcpm\b",
+        r"\bsip\b.*\bcalc\b", r"\birr\b", r"\bnpv\b", r"\broth\b", r"\bira\b",
+        r"\binsurance\b", r"\bschedule\s*1\b", r"\bdepreciation\b",
+        r"\bcost\s*of\s*living\b", r"\brent\b.*\bcalc\b", r"\bprorated\b",
     ],
     "health": [
-        r"\bbmi\b", r"\bcalorie\b", r"\bweight\b", r"\bheight\b", r"\bbody\b",
+        r"\bbmi\b", r"\bcalorie\b", r"\bweight\b.*\b(loss|calc|gain)\b",
+        r"\bheight\b.*\bcalc\b", r"\bbody\s*(fat|mass)\b",
         r"\bpeptide\b", r"\bfitness\b", r"\bexercise\b", r"\bpregnancy\b",
-        r"\bovulation\b", r"\bhealth\b", r"\bnutrition\b", r"\bdiet\b",
-        r"\bmacro\b", r"\bprotein\b", r"\bsleep\b",
+        r"\bovulation\b", r"\bhealth\b", r"\bdiet\b",
+        r"\bmacro\b.*\bcalc\b", r"\bprotein\b.*\bcalc\b", r"\bsleep\b",
+        r"\btdee\b", r"\bvo2\b", r"\brep\s*max\b", r"\b1rm\b",
+        r"\bacft\b", r"\bffmi\b", r"\bheart\s*rate\b",
+        r"\bdue\s*date\b", r"\bconception\b", r"\bivf\b", r"\bperiod\b",
+        r"\bbac\b.*\bcalc\b", r"\betg\b", r"\babv\b",
+        r"\bcreatinine\b", r"\bcrcl\b", r"\ba1c\b", r"\bcalcium\b",
+        r"\bpuppy\b.*\bweight\b", r"\blife\s*expectancy\b",
+        r"\bpace\b.*\bcalc\b", r"\bsteps\b.*\bmiles\b",
+    ],
+    "education": [
+        r"\bgrade\b", r"\bgpa\b", r"\bexam\b", r"\bfinal\b.*\bgrade\b",
+        r"\bstudy\b", r"\bcollege\b", r"\buniversity\b", r"\bschool\b",
+        r"\bspelling\b", r"\bgrammar\b", r"\bvocabulary\b", r"\bquiz\b",
+        r"\bsat\b.*\bscore\b", r"\bap\b.*\bscore\b", r"\bsemester\b",
+    ],
+    "math": [
+        r"\bmath\b", r"\bmultiplication\b", r"\bcalculus\b",
+        r"\balgebra\b", r"\bgeometry\b", r"\btrigonometry\b",
+        r"\bfraction\b", r"\bdecimal\b", r"\bpercentage?\b", r"\bpercent\b",
+        r"\bequation\b", r"\bmatrix\b", r"\beigen\b", r"\brref\b",
+        r"\bslope\b", r"\bderivative\b", r"\bintegral\b", r"\bantiderivative\b",
+        r"\blimit\b.*\bcalc\b", r"\blog\b.*\bcalc\b",
+        r"\bsquare\s*root\b", r"\bsq\s*ft\b", r"\bsquare\s*foot\b",
+        r"\bsurface\s*area\b", r"\bvolume\b.*\bcalc\b", r"\bcircle\b",
+        r"\btriangle\b", r"\bcylinder\b", r"\bpythagorean\b",
+        r"\bmidpoint\b", r"\bmedian\b", r"\bmean\b.*\bcalc\b",
+        r"\bstandard\s*deviation\b", r"\bvariance\b", r"\bz.score\b",
+        r"\bp.value\b", r"\bgcf\b", r"\blcm\b", r"\bfactor\b",
+        r"\bratio\b", r"\bproportion\b", r"\bsimplif\b",
+        r"\bgraphing\b", r"\bscientific\s*calculator\b", r"\bdesmos\b",
+        r"\bdistance\b.*\bcalc\b", r"\bconversion\b.*\bcalc\b",
+        r"\brounding\b", r"\bremainder\b", r"\bdivision\b",
+        r"\bsignificant\s*figures\b", r"\bscientific\s*notation\b",
+        r"\bcosine\b", r"\bsine\b", r"\bhypotenuse\b",
+        r"\bcross\s*product\b", r"\bdensity\b", r"\bhalf.life\b",
+    ],
+    "science": [
+        r"\bphysics\b", r"\bchemistry\b", r"\bbiology\b", r"\bscien\b",
+        r"\bmolecul\b", r"\batom\b", r"\bperiodic\s*table\b",
+        r"\blight\b.*\bspeed\b", r"\bgravity\b",
+        r"\bdilution\b", r"\bmolarity\b", r"\bheat\s*index\b",
+        r"\bwind\s*chill\b", r"\bformula\b",
+    ],
+    "lifestyle": [
+        r"\bage\b.*\bcalc\b", r"\bdate\b.*\bcalc\b", r"\btime\s*zone\b",
+        r"\bbirthday\b", r"\bday\s*calculator\b", r"\bdays\s*calculator\b",
+        r"\bdog\s*age\b", r"\bdog\s*years\b", r"\bfemale\s*delusion\b",
+        r"\bgematria\b", r"\bbirth\s*chart\b", r"\bmoon\s*sign\b",
+        r"\brising\s*sign\b", r"\bsaturn\s*return\b", r"\blove\b.*\bcalc\b",
+        r"\bsnow\s*day\b", r"\bpool\b.*\bvolume\b", r"\bbra\s*size\b",
+        r"\bchronological\b", r"\bastrology\b", r"\bhoroscope\b",
+        r"\btravel\b", r"\bnomad\b", r"\bvisa\b", r"\bflight\b",
     ],
     "tech": [
         r"\bjson\b", r"\bhtml\b", r"\bcss\b", r"\bregex\b", r"\bcode\b",
@@ -80,28 +177,18 @@ CATEGORY_PATTERNS = {
         r"\bjavascript\b", r"\blinux\b", r"\bchmod\b", r"\bcron\b",
         r"\bip\b.*\baddress\b", r"\bsubnet\b", r"\bpassword\b", r"\bhash\b",
         r"\bencrypt\b", r"\bbase64\b", r"\bflexbox\b", r"\bgrid\b",
-        r"\bgpu\b", r"\bbenchmark\b",
-    ],
-    "science": [
-        r"\bphysics\b", r"\bchemistry\b", r"\bbiology\b", r"\bscien\b",
-        r"\bmolecul\b", r"\batom\b", r"\bformula\b", r"\bperiodic\b",
-        r"\blight\b.*\bspeed\b", r"\bgravity\b",
-    ],
-    "lifestyle": [
-        r"\bcooking\b", r"\brecipe\b", r"\bkitchen\b", r"\bfood\b",
-        r"\btravel\b", r"\bnomad\b", r"\bvisa\b", r"\bflight\b",
-        r"\bcost\s*of\s*living\b", r"\brent\b", r"\bhome\b", r"\bdiy\b",
-        r"\bgarden\b", r"\bpet\b", r"\bdog\b", r"\bcat\b",
-        r"\bage\b.*\bcalc\b", r"\bdate\b.*\bcalc\b", r"\btime\s*zone\b",
+        r"\bgpu\b", r"\bbenchmark\b", r"\bohm\b", r"\bwire\s*size\b",
     ],
     "sports": [
         r"\bsport\b", r"\bfootball\b", r"\bbasketball\b", r"\bbaseball\b",
-        r"\bsoccer\b", r"\btennis\b", r"\bgolf\b", r"\bfantasy\b",
+        r"\bsoccer\b", r"\btennis\b", r"\bgolf\b",
         r"\bnfl\b", r"\bnba\b", r"\bmlb\b", r"\bfifa\b",
+        r"\bpace\b.*\b(run|mile|km)\b",
     ],
-    "gaming": [
-        r"\bgame\b", r"\bgaming\b", r"\btier\s*list\b", r"\bwiki\b",
-        r"\bminecraft\b", r"\bfortnite\b", r"\broblox\b",
+    "tools": [
+        r"\bcalculator\s*(app|online|google|soup)\b",
+        r"\bomni\s*calculator\b", r"\bti.84\b",
+        r"\bonline\s*calculator\b", r"\bgoogle\s*calculator\b",
     ],
 }
 
@@ -127,13 +214,21 @@ def classify_engine(kw):
 
 
 def classify_category(kw):
-    """Determine category for this keyword."""
+    """Determine category for this keyword. Never returns 'general'."""
     kw_lower = kw.lower()
     for cat, patterns in CATEGORY_PATTERNS.items():
         for p in patterns:
             if re.search(p, kw_lower):
                 return cat
-    return "general"
+    # Fallback: use broad heuristics instead of "general"
+    if any(w in kw_lower for w in ["money", "pay", "cost", "price", "fee", "earn"]):
+        return "finance"
+    if any(w in kw_lower for w in ["health", "medical", "body", "heart", "blood"]):
+        return "health"
+    if any(w in kw_lower for w in ["number", "calculate", "formula", "equation"]):
+        return "math"
+    # Last resort: "lifestyle" as the broadest non-"general" bucket
+    return "lifestyle"
 
 
 def is_blacklisted(kw):

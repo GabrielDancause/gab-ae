@@ -1,0 +1,72 @@
+{
+  "slug": "ps5-price-hike-pc-gaming-bottleneck-2026",
+  "title": "Sony Hikes PS5 Price by 19% to $650 — Blame AI Data Centers for Eating All the RAM",
+  "description": "The PS5 now costs $650 in the US and £570 in the UK. Sony says global economic pressures forced the increase, but the real culprit is AI infrastructure gobbling up RAM and storage chips.",
+  "category": "tech",
+  "image": "",
+  "imageAlt": "",
+  "lede": "Sony just raised PS5 prices by up to 21% worldwide, effective April 2. The standard PS5 jumps from $550 to $650 in the US and from £480 to £570 in the UK. The PS5 Pro hits £790. Sony blames 'global economic pressures' — but analysts point to a more specific cause: AI.",
+  "sections": [
+    {
+      "heading": "The Price Hikes, By the Numbers",
+      "paragraphs": [
+        "Starting April 2, 2026, Sony's PlayStation lineup gets dramatically more expensive across every market. The PS5 rises to $649.99 in the US (up from $549.99, an 18% increase). In the UK, it jumps to £569.99 (up from £479.99, a 19% increase). The PS5 Digital Edition hits £519.99 (21% increase). The PS5 Pro reaches £789.99 (13% increase). Even the PlayStation Portal handheld goes up £20 to £219.99.",
+        "Sony's official explanation cites 'continued pressures in the global economic landscape' and calls the increases 'a necessary step to ensure we can continue delivering innovative, high-quality gaming experiences.' The statement is carefully vague — but industry analysts aren't.",
+        "Player reaction has been fierce. Comments on Sony's blog post announcing the changes called the move 'disgusting' and noted that console prices have never increased this late into a generation cycle before. The PS5 launched in November 2020 — this is a five-year-old console now costing more than it did at launch."
+      ]
+    },
+    {
+      "heading": "The Real Culprit: AI Is Eating the World's Chips",
+      "paragraphs": [
+        "Gaming industry analyst Piers Harding-Rolls of Ampere Analysis told the BBC the real driver is surging prices for RAM and storage — both essential components in building consoles. The reason those prices are surging: AI data centers are consuming enormous quantities of the same memory chips that go into gaming hardware.",
+        "The global buildout of AI infrastructure — data centers housing the GPU clusters that power large language models, image generators, and AI training — has created unprecedented demand for high-bandwidth memory (HBM), DRAM, and NAND flash storage. This demand is pulling supply away from consumer electronics and driving up component costs across the board.",
+        "Valve, the company behind Steam, has already cited the same issue as the reason for delaying and repricing its upcoming Steam console hybrid. Harding-Rolls warned that Microsoft and Nintendo will likely follow Sony's lead with their own price increases 'in the not-too-distant future.'"
+      ]
+    },
+    {
+      "heading": "PC Gaming: The Alternative Math",
+      "paragraphs": [
+        "At $650 for a standard PS5 — with no ability to upgrade individual components — the console value proposition is looking increasingly shaky compared to PC gaming. A well-balanced gaming PC built around a Ryzen 5 7600X and an RTX 4070 costs approximately $800-900 and delivers significantly higher performance at 1440p, with the ability to upgrade the GPU or CPU independently as prices drop.",
+        "The key to getting good value from a PC build is avoiding bottlenecks — making sure your CPU and GPU are well-matched for your target resolution. A $300 GPU paired with a $100 CPU creates a CPU bottleneck that wastes most of your GPU's capability. A bottleneck calculator can identify these mismatches before you spend money.",
+        "The irony of the PS5 price hike is that it's pushing the console into territory where budget gaming PCs become competitive on price while offering dramatically more flexibility, modding support, backwards compatibility, and no paid online subscriptions."
+      ]
+    },
+    {
+      "heading": "What Comes Next",
+      "paragraphs": [
+        "The outlook isn't great for console pricing. AI infrastructure spending is projected to exceed $250 billion in 2026, with no sign of slowing. Every new data center built consumes memory that could otherwise go into consumer electronics. Until AI chip demand plateaus — or manufacturers significantly expand production capacity — the component cost pressure will persist.",
+        "Epic Games laid off 1,000 employees the same week Sony announced its price hikes, citing a 'downturn' in the gaming market. The combination of rising hardware costs, an industry contraction, and consumers with less disposable income creates a challenging environment for everyone in gaming.",
+        "For gamers, the practical advice is straightforward: if you're considering a console purchase, wait for sales or consider refurbished options. If you're open to PC gaming, check whether your current hardware is bottlenecked — you might get better performance from a $200 component upgrade than from spending $650 on a new PS5."
+      ]
+    }
+  ],
+  "tags": ["PS5", "Sony", "PlayStation", "PC gaming", "bottleneck", "RAM prices", "AI data centers", "gaming hardware", "console prices"],
+  "sources": [
+    {
+      "name": "BBC News",
+      "url": "https://www.bbc.com/news/articles/czx9852nkexo"
+    }
+  ],
+  "faqs": [
+    {
+      "q": "How much does the PS5 cost in 2026?",
+      "a": "As of April 2, 2026: PS5 costs $649.99 (US) / £569.99 (UK). PS5 Digital Edition: £519.99. PS5 Pro: £789.99. PlayStation Portal: £219.99. These represent increases of 13-21% from previous prices."
+    },
+    {
+      "q": "Why did Sony raise PS5 prices?",
+      "a": "Sony cites 'global economic pressures.' Analysts attribute the increase specifically to surging RAM and storage prices driven by AI data center demand, plus the broader economic impact of the Middle East conflict on supply chains."
+    },
+    {
+      "q": "Is PC gaming cheaper than PS5 now?",
+      "a": "At $650 for a PS5, a budget gaming PC ($800-900) becomes price-competitive while offering component upgradeability, no paid online subscriptions, and broader game compatibility. The value calculation has shifted significantly in PC gaming's favor."
+    },
+    {
+      "q": "Will Xbox and Nintendo raise prices too?",
+      "a": "Analysts expect Microsoft and Nintendo to follow Sony's lead with their own price increases, as the RAM and storage cost pressures affect all console manufacturers equally."
+    },
+    {
+      "q": "What is a PC bottleneck?",
+      "a": "A bottleneck occurs when one PC component (usually CPU or GPU) limits the performance of the rest of the system. A bottleneck calculator helps identify if upgrading one component would unlock significantly better performance from your existing hardware."
+    }
+  ]
+}

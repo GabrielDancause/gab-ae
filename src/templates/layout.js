@@ -16,6 +16,9 @@ export function layout({ title, description, canonical, schemaJson, body }) {
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <!-- GA4 -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-24QTGCDKMH"></script>
+  <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-24QTGCDKMH');</script>
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
     tailwind.config = {
@@ -32,6 +35,8 @@ export function layout({ title, description, canonical, schemaJson, body }) {
   </script>
   <style>
     body { font-family: 'Inter', system-ui, sans-serif; }
+    article a, .prose a, p a { color: #3b82f6; text-decoration: underline; text-underline-offset: 2px; }
+    article a:hover, .prose a:hover, p a:hover { color: #60a5fa; }
     @media print {
       .no-print { display: none !important; }
       body { background: white; color: black; }
@@ -42,10 +47,11 @@ export function layout({ title, description, canonical, schemaJson, body }) {
   <!-- Nav -->
   <nav class="border-b border-surface-border px-4 py-3 no-print">
     <div class="max-w-5xl mx-auto flex items-center justify-between">
-      <a href="/" class="text-xl font-bold text-white hover:text-accent transition-colors">gab.ae</a>
+      <a href="/" class="text-xl font-bold text-white hover:text-accent transition-colors">GAB</a>
       <div class="flex gap-6 text-sm text-gray-400">
-        <a href="/tools" class="hover:text-white transition-colors">Tools</a>
         <a href="/news" class="hover:text-white transition-colors">News</a>
+        <a href="/#categories" class="hover:text-white transition-colors">Tools</a>
+        <a href="/#finance" class="hover:text-white transition-colors">Finance</a>
       </div>
     </div>
   </nav>
@@ -65,7 +71,7 @@ export function layout({ title, description, canonical, schemaJson, body }) {
 </html>`;
 }
 
-function esc(s) {
+export function esc(s) {
   if (!s) return '';
   return s.replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
 }

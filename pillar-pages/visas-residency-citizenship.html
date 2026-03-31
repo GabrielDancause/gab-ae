@@ -1,0 +1,1245 @@
+<style>
+  .visa-container {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 2rem;
+    color: #e2e8f0;
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    line-height: 1.8;
+  }
+  .visa-header {
+    text-align: center;
+    margin-bottom: 4rem;
+    padding-top: 3rem;
+  }
+  .gradient-h1 {
+    font-size: clamp(2.2rem, 5vw, 3.5rem);
+    font-weight: 800;
+    background: linear-gradient(135deg, #ffffff 0%, #a5b4fc 50%, #818cf8 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    margin-bottom: 1rem;
+    line-height: 1.15;
+    letter-spacing: -0.02em;
+  }
+  .visa-subtitle {
+    font-size: 1.2rem;
+    color: #94a3b8;
+    max-width: 750px;
+    margin: 0 auto;
+  }
+  .breadcrumb {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    justify-content: center;
+    margin-bottom: 2rem;
+    font-size: 0.85rem;
+  }
+  .breadcrumb a {
+    color: #818cf8;
+    text-decoration: none;
+  }
+  .breadcrumb a:hover { text-decoration: underline; }
+  .breadcrumb span { color: #475569; }
+  .updated-badge {
+    display: inline-block;
+    background: rgba(129, 140, 248, 0.15);
+    color: #a5b4fc;
+    padding: 0.4rem 1rem;
+    border-radius: 20px;
+    font-size: 0.85rem;
+    margin-bottom: 1.5rem;
+    border: 1px solid rgba(129, 140, 248, 0.3);
+  }
+
+  /* Sticky TOC */
+  .visa-layout {
+    display: grid;
+    grid-template-columns: 260px 1fr;
+    gap: 4rem;
+    align-items: start;
+  }
+  .sticky-toc {
+    position: sticky;
+    top: 2rem;
+    background: #12121a;
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 14px;
+    padding: 1.5rem;
+  }
+  .sticky-toc h3 {
+    margin: 0 0 1rem;
+    color: #fff;
+    font-size: 0.9rem;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    padding-bottom: 0.8rem;
+    border-bottom: 1px solid rgba(255,255,255,0.08);
+  }
+  .sticky-toc ul { list-style: none; padding: 0; margin: 0; }
+  .sticky-toc li { margin-bottom: 0.7rem; }
+  .sticky-toc a {
+    color: #94a3b8;
+    text-decoration: none;
+    font-size: 0.88rem;
+    transition: all 0.2s;
+    display: block;
+  }
+  .sticky-toc a:hover { color: #818cf8; transform: translateX(3px); }
+
+  /* Content sections */
+  .section { margin-bottom: 5rem; scroll-margin-top: 2rem; }
+  .section h2 {
+    font-size: 2rem;
+    color: #fff;
+    margin-bottom: 1.2rem;
+    padding-bottom: 0.8rem;
+    border-bottom: 1px solid rgba(255,255,255,0.08);
+    letter-spacing: -0.02em;
+  }
+  .section h3 {
+    font-size: 1.35rem;
+    color: #e2e8f0;
+    margin-top: 2.5rem;
+    margin-bottom: 0.8rem;
+  }
+  .section p {
+    margin-bottom: 1.3rem;
+    font-size: 1.05rem;
+    color: #cbd5e1;
+  }
+  .section ul, .section ol {
+    margin-bottom: 1.5rem;
+    padding-left: 1.5rem;
+    color: #cbd5e1;
+    font-size: 1.05rem;
+  }
+  .section li { margin-bottom: 0.5rem; }
+
+  /* Callout boxes */
+  .callout {
+    border-left: 4px solid #818cf8;
+    background: linear-gradient(90deg, rgba(129, 140, 248, 0.1) 0%, rgba(129, 140, 248, 0.02) 100%);
+    padding: 1.3rem 1.8rem;
+    border-radius: 0 12px 12px 0;
+    margin: 2rem 0;
+    font-size: 1.05rem;
+    color: #e2e8f0;
+  }
+  .callout.warning {
+    border-left-color: #f59e0b;
+    background: linear-gradient(90deg, rgba(245, 158, 11, 0.1) 0%, rgba(245, 158, 11, 0.02) 100%);
+  }
+  .callout.success {
+    border-left-color: #10b981;
+    background: linear-gradient(90deg, rgba(16, 185, 129, 0.1) 0%, rgba(16, 185, 129, 0.02) 100%);
+  }
+  .callout strong { color: #fff; }
+
+  /* Data tables */
+  .data-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 2rem 0;
+    font-size: 0.95rem;
+  }
+  .data-table thead {
+    background: rgba(129, 140, 248, 0.1);
+  }
+  .data-table th {
+    padding: 0.8rem 1rem;
+    text-align: left;
+    color: #a5b4fc;
+    font-weight: 600;
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    border-bottom: 1px solid rgba(255,255,255,0.1);
+  }
+  .data-table td {
+    padding: 0.8rem 1rem;
+    color: #cbd5e1;
+    border-bottom: 1px solid rgba(255,255,255,0.04);
+  }
+  .data-table tbody tr:hover {
+    background: rgba(255,255,255,0.02);
+  }
+  .val-good { color: #4ade80; font-weight: 600; }
+  .val-great { color: #22d3ee; font-weight: 700; }
+  .val-meh { color: #fbbf24; }
+
+  /* Tool cards */
+  .tool-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 1.2rem;
+    margin: 2rem 0;
+  }
+  .tool-card {
+    background: #12121a;
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 14px;
+    padding: 1.8rem;
+    transition: border-color 0.2s;
+  }
+  .tool-card:hover { border-color: rgba(129, 140, 248, 0.4); }
+  .tool-card h4 {
+    color: #fff;
+    font-size: 1.15rem;
+    margin: 0 0 0.5rem;
+  }
+  .tool-card .tool-type {
+    font-size: 0.75rem;
+    color: #818cf8;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    font-weight: 600;
+    margin-bottom: 0.6rem;
+  }
+  .tool-card p {
+    color: #94a3b8;
+    font-size: 0.95rem;
+    margin: 0 0 0.8rem;
+    line-height: 1.5;
+  }
+  .tool-card .tool-price {
+    font-size: 0.85rem;
+    color: #64748b;
+  }
+
+  /* Interactive passport calculator */
+  .calc-box {
+    background: #12121a;
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 16px;
+    padding: 2.5rem;
+    margin: 2.5rem 0;
+  }
+  .calc-box h3 {
+    color: #fff;
+    margin: 0 0 1.5rem;
+    font-size: 1.4rem;
+  }
+  .calc-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.5rem;
+    margin-bottom: 1.5rem;
+  }
+  .calc-field label {
+    display: block;
+    font-size: 0.8rem;
+    color: #94a3b8;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    margin-bottom: 0.4rem;
+  }
+  .calc-field select {
+    width: 100%;
+    padding: 0.7rem 1rem;
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 8px;
+    color: #fff;
+    font-size: 1rem;
+    font-family: inherit;
+    box-sizing: border-box;
+  }
+  .calc-field select:focus {
+    outline: none;
+    border-color: #818cf8;
+  }
+  .calc-field select option { background: #12121a; color: #fff; }
+  .calc-btn {
+    display: inline-block;
+    background: #818cf8;
+    color: #fff;
+    border: none;
+    padding: 0.8rem 2rem;
+    border-radius: 10px;
+    font-weight: 600;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: all 0.2s;
+    font-family: inherit;
+  }
+  .calc-btn:hover { background: #6366f1; transform: translateY(-2px); }
+  .calc-result {
+    margin-top: 1.5rem;
+    padding: 1.5rem;
+    background: rgba(129, 140, 248, 0.08);
+    border-radius: 12px;
+    display: none;
+  }
+  .calc-result h4 {
+    color: #4ade80;
+    font-size: 1.3rem;
+    margin: 0 0 1rem;
+  }
+  .calc-result .recommendations {
+    font-size: 0.95rem;
+    color: #cbd5e1;
+  }
+
+  /* Country comparison */
+  .country-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+    gap: 1.5rem;
+    margin: 2rem 0;
+  }
+  .country-card {
+    background: #12121a;
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 14px;
+    padding: 2rem;
+    transition: border-color 0.2s;
+  }
+  .country-card:hover { border-color: rgba(255,255,255,0.2); }
+  .country-name {
+    font-size: 1.3rem;
+    font-weight: 700;
+    color: #fff;
+    margin-bottom: 0.3rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+  .country-requirements {
+    font-size: 0.85rem;
+    color: #64748b;
+    margin-bottom: 1.2rem;
+  }
+  .country-stat {
+    display: flex;
+    justify-content: space-between;
+    padding: 0.5rem 0;
+    border-top: 1px solid rgba(255,255,255,0.04);
+    font-size: 0.9rem;
+  }
+  .country-stat-label { color: #94a3b8; }
+  .country-stat-value { color: #e2e8f0; font-weight: 600; }
+
+  /* Path cards */
+  .path-card {
+    background: #12121a;
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 14px;
+    padding: 2rem;
+    margin: 1.5rem 0;
+    position: relative;
+    overflow: hidden;
+  }
+  .path-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0;
+    width: 4px; height: 100%;
+    background: #818cf8;
+  }
+  .path-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+  .path-title { color: #fff; font-size: 1.25rem; font-weight: 700; margin: 0; }
+  .path-tags { display: flex; gap: 0.5rem; flex-wrap: wrap; }
+  .path-tag {
+    font-size: 0.7rem;
+    padding: 0.2rem 0.5rem;
+    border-radius: 4px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+  .tag-timeline { background: rgba(74, 222, 128, 0.15); color: #4ade80; }
+  .tag-cost { background: rgba(248, 113, 113, 0.15); color: #f87171; }
+  .tag-difficulty { background: rgba(251, 191, 36, 0.15); color: #fbbf24; }
+  .path-body { color: #cbd5e1; font-size: 1rem; }
+  .path-body p { margin-bottom: 0.8rem; }
+
+  /* CTA */
+  .cta-card {
+    display: block;
+    background: #12121a;
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 16px;
+    padding: 2rem;
+    text-decoration: none;
+    transition: all 0.3s;
+    position: relative;
+    overflow: hidden;
+    margin: 2.5rem 0;
+  }
+  .cta-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0;
+    width: 4px; height: 100%;
+    background: #818cf8;
+  }
+  .cta-card:hover { transform: translateY(-4px); border-color: #818cf8; }
+  .cta-card h4 { color: #fff; font-size: 1.3rem; margin: 0 0 0.5rem; }
+  .cta-card p { color: #94a3b8; margin: 0; font-size: 1rem; }
+
+  /* FAQ */
+  .faq-section {
+    margin-top: 5rem;
+    border-top: 1px solid rgba(255,255,255,0.08);
+    padding-top: 4rem;
+  }
+  .faq-section h2 {
+    font-size: 2rem;
+    color: #fff;
+    margin-bottom: 2rem;
+    text-align: center;
+  }
+  .faq-item {
+    background: #12121a;
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 14px;
+    padding: 1.5rem;
+    margin-bottom: 1rem;
+  }
+  .faq-item:hover { border-color: rgba(129, 140, 248, 0.3); }
+  .faq-item h3 { margin: 0 0 0.7rem; color: #fff; font-size: 1.1rem; }
+  .faq-item p { margin: 0; color: #94a3b8; font-size: 1rem; }
+
+  @media (max-width: 1024px) {
+    .visa-layout { grid-template-columns: 1fr; gap: 2rem; }
+    .sticky-toc { position: relative; top: 0; }
+    .country-grid { grid-template-columns: 1fr; }
+  }
+  @media (max-width: 768px) {
+    .gradient-h1 { font-size: 2rem; }
+    .visa-container { padding: 1rem; }
+    .calc-row { grid-template-columns: 1fr; }
+    .tool-grid { grid-template-columns: 1fr; }
+  }
+</style>
+
+<div class="visa-container">
+  <div class="visa-header">
+    <div class="breadcrumb">
+      <a href="/apex-guides">Apex Guides</a>
+      <span>›</span>
+      <a href="/global-mobility-geo-arbitrage-guide-2026">Global Mobility & Geo-Arbitrage</a>
+      <span>›</span>
+      <span style="color: #cbd5e1;">Current</span>
+    </div>
+    <span class="updated-badge">🌍 Updated March 2026</span>
+    <h1 class="gradient-h1">Visas, Residency & Citizenship — The Complete Playbook</h1>
+    <p class="visa-subtitle">Navigate global mobility with strategic visa planning, residency optimization, and citizenship by investment. From digital nomad visas to second passports — everything you need for borderless living.</p>
+  </div>
+
+  <div class="visa-layout">
+    <aside>
+      <nav class="sticky-toc">
+        <h3>Contents</h3>
+        <ul>
+          <li><a href="#foundation">1. Global Mobility Strategy</a></li>
+          <li><a href="#visa-types">2. Visa Categories</a></li>
+          <li><a href="#calculator">3. Pathway Calculator</a></li>
+          <li><a href="#digital-nomad">4. Digital Nomad Visas</a></li>
+          <li><a href="#residency">5. Residency Programs</a></li>
+          <li><a href="#citizenship">6. Citizenship by Investment</a></li>
+          <li><a href="#tax-planning">7. Tax Optimization</a></li>
+          <li><a href="#tools">8. Documentation Tools</a></li>
+          <li><a href="#faq">9. FAQ</a></li>
+        </ul>
+      </nav>
+    </aside>
+
+    <main>
+
+      <!-- SECTION 1: FOUNDATION -->
+      <section id="foundation" class="section">
+        <h2>1. Strategic Global Mobility Planning</h2>
+        <p>Global mobility is no longer a luxury — it's a strategic advantage. The right visa and residency setup provides tax optimization, geographic diversification, backup options during crisis, and access to better business opportunities, healthcare, and education systems.</p>
+        
+        <p>Modern citizenship and residency planning operates on three levels: <strong>immediate mobility</strong> (tourist/business visas for travel), <strong>medium-term flexibility</strong> (temporary residence permits and digital nomad visas), and <strong>long-term security</strong> (permanent residence and second citizenship).</p>
+
+        <div class="callout">
+          <strong>The key insight:</strong> Your passport determines your baseline opportunities, but strategic residency and additional citizenships can dramatically expand your options. A U.S. citizen with Portuguese residency and Maltese citizenship has fundamentally different global opportunities than someone with just U.S. citizenship.
+        </div>
+
+        <p>The geopolitical landscape is shifting rapidly. Countries that once offered citizenship/residence programs are tightening requirements (e.g., Portugal's Golden Visa suspension), while others are introducing new opportunities (e.g., Spain's Digital Nomad Visa, Italy's Self-Employment Visa). Successful global mobility requires staying ahead of these changes.</p>
+
+        <h3>The Five Pillars of Global Mobility</h3>
+        <ul>
+          <li><strong>Visa-free travel:</strong> Access to global markets, business opportunities, and lifestyle options without bureaucratic friction</li>
+          <li><strong>Tax optimization:</strong> Legal strategies to minimize global tax burden through residency planning and treaty networks</li>
+          <li><strong>Business opportunities:</strong> Access to markets, banking, investment opportunities restricted by nationality or residency</li>
+          <li><strong>Lifestyle flexibility:</strong> Freedom to live, work, and retire in desirable locations with better climate, cost of living, or quality of life</li>
+          <li><strong>Risk mitigation:</strong> Backup plans for political instability, economic crisis, or personal emergencies in home countries</li>
+        </ul>
+
+        <h3>Passport Power Rankings 2026</h3>
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>Rank</th>
+              <th>Passport</th>
+              <th>Visa-Free Destinations</th>
+              <th>Key Advantages</th>
+              <th>Acquisition Difficulty</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>1</td>
+              <td class="val-great">Singapore</td>
+              <td class="val-great">195</td>
+              <td>Business hub, tax benefits</td>
+              <td class="val-meh">Very High</td>
+            </tr>
+            <tr>
+              <td>2</td>
+              <td class="val-great">Germany</td>
+              <td class="val-great">194</td>
+              <td>EU access, strong economy</td>
+              <td class="val-good">Moderate</td>
+            </tr>
+            <tr>
+              <td>3</td>
+              <td class="val-great">Italy</td>
+              <td class="val-great">193</td>
+              <td>EU access, lifestyle</td>
+              <td class="val-good">Moderate</td>
+            </tr>
+            <tr>
+              <td>4</td>
+              <td class="val-great">Spain</td>
+              <td class="val-great">193</td>
+              <td>EU access, Latin America ties</td>
+              <td class="val-good">Moderate</td>
+            </tr>
+            <tr>
+              <td>5</td>
+              <td class="val-great">Luxembourg</td>
+              <td class="val-great">192</td>
+              <td>EU access, financial center</td>
+              <td class="val-good">Moderate</td>
+            </tr>
+            <tr>
+              <td>8</td>
+              <td class="val-good">USA</td>
+              <td class="val-good">188</td>
+              <td>Global business access</td>
+              <td class="val-meh">High</td>
+            </tr>
+            <tr>
+              <td>9</td>
+              <td class="val-good">Canada</td>
+              <td class="val-good">188</td>
+              <td>Quality of life, Commonwealth</td>
+              <td class="val-good">Moderate</td>
+            </tr>
+          </tbody>
+        </table>
+      </section>
+
+      <!-- SECTION 2: VISA TYPES -->
+      <section id="visa-types" class="section">
+        <h2>2. Understanding Visa Categories</h2>
+        <p>Visas exist on a spectrum from short-term tourism to permanent settlement rights. Understanding the hierarchy helps you plan a logical progression toward your global mobility goals.</p>
+
+        <div class="path-card">
+          <div class="path-header">
+            <h3 class="path-title">Tourist & Business Visas</h3>
+            <div class="path-tags">
+              <span class="path-tag tag-timeline">Up to 90 days</span>
+              <span class="path-tag tag-cost">Low cost</span>
+            </div>
+          </div>
+          <div class="path-body">
+            <p>Short-term entry for tourism, business meetings, conferences, or reconnaissance trips. Usually visa-free or visa-on-arrival for developed country passports. Cannot work locally or establish residency.</p>
+            <p><strong>Best for:</strong> Exploring potential relocation destinations, business development, maintaining tourist status for tax purposes, short-term lifestyle experiments.</p>
+            <p><strong>Limitations:</strong> No work authorization, time limits, cannot establish bank accounts or utilities, no path to permanent residence.</p>
+          </div>
+        </div>
+
+        <div class="path-card">
+          <div class="path-header">
+            <h3 class="path-title">Temporary Residence</h3>
+            <div class="path-tags">
+              <span class="path-tag tag-timeline">1-5 years</span>
+              <span class="path-tag tag-cost">Moderate cost</span>
+            </div>
+          </div>
+          <div class="path-body">
+            <p>Renewable permits allowing extended stays with work authorization. Includes digital nomad visas, self-employment permits, student visas, and family reunification visas.</p>
+            <p><strong>Best for:</strong> Remote workers, freelancers, entrepreneurs, students, people with EU/local family ties, location independence while maintaining home country ties.</p>
+            <p><strong>Path to permanent residency:</strong> Usually requires 5+ years of continuous residence, tax compliance, language proficiency, and clean criminal record.</p>
+          </div>
+        </div>
+
+        <div class="path-card">
+          <div class="path-header">
+            <h3 class="path-title">Permanent Residence</h3>
+            <div class="path-tags">
+              <span class="path-tag tag-timeline">Permanent</span>
+              <span class="path-tag tag-difficulty">Complex process</span>
+            </div>
+          </div>
+          <div class="path-body">
+            <p>Indefinite right to live and work in a country without citizenship obligations. Often obtained through Golden Visa programs, skilled worker immigration, or family ties.</p>
+            <p><strong>Best for:</strong> Long-term residence planning, tax optimization, access to social services, EU freedom of movement (for EU residence permits).</p>
+            <p><strong>Path to citizenship:</strong> Usually requires 3-10 years of permanent residence depending on country, plus language and civics requirements.</p>
+          </div>
+        </div>
+
+        <div class="path-card">
+          <div class="path-header">
+            <h3 class="path-title">Dual/Multiple Citizenship</h3>
+            <div class="path-tags">
+              <span class="path-tag tag-timeline">Lifetime</span>
+              <span class="path-tag tag-cost">High cost/time</span>
+            </div>
+          </div>
+          <div class="path-body">
+            <p>Full citizenship rights in multiple countries including passports, voting rights, social services, and the right to pass citizenship to children.</p>
+            <p><strong>Best for:</strong> Ultimate global mobility, maximum visa-free travel, diplomatic protection, inheritance and business advantages, backup citizenship for crisis situations.</p>
+            <p><strong>Considerations:</strong> Military service obligations, tax implications, potential citizenship conflicts, maintaining multiple passports and documentation.</p>
+          </div>
+        </div>
+
+        <div class="callout success">
+          <strong>Strategic progression:</strong> Most successful global mobility plans follow a logical sequence: tourist visa reconnaissance → temporary residence → permanent residence → citizenship. Each step builds on the previous one and provides increasing benefits and security.
+        </div>
+      </section>
+
+      <!-- SECTION 3: CALCULATOR -->
+      <section id="calculator" class="section">
+        <h2>3. Personalized Pathway Calculator</h2>
+        <p>Find the best visa and residency options based on your profile, budget, and goals.</p>
+
+        <div class="calc-box">
+          <h3>🌍 Your Global Mobility Pathway</h3>
+          <div class="calc-row">
+            <div class="calc-field">
+              <label>Current passport</label>
+              <select id="currentPassport">
+                <option value="USA">United States</option>
+                <option value="CAN">Canada</option>
+                <option value="GBR">United Kingdom</option>
+                <option value="AUS">Australia</option>
+                <option value="DEU">Germany</option>
+                <option value="FRA">France</option>
+                <option value="ITA">Italy</option>
+                <option value="ESP">Spain</option>
+                <option value="NLD">Netherlands</option>
+                <option value="SWE">Sweden</option>
+                <option value="CHE">Switzerland</option>
+                <option value="JPN">Japan</option>
+                <option value="SGP">Singapore</option>
+                <option value="OTHER">Other</option>
+              </select>
+            </div>
+            <div class="calc-field">
+              <label>Primary goal</label>
+              <select id="primaryGoal">
+                <option value="nomad">Digital nomad lifestyle</option>
+                <option value="business">Business/work opportunities</option>
+                <option value="tax">Tax optimization</option>
+                <option value="retirement">Retirement planning</option>
+                <option value="education">Education access</option>
+                <option value="backup">Backup citizenship</option>
+                <option value="family">Family reunification</option>
+              </select>
+            </div>
+          </div>
+          <div class="calc-row">
+            <div class="calc-field">
+              <label>Budget range</label>
+              <select id="budgetRange">
+                <option value="low">Under $10K</option>
+                <option value="medium">$10K - $100K</option>
+                <option value="high">$100K - $500K</option>
+                <option value="very-high">$500K+</option>
+              </select>
+            </div>
+            <div class="calc-field">
+              <label>Timeline preference</label>
+              <select id="timelinePreference">
+                <option value="immediate">Immediate (0-6 months)</option>
+                <option value="short">Short-term (6-24 months)</option>
+                <option value="medium">Medium-term (2-5 years)</option>
+                <option value="long">Long-term (5+ years)</option>
+              </select>
+            </div>
+          </div>
+          <button class="calc-btn" onclick="calculatePathway()">Find My Pathway</button>
+
+          <div class="calc-result" id="pathwayResult">
+            <h4 id="recommendedPath"></h4>
+            <div class="recommendations" id="pathwayRecommendations"></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- SECTION 4: DIGITAL NOMAD -->
+      <section id="digital-nomad" class="section">
+        <h2>4. Digital Nomad Visa Programs</h2>
+        <p>Over 50 countries now offer specialized visas for remote workers, recognizing the economic value of location-independent professionals who bring foreign income while spending locally.</p>
+
+        <div class="country-grid">
+          <div class="country-card">
+            <div class="country-name">🇵🇹 Portugal</div>
+            <div class="country-requirements">D7 Visa (Temporary Stay)</div>
+            <div class="country-stat"><span class="country-stat-label">Income requirement</span><span class="country-stat-value">€700/month</span></div>
+            <div class="country-stat"><span class="country-stat-label">Duration</span><span class="country-stat-value">1 year, renewable</span></div>
+            <div class="country-stat"><span class="country-stat-label">Path to residency</span><span class="country-stat-value">5 years</span></div>
+            <div class="country-stat"><span class="country-stat-label">Tax implications</span><span class="country-stat-value">NHR program available</span></div>
+          </div>
+          <div class="country-card">
+            <div class="country-name">🇪🇸 Spain</div>
+            <div class="country-requirements">Digital Nomad Visa</div>
+            <div class="country-stat"><span class="country-stat-label">Income requirement</span><span class="country-stat-value">€2,160/month</span></div>
+            <div class="country-stat"><span class="country-stat-label">Duration</span><span class="country-stat-value">1 year, renewable to 5</span></div>
+            <div class="country-stat"><span class="country-stat-label">Path to residency</span><span class="country-stat-value">Direct path</span></div>
+            <div class="country-stat"><span class="country-stat-label">Tax implications</span><span class="country-stat-value">Beckham Law eligible</span></div>
+          </div>
+          <div class="country-card">
+            <div class="country-name">🇮🇹 Italy</div>
+            <div class="country-requirements">Self-Employment Visa</div>
+            <div class="country-stat"><span class="country-stat-label">Income requirement</span><span class="country-stat-value">€31,000/year</span></div>
+            <div class="country-stat"><span class="country-stat-label">Duration</span><span class="country-stat-value">1 year, renewable</span></div>
+            <div class="country-stat"><span class="country-stat-label">Path to residency</span><span class="country-stat-value">5 years</span></div>
+            <div class="country-stat"><span class="country-stat-label">Tax implications</span><span class="country-stat-value">Flat tax regime available</span></div>
+          </div>
+          <div class="country-card">
+            <div class="country-name">🇩🇪 Germany</div>
+            <div class="country-requirements">Freelancer Visa</div>
+            <div class="country-stat"><span class="country-stat-label">Income requirement</span><span class="country-stat-value">Varies by profession</span></div>
+            <div class="country-stat"><span class="country-stat-label">Duration</span><span class="country-stat-value">3 years</span></div>
+            <div class="country-stat"><span class="country-stat-label">Path to residency</span><span class="country-stat-value">5 years</span></div>
+            <div class="country-stat"><span class="country-stat-label">Tax implications</span><span class="country-stat-value">Full tax residence</span></div>
+          </div>
+          <div class="country-card">
+            <div class="country-name">🇳🇱 Netherlands</div>
+            <div class="country-requirements">Highly Skilled Migrant</div>
+            <div class="country-stat"><span class="country-stat-label">Income requirement</span><span class="country-stat-value">€3,672/month (under 30)</span></div>
+            <div class="country-stat"><span class="country-stat-label">Duration</span><span class="country-stat-value">Up to 5 years</span></div>
+            <div class="country-stat"><span class="country-stat-label">Path to residency</span><span class="country-stat-value">5 years</span></div>
+            <div class="country-stat"><span class="country-stat-label">Tax implications</span><span class="country-stat-value">30% ruling for expats</span></div>
+          </div>
+          <div class="country-card">
+            <div class="country-name">🇪🇪 Estonia</div>
+            <div class="country-requirements">Digital Nomad Visa</div>
+            <div class="country-stat"><span class="country-stat-label">Income requirement</span><span class="country-stat-value">€3,500/month</span></div>
+            <div class="country-stat"><span class="country-stat-label">Duration</span><span class="country-stat-value">1 year</span></div>
+            <div class="country-stat"><span class="country-stat-label">Path to residency</span><span class="country-stat-value">No direct path</span></div>
+            <div class="country-stat"><span class="country-stat-label">Tax implications</span><span class="country-stat-value">No tax on distributed profits</span></div>
+          </div>
+        </div>
+
+        <h3>Non-EU Digital Nomad Options</h3>
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>Country</th>
+              <th>Visa Name</th>
+              <th>Income Requirement</th>
+              <th>Duration</th>
+              <th>Key Benefits</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>🇲🇽 Mexico</strong></td>
+              <td class="val-good">Temporary Resident</td>
+              <td>$2,700/month</td>
+              <td>1 year, renewable to 4</td>
+              <td>Low cost of living, proximity to US</td>
+            </tr>
+            <tr>
+              <td><strong>🇨🇷 Costa Rica</strong></td>
+              <td class="val-good">Rentista Visa</td>
+              <td>$2,500/month</td>
+              <td>2 years, renewable</td>
+              <td>Stable democracy, nature access</td>
+            </tr>
+            <tr>
+              <td><strong>🇹🇭 Thailand</strong></td>
+              <td class="val-good">LTR Visa</td>
+              <td>$80,000 income/year</td>
+              <td>10 years</td>
+              <td>Long duration, tax benefits</td>
+            </tr>
+            <tr>
+              <td><strong>🇦🇪 UAE</strong></td>
+              <td class="val-great">Remote Work Visa</td>
+              <td>$5,000/month</td>
+              <td>1 year</td>
+              <td>Tax-free income, business hub</td>
+            </tr>
+            <tr>
+              <td><strong>🇧🇧 Barbados</strong></td>
+              <td class="val-good">Welcome Stamp</td>
+              <td>$50,000/year</td>
+              <td>1 year, renewable</td>
+              <td>Caribbean lifestyle, English-speaking</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <div class="callout">
+          <strong>Digital nomad strategy:</strong> Use nomad visas as a testing ground for permanent relocation. Spend 1-2 years experiencing the culture, building local connections, and understanding tax implications before committing to permanent residence programs.
+        </div>
+      </section>
+
+      <!-- SECTION 5: RESIDENCY -->
+      <section id="residency" class="section">
+        <h2>5. Golden Visa & Investment Residency Programs</h2>
+        <p>Investment residency programs offer fast-track permanent residence (and eventually citizenship) in exchange for significant financial investment. Popular among high-net-worth individuals seeking mobility, tax optimization, and portfolio diversification.</p>
+
+        <h3>Active European Programs (Post-2024 Changes)</h3>
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>Country</th>
+              <th>Minimum Investment</th>
+              <th>Residency Requirement</th>
+              <th>Path to Citizenship</th>
+              <th>Key Advantages</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>🇬🇷 Greece</strong></td>
+              <td class="val-good">€250,000-800,000</td>
+              <td class="val-great">None (no physical presence)</td>
+              <td class="val-meh">7 years + requirements</td>
+              <td>EU access, low investment, rental income</td>
+            </tr>
+            <tr>
+              <td><strong>🇮🇹 Italy</strong></td>
+              <td class="val-meh">€250,000-500,000</td>
+              <td class="val-good">Minimal (few days/year)</td>
+              <td class="val-good">3 years with investment</td>
+              <td>Fast citizenship track, EU passport</td>
+            </tr>
+            <tr>
+              <td><strong>🇪🇸 Spain</strong></td>
+              <td class="val-meh">€500,000</td>
+              <td class="val-good">1 day/year</td>
+              <td class="val-meh">10 years</td>
+              <td>Quality of life, Latin America access</td>
+            </tr>
+            <tr>
+              <td><strong>🇲🇹 Malta</strong></td>
+              <td class="val-meh">€300,000-600,000</td>
+              <td class="val-good">5 days/year</td>
+              <td class="val-good">1-3 years</td>
+              <td>EU passport, tax planning, English-speaking</td>
+            </tr>
+            <tr>
+              <td><strong>🇱🇺 Luxembourg</strong></td>
+              <td class="val-meh">€500,000</td>
+              <td class="val-good">Minimal</td>
+              <td class="val-good">5 years</td>
+              <td>Financial center, high quality of life</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <h3>Non-EU Investment Programs</h3>
+        <p>These programs often offer faster processing and more favorable terms than European alternatives:</p>
+        <ul>
+          <li><strong>🇨🇦 Canada (Quebec):</strong> $1.2M investment, path to citizenship in 4 years, excellent passport strength</li>
+          <li><strong>🇺🇸 USA (EB-5):</strong> $800K-1.05M investment, path to citizenship in 6+ years, global business access</li>
+          <li><strong>🇦🇺 Australia:</strong> $1.25M-5M investment, path to citizenship in 5 years, high quality of life</li>
+          <li><strong>🇸🇬 Singapore:</strong> $1.5M+ investment, path to citizenship in 6+ years, business hub advantages</li>
+          <li><strong>🇳🇿 New Zealand:</strong> $3M investment, path to citizenship in 5 years, lifestyle benefits</li>
+        </ul>
+
+        <div class="callout warning">
+          <strong>Investment program changes:</strong> Golden Visa programs are constantly evolving. Portugal suspended its program in 2024, Ireland ended theirs in 2023. Many countries are increasing investment thresholds and adding physical presence requirements. Act quickly when opportunities align with your goals.
+        </div>
+      </section>
+
+      <!-- SECTION 6: CITIZENSHIP -->
+      <section id="citizenship" class="section">
+        <h2>6. Citizenship by Investment Programs</h2>
+        <p>Direct citizenship programs offer immediate passport acquisition without residency requirements, though at premium prices. Popular for business mobility, family security, and tax planning.</p>
+
+        <h3>Caribbean Citizenship Programs</h3>
+        <div class="country-grid">
+          <div class="country-card">
+            <div class="country-name">🇦🇬 Antigua & Barbuda</div>
+            <div class="country-requirements">Donation or Investment</div>
+            <div class="country-stat"><span class="country-stat-label">Minimum cost</span><span class="country-stat-value">$130,000</span></div>
+            <div class="country-stat"><span class="country-stat-label">Processing time</span><span class="country-stat-value">4-6 months</span></div>
+            <div class="country-stat"><span class="country-stat-label">Visa-free travel</span><span class="country-stat-value">150+ destinations</span></div>
+            <div class="country-stat"><span class="country-stat-label">Residency requirement</span><span class="country-stat-value">5 days in 5 years</span></div>
+          </div>
+          <div class="country-card">
+            <div class="country-name">🇩🇲 Dominica</div>
+            <div class="country-requirements">Economic Citizenship</div>
+            <div class="country-stat"><span class="country-stat-label">Minimum cost</span><span class="country-stat-value">$100,000</span></div>
+            <div class="country-stat"><span class="country-stat-label">Processing time</span><span class="country-stat-value">3-4 months</span></div>
+            <div class="country-stat"><span class="country-stat-label">Visa-free travel</span><span class="country-stat-value">140+ destinations</span></div>
+            <div class="country-stat"><span class="country-stat-label">Residency requirement</span><span class="country-stat-value">None</span></div>
+          </div>
+          <div class="country-card">
+            <div class="country-name">🇬🇩 Grenada</div>
+            <div class="country-requirements">Investment Program</div>
+            <div class="country-stat"><span class="country-stat-label">Minimum cost</span><span class="country-stat-value">$150,000</span></div>
+            <div class="country-stat"><span class="country-stat-label">Processing time</span><span class="country-stat-value">4-6 months</span></div>
+            <div class="country-stat"><span class="country-stat-label">Visa-free travel</span><span class="country-stat-value">140+ destinations</span></div>
+            <div class="country-stat"><span class="country-stat-label">Special benefit</span><span class="country-stat-value">US E-2 treaty access</span></div>
+          </div>
+          <div class="country-card">
+            <div class="country-name">🇰🇳 St. Kitts & Nevis</div>
+            <div class="country-requirements">Original CBI Program (1984)</div>
+            <div class="country-stat"><span class="country-stat-label">Minimum cost</span><span class="country-stat-value">$150,000</span></div>
+            <div class="country-stat"><span class="country-stat-label">Processing time</span><span class="country-stat-value">4-6 months</span></div>
+            <div class="country-stat"><span class="country-stat-label">Visa-free travel</span><span class="country-stat-value">160+ destinations</span></div>
+            <div class="country-stat"><span class="country-stat-label">Reputation</span><span class="country-stat-value">Oldest, most established</span></div>
+          </div>
+          <div class="country-card">
+            <div class="country-name">🇻🇨 St. Vincent</div>
+            <div class="country-requirements">New program (2023)</div>
+            <div class="country-stat"><span class="country-stat-label">Minimum cost</span><span class="country-stat-value">$130,000</span></div>
+            <div class="country-stat"><span class="country-stat-label">Processing time</span><span class="country-stat-value">3-4 months</span></div>
+            <div class="country-stat"><span class="country-stat-label">Visa-free travel</span><span class="country-stat-value">130+ destinations</span></div>
+            <div class="country-stat"><span class="country-stat-label">Status</span><span class="country-stat-value">Newest program</span></div>
+          </div>
+        </div>
+
+        <h3>European Citizenship by Investment</h3>
+        <ul>
+          <li><strong>🇲🇹 Malta:</strong> €600,000-750,000 + property + donation. 1-3 year process. EU passport with excellent mobility.</li>
+          <li><strong>🇲🇪 Montenegro:</strong> €350,000 investment (suspended 2022, may reopen). EU candidate country.</li>
+          <li><strong>🇹🇷 Turkey:</strong> $250,000 property investment. 3-6 month process. Good value but limited visa-free travel.</li>
+        </ul>
+
+        <h3>Alternative Citizenship Paths</h3>
+        <ul>
+          <li><strong>Ancestry citizenship:</strong> Irish, Italian, Polish, Jewish ancestry often qualifies for EU passports</li>
+          <li><strong>Marriage/partnership:</strong> Fast-track citizenship through genuine relationships (2-3 years)</li>
+          <li><strong>Religious grounds:</strong> Jewish right of return to Israel, some Christian programs</li>
+          <li><strong>Exceptional naturalization:</strong> Significant investments or contributions to national interests</li>
+        </ul>
+
+        <div class="callout success">
+          <strong>Citizenship ROI analysis:</strong> Compare the cost of citizenship by investment against visa costs over 20+ years. A $150,000 Caribbean passport might pay for itself through saved visa fees, especially for passports with limited global mobility. Calculate based on your specific travel patterns and business needs.
+        </div>
+      </section>
+
+      <!-- SECTION 7: TAX PLANNING -->
+      <section id="tax-planning" class="section">
+        <h2>7. Tax Optimization Through Residency</h2>
+        <p>Residency determines tax obligations more than citizenship. Strategic residency planning can legally minimize global tax burden while maintaining access to desired countries and services.</p>
+
+        <h3>Tax-Optimized Residency Jurisdictions</h3>
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>Country/Territory</th>
+              <th>Individual Tax Rate</th>
+              <th>Corporate Tax Rate</th>
+              <th>Residency Requirement</th>
+              <th>Key Benefits</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>🇦🇪 UAE</strong></td>
+              <td class="val-great">0%</td>
+              <td class="val-great">0-9%</td>
+              <td class="val-good">90 days/year</td>
+              <td>No personal tax, business hub</td>
+            </tr>
+            <tr>
+              <td><strong>🇲🇨 Monaco</strong></td>
+              <td class="val-great">0%</td>
+              <td class="val-meh">33.33%</td>
+              <td class="val-good">183 days/year</td>
+              <td>No personal tax (except French citizens)</td>
+            </tr>
+            <tr>
+              <td><strong>🇸🇬 Singapore</strong></td>
+              <td class="val-good">0-22%</td>
+              <td class="val-good">17%</td>
+              <td class="val-good">183 days/year</td>
+              <td>Territorial system, business opportunities</td>
+            </tr>
+            <tr>
+              <td><strong>🇭🇰 Hong Kong</strong></td>
+              <td class="val-good">2-17%</td>
+              <td class="val-good">16.5%</td>
+              <td class="val-good">180 days/year</td>
+              <td>Territorial system, China gateway</td>
+            </tr>
+            <tr>
+              <td><strong>🇵🇹 Portugal (NHR)</strong></td>
+              <td class="val-good">0-20%</td>
+              <td class="val-meh">21-31.5%</td>
+              <td class="val-good">183 days/year</td>
+              <td>Foreign income exemptions (10 years)</td>
+            </tr>
+            <tr>
+              <td><strong>🇲🇾 Malaysia (MM2H)</strong></td>
+              <td class="val-good">0-30%</td>
+              <td class="val-good">24%</td>
+              <td class="val-great">None required</td>
+              <td>Territorial system, low cost of living</td>
+            </tr>
+            <tr>
+              <td><strong>🇵🇦 Panama</strong></td>
+              <td class="val-good">0-25%</td>
+              <td class="val-good">25%</td>
+              <td class="val-great">30 days/year</td>
+              <td>Territorial system, USD economy</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <h3>The Tax Residency Triangle</h3>
+        <p>Optimize your tax situation by managing three key relationships:</p>
+        <ul>
+          <li><strong>Tax residency:</strong> Where you're liable to pay tax (usually based on days present or center of vital interests)</li>
+          <li><strong>Income source:</strong> Where your income is generated (employment, business operations, investments)</li>
+          <li><strong>Tax treaties:</strong> Bilateral agreements that prevent double taxation and may offer reduced withholding rates</li>
+        </ul>
+
+        <div class="callout warning">
+          <strong>Tax compliance warning:</strong> Moving to a low-tax jurisdiction doesn't automatically reduce your tax burden. You must properly establish tax residency, possibly renounce previous tax residency, and ensure compliance with all relevant jurisdictions. Exit taxes, controlled foreign corporation rules, and substance requirements can create unexpected obligations. Always consult qualified tax professionals.
+        </div>
+
+        <a href="/cost-of-living-geo-arbitrage" class="cta-card">
+          <h4>💰 Cost of Living Optimization</h4>
+          <p>Maximize your purchasing power through strategic geographic arbitrage and cost-of-living optimization.</p>
+        </a>
+      </section>
+
+      <!-- SECTION 8: TOOLS -->
+      <section id="tools" class="section">
+        <h2>8. Documentation & Application Tools</h2>
+        <p>Managing visa applications, residency permits, and citizenship processes requires organization, document management, and professional assistance.</p>
+
+        <div class="tool-grid">
+          <div class="tool-card">
+            <div class="tool-type">Document Management</div>
+            <h4>Dropbox / Google Drive</h4>
+            <p>Secure cloud storage for visa documents, apostilled certificates, translations, and application materials. Essential for multi-jurisdiction applications.</p>
+            <div class="tool-price">$10-20/month</div>
+          </div>
+          <div class="tool-card">
+            <div class="tool-type">Document Translation</div>
+            <h4>Certified Translation Services</h4>
+            <p>Professional translation and apostille services for birth certificates, diplomas, marriage certificates, and other required documents.</p>
+            <div class="tool-price">$25-100/document</div>
+          </div>
+          <div class="tool-card">
+            <div class="tool-type">Visa Tracking</div>
+            <h4>VisaHQ / iVisa</h4>
+            <p>Visa application tracking, requirements checking, and expedited processing services for tourist and business visas.</p>
+            <div class="tool-price">$50-500/application</div>
+          </div>
+          <div class="tool-card">
+            <div class="tool-type">Legal Services</div>
+            <h4>Residency/Citizenship Lawyers</h4>
+            <p>Specialized immigration lawyers for complex residency and citizenship applications. Essential for investment programs and challenging cases.</p>
+            <div class="tool-price">$200-1000/hour</div>
+          </div>
+          <div class="tool-card">
+            <div class="tool-type">Tax Planning</div>
+            <h4>International Tax Advisors</h4>
+            <p>Cross-border tax specialists for residency planning, exit strategies, and compliance with multiple tax jurisdictions.</p>
+            <div class="tool-price">$300-800/hour</div>
+          </div>
+          <div class="tool-card">
+            <div class="tool-type">Banking</div>
+            <h4>International Banking</h4>
+            <p>Multi-currency accounts, international wire transfers, and relationship banking for global mobility needs.</p>
+            <div class="tool-price">$25-200/month</div>
+          </div>
+          <div class="tool-card">
+            <div class="tool-type">Travel Insurance</div>
+            <h4>Global Health Coverage</h4>
+            <p>International health insurance for visa applications and healthcare coverage while establishing residency abroad.</p>
+            <div class="tool-price">$100-500/month</div>
+          </div>
+          <div class="tool-card">
+            <div class="tool-type">Concierge Services</div>
+            <h4>Residency Consultants</h4>
+            <p>Full-service residency and citizenship advisory firms that handle entire applications from start to finish.</p>
+            <div class="tool-price">5-10% of program cost</div>
+          </div>
+        </div>
+
+        <h3>Required Documents Checklist</h3>
+        <ul>
+          <li><strong>Identity documents:</strong> Passport, birth certificate, marriage certificate (all apostilled)</li>
+          <li><strong>Financial documents:</strong> Bank statements, investment portfolios, income verification, tax returns</li>
+          <li><strong>Background checks:</strong> Criminal record checks from all countries of residence (apostilled)</li>
+          <li><strong>Health documents:</strong> Medical certificates, vaccination records, health insurance proof</li>
+          <li><strong>Education/profession:</strong> Diplomas, professional licenses, CV/resume, employer letters</li>
+          <li><strong>Photography:</strong> Biometric photos meeting specific country requirements</li>
+        </ul>
+      </section>
+
+    </main>
+  </div>
+
+  <!-- FAQ -->
+  <section id="faq" class="faq-section">
+    <h2>Frequently Asked Questions</h2>
+
+    <div class="faq-item">
+      <h3>How many citizenships can I legally hold?</h3>
+      <p>This depends on your current citizenship(s) and target countries. Many countries now allow dual citizenship, and some permit unlimited multiple citizenships. However, some countries (like Singapore, Japan, and Germany in certain cases) require renunciation of previous citizenship. Research each country's specific rules and consider diplomatic protection implications.</p>
+    </div>
+
+    <div class="faq-item">
+      <h3>Do I need to pay taxes in every country where I hold citizenship?</h3>
+      <p>Generally, no. Tax obligations are determined by residence, not citizenship, with the major exception being the United States (and to a lesser extent, Eritrea), which taxes based on citizenship regardless of residence. Most countries only tax residents. However, you may still have filing obligations or face exit taxes when renouncing tax residency.</p>
+    </div>
+
+    <div class="faq-item">
+      <h3>How long does it typically take to get permanent residency?</h3>
+      <p>Investment-based programs range from 6 months to 2 years for initial approval. Traditional immigration routes (skilled worker, family reunification) typically take 1-3 years. Converting temporary residence to permanent residence usually requires 3-5 years of continuous residence, depending on the country and visa category.</p>
+    </div>
+
+    <div class="faq-item">
+      <h3>What's the difference between residency and citizenship?</h3>
+      <p>Residency gives you the right to live in a country but you remain a citizen of your home country. Citizenship provides full political rights (voting, diplomatic protection, passport), the right to pass citizenship to children, and typically cannot be revoked. Permanent residents can usually work freely but may face restrictions on certain government jobs or military service.</p>
+    </div>
+
+    <div class="faq-item">
+      <h3>Are Caribbean citizenship programs legitimate and safe?</h3>
+      <p>Yes, when obtained through authorized agents and proper channels. These programs are established by law and recognized internationally. However, due diligence standards vary between countries, and some passport holders may face enhanced scrutiny at borders. Choose established programs (St. Kitts, Antigua, Grenada) and work with reputable agents.</p>
+    </div>
+
+    <div class="faq-item">
+      <h3>Can I lose my residency or citizenship?</h3>
+      <p>Residency can typically be lost through extended absence, failure to meet renewal requirements, or criminal convictions. Citizenship is harder to lose but can be revoked in cases of fraud in the application process, treason, or voluntary renunciation. Investment-based programs may have clawback provisions if investments are withdrawn too early.</p>
+    </div>
+
+    <div class="faq-item">
+      <h3>Do I need to speak the local language for citizenship?</h3>
+      <p>Most traditional citizenship paths require basic language proficiency and civics knowledge. However, many investment citizenship programs waive language requirements. EU countries typically require A2-B1 level proficiency, while some (like Malta's investment program) may not require language tests at all.</p>
+    </div>
+
+    <div class="faq-item">
+      <h3>What happens if I overstay a visa?</h3>
+      <p>Consequences vary by country but typically include fines, deportation, and entry bans ranging from 6 months to 10 years. Overstays also affect future visa applications globally, as immigration records are increasingly shared between countries. Always maintain legal status and apply for extensions before visas expire.</p>
+    </div>
+  </section>
+
+</div>
+
+<script>
+function calculatePathway() {
+  const currentPassport = document.getElementById('currentPassport').value;
+  const primaryGoal = document.getElementById('primaryGoal').value;
+  const budgetRange = document.getElementById('budgetRange').value;
+  const timelinePreference = document.getElementById('timelinePreference').value;
+
+  const resultEl = document.getElementById('pathwayResult');
+  const pathTitleEl = document.getElementById('recommendedPath');
+  const recommendationsEl = document.getElementById('pathwayRecommendations');
+
+  let recommendedPath = '';
+  let recommendations = '';
+
+  // Logic for pathway recommendations based on inputs
+  if (primaryGoal === 'nomad') {
+    if (timelinePreference === 'immediate') {
+      recommendedPath = 'Digital Nomad Visas';
+      recommendations = `
+        <p><strong>Immediate options:</strong></p>
+        <ul>
+          <li><strong>Estonia Digital Nomad Visa:</strong> €3,500/month income, 1 year duration, EU access</li>
+          <li><strong>Portugal D7 Visa:</strong> €700/month income, 1 year renewable, path to EU residency</li>
+          <li><strong>Spain Digital Nomad Visa:</strong> €2,160/month income, up to 5 years</li>
+          <li><strong>Mexico Temporary Resident:</strong> $2,700/month income, up to 4 years</li>
+        </ul>
+        <p><strong>Next steps:</strong> Gather income documentation, research specific country requirements, consider tax implications.</p>
+      `;
+    } else {
+      recommendedPath = 'Strategic Nomad to Residence Pipeline';
+      recommendations = `
+        <p><strong>Recommended strategy:</strong></p>
+        <ul>
+          <li><strong>Year 1-2:</strong> Test countries with digital nomad visas</li>
+          <li><strong>Year 2-3:</strong> Apply for temporary residence in preferred location</li>
+          <li><strong>Year 5-7:</strong> Qualify for permanent residence</li>
+          <li><strong>Year 8-10:</strong> Optional citizenship application</li>
+        </ul>
+      `;
+    }
+  } else if (primaryGoal === 'business') {
+    if (budgetRange === 'high' || budgetRange === 'very-high') {
+      recommendedPath = 'Investment Residency Programs';
+      recommendations = `
+        <p><strong>High-value business residency:</strong></p>
+        <ul>
+          <li><strong>Singapore:</strong> Global investor program, $1.5M+ investment, business hub access</li>
+          <li><strong>UAE:</strong> Investment residency, $500K+ investment, 0% personal tax</li>
+          <li><strong>UK Innovator:</strong> £50K investment, direct business immigration route</li>
+          <li><strong>Canada Start-up Visa:</strong> Business support + investment, path to citizenship</li>
+        </ul>
+      `;
+    } else {
+      recommendedPath = 'Skilled Worker Programs';
+      recommendations = `
+        <p><strong>Skills-based business immigration:</strong></p>
+        <ul>
+          <li><strong>Germany Freelancer Visa:</strong> For qualified professionals, EU market access</li>
+          <li><strong>Netherlands HSM:</strong> €3,672/month threshold, 30% tax ruling</li>
+          <li><strong>Canada Express Entry:</strong> Points-based system, excellent passport outcome</li>
+          <li><strong>Australia Global Talent:</strong> Fast-track for exceptional skills</li>
+        </ul>
+      `;
+    }
+  } else if (primaryGoal === 'tax') {
+    recommendedPath = 'Tax-Optimized Residency';
+    recommendations = `
+      <p><strong>Tax optimization jurisdictions:</strong></p>
+      <ul>
+        <li><strong>UAE:</strong> 0% personal tax, 90 days/year requirement, business opportunities</li>
+        <li><strong>Portugal NHR:</strong> 10 years foreign income exemption, EU access</li>
+        <li><strong>Singapore:</strong> Territorial taxation, excellent business environment</li>
+        <li><strong>Panama:</strong> Territorial taxation, 30 days/year requirement, USD economy</li>
+      </ul>
+      <p><strong>Important:</strong> Consult tax professionals before making residency changes. Exit taxes and substance requirements apply.</p>
+    `;
+  } else if (primaryGoal === 'backup') {
+    if (budgetRange === 'very-high') {
+      recommendedPath = 'Citizenship by Investment';
+      recommendations = `
+        <p><strong>Direct citizenship programs:</strong></p>
+        <ul>
+          <li><strong>Malta:</strong> €600K-750K, EU passport, 1-3 years</li>
+          <li><strong>St. Kitts & Nevis:</strong> $150K donation, 4-6 months, established program</li>
+          <li><strong>Antigua & Barbuda:</strong> $130K donation, 4-6 months, 5 days residency requirement</li>
+          <li><strong>Grenada:</strong> $150K donation, E-2 treaty access to USA</li>
+        </ul>
+      `;
+    } else {
+      recommendedPath = 'Ancestry & Long-term Residency';
+      recommendations = `
+        <p><strong>Cost-effective backup citizenship:</strong></p>
+        <ul>
+          <li><strong>Check ancestry:</strong> Irish, Italian, Polish grandparents may qualify for EU citizenship</li>
+          <li><strong>Long-term residency:</strong> 5-10 year path through temporary residence</li>
+          <li><strong>Marriage/partnership:</strong> 2-3 year fast-track in many countries</li>
+          <li><strong>Skills immigration:</strong> Canada, Australia, New Zealand express entry</li>
+        </ul>
+      `;
+    }
+  }
+
+  resultEl.style.display = 'block';
+  pathTitleEl.textContent = recommendedPath;
+  recommendationsEl.innerHTML = recommendations;
+}
+</script>

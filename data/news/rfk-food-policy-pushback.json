@@ -1,0 +1,60 @@
+{
+  "slug": "rfk-food-policy-companies-push-back-2026",
+  "title": "Food Companies Are Fighting RFK's Ingredient Review — Here's What's Actually at Stake",
+  "description": "Robert F. Kennedy Jr.'s FDA proposal to review all new food ingredients is drawing fierce opposition from food companies. The battle will determine what goes into the food Americans eat for decades.",
+  "category": "health",
+  "image": "",
+  "imageAlt": "",
+  "lede": "Health Secretary Robert F. Kennedy Jr. falsely claimed victory on a recent podcast, but his signature food policy initiative — a federal proposal to review all new food ingredients — is still in the early stages. And the food industry is fighting back hard.",
+  "sections": [
+    {
+      "heading": "What Kennedy Wants",
+      "paragraphs": [
+        "The proposal targets the FDA's GRAS (Generally Recognized As Safe) system — the framework that allows food companies to add new ingredients to products, often with minimal independent review. Under current rules, companies can self-certify ingredients as safe without FDA approval.",
+        "Kennedy's plan would require formal FDA review of all new food ingredients before they reach store shelves. It would also mandate re-evaluation of existing GRAS substances that haven't been independently studied. The scope is enormous: there are an estimated 10,000+ food additives currently in the US food supply, many approved decades ago under different safety standards.",
+        "Supporters argue the current system is broken — that letting companies self-certify the safety of their own ingredients is like letting students grade their own exams. Critics of the proposal say it would create regulatory gridlock, slow innovation, raise food prices, and potentially remove ingredients that have been used safely for years."
+      ]
+    },
+    {
+      "heading": "Why Companies Are Fighting It",
+      "paragraphs": [
+        "The food industry's opposition is fierce and organized, according to reporting by the New York Times. Major food manufacturers argue the proposal would cost billions in reformulation, testing, and regulatory compliance. The timeline for FDA ingredient review can stretch years — during which companies can't sell products with pending ingredients.",
+        "Trade groups representing food manufacturers have deployed lobbyists and submitted formal objections. Their core argument: the current GRAS system has worked for decades without major safety incidents, and overhauling it would disrupt the entire food supply chain without proportional safety benefits.",
+        "Consumer advocacy groups counter that 'no major incidents' is a misleading metric — chronic health effects from food additives don't produce headlines the way acute poisoning does. They point to ingredients like red dye No. 3, which was banned in cosmetics in 1990 but remained legal in food until California banned it in 2024."
+      ]
+    },
+    {
+      "heading": "What It Means for Your Health",
+      "paragraphs": [
+        "Regardless of how the policy battle plays out, the debate has raised public awareness about what's actually in processed food. Consumers are increasingly reading labels, checking ingredient lists, and questioning additives they can't pronounce.",
+        "The practical takeaway: you can't control FDA policy, but you can control what you eat. Understanding your baseline health metrics — BMI, body fat percentage, caloric needs — gives you a framework for making informed dietary decisions. A <a href=\"https://bodycount.photonbuilder.com/bmi-calculator\">BMI calculator</a> is a starting point, not an endpoint, but knowing where you stand helps you evaluate whether your current diet is working.",
+        "The RFK food review debate will likely take years to resolve. In the meantime, the single most evidence-backed dietary advice hasn't changed: eat mostly whole foods, minimize ultra-processed products, maintain a healthy weight, and get regular health checkups. The ingredients debate matters — but it matters less than the fundamentals."
+      ]
+    }
+  ],
+  "tags": ["RFK", "food policy", "FDA", "GRAS", "food ingredients", "food safety", "health", "nutrition", "BMI"],
+  "sources": [
+    {
+      "name": "The New York Times",
+      "url": "https://www.nytimes.com/2026/03/27/health/rfk-food-ingredients-fda.html"
+    }
+  ],
+  "faqs": [
+    {
+      "q": "What is RFK's food ingredient review proposal?",
+      "a": "Health Secretary Robert F. Kennedy Jr. has proposed that the FDA formally review all new food ingredients before they can be added to products, and re-evaluate existing GRAS (Generally Recognized As Safe) substances. Currently, companies can self-certify ingredients as safe."
+    },
+    {
+      "q": "What does GRAS mean in food labeling?",
+      "a": "GRAS stands for Generally Recognized As Safe. It's an FDA designation that allows food companies to add ingredients to products without formal FDA approval, as long as qualified experts consider them safe. There are an estimated 10,000+ GRAS substances in the US food supply."
+    },
+    {
+      "q": "Will food prices increase because of the ingredient review?",
+      "a": "Food companies argue yes — reformulation, testing, and regulatory compliance would cost billions, which would be passed to consumers. Proponents say any price increases would be modest and justified by improved food safety."
+    },
+    {
+      "q": "How can I check what's in my food?",
+      "a": "Read the ingredient list on packaging (ingredients are listed by weight, largest first). Look for common additives like artificial colors, preservatives, and emulsifiers. Apps like Yuka and EWG's Food Scores can help identify potentially concerning ingredients."
+    }
+  ]
+}

@@ -1,0 +1,1307 @@
+<style>
+  .dnl-container {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 2rem;
+    color: #e2e8f0;
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    line-height: 1.8;
+  }
+  .dnl-header {
+    text-align: center;
+    margin-bottom: 4rem;
+    padding-top: 3rem;
+  }
+  .gradient-h1 {
+    font-size: clamp(2.2rem, 5vw, 3.5rem);
+    font-weight: 800;
+    background: linear-gradient(135deg, #ffffff 0%, #a5b4fc 50%, #818cf8 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    margin-bottom: 1rem;
+    line-height: 1.15;
+    letter-spacing: -0.02em;
+  }
+  .dnl-subtitle {
+    font-size: 1.2rem;
+    color: #94a3b8;
+    max-width: 750px;
+    margin: 0 auto;
+  }
+  .breadcrumb {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    justify-content: center;
+    margin-bottom: 2rem;
+    font-size: 0.85rem;
+  }
+  .breadcrumb a {
+    color: #818cf8;
+    text-decoration: none;
+  }
+  .breadcrumb a:hover { text-decoration: underline; }
+  .breadcrumb span { color: #475569; }
+  .updated-badge {
+    display: inline-block;
+    background: rgba(129, 140, 248, 0.15);
+    color: #a5b4fc;
+    padding: 0.4rem 1rem;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    margin-bottom: 2rem;
+  }
+  .content-wrapper {
+    display: grid;
+    grid-template-columns: 1fr 280px;
+    gap: 4rem;
+    margin-top: 3rem;
+  }
+  .main-content {
+    min-width: 0;
+  }
+  .sidebar {
+    position: sticky;
+    top: 2rem;
+    height: fit-content;
+    background: #12121a;
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 16px;
+    padding: 1.5rem;
+  }
+  .sidebar h3 {
+    color: #ffffff;
+    font-size: 0.9rem;
+    font-weight: 600;
+    margin: 0 0 1rem 0;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+  .sidebar ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+  .sidebar li {
+    margin: 0;
+  }
+  .sidebar a {
+    display: block;
+    color: #94a3b8;
+    text-decoration: none;
+    padding: 0.5rem 0;
+    border-bottom: 1px solid rgba(255,255,255,0.05);
+    font-size: 0.85rem;
+    transition: color 0.2s;
+  }
+  .sidebar a:hover {
+    color: #a5b4fc;
+  }
+  .section {
+    margin: 4rem 0;
+    scroll-margin-top: 2rem;
+  }
+  .section h2 {
+    color: #ffffff;
+    font-size: 1.8rem;
+    font-weight: 700;
+    margin-bottom: 1.5rem;
+  }
+  .section h3 {
+    color: #e2e8f0;
+    font-size: 1.3rem;
+    font-weight: 600;
+    margin: 2rem 0 1rem 0;
+  }
+  .stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1.5rem;
+    margin: 2rem 0;
+  }
+  .stat-card {
+    background: #12121a;
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 14px;
+    padding: 1.5rem;
+    text-align: center;
+  }
+  .stat-number {
+    font-size: 2.5rem;
+    font-weight: 800;
+    color: #818cf8;
+    display: block;
+    line-height: 1;
+  }
+  .stat-label {
+    color: #94a3b8;
+    font-size: 0.9rem;
+    margin-top: 0.5rem;
+  }
+  .destination-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 2rem;
+    margin: 2rem 0;
+  }
+  .destination-card {
+    background: #12121a;
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 16px;
+    padding: 2rem;
+    position: relative;
+    overflow: hidden;
+  }
+  .destination-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, #818cf8, #a5b4fc);
+  }
+  .destination-card h4 {
+    color: #ffffff;
+    font-size: 1.2rem;
+    font-weight: 600;
+    margin-bottom: 1rem;
+  }
+  .cost-badge {
+    background: rgba(129, 140, 248, 0.15);
+    color: #a5b4fc;
+    padding: 0.3rem 0.8rem;
+    border-radius: 8px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    display: inline-block;
+    margin-bottom: 1rem;
+  }
+  .cost-badge.low { background: rgba(74, 222, 128, 0.15); color: #4ade80; }
+  .cost-badge.medium { background: rgba(251, 191, 36, 0.15); color: #fbbf24; }
+  .cost-badge.high { background: rgba(248, 113, 113, 0.15); color: #f87171; }
+  .callout {
+    background: rgba(34, 211, 238, 0.1);
+    border-left: 4px solid #22d3ee;
+    border-radius: 0 8px 8px 0;
+    padding: 1.5rem;
+    margin: 2rem 0;
+  }
+  .callout.warning {
+    background: rgba(251, 191, 36, 0.1);
+    border-left-color: #fbbf24;
+  }
+  .callout.success {
+    background: rgba(74, 222, 128, 0.1);
+    border-left-color: #4ade80;
+  }
+  .callout.danger {
+    background: rgba(239, 68, 68, 0.1);
+    border-left-color: #ef4444;
+  }
+  .callout h4 {
+    color: #ffffff;
+    font-size: 1rem;
+    font-weight: 600;
+    margin: 0 0 0.5rem 0;
+  }
+  .comparison-table {
+    width: 100%;
+    background: #12121a;
+    border-radius: 16px;
+    overflow: hidden;
+    border: 1px solid rgba(255,255,255,0.08);
+    margin: 2rem 0;
+  }
+  .comparison-table th {
+    background: #1e293b;
+    color: #ffffff;
+    padding: 1rem;
+    text-align: left;
+    font-weight: 600;
+  }
+  .comparison-table td {
+    padding: 1rem;
+    border-bottom: 1px solid rgba(255,255,255,0.05);
+    color: #e2e8f0;
+  }
+  .comparison-table tr:last-child td {
+    border-bottom: none;
+  }
+  .tier-high { color: #4ade80; }
+  .tier-medium { color: #fbbf24; }
+  .tier-low { color: #f87171; }
+  .budget-calculator {
+    background: #12121a;
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 16px;
+    padding: 2rem;
+    margin: 3rem 0;
+  }
+  .budget-calculator h3 {
+    color: #ffffff;
+    font-size: 1.3rem;
+    font-weight: 600;
+    margin-bottom: 1.5rem;
+    text-align: center;
+  }
+  .calc-inputs {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1rem;
+    margin-bottom: 2rem;
+  }
+  .calc-input {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+  .calc-input label {
+    color: #94a3b8;
+    font-size: 0.85rem;
+    font-weight: 500;
+  }
+  .calc-input input, .calc-input select {
+    background: #1e293b;
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 8px;
+    padding: 0.75rem;
+    color: #e2e8f0;
+    font-size: 0.9rem;
+  }
+  .calc-input input:focus, .calc-input select:focus {
+    outline: none;
+    border-color: #818cf8;
+  }
+  .calc-button {
+    background: #818cf8;
+    color: #ffffff;
+    border: none;
+    border-radius: 8px;
+    padding: 0.75rem 2rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s;
+    width: 100%;
+  }
+  .calc-button:hover {
+    background: #6366f1;
+  }
+  .calc-results {
+    background: rgba(129, 140, 248, 0.1);
+    border-radius: 12px;
+    padding: 1.5rem;
+    margin-top: 1.5rem;
+    display: none;
+  }
+  .calc-results h4 {
+    color: #a5b4fc;
+    font-size: 1.1rem;
+    margin-bottom: 1rem;
+  }
+  .result-breakdown {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 1rem;
+    margin-top: 1rem;
+  }
+  .breakdown-item {
+    background: rgba(255,255,255,0.02);
+    padding: 1rem;
+    border-radius: 8px;
+    text-align: center;
+  }
+  .breakdown-label {
+    color: #94a3b8;
+    font-size: 0.8rem;
+    margin-bottom: 0.25rem;
+  }
+  .breakdown-value {
+    color: #e2e8f0;
+    font-weight: 600;
+    font-size: 0.9rem;
+  }
+  .breakdown-status {
+    color: #818cf8;
+    font-size: 0.75rem;
+    margin-top: 0.25rem;
+  }
+  .strategy-cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 1.5rem;
+    margin: 2rem 0;
+  }
+  .strategy-card {
+    background: #12121a;
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 14px;
+    padding: 1.5rem;
+  }
+  .strategy-card h4 {
+    color: #ffffff;
+    font-size: 1.1rem;
+    font-weight: 600;
+    margin-bottom: 1rem;
+  }
+  .tool-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1.5rem;
+    margin: 2rem 0;
+  }
+  .tool-card {
+    background: #12121a;
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 12px;
+    padding: 1.5rem;
+    text-align: center;
+  }
+  .tool-card h5 {
+    color: #ffffff;
+    margin-bottom: 0.5rem;
+    font-size: 1rem;
+  }
+  .tool-description {
+    font-size: 0.9rem;
+    color: #94a3b8;
+    margin-bottom: 1rem;
+  }
+  .tool-pricing {
+    font-size: 0.8rem;
+    color: #818cf8;
+    font-weight: 600;
+  }
+  .faq-section {
+    margin: 4rem 0;
+  }
+  .faq-item {
+    background: #12121a;
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 14px;
+    margin-bottom: 1rem;
+    overflow: hidden;
+  }
+  .faq-question {
+    padding: 1.5rem;
+    color: #ffffff;
+    font-weight: 600;
+    cursor: pointer;
+    border-bottom: 1px solid rgba(255,255,255,0.05);
+  }
+  .faq-answer {
+    padding: 1.5rem;
+    color: #94a3b8;
+  }
+  .cta-cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1.5rem;
+    margin: 3rem 0;
+  }
+  .cta-card {
+    background: linear-gradient(135deg, #1e293b, #334155);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 16px;
+    padding: 2rem;
+    text-align: center;
+  }
+  .cta-card h4 {
+    color: #ffffff;
+    font-size: 1.1rem;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+  }
+  .cta-card p {
+    color: #94a3b8;
+    font-size: 0.9rem;
+    margin-bottom: 1.5rem;
+  }
+  .cta-button {
+    display: inline-block;
+    background: #818cf8;
+    color: #ffffff;
+    padding: 0.7rem 1.5rem;
+    border-radius: 8px;
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 0.9rem;
+    transition: background 0.2s;
+  }
+  .cta-button:hover {
+    background: #6366f1;
+  }
+  
+  @media (max-width: 1024px) {
+    .content-wrapper {
+      grid-template-columns: 1fr;
+      gap: 2rem;
+    }
+    .sidebar {
+      position: relative;
+      top: 0;
+      order: -1;
+    }
+  }
+  
+  @media (max-width: 768px) {
+    .dnl-container {
+      padding: 1rem;
+    }
+    .breadcrumb {
+      flex-wrap: wrap;
+    }
+    .stats-grid {
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    }
+    .destination-grid {
+      grid-template-columns: 1fr;
+    }
+    .strategy-cards {
+      grid-template-columns: 1fr;
+    }
+    .tool-grid {
+      grid-template-columns: 1fr;
+    }
+    .cta-cards {
+      grid-template-columns: 1fr;
+    }
+    .calc-inputs {
+      grid-template-columns: 1fr;
+    }
+    .result-breakdown {
+      grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+    }
+  }
+</style>
+
+<div class="dnl-container">
+  <div class="dnl-header">
+    <div class="breadcrumb">
+      <a href="/apex-guides">Apex Guides</a>
+      <span>›</span>
+      <a href="/global-mobility-geo-arbitrage-guide-2026">Global Mobility & Geo-Arbitrage</a>
+      <span>›</span>
+      <span style="color: #cbd5e1;">Current</span>
+    </div>
+    
+    <div class="updated-badge">
+      🌍 Updated March 2026
+    </div>
+    
+    <h1 class="gradient-h1">Digital Nomad Lifestyle</h1>
+    <p class="dnl-subtitle">Master the digital nomad lifestyle with comprehensive guides to remote work, destination selection, budgeting, legal considerations, and building sustainable location-independent income streams.</p>
+  </div>
+
+  <div class="content-wrapper">
+    <main class="main-content">
+      <div class="stats-grid">
+        <div class="stat-card">
+          <span class="stat-number">73M</span>
+          <div class="stat-label">Digital nomads worldwide (2026)</div>
+        </div>
+        <div class="stat-card">
+          <span class="stat-number">$75K</span>
+          <div class="stat-label">Average digital nomad income</div>
+        </div>
+        <div class="stat-card">
+          <span class="stat-number">$2,100</span>
+          <div class="stat-label">Average monthly nomad expenses</div>
+        </div>
+        <div class="stat-card">
+          <span class="stat-number">68%</span>
+          <div class="stat-label">Nomads earning more than pre-nomad life</div>
+        </div>
+      </div>
+
+      <section id="nomad-fundamentals" class="section">
+        <h2>Digital Nomad Fundamentals</h2>
+        <p>The digital nomad movement has evolved from a fringe lifestyle to a mainstream career choice, with 73 million location-independent workers worldwide. Modern nomads aren't just backpackers with laptops—they're skilled professionals, entrepreneurs, and consultants building sustainable businesses while exploring the world.</p>
+
+        <div class="callout">
+          <h4>💡 The New Nomad Reality</h4>
+          <p>Today's successful digital nomads focus on stability over constant travel. The "laptop lifestyle" requires reliable income, professional development, and strategic location choices. Most successful nomads establish bases in 2-4 locations annually rather than constantly moving.</p>
+        </div>
+
+        <h3>Nomad Business Models</h3>
+        <div class="comparison-table">
+          <table>
+            <thead>
+              <tr>
+                <th>Model</th>
+                <th>Income Potential</th>
+                <th>Location Independence</th>
+                <th>Stability</th>
+                <th>Startup Requirements</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>Remote Employment</strong></td>
+                <td class="tier-medium">$50K-200K+</td>
+                <td class="tier-medium">Medium (timezone restrictions)</td>
+                <td class="tier-high">Very High</td>
+                <td class="tier-high">Skills + job search</td>
+              </tr>
+              <tr>
+                <td><strong>Freelancing/Consulting</strong></td>
+                <td class="tier-high">$30K-500K+</td>
+                <td class="tier-high">Very High</td>
+                <td class="tier-medium">Medium</td>
+                <td class="tier-medium">Portfolio + clients</td>
+              </tr>
+              <tr>
+                <td><strong>Online Business</strong></td>
+                <td class="tier-high">$10K-1M+</td>
+                <td class="tier-high">Very High</td>
+                <td class="tier-medium">Variable</td>
+                <td class="tier-low">Capital + business model</td>
+              </tr>
+              <tr>
+                <td><strong>Content Creation</strong></td>
+                <td class="tier-medium">$20K-200K+</td>
+                <td class="tier-high">Very High</td>
+                <td class="tier-low">Low</td>
+                <td class="tier-medium">Audience + platforms</td>
+              </tr>
+              <tr>
+                <td><strong>Digital Products</strong></td>
+                <td class="tier-high">$5K-100K+</td>
+                <td class="tier-high">Very High</td>
+                <td class="tier-medium">Medium</td>
+                <td class="tier-medium">Skills + marketing</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <h3>Nomad Lifestyle Types</h3>
+        <div class="strategy-cards">
+          <div class="strategy-card">
+            <h4>🏢 Corporate Remote Worker</h4>
+            <p><strong>Income:</strong> $60K-250K annually</p>
+            <p><strong>Lifestyle:</strong> Structured schedule, timezone considerations, company policies</p>
+            <p><strong>Advantages:</strong> Stable income, benefits, career progression</p>
+            <p><strong>Challenges:</strong> Limited timezone flexibility, company travel restrictions</p>
+          </div>
+
+          <div class="strategy-card">
+            <h4>💼 Freelance Professional</h4>
+            <p><strong>Income:</strong> $40K-500K annually</p>
+            <p><strong>Lifestyle:</strong> Project-based work, client management, feast/famine cycles</p>
+            <p><strong>Advantages:</strong> Complete location freedom, high earning potential</p>
+            <p><strong>Challenges:</strong> Income variability, constant business development</p>
+          </div>
+
+          <div class="strategy-card">
+            <h4>🚀 Digital Entrepreneur</h4>
+            <p><strong>Income:</strong> $0-1M+ annually</p>
+            <p><strong>Lifestyle:</strong> Building scalable businesses, long-term vision</p>
+            <p><strong>Advantages:</strong> Unlimited income potential, asset building</p>
+            <p><strong>Challenges:</strong> High initial risk, longer path to profitability</p>
+          </div>
+
+          <div class="strategy-card">
+            <h4>🎨 Creative Nomad</h4>
+            <p><strong>Income:</strong> $20K-200K annually</p>
+            <p><strong>Lifestyle:</strong> Content creation, audience building, diverse revenue streams</p>
+            <p><strong>Advantages:</strong> Creative fulfillment, multiple income sources</p>
+            <p><strong>Challenges:</strong> Platform dependency, unpredictable income</p>
+          </div>
+        </strategy-cards>
+
+        <div class="callout success">
+          <h4>✅ Nomad Readiness Checklist</h4>
+          <p><strong>Financial Foundation:</strong> 6+ months expenses saved, stable income stream<br>
+          <strong>Professional Setup:</strong> Reliable income source, professional equipment<br>
+          <strong>Legal Preparation:</strong> Passport, visas, tax strategy, insurance coverage<br>
+          <strong>Mindset Readiness:</strong> Adaptability, problem-solving skills, independence</p>
+        </div>
+      </section>
+
+      <section id="destination-selection" class="section">
+        <h2>Destination Selection & Planning</h2>
+
+        <div class="callout warning">
+          <h4>⚠️ Destination Research Is Critical</h4>
+          <p>Poor destination choices kill nomad dreams faster than financial problems. Research internet reliability, safety, cost of living, visa requirements, and nomad community before committing. A month of misery costs more than thorough upfront research.</p>
+        </div>
+
+        <h3>Top Digital Nomad Destinations (2026)</h3>
+        <div class="destination-grid">
+          <div class="destination-card">
+            <div class="cost-badge medium">$1,500-2,500/month</div>
+            <h4>🇵🇹 Lisbon, Portugal</h4>
+            <p><strong>Internet:</strong> Excellent (50+ Mbps average)</p>
+            <p><strong>Visa:</strong> 90-day tourist, D7 visa available</p>
+            <p><strong>Community:</strong> Large expat and nomad community</p>
+            <p><strong>Pros:</strong> EU access, great weather, safe, good food</p>
+            <p><strong>Cons:</strong> Increasing costs, crowded in summer</p>
+          </div>
+
+          <div class="destination-card">
+            <div class="cost-badge low">$800-1,500/month</div>
+            <h4>🇲🇽 Mexico City, Mexico</h4>
+            <p><strong>Internet:</strong> Good (30+ Mbps average)</p>
+            <p><strong>Visa:</strong> 180-day tourist visa</p>
+            <p><strong>Community:</strong> Growing nomad scene, especially Roma/Condesa</p>
+            <p><strong>Pros:</strong> Low cost, rich culture, US timezone alignment</p>
+            <p><strong>Cons:</strong> Air quality, altitude adjustment, safety concerns</p>
+          </div>
+
+          <div class="destination-card">
+            <div class="cost-badge low">$600-1,200/month</div>
+            <h4>🇹🇭 Chiang Mai, Thailand</h4>
+            <p><strong>Internet:</strong> Good (25+ Mbps average)</p>
+            <p><strong>Visa:</strong> 60-day tourist, various long-term options</p>
+            <p><strong>Community:</strong> Established nomad hub with coworking spaces</p>
+            <p><strong>Pros:</strong> Very low cost, great food, nomad infrastructure</p>
+            <p><strong>Cons:</strong> Burning season, visa runs required</p>
+          </div>
+
+          <div class="destination-card">
+            <div class="cost-badge medium">$1,200-2,000/month</div>
+            <h4>🇪🇸 Valencia, Spain</h4>
+            <p><strong>Internet:</strong> Excellent (45+ Mbps average)</p>
+            <p><strong>Visa:</strong> 90-day tourist, non-lucrative visa available</p>
+            <p><strong>Community:</strong> Growing nomad community, great coworking</p>
+            <p><strong>Pros:</strong> Beach city, excellent weather, good food scene</p>
+            <p><strong>Cons:</strong> Language barrier, limited night options</p>
+          </div>
+
+          <div class="destination-card">
+            <div class="cost-badge medium">$1,800-2,800/month</div>
+            <h4>🇦🇪 Dubai, UAE</h4>
+            <p><strong>Internet:</strong> Excellent (60+ Mbps average)</p>
+            <p><strong>Visa:</strong> 90-day tourist, remote work visa available</p>
+            <p><strong>Community:</strong> International business hub, networking opportunities</p>
+            <p><strong>Pros:</strong> Tax benefits, excellent infrastructure, safety</p>
+            <p><strong>Cons:</strong> High costs, cultural restrictions, extreme heat</p>
+          </div>
+
+          <div class="destination-card">
+            <div class="cost-badge low">$700-1,300/month</div>
+            <h4>🇲🇾 Kuala Lumpur, Malaysia</h4>
+            <p><strong>Internet:</strong> Good (35+ Mbps average)</p>
+            <p><strong>Visa:</strong> 90-day tourist, MM2H program</p>
+            <p><strong>Community:</strong> Diverse expat community, growing nomad scene</p>
+            <p><strong>Pros:</strong> Low cost, English-friendly, food paradise</p>
+            <p><strong>Cons:</strong> Humid climate, occasional internet issues</p>
+          </div>
+        </div>
+
+        <h3>Destination Evaluation Framework</h3>
+        <div class="comparison-table">
+          <table>
+            <thead>
+              <tr>
+                <th>Factor</th>
+                <th>Weight</th>
+                <th>Evaluation Criteria</th>
+                <th>Research Methods</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>Internet Quality</strong></td>
+                <td class="tier-high">Critical</td>
+                <td>25+ Mbps, stable connection, backup options</td>
+                <td>Speedtest.net, nomad forums, coworking spaces</td>
+              </tr>
+              <tr>
+                <td><strong>Cost of Living</strong></td>
+                <td class="tier-high">High</td>
+                <td>Fits budget, value for money, hidden costs</td>
+                <td>Numbeo, Nomad List, local Facebook groups</td>
+              </tr>
+              <tr>
+                <td><strong>Safety & Security</strong></td>
+                <td class="tier-high">High</td>
+                <td>Low crime, political stability, health infrastructure</td>
+                <td>Government travel advisories, expat forums</td>
+              </tr>
+              <tr>
+                <td><strong>Visa Requirements</strong></td>
+                <td class="tier-medium">Medium</td>
+                <td>Length of stay, renewal process, work permissions</td>
+                <td>Embassy websites, visa services, immigration lawyers</td>
+              </tr>
+              <tr>
+                <td><strong>Community</strong></td>
+                <td class="tier-medium">Medium</td>
+                <td>Nomad presence, networking opportunities, social life</td>
+                <td>Facebook groups, Meetup, coworking spaces</td>
+              </tr>
+              <tr>
+                <td><strong>Quality of Life</strong></td>
+                <td class="tier-medium">Medium</td>
+                <td>Climate, culture, activities, healthcare</td>
+                <td>Travel blogs, YouTube vlogs, personal visits</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="callout danger">
+          <h4>🚨 Destination Red Flags</h4>
+          <p><strong>Internet Issues:</strong> Frequent outages, slow speeds, expensive backup options<br>
+          <strong>Visa Complications:</strong> Complex requirements, frequent changes, enforcement issues<br>
+          <strong>Safety Concerns:</strong> High crime rates, political instability, poor emergency services<br>
+          <strong>Hidden Costs:</strong> Expensive utilities, mandatory fees, tourist pricing<br>
+          <strong>Isolation:</strong> No nomad community, language barriers, cultural restrictions</p>
+        </div>
+      </section>
+
+      <section id="budget-calculator" class="section">
+        <div class="budget-calculator">
+          <h3>💰 Digital Nomad Budget Calculator</h3>
+          <p>Calculate your monthly nomad budget based on destination and lifestyle preferences.</p>
+          
+          <div class="calc-inputs">
+            <div class="calc-input">
+              <label for="destination">Destination Tier</label>
+              <select id="destination">
+                <option value="low">Low Cost (Southeast Asia, Eastern Europe)</option>
+                <option value="medium">Medium Cost (Latin America, Southern Europe)</option>
+                <option value="high">High Cost (Western Europe, North America, Australia)</option>
+                <option value="luxury">Luxury (Switzerland, Singapore, Norway)</option>
+              </select>
+            </div>
+            
+            <div class="calc-input">
+              <label for="accommodation">Accommodation Style</label>
+              <select id="accommodation">
+                <option value="hostel">Hostel/Shared ($15-50/day)</option>
+                <option value="budget">Budget Private ($30-80/day)</option>
+                <option value="mid">Mid-range Apartment ($60-150/day)</option>
+                <option value="luxury">Luxury/Hotel ($120-300+/day)</option>
+              </select>
+            </div>
+            
+            <div class="calc-input">
+              <label for="lifestyle">Lifestyle Level</label>
+              <select id="lifestyle">
+                <option value="minimal">Minimal (cooking, limited activities)</option>
+                <option value="moderate">Moderate (mix of cooking/eating out)</option>
+                <option value="comfortable">Comfortable (regular dining, activities)</option>
+                <option value="luxury">Luxury (premium experiences)</option>
+              </select>
+            </div>
+            
+            <div class="calc-input">
+              <label for="workSetup">Work Setup</label>
+              <select id="workSetup">
+                <option value="basic">Basic (cafes, public wifi)</option>
+                <option value="coworking">Coworking Space ($50-150/month)</option>
+                <option value="private">Private Office ($200-500/month)</option>
+                <option value="premium">Premium Setup ($300-800/month)</option>
+              </select>
+            </div>
+            
+            <div class="calc-input">
+              <label for="travelFreq">Travel Frequency</label>
+              <select id="travelFreq">
+                <option value="slow">Slow (3+ months/location)</option>
+                <option value="moderate">Moderate (1-3 months/location)</option>
+                <option value="fast">Fast (2-4 weeks/location)</option>
+                <option value="constant">Constant (weekly travel)</option>
+              </select>
+            </div>
+            
+            <div class="calc-input">
+              <label for="insurance">Insurance & Safety Net</label>
+              <select id="insurance">
+                <option value="basic">Basic Travel Insurance ($50-100/month)</option>
+                <option value="comprehensive">Comprehensive Coverage ($100-200/month)</option>
+                <option value="premium">Premium + Emergency Fund ($200-400/month)</option>
+              </select>
+            </div>
+          </div>
+          
+          <button class="calc-button" onclick="calculateNomadBudget()">Calculate Budget</button>
+          
+          <div class="calc-results" id="budgetResults">
+            <h4>Your Digital Nomad Budget</h4>
+            <div class="result-breakdown" id="budgetBreakdown">
+              <!-- Results will be populated here -->
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="tools-setup" class="section">
+        <h2>Essential Tools & Setup</h2>
+
+        <div class="callout">
+          <h4>🛠️ Your Mobile Office</h4>
+          <p>Successful nomads invest in reliable tools and systems before traveling. Your technology setup directly impacts income potential, productivity, and stress levels. Prioritize reliability over cutting-edge features when your livelihood depends on it.</p>
+        </div>
+
+        <h3>Hardware Essentials</h3>
+        <div class="tool-grid">
+          <div class="tool-card">
+            <h5>💻 Primary Laptop</h5>
+            <div class="tool-description">
+              13-15" with 16GB+ RAM, SSD storage, good battery life
+            </div>
+            <div class="tool-pricing">Budget: $800-2,500</div>
+          </div>
+
+          <div class="tool-card">
+            <h5>📱 Unlocked Phone</h5>
+            <div class="tool-description">
+              Dual SIM capability, international bands, hotspot feature
+            </div>
+            <div class="tool-pricing">Budget: $300-1,200</div>
+          </div>
+
+          <div class="tool-card">
+            <h5>🎧 Noise-Canceling Headphones</h5>
+            <div class="tool-description">
+              Quality audio for calls, music, and blocking distractions
+            </div>
+            <div class="tool-pricing">Budget: $150-400</div>
+          </div>
+
+          <div class="tool-card">
+            <h5>🔌 Universal Power Setup</h5>
+            <div class="tool-description">
+              Universal adapter, power bank, laptop charger, USB-C hub
+            </div>
+            <div class="tool-pricing">Budget: $100-300</div>
+          </div>
+
+          <div class="tool-card">
+            <h5>📡 Backup Internet</h5>
+            <div class="tool-description">
+              Portable WiFi hotspot, local SIM cards, satellite backup
+            </div>
+            <div class="tool-pricing">Budget: $50-500</div>
+          </div>
+
+          <div class="tool-card">
+            <h5>🎒 Quality Backpack</h5>
+            <div class="tool-description">
+              Travel-friendly, laptop compartment, durable materials
+            </div>
+            <div class="tool-pricing">Budget: $150-500</div>
+          </div>
+        </tool-grid>
+
+        <h3>Software & Services Stack</h3>
+        <div class="strategy-cards">
+          <div class="strategy-card">
+            <h4>☁️ Cloud & Backup</h4>
+            <p><strong>File Storage:</strong> Google Drive, Dropbox, or OneDrive (1TB+ plan)</p>
+            <p><strong>Code Repository:</strong> GitHub, GitLab for version control</p>
+            <p><strong>Password Manager:</strong> 1Password, Bitwarden for security</p>
+            <p><strong>Automated Backup:</strong> Time Machine, Backblaze for local backup</p>
+          </div>
+
+          <div class="strategy-card">
+            <h4>💬 Communication</h4>
+            <p><strong>Video Calls:</strong> Zoom, Google Meet, Microsoft Teams</p>
+            <p><strong>Messaging:</strong> Slack, Discord, WhatsApp, Telegram</p>
+            <p><strong>Email:</strong> Gmail, Outlook with professional signature</p>
+            <p><strong>Phone Service:</strong> Google Voice, Skype for international calling</p>
+          </div>
+
+          <div class="strategy-card">
+            <h4>📊 Productivity</h4>
+            <p><strong>Project Management:</strong> Notion, Asana, Trello for organization</p>
+            <p><strong>Time Tracking:</strong> Toggl, RescueTime for billable hours</p>
+            <p><strong>Documents:</strong> Google Workspace, Microsoft 365</p>
+            <p><strong>Design:</strong> Canva, Figma for visual content</p>
+          </div>
+
+          <div class="strategy-card">
+            <h4>🔐 Security & Finance</h4>
+            <p><strong>VPN Service:</strong> ExpressVPN, NordVPN for secure browsing</p>
+            <p><strong>Banking:</strong> Charles Schwab, Wise for international banking</p>
+            <p><strong>Invoicing:</strong> FreshBooks, Wave for client billing</p>
+            <p><strong>Expense Tracking:</strong> Expensify, Receipt Bank for taxes</p>
+          </div>
+        </strategy-cards>
+
+        <h3>Workspace Solutions</h3>
+        <div class="destination-grid">
+          <div class="destination-card">
+            <h4>☕ Cafes & Public Spaces</h4>
+            <p><strong>Cost:</strong> $5-15/day in coffee purchases</p>
+            <p><strong>Pros:</strong> Flexible, social atmosphere, no commitment</p>
+            <p><strong>Cons:</strong> Noise, unreliable WiFi, limited power outlets</p>
+            <p><strong>Best For:</strong> Light work, client calls, short sessions</p>
+          </div>
+
+          <div class="destination-card">
+            <h4>🏢 Coworking Spaces</h4>
+            <p><strong>Cost:</strong> $50-300/month depending on location</p>
+            <p><strong>Pros:</strong> Reliable internet, networking, professional environment</p>
+            <p><strong>Cons:</strong> Monthly commitment, additional expense</p>
+            <p><strong>Best For:</strong> Focused work, video calls, community building</p>
+          </div>
+
+          <div class="destination-card">
+            <h4>🏠 Accommodation Workspace</h4>
+            <p><strong>Cost:</strong> Included in accommodation</p>
+            <p><strong>Pros:</strong> Private, comfortable, customizable setup</p>
+            <p><strong>Cons:</strong> Isolation, potential distractions, space limitations</p>
+            <p><strong>Best For:</strong> Deep work, early/late hours, video content creation</p>
+          </div>
+        </destination-grid>
+      </section>
+
+      <section id="legal-considerations" class="section">
+        <h2>Legal & Tax Considerations</h2>
+
+        <div class="callout warning">
+          <h4>⚠️ Legal Compliance Is Non-Negotiable</h4>
+          <p>Tax and visa violations can end nomad careers permanently. Every country has different rules for remote work, tourist activities, and tax obligations. When in doubt, consult professionals—legal mistakes cost far more than proper advice.</p>
+        </div>
+
+        <h3>Tax Strategy Framework</h3>
+        <div class="strategy-cards">
+          <div class="strategy-card">
+            <h4>🇺🇸 US Tax Obligations</h4>
+            <p><strong>Foreign Earned Income Exclusion:</strong> Up to $120K (2026) exempt if qualifying</p>
+            <p><strong>Physical Presence Test:</strong> 330 days outside US in 365-day period</p>
+            <p><strong>State Tax Issues:</strong> Establish non-residency in high-tax states</p>
+            <p><strong>FBAR & FATCA:</strong> Report foreign bank accounts over $10K</p>
+          </div>
+
+          <div class="strategy-card">
+            <h4>🌍 International Tax Planning</h4>
+            <p><strong>Tax Residency:</strong> Understand rules for each country (183-day rule common)</p>
+            <p><strong>Double Tax Treaties:</strong> Avoid paying taxes in multiple countries</p>
+            <p><strong>Territorial Systems:</strong> Some countries only tax local income</p>
+            <p><strong>Digital Nomad Visas:</strong> Special tax treatments in some jurisdictions</p>
+          </div>
+
+          <div class="strategy-card">
+            <h4>💼 Business Structure Options</h4>
+            <p><strong>US LLC:</strong> Pass-through taxation, international banking access</p>
+            <p><strong>Estonian e-Residency:</strong> EU business access, territorial taxation</p>
+            <p><strong>Dubai Free Zone:</strong> 0% corporate tax, UAE residency benefits</p>
+            <p><strong>Singapore Company:</strong> Low corporate rates, regional business hub</p>
+          </div>
+        </strategy-cards>
+
+        <h3>Visa & Immigration Strategy</h3>
+        <div class="comparison-table">
+          <table>
+            <thead>
+              <tr>
+                <th>Visa Type</th>
+                <th>Duration</th>
+                <th>Work Allowed</th>
+                <th>Renewal</th>
+                <th>Best For</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>Tourist Visa</strong></td>
+                <td>30-90 days</td>
+                <td class="tier-low">Generally No</td>
+                <td>Visa runs required</td>
+                <td>Short stays, testing destinations</td>
+              </tr>
+              <tr>
+                <td><strong>Digital Nomad Visa</strong></td>
+                <td>6-24 months</td>
+                <td class="tier-high">Remote work allowed</td>
+                <td>Often renewable</td>
+                <td>Medium-term stays, legal compliance</td>
+              </tr>
+              <tr>
+                <td><strong>Working Holiday</strong></td>
+                <td>12 months</td>
+                <td class="tier-high">Local work allowed</td>
+                <td>Usually once per country</td>
+                <td>Young travelers (18-30), experience seeking</td>
+              </tr>
+              <tr>
+                <td><strong>Investment Visa</strong></td>
+                <td>1-5 years</td>
+                <td class="tier-high">Business activities</td>
+                <td>Renewable with conditions</td>
+                <td>Entrepreneurs, significant capital available</td>
+              </tr>
+              <tr>
+                <td><strong>Residency Permit</strong></td>
+                <td>1+ years</td>
+                <td class="tier-high">Full work rights</td>
+                <td>Path to citizenship</td>
+                <td>Long-term settling, family considerations</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <h3>Insurance & Protection</h3>
+        <div class="tool-grid">
+          <div class="tool-card">
+            <h5>🏥 Health Insurance</h5>
+            <div class="tool-description">
+              International health coverage with emergency evacuation
+            </div>
+            <div class="tool-pricing">$100-400/month</div>
+          </div>
+
+          <div class="tool-card">
+            <h5>💻 Equipment Insurance</h5>
+            <div class="tool-description">
+              Coverage for laptop, phone, camera against theft/damage
+            </div>
+            <div class="tool-pricing">$20-100/month</div>
+          </div>
+
+          <div class="tool-card">
+            <h5>⚖️ Legal Protection</h5>
+            <div class="tool-description">
+              Legal assistance for visa, contract, and business issues
+            </div>
+            <div class="tool-pricing">$50-200/month</div>
+          </div>
+
+          <div class="tool-card">
+            <h5>🛡️ Digital Security</h5>
+            <div class="tool-description">
+              VPN, backup services, identity theft protection
+            </div>
+            <div class="tool-pricing">$30-100/month</div>
+          </div>
+
+          <div class="tool-card">
+            <h5>✈️ Travel Insurance</h5>
+            <div class="tool-description">
+              Trip cancellation, lost luggage, emergency assistance
+            </div>
+            <div class="tool-pricing">$50-150/month</div>
+          </div>
+
+          <div class="tool-card">
+            <h5>💰 Emergency Fund</h5>
+            <div class="tool-description">
+              6-12 months expenses for unexpected situations
+            </div>
+            <div class="tool-pricing">$10K-50K saved</div>
+          </div>
+        </tool-grid>
+
+        <div class="callout success">
+          <h4>✅ Legal Compliance Checklist</h4>
+          <p><strong>Tax Planning:</strong> Understand home country obligations and foreign tax implications<br>
+          <strong>Visa Compliance:</strong> Never overstay or work on tourist visas<br>
+          <strong>Business Registration:</strong> Proper business structure for tax and legal protection<br>
+          <strong>Insurance Coverage:</strong> Health, equipment, and liability protection<br>
+          <strong>Professional Advice:</strong> Regular consultation with tax and immigration professionals</p>
+        </div>
+      </section>
+
+      <section id="faq" class="faq-section">
+        <h2>Frequently Asked Questions</h2>
+
+        <div class="faq-item">
+          <div class="faq-question">How much money do I need to start as a digital nomad?</div>
+          <div class="faq-answer">Minimum $10K-15K for initial setup and 6 months expenses, though $20K-30K provides better security. This includes equipment ($2K-5K), initial accommodation deposits, flights, emergency fund, and living expenses for your first destination. Start with lower-cost destinations to stretch your budget further.</div>
+        </div>
+
+        <div class="faq-item">
+          <div class="faq-question">Can I work as a digital nomad on a tourist visa?</div>
+          <div class="faq-answer">Legally, most countries prohibit work on tourist visas, even remote work for foreign employers. However, enforcement varies significantly. Digital nomad visas are increasingly available (Portugal, Estonia, Barbados) for legal remote work. Consult immigration lawyers for specific country guidance and compliance strategies.</div>
+        </div>
+
+        <div class="faq-item">
+          <div class="faq-question">What internet speed do I need for remote work?</div>
+          <div class="faq-answer">Minimum 25 Mbps download, 5 Mbps upload for standard work. Video calls require 1-3 Mbps per participant. Always have backup options: mobile hotspot, nearby coworking spaces, or alternative accommodation. Test internet before committing to longer stays in any location.</div>
+        </div>
+
+        <div class="faq-item">
+          <div class="faq-question">How do I handle taxes as a digital nomad?</div>
+          <div class="faq-answer">Tax obligations depend on your citizenship, residency status, and countries visited. US citizens must file annually regardless of location. Consider Foreign Earned Income Exclusion, establish tax residency strategically, and maintain detailed records of travel and income. Consult international tax professionals—mistakes are expensive.</div>
+        </div>
+
+        <div class="faq-item">
+          <div class="faq-question">What's the best way to start the nomad transition?</div>
+          <div class="faq-answer">Start part-time while maintaining stable income. Test remote work arrangements, build emergency savings, research destinations, and establish location-independent income streams. Consider "workcations" or extended trips before fully committing to nomadic lifestyle. Gradual transition reduces risk and stress.</div>
+        </div>
+
+        <div class="faq-item">
+          <div class="faq-question">How do I maintain work-life balance while nomading?</div>
+          <div class="faq-answer">Establish consistent routines, set boundaries between work and travel time, create dedicated workspace, and maintain regular schedule despite timezone changes. Join nomad communities for social connection, schedule downtime for exploration, and resist the urge to work constantly just because you can.</div>
+        </div>
+
+        <div class="faq-item">
+          <div class="faq-question">What are the biggest challenges nomads face?</div>
+          <div class="faq-answer">Loneliness and isolation, income instability, visa complications, timezone management, relationship maintenance, tax complexity, and health insurance gaps. Success requires proactive planning: building support networks, diversifying income, understanding legal requirements, and maintaining physical/mental health.</div>
+        </div>
+
+        <div class="faq-item">
+          <div class="faq-question">Should I travel solo or with a partner/group?</div>
+          <div class="faq-answer">Each has advantages. Solo travel offers complete flexibility but requires more self-reliance and can be lonely. Traveling with partners provides companionship and shared costs but requires compromise and compatible work styles. Many nomads alternate between solo and group travel depending on their current needs.</div>
+        </div>
+      </section>
+
+      <div class="cta-cards">
+        <div class="cta-card">
+          <h4>💼 Freelancing Business</h4>
+          <p>Build location-independent income streams through freelancing and consulting services.</p>
+          <a href="/freelancing-consulting-business" class="cta-button">Freelancing Guide</a>
+        </div>
+
+        <div class="cta-card">
+          <h4>🏠 Cost of Living</h4>
+          <p>Master geo-arbitrage strategies to maximize purchasing power across different locations.</p>
+          <a href="/cost-of-living-geo-arbitrage" class="cta-button">Geo-Arbitrage</a>
+        </div>
+
+        <div class="cta-card">
+          <h4>📱 Content Creation</h4>
+          <p>Monetize your nomad journey through content creation and social media strategies.</p>
+          <a href="/content-creation-monetization" class="cta-button">Content Strategy</a>
+        </div>
+      </div>
+    </main>
+
+    <aside class="sidebar">
+      <h3>Contents</h3>
+      <ul>
+        <li><a href="#nomad-fundamentals">Nomad Fundamentals</a></li>
+        <li><a href="#destination-selection">Destination Selection</a></li>
+        <li><a href="#budget-calculator">Budget Calculator</a></li>
+        <li><a href="#tools-setup">Tools & Setup</a></li>
+        <li><a href="#legal-considerations">Legal Considerations</a></li>
+        <li><a href="#faq">FAQ</a></li>
+      </ul>
+    </aside>
+  </div>
+</div>
+
+<script>
+function calculateNomadBudget() {
+  const destination = document.getElementById('destination').value;
+  const accommodation = document.getElementById('accommodation').value;
+  const lifestyle = document.getElementById('lifestyle').value;
+  const workSetup = document.getElementById('workSetup').value;
+  const travelFreq = document.getElementById('travelFreq').value;
+  const insurance = document.getElementById('insurance').value;
+  
+  // Base costs by destination tier (monthly)
+  const destinationCosts = {
+    low: { base: 400, food: 300, transport: 100, activities: 200 },
+    medium: { base: 800, food: 600, transport: 200, activities: 400 },
+    high: { base: 1500, food: 1200, transport: 400, activities: 800 },
+    luxury: { base: 2500, food: 2000, transport: 600, activities: 1500 }
+  };
+  
+  // Accommodation costs (monthly)
+  const accommodationCosts = {
+    hostel: 450,
+    budget: 900,
+    mid: 1800,
+    luxury: 3600
+  };
+  
+  // Lifestyle multipliers
+  const lifestyleMultipliers = {
+    minimal: 0.8,
+    moderate: 1.0,
+    comfortable: 1.4,
+    luxury: 2.0
+  };
+  
+  // Work setup costs (monthly)
+  const workSetupCosts = {
+    basic: 50,
+    coworking: 150,
+    private: 350,
+    premium: 550
+  };
+  
+  // Travel frequency multipliers
+  const travelMultipliers = {
+    slow: 1.0,
+    moderate: 1.2,
+    fast: 1.5,
+    constant: 2.0
+  };
+  
+  // Insurance costs (monthly)
+  const insuranceCosts = {
+    basic: 75,
+    comprehensive: 150,
+    premium: 300
+  };
+  
+  // Calculate base costs
+  const baseCosts = destinationCosts[destination];
+  const accommodationCost = accommodationCosts[accommodation];
+  const workCost = workSetupCosts[workSetup];
+  const insuranceCost = insuranceCosts[insurance];
+  const lifestyleMultiplier = lifestyleMultipliers[lifestyle];
+  const travelMultiplier = travelMultipliers[travelFreq];
+  
+  // Calculate monthly budget
+  const foodCost = baseCosts.food * lifestyleMultiplier;
+  const transportCost = baseCosts.transport * travelMultiplier;
+  const activitiesCost = baseCosts.activities * lifestyleMultiplier;
+  const miscCost = baseCosts.base;
+  
+  const totalMonthly = accommodationCost + foodCost + transportCost + activitiesCost + workCost + insuranceCost + miscCost;
+  const annualBudget = totalMonthly * 12;
+  const emergencyFund = totalMonthly * 6; // 6 months emergency fund
+  
+  // Calculate recommended startup capital
+  const startupCosts = 5000; // Equipment, initial setup
+  const firstMonthDeposits = accommodationCost * 2; // First month + deposit
+  const totalStartupNeeded = emergencyFund + startupCosts + firstMonthDeposits;
+  
+  // Determine budget tier
+  const getBudgetTier = (amount) => {
+    if (amount >= 4000) return { tier: 'Luxury', color: '#f87171' };
+    if (amount >= 2500) return { tier: 'High-End', color: '#fbbf24' };
+    if (amount >= 1500) return { tier: 'Comfortable', color: '#4ade80' };
+    return { tier: 'Budget', color: '#818cf8' };
+  };
+  
+  const budgetTier = getBudgetTier(totalMonthly);
+  
+  // Display results
+  const breakdown = document.getElementById('budgetBreakdown');
+  breakdown.innerHTML = `
+    <div class="breakdown-item">
+      <div class="breakdown-label">Accommodation</div>
+      <div class="breakdown-value">$${accommodationCost.toLocaleString()}</div>
+      <div class="breakdown-status">${Math.round((accommodationCost/totalMonthly)*100)}% of budget</div>
+    </div>
+    <div class="breakdown-item">
+      <div class="breakdown-label">Food & Dining</div>
+      <div class="breakdown-value">$${foodCost.toLocaleString()}</div>
+      <div class="breakdown-status">${Math.round((foodCost/totalMonthly)*100)}% of budget</div>
+    </div>
+    <div class="breakdown-item">
+      <div class="breakdown-label">Work Setup</div>
+      <div class="breakdown-value">$${workCost.toLocaleString()}</div>
+      <div class="breakdown-status">Coworking, tools</div>
+    </div>
+    <div class="breakdown-item">
+      <div class="breakdown-label">Transport & Travel</div>
+      <div class="breakdown-value">$${transportCost.toLocaleString()}</div>
+      <div class="breakdown-status">Local + between cities</div>
+    </div>
+    <div class="breakdown-item">
+      <div class="breakdown-label">Insurance & Safety</div>
+      <div class="breakdown-value">$${insuranceCost.toLocaleString()}</div>
+      <div class="breakdown-status">Health, travel, equipment</div>
+    </div>
+    <div class="breakdown-item">
+      <div class="breakdown-label">Total Monthly</div>
+      <div class="breakdown-value">$${totalMonthly.toLocaleString()}</div>
+      <div class="breakdown-status" style="color: ${budgetTier.color}">${budgetTier.tier}</div>
+    </div>
+  `;
+  
+  document.getElementById('budgetResults').style.display = 'block';
+}
+</script>

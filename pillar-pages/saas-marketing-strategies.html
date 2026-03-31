@@ -1,0 +1,1248 @@
+<style>
+  .sms-container {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 2rem;
+    color: #e2e8f0;
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    line-height: 1.8;
+  }
+  .sms-header {
+    text-align: center;
+    margin-bottom: 4rem;
+    padding-top: 3rem;
+  }
+  .gradient-h1 {
+    font-size: clamp(2.2rem, 5vw, 3.5rem);
+    font-weight: 800;
+    background: linear-gradient(135deg, #ffffff 0%, #a5b4fc 50%, #818cf8 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    margin-bottom: 1rem;
+    line-height: 1.15;
+    letter-spacing: -0.02em;
+  }
+  .sms-subtitle {
+    font-size: 1.2rem;
+    color: #94a3b8;
+    max-width: 750px;
+    margin: 0 auto;
+  }
+  .breadcrumb {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    justify-content: center;
+    margin-bottom: 2rem;
+    font-size: 0.85rem;
+  }
+  .breadcrumb a {
+    color: #818cf8;
+    text-decoration: none;
+  }
+  .breadcrumb a:hover { text-decoration: underline; }
+  .breadcrumb span { color: #475569; }
+  .updated-badge {
+    display: inline-block;
+    background: rgba(129, 140, 248, 0.15);
+    color: #a5b4fc;
+    padding: 0.4rem 1rem;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    margin-bottom: 2rem;
+  }
+  .content-wrapper {
+    display: grid;
+    grid-template-columns: 1fr 280px;
+    gap: 4rem;
+    margin-top: 3rem;
+  }
+  .main-content {
+    min-width: 0;
+  }
+  .sidebar {
+    position: sticky;
+    top: 2rem;
+    height: fit-content;
+    background: #12121a;
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 16px;
+    padding: 1.5rem;
+  }
+  .sidebar h3 {
+    color: #ffffff;
+    font-size: 0.9rem;
+    font-weight: 600;
+    margin: 0 0 1rem 0;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+  .sidebar ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+  .sidebar li {
+    margin: 0;
+  }
+  .sidebar a {
+    display: block;
+    color: #94a3b8;
+    text-decoration: none;
+    padding: 0.5rem 0;
+    border-bottom: 1px solid rgba(255,255,255,0.05);
+    font-size: 0.85rem;
+    transition: color 0.2s;
+  }
+  .sidebar a:hover {
+    color: #a5b4fc;
+  }
+  .section {
+    margin: 4rem 0;
+    scroll-margin-top: 2rem;
+  }
+  .section h2 {
+    color: #ffffff;
+    font-size: 1.8rem;
+    font-weight: 700;
+    margin-bottom: 1.5rem;
+  }
+  .section h3 {
+    color: #e2e8f0;
+    font-size: 1.3rem;
+    font-weight: 600;
+    margin: 2rem 0 1rem 0;
+  }
+  .stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1.5rem;
+    margin: 2rem 0;
+  }
+  .stat-card {
+    background: #12121a;
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 14px;
+    padding: 1.5rem;
+    text-align: center;
+  }
+  .stat-number {
+    font-size: 2.5rem;
+    font-weight: 800;
+    color: #818cf8;
+    display: block;
+    line-height: 1;
+  }
+  .stat-label {
+    color: #94a3b8;
+    font-size: 0.9rem;
+    margin-top: 0.5rem;
+  }
+  .funnel-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 2rem;
+    margin: 2rem 0;
+  }
+  .funnel-card {
+    background: #12121a;
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 16px;
+    padding: 2rem;
+    position: relative;
+    overflow: hidden;
+  }
+  .funnel-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, #818cf8, #a5b4fc);
+  }
+  .funnel-card h4 {
+    color: #ffffff;
+    font-size: 1.2rem;
+    font-weight: 600;
+    margin-bottom: 1rem;
+  }
+  .stage-badge {
+    background: rgba(129, 140, 248, 0.15);
+    color: #a5b4fc;
+    padding: 0.3rem 0.8rem;
+    border-radius: 8px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    display: inline-block;
+    margin-bottom: 1rem;
+  }
+  .callout {
+    background: rgba(34, 211, 238, 0.1);
+    border-left: 4px solid #22d3ee;
+    border-radius: 0 8px 8px 0;
+    padding: 1.5rem;
+    margin: 2rem 0;
+  }
+  .callout.warning {
+    background: rgba(251, 191, 36, 0.1);
+    border-left-color: #fbbf24;
+  }
+  .callout.success {
+    background: rgba(74, 222, 128, 0.1);
+    border-left-color: #4ade80;
+  }
+  .callout.danger {
+    background: rgba(239, 68, 68, 0.1);
+    border-left-color: #ef4444;
+  }
+  .callout h4 {
+    color: #ffffff;
+    font-size: 1rem;
+    font-weight: 600;
+    margin: 0 0 0.5rem 0;
+  }
+  .comparison-table {
+    width: 100%;
+    background: #12121a;
+    border-radius: 16px;
+    overflow: hidden;
+    border: 1px solid rgba(255,255,255,0.08);
+    margin: 2rem 0;
+  }
+  .comparison-table th {
+    background: #1e293b;
+    color: #ffffff;
+    padding: 1rem;
+    text-align: left;
+    font-weight: 600;
+  }
+  .comparison-table td {
+    padding: 1rem;
+    border-bottom: 1px solid rgba(255,255,255,0.05);
+    color: #e2e8f0;
+  }
+  .comparison-table tr:last-child td {
+    border-bottom: none;
+  }
+  .tier-high { color: #4ade80; }
+  .tier-medium { color: #fbbf24; }
+  .tier-low { color: #f87171; }
+  .cac-calculator {
+    background: #12121a;
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 16px;
+    padding: 2rem;
+    margin: 3rem 0;
+  }
+  .cac-calculator h3 {
+    color: #ffffff;
+    font-size: 1.3rem;
+    font-weight: 600;
+    margin-bottom: 1.5rem;
+    text-align: center;
+  }
+  .calc-inputs {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1rem;
+    margin-bottom: 2rem;
+  }
+  .calc-input {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+  .calc-input label {
+    color: #94a3b8;
+    font-size: 0.85rem;
+    font-weight: 500;
+  }
+  .calc-input input, .calc-input select {
+    background: #1e293b;
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 8px;
+    padding: 0.75rem;
+    color: #e2e8f0;
+    font-size: 0.9rem;
+  }
+  .calc-input input:focus, .calc-input select:focus {
+    outline: none;
+    border-color: #818cf8;
+  }
+  .calc-button {
+    background: #818cf8;
+    color: #ffffff;
+    border: none;
+    border-radius: 8px;
+    padding: 0.75rem 2rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s;
+    width: 100%;
+  }
+  .calc-button:hover {
+    background: #6366f1;
+  }
+  .calc-results {
+    background: rgba(129, 140, 248, 0.1);
+    border-radius: 12px;
+    padding: 1.5rem;
+    margin-top: 1.5rem;
+    display: none;
+  }
+  .calc-results h4 {
+    color: #a5b4fc;
+    font-size: 1.1rem;
+    margin-bottom: 1rem;
+  }
+  .result-breakdown {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 1rem;
+    margin-top: 1rem;
+  }
+  .breakdown-item {
+    background: rgba(255,255,255,0.02);
+    padding: 1rem;
+    border-radius: 8px;
+    text-align: center;
+  }
+  .breakdown-label {
+    color: #94a3b8;
+    font-size: 0.8rem;
+    margin-bottom: 0.25rem;
+  }
+  .breakdown-value {
+    color: #e2e8f0;
+    font-weight: 600;
+    font-size: 0.9rem;
+  }
+  .breakdown-status {
+    color: #818cf8;
+    font-size: 0.75rem;
+    margin-top: 0.25rem;
+  }
+  .strategy-cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 1.5rem;
+    margin: 2rem 0;
+  }
+  .strategy-card {
+    background: #12121a;
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 14px;
+    padding: 1.5rem;
+  }
+  .strategy-card h4 {
+    color: #ffffff;
+    font-size: 1.1rem;
+    font-weight: 600;
+    margin-bottom: 1rem;
+  }
+  .channel-comparison {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1rem;
+    margin: 2rem 0;
+  }
+  .channel-card {
+    background: #12121a;
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 12px;
+    padding: 1.5rem;
+    text-align: center;
+  }
+  .channel-card h5 {
+    color: #ffffff;
+    margin-bottom: 0.5rem;
+    font-size: 1rem;
+  }
+  .channel-score {
+    font-size: 1.5rem;
+    font-weight: 800;
+    margin: 0.5rem 0;
+  }
+  .channel-score.high { color: #4ade80; }
+  .channel-score.medium { color: #fbbf24; }
+  .channel-score.low { color: #f87171; }
+  .channel-details {
+    font-size: 0.8rem;
+    color: #94a3b8;
+    margin-top: 0.5rem;
+  }
+  .faq-section {
+    margin: 4rem 0;
+  }
+  .faq-item {
+    background: #12121a;
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 14px;
+    margin-bottom: 1rem;
+    overflow: hidden;
+  }
+  .faq-question {
+    padding: 1.5rem;
+    color: #ffffff;
+    font-weight: 600;
+    cursor: pointer;
+    border-bottom: 1px solid rgba(255,255,255,0.05);
+  }
+  .faq-answer {
+    padding: 1.5rem;
+    color: #94a3b8;
+  }
+  .cta-cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1.5rem;
+    margin: 3rem 0;
+  }
+  .cta-card {
+    background: linear-gradient(135deg, #1e293b, #334155);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 16px;
+    padding: 2rem;
+    text-align: center;
+  }
+  .cta-card h4 {
+    color: #ffffff;
+    font-size: 1.1rem;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+  }
+  .cta-card p {
+    color: #94a3b8;
+    font-size: 0.9rem;
+    margin-bottom: 1.5rem;
+  }
+  .cta-button {
+    display: inline-block;
+    background: #818cf8;
+    color: #ffffff;
+    padding: 0.7rem 1.5rem;
+    border-radius: 8px;
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 0.9rem;
+    transition: background 0.2s;
+  }
+  .cta-button:hover {
+    background: #6366f1;
+  }
+  
+  @media (max-width: 1024px) {
+    .content-wrapper {
+      grid-template-columns: 1fr;
+      gap: 2rem;
+    }
+    .sidebar {
+      position: relative;
+      top: 0;
+      order: -1;
+    }
+  }
+  
+  @media (max-width: 768px) {
+    .sms-container {
+      padding: 1rem;
+    }
+    .breadcrumb {
+      flex-wrap: wrap;
+    }
+    .stats-grid {
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    }
+    .funnel-grid {
+      grid-template-columns: 1fr;
+    }
+    .strategy-cards {
+      grid-template-columns: 1fr;
+    }
+    .channel-comparison {
+      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    }
+    .cta-cards {
+      grid-template-columns: 1fr;
+    }
+    .calc-inputs {
+      grid-template-columns: 1fr;
+    }
+    .result-breakdown {
+      grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+    }
+  }
+</style>
+
+<div class="sms-container">
+  <div class="sms-header">
+    <div class="breadcrumb">
+      <a href="/apex-guides">Apex Guides</a>
+      <span>›</span>
+      <a href="/software-ai-infrastructure-guide-2026">Software, AI & Digital Infrastructure</a>
+      <span>›</span>
+      <span style="color: #cbd5e1;">Current</span>
+    </div>
+    
+    <div class="updated-badge">
+      🚀 Updated March 2026
+    </div>
+    
+    <h1 class="gradient-h1">SaaS Marketing Strategies</h1>
+    <p class="sms-subtitle">Comprehensive SaaS marketing playbook from product-market fit to $10M ARR. Master growth funnels, customer acquisition, retention strategies, and scaling frameworks that drive sustainable SaaS growth.</p>
+  </div>
+
+  <div class="content-wrapper">
+    <main class="main-content">
+      <div class="stats-grid">
+        <div class="stat-card">
+          <span class="stat-number">$700B</span>
+          <div class="stat-label">Global SaaS market size (2026)</div>
+        </div>
+        <div class="stat-card">
+          <span class="stat-number">$127</span>
+          <div class="stat-label">Average SaaS customer acquisition cost</div>
+        </div>
+        <div class="stat-card">
+          <span class="stat-number">95%</span>
+          <div class="stat-label">SaaS customer lifetime value from retention</div>
+        </div>
+        <div class="stat-card">
+          <span class="stat-number">3:1</span>
+          <div class="stat-label">Ideal LTV to CAC ratio</div>
+        </div>
+      </div>
+
+      <section id="saas-marketing-fundamentals" class="section">
+        <h2>SaaS Marketing Fundamentals</h2>
+        <p>SaaS marketing differs fundamentally from traditional product marketing. Success hinges on subscription retention, compound growth, and customer lifetime value optimization. The $700 billion SaaS market rewards companies that master acquisition-retention balance, not just growth-at-all-costs strategies.</p>
+
+        <div class="callout">
+          <h4>💡 The SaaS Marketing Triangle</h4>
+          <p>Sustainable SaaS growth requires three pillars: 1) Product-Market Fit (solve real problems), 2) Scalable Acquisition (repeatable customer acquisition), and 3) Retention Excellence (low churn, high expansion). Most SaaS failures result from optimizing only one pillar.</p>
+        </div>
+
+        <h3>SaaS Growth Stages & Marketing Focus</h3>
+        <div class="funnel-grid">
+          <div class="funnel-card">
+            <div class="stage-badge">Stage 1</div>
+            <h4>🎯 Product-Market Fit ($0-100K ARR)</h4>
+            <p><strong>Focus:</strong> Validate problem-solution fit with deep customer research</p>
+            <p><strong>Key Metrics:</strong> Retention rate >70%, NPS >50, word-of-mouth referrals</p>
+            <p><strong>Marketing Channels:</strong> Direct outreach, customer development, content marketing</p>
+            <p><strong>Common Mistakes:</strong> Scaling marketing before achieving PMF, feature bloat</p>
+          </div>
+
+          <div class="funnel-card">
+            <div class="stage-badge">Stage 2</div>
+            <h4>📈 Scalable Acquisition ($100K-1M ARR)</h4>
+            <p><strong>Focus:</strong> Build repeatable, profitable customer acquisition channels</p>
+            <p><strong>Key Metrics:</strong> CAC payback <12 months, LTV/CAC >3:1</p>
+            <p><strong>Marketing Channels:</strong> SEO, content marketing, paid ads, partnerships</p>
+            <p><strong>Common Mistakes:</strong> Channel diversification too early, ignoring unit economics</p>
+          </div>
+
+          <div class="funnel-card">
+            <div class="stage-badge">Stage 3</div>
+            <h4>🚀 Growth Acceleration ($1M-10M ARR)</h4>
+            <p><strong>Focus:</strong> Optimize funnel conversion, expand market reach</p>
+            <p><strong>Key Metrics:</strong> Net revenue retention >110%, efficient CAC channels</p>
+            <p><strong>Marketing Channels:</strong> Multi-channel optimization, account-based marketing</p>
+            <p><strong>Common Mistakes:</strong> Premature enterprise focus, neglecting SMB segments</p>
+          </div>
+
+          <div class="funnel-card">
+            <div class="stage-badge">Stage 4</div>
+            <h4>🏢 Market Leadership ($10M+ ARR)</h4>
+            <p><strong>Focus:</strong> Market expansion, competitive moats, platform plays</p>
+            <p><strong>Key Metrics:</strong> Market share growth, brand recognition, ecosystem strength</p>
+            <p><strong>Marketing Channels:</strong> Brand marketing, events, strategic partnerships</p>
+            <p><strong>Common Mistakes:</strong> Innovation stagnation, customer experience degradation</p>
+          </div>
+        </div>
+
+        <div class="callout success">
+          <h4>✅ SaaS Marketing Success Framework</h4>
+          <p><strong>Foundation:</strong> Product-market fit with measurable customer success<br>
+          <strong>Acquisition:</strong> 2-3 scalable channels generating predictable pipeline<br>
+          <strong>Retention:</strong> Onboarding excellence and continuous value delivery<br>
+          <strong>Expansion:</strong> Upsell/cross-sell systems driving negative churn</p>
+        </div>
+      </section>
+
+      <section id="customer-acquisition" class="section">
+        <h2>Customer Acquisition Strategies</h2>
+
+        <div class="callout warning">
+          <h4>⚠️ The SaaS CAC Crisis</h4>
+          <p>Average SaaS customer acquisition costs have increased 60% since 2020. Winning SaaS companies focus on efficient, sustainable acquisition channels rather than venture-backed growth-at-all-costs strategies. Prioritize channels with improving unit economics over time.</p>
+        </div>
+
+        <h3>SaaS Acquisition Channel Comparison</h3>
+        <div class="comparison-table">
+          <table>
+            <thead>
+              <tr>
+                <th>Channel</th>
+                <th>Time to Scale</th>
+                <th>Avg CAC</th>
+                <th>Customer Quality</th>
+                <th>Scalability</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>Organic Search (SEO)</strong></td>
+                <td class="tier-low">12-24 months</td>
+                <td class="tier-high">$45-85</td>
+                <td class="tier-high">Very High</td>
+                <td class="tier-high">Very High</td>
+              </tr>
+              <tr>
+                <td><strong>Content Marketing</strong></td>
+                <td class="tier-low">8-18 months</td>
+                <td class="tier-high">$60-120</td>
+                <td class="tier-high">High</td>
+                <td class="tier-high">High</td>
+              </tr>
+              <tr>
+                <td><strong>Paid Search (Google Ads)</strong></td>
+                <td class="tier-medium">1-3 months</td>
+                <td class="tier-medium">$150-300</td>
+                <td class="tier-high">High</td>
+                <td class="tier-high">Very High</td>
+              </tr>
+              <tr>
+                <td><strong>Social Media Ads</strong></td>
+                <td class="tier-medium">2-6 months</td>
+                <td class="tier-medium">$100-250</td>
+                <td class="tier-medium">Medium</td>
+                <td class="tier-medium">Medium</td>
+              </tr>
+              <tr>
+                <td><strong>Partnership/Integrations</strong></td>
+                <td class="tier-low">6-18 months</td>
+                <td class="tier-high">$50-150</td>
+                <td class="tier-high">Very High</td>
+                <td class="tier-medium">Medium</td>
+              </tr>
+              <tr>
+                <td><strong>Account-Based Marketing</strong></td>
+                <td class="tier-medium">3-9 months</td>
+                <td class="tier-low">$300-1000</td>
+                <td class="tier-high">Very High</td>
+                <td class="tier-low">Low</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <h3>Channel-Specific Strategies</h3>
+        <div class="channel-comparison">
+          <div class="channel-card">
+            <h5>🔍 SEO/Content</h5>
+            <div class="channel-score high">A+</div>
+            <div class="channel-details">
+              <strong>Best For:</strong> Bottom-funnel keywords<br>
+              <strong>Timeline:</strong> 12+ months<br>
+              <strong>Investment:</strong> $3K-10K/month
+            </div>
+          </div>
+
+          <div class="channel-card">
+            <h5>💰 Google Ads</h5>
+            <div class="channel-score high">A</div>
+            <div class="channel-details">
+              <strong>Best For:</strong> High-intent searches<br>
+              <strong>Timeline:</strong> 1-3 months<br>
+              <strong>Investment:</strong> $5K-50K/month
+            </div>
+          </div>
+
+          <div class="channel-card">
+            <h5>🎯 Facebook/LinkedIn</h5>
+            <div class="channel-score medium">B+</div>
+            <div class="channel-details">
+              <strong>Best For:</strong> Top/mid-funnel awareness<br>
+              <strong>Timeline:</strong> 3-6 months<br>
+              <strong>Investment:</strong> $3K-25K/month
+            </div>
+          </div>
+
+          <div class="channel-card">
+            <h5>🤝 Partnerships</h5>
+            <div class="channel-score high">A-</div>
+            <div class="channel-details">
+              <strong>Best For:</strong> Strategic integrations<br>
+              <strong>Timeline:</strong> 6-18 months<br>
+              <strong>Investment:</strong> Team time + revenue share
+            </div>
+          </div>
+
+          <div class="channel-card">
+            <h5>📧 Email Marketing</h5>
+            <div class="channel-score medium">B</div>
+            <div class="channel-details">
+              <strong>Best For:</strong> Nurturing prospects<br>
+              <strong>Timeline:</strong> 2-6 months<br>
+              <strong>Investment:</strong> $500-3K/month
+            </div>
+          </div>
+
+          <div class="channel-card">
+            <h5>🎪 Events/Webinars</h5>
+            <div class="channel-score medium">B-</div>
+            <div class="channel-details">
+              <strong>Best For:</strong> Enterprise sales<br>
+              <strong>Timeline:</strong> 3-12 months<br>
+              <strong>Investment:</strong> $2K-15K/event
+            </div>
+          </div>
+        </div>
+
+        <h3>Channel Selection Framework</h3>
+        <div class="strategy-cards">
+          <div class="strategy-card">
+            <h4>🎯 B2B SaaS ($50-500/month)</h4>
+            <p><strong>Primary Channels:</strong> SEO, content marketing, Google Ads</p>
+            <p><strong>Timeline:</strong> Focus on 1-2 channels for first 12 months</p>
+            <p><strong>Budget Allocation:</strong> 60% content/SEO, 30% paid ads, 10% experiments</p>
+            <p><strong>Success Metrics:</strong> Organic traffic growth, demo requests, trial conversions</p>
+          </div>
+
+          <div class="strategy-card">
+            <h4>🏢 Enterprise SaaS ($500-5000+/month)</h4>
+            <p><strong>Primary Channels:</strong> ABM, partnerships, content marketing, events</p>
+            <p><strong>Timeline:</strong> 18-month sales cycles require long-term thinking</p>
+            <p><strong>Budget Allocation:</strong> 40% ABM, 30% content, 20% events, 10% partnerships</p>
+            <p><strong>Success Metrics:</strong> Pipeline quality, deal velocity, average deal size</p>
+          </div>
+
+          <div class="strategy-card">
+            <h4>👥 SMB/Prosumer SaaS ($10-100/month)</h4>
+            <p><strong>Primary Channels:</strong> Social ads, influencer marketing, viral features</p>
+            <p><strong>Timeline:</strong> Fast iteration, growth hacking approach</p>
+            <p><strong>Budget Allocation:</strong> 50% paid social, 30% product marketing, 20% partnerships</p>
+            <p><strong>Success Metrics:</strong> Volume growth, viral coefficients, self-serve conversions</p>
+          </div>
+        </div>
+      </section>
+
+      <section id="cac-calculator" class="section">
+        <div class="cac-calculator">
+          <h3>📊 SaaS Unit Economics Calculator</h3>
+          <p>Calculate your customer acquisition cost (CAC), lifetime value (LTV), and key SaaS metrics.</p>
+          
+          <div class="calc-inputs">
+            <div class="calc-input">
+              <label for="monthlySpend">Monthly Marketing Spend ($)</label>
+              <input type="number" id="monthlySpend" placeholder="25000">
+            </div>
+            
+            <div class="calc-input">
+              <label for="newCustomers">New Customers/Month</label>
+              <input type="number" id="newCustomers" placeholder="50">
+            </div>
+            
+            <div class="calc-input">
+              <label for="avgMRR">Average MRR per Customer ($)</label>
+              <input type="number" id="avgMRR" placeholder="297">
+            </div>
+            
+            <div class="calc-input">
+              <label for="churnRate">Monthly Churn Rate (%)</label>
+              <input type="number" id="churnRate" placeholder="5" step="0.1">
+            </div>
+            
+            <div class="calc-input">
+              <label for="grossMargin">Gross Margin (%)</label>
+              <input type="number" id="grossMargin" placeholder="80" step="0.1">
+            </div>
+          </div>
+          
+          <button class="calc-button" onclick="calculateSaaSMetrics()">Calculate Metrics</button>
+          
+          <div class="calc-results" id="metricsResults">
+            <h4>Your SaaS Unit Economics</h4>
+            <div class="result-breakdown" id="metricsBreakdown">
+              <!-- Results will be populated here -->
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="conversion-optimization" class="section">
+        <h2>Conversion Funnel Optimization</h2>
+
+        <div class="callout">
+          <h4>🎯 SaaS Funnel Benchmarks</h4>
+          <p>Typical SaaS conversion rates: Website visitor → Trial: 2-5%, Trial → Paid: 15-30%, Monthly churn: 3-10%. Small improvements compound significantly—a 1% improvement in each funnel stage can double overall conversion rates.</p>
+        </div>
+
+        <h3>SaaS Conversion Funnel Stages</h3>
+        <div class="funnel-grid">
+          <div class="funnel-card">
+            <h4>🌐 Website Conversion</h4>
+            <p><strong>Goal:</strong> Convert traffic to trial/demo signups</p>
+            <p><strong>Benchmark:</strong> 2-5% visitor-to-trial conversion</p>
+            <p><strong>Optimization Focus:</strong></p>
+            <ul>
+              <li>Clear value proposition above the fold</li>
+              <li>Social proof and customer testimonials</li>
+              <li>Friction-free signup process</li>
+              <li>Compelling call-to-action buttons</li>
+            </ul>
+          </div>
+
+          <div class="funnel-card">
+            <h4>🔄 Trial Experience</h4>
+            <p><strong>Goal:</strong> Demonstrate core value quickly</p>
+            <p><strong>Benchmark:</strong> 15-30% trial-to-paid conversion</p>
+            <p><strong>Optimization Focus:</strong></p>
+            <ul>
+              <li>Immediate value delivery (time-to-value <5 minutes)</li>
+              <li>Progressive disclosure of features</li>
+              <li>Proactive onboarding communication</li>
+              <li>Usage-based conversion triggers</li>
+            </ul>
+          </div>
+
+          <div class="funnel-card">
+            <h4>💳 Payment Conversion</h4>
+            <p><strong>Goal:</strong> Convert trial users to paying customers</p>
+            <p><strong>Benchmark:</strong> 60-80% trial completion rate</p>
+            <p><strong>Optimization Focus:</strong></p>
+            <ul>
+              <li>Multiple pricing options and payment methods</li>
+              <li>Transparent pricing without hidden fees</li>
+              <li>Limited-time trial extension offers</li>
+              <li>Personal outreach for high-value prospects</li>
+            </ul>
+          </div>
+
+          <div class="funnel-card">
+            <h4>📈 Retention & Expansion</h4>
+            <p><strong>Goal:</strong> Minimize churn, maximize expansion revenue</p>
+            <p><strong>Benchmark:</strong> <10% monthly churn, >110% net revenue retention</p>
+            <p><strong>Optimization Focus:</strong></p>
+            <ul>
+              <li>Continuous onboarding and feature adoption</li>
+              <li>Proactive customer success management</li>
+              <li>Usage-based upsell triggers</li>
+              <li>Churn prediction and intervention</li>
+            </ul>
+          </div>
+        </div>
+
+        <h3>Landing Page Optimization</h3>
+        <div class="strategy-cards">
+          <div class="strategy-card">
+            <h4>📝 Value Proposition Testing</h4>
+            <p><strong>Test Variables:</strong> Headlines, benefit statements, problem descriptions</p>
+            <p><strong>Framework:</strong> Problem + Solution + Outcome + Proof</p>
+            <p><strong>A/B Testing:</strong> Test one element at a time, run for statistical significance</p>
+            <p><strong>Success Metrics:</strong> Signup rate, demo requests, trial activations</p>
+          </div>
+
+          <div class="strategy-card">
+            <h4>🎨 Design & UX Optimization</h4>
+            <p><strong>Visual Hierarchy:</strong> Guide attention to primary CTA</p>
+            <p><strong>Form Optimization:</strong> Minimize fields, use progressive profiling</p>
+            <p><strong>Mobile Experience:</strong> 60%+ of B2B traffic is mobile</p>
+            <p><strong>Load Speed:</strong> <3 seconds for optimal conversion</p>
+          </div>
+
+          <div class="strategy-card">
+            <h4>🏆 Social Proof Strategy</h4>
+            <p><strong>Customer Logos:</strong> Recognizable brands using your product</p>
+            <p><strong>Specific Metrics:</strong> "Saved customers $2M+ in 2025"</p>
+            <p><strong>Video Testimonials:</strong> Real customers explaining transformation</p>
+            <p><strong>Usage Statistics:</strong> "Join 50,000+ users" vs generic claims</p>
+          </div>
+        </div>
+
+        <div class="callout success">
+          <h4>✅ High-Converting SaaS Landing Page Elements</h4>
+          <p><strong>Above Fold:</strong> Clear value prop, primary CTA, hero image/video<br>
+          <strong>Social Proof:</strong> Customer logos, testimonials, usage stats<br>
+          <strong>Features/Benefits:</strong> Problem-focused benefits, not feature lists<br>
+          <strong>Risk Reversal:</strong> Free trial, money-back guarantee, no credit card required</p>
+        </div>
+      </section>
+
+      <section id="retention-growth" class="section">
+        <h2>Customer Retention & Growth</h2>
+
+        <div class="callout danger">
+          <h4>🚨 The SaaS Retention Reality</h4>
+          <p>Acquiring a new customer costs 5-25x more than retaining existing ones. SaaS companies with >90% annual retention grow 2-3x faster than those with <80% retention. Retention is the ultimate growth lever—focus here before optimizing acquisition.</p>
+        </div>
+
+        <h3>Customer Success Framework</h3>
+        <div class="strategy-cards">
+          <div class="strategy-card">
+            <h4>🎯 Onboarding Excellence</h4>
+            <p><strong>Time-to-Value Goals:</strong> First value within first session (<10 minutes)</p>
+            <p><strong>Progressive Onboarding:</strong> Introduce features based on usage patterns</p>
+            <p><strong>Success Milestones:</strong> Define and track key activation events</p>
+            <p><strong>Communication:</strong> Automated sequences + personal outreach for high-value accounts</p>
+          </div>
+
+          <div class="strategy-card">
+            <h4>📊 Health Score Monitoring</h4>
+            <p><strong>Usage Metrics:</strong> Login frequency, feature adoption, depth of usage</p>
+            <p><strong>Engagement Signals:</strong> Support interactions, feature requests, integrations</p>
+            <p><strong>Business Metrics:</strong> ROI achievement, goal completion, team expansion</p>
+            <p><strong>Risk Indicators:</strong> Declining usage, support complaints, billing issues</p>
+          </div>
+
+          <div class="strategy-card">
+            <h4>💰 Expansion Revenue</h4>
+            <p><strong>Upsell Triggers:</strong> Usage limits, team growth, success achievements</p>
+            <p><strong>Cross-sell Opportunities:</strong> Complementary features, integrations</p>
+            <p><strong>Timing Strategy:</strong> Expansion conversations during renewal cycles</p>
+            <p><strong>Value Demonstration:</strong> Clear ROI from current usage, future potential</p>
+          </div>
+        </div>
+
+        <h3>Churn Prevention Strategy</h3>
+        <div class="comparison-table">
+          <table>
+            <thead>
+              <tr>
+                <th>Churn Risk Level</th>
+                <th>Indicators</th>
+                <th>Intervention Strategy</th>
+                <th>Timeline</th>
+                <th>Success Rate</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>Low Risk</strong></td>
+                <td class="tier-high">High engagement, growing usage</td>
+                <td>Expansion opportunity outreach</td>
+                <td>Quarterly</td>
+                <td class="tier-high">90%+</td>
+              </tr>
+              <tr>
+                <td><strong>Medium Risk</strong></td>
+                <td class="tier-medium">Stable but not growing usage</td>
+                <td>Feature education, use case expansion</td>
+                <td>Monthly check-ins</td>
+                <td class="tier-high">70-80%</td>
+              </tr>
+              <tr>
+                <td><strong>High Risk</strong></td>
+                <td class="tier-low">Declining usage, support issues</td>
+                <td>Executive intervention, success planning</td>
+                <td>Immediate</td>
+                <td class="tier-medium">40-60%</td>
+              </tr>
+              <tr>
+                <td><strong>Critical Risk</strong></td>
+                <td class="tier-low">No login >30 days, billing issues</td>
+                <td>Win-back campaigns, retention offers</td>
+                <td>Within 48 hours</td>
+                <td class="tier-low">20-30%</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="callout warning">
+          <h4>⚠️ Common Retention Mistakes</h4>
+          <p><strong>Reactive Approach:</strong> Only addressing churn after cancellation request<br>
+          <strong>Feature Focus:</strong> Pushing features instead of solving customer problems<br>
+          <strong>Generic Communication:</strong> One-size-fits-all messaging vs. personalized outreach<br>
+          <strong>Poor Handoffs:</strong> Disconnected sales-to-success customer transitions</p>
+        </div>
+      </section>
+
+      <section id="scaling-strategies" class="section">
+        <h2>Scaling & Advanced Strategies</h2>
+
+        <h3>Growth Stage Strategies</h3>
+        <div class="funnel-grid">
+          <div class="funnel-card">
+            <h4>🌱 Early Stage ($0-1M ARR)</h4>
+            <p><strong>Focus:</strong> Product-market fit, channel validation</p>
+            <p><strong>Team Size:</strong> 1-2 marketing generalists</p>
+            <p><strong>Channel Strategy:</strong> 1-2 channels maximum, deep focus</p>
+            <p><strong>Key Investments:</strong> Content creation, customer development</p>
+            <p><strong>Success Metrics:</strong> Retention rate, word-of-mouth growth</p>
+          </div>
+
+          <div class="funnel-card">
+            <h4>📈 Growth Stage ($1-10M ARR)</h4>
+            <p><strong>Focus:</strong> Predictable revenue growth, channel optimization</p>
+            <p><strong>Team Size:</strong> 3-8 marketing specialists</p>
+            <p><strong>Channel Strategy:</strong> 3-4 proven channels, systematic testing</p>
+            <p><strong>Key Investments:</strong> Marketing automation, sales enablement</p>
+            <p><strong>Success Metrics:</strong> CAC payback, channel efficiency</p>
+          </div>
+
+          <div class="funnel-card">
+            <h4>🚀 Scale Stage ($10-100M ARR)</h4>
+            <p><strong>Focus:</strong> Market expansion, competitive differentiation</p>
+            <p><strong>Team Size:</strong> 10-30 marketing team members</p>
+            <p><strong>Channel Strategy:</strong> Full-funnel approach, brand building</p>
+            <p><strong>Key Investments:</strong> MarTech stack, data analytics, brand</p>
+            <p><strong>Success Metrics:</strong> Market share, brand recognition</p>
+          </div>
+
+          <div class="funnel-card">
+            <h4>🏢 Enterprise Stage ($100M+ ARR)</h4>
+            <p><strong>Focus:</strong> Platform strategy, ecosystem development</p>
+            <p><strong>Team Size:</strong> 50+ specialized marketing professionals</p>
+            <p><strong>Channel Strategy:</strong> Omnichannel, partnership-driven</p>
+            <p><strong>Key Investments:</strong> Global expansion, strategic partnerships</p>
+            <p><strong>Success Metrics:</strong> Platform adoption, ecosystem growth</p>
+          </div>
+        </div>
+
+        <h3>Advanced Marketing Techniques</h3>
+        <div class="strategy-cards">
+          <div class="strategy-card">
+            <h4>🎯 Product-Led Growth (PLG)</h4>
+            <p><strong>Core Concept:</strong> Product itself drives acquisition, retention, expansion</p>
+            <p><strong>Implementation:</strong> Freemium models, viral features, self-serve onboarding</p>
+            <p><strong>Success Examples:</strong> Slack, Zoom, Figma</p>
+            <p><strong>Key Metrics:</strong> Product qualified leads (PQLs), viral coefficient, time-to-value</p>
+          </div>
+
+          <div class="strategy-card">
+            <h4>🤝 Partner-Led Growth</h4>
+            <p><strong>Core Concept:</strong> Strategic partnerships drive mutual customer value</p>
+            <p><strong>Implementation:</strong> Integration partnerships, channel partners, co-marketing</p>
+            <p><strong>Success Examples:</strong> HubSpot integrations, Salesforce AppExchange</p>
+            <p><strong>Key Metrics:</strong> Partner-sourced revenue, integration adoption, co-sell success</p>
+          </div>
+
+          <div class="strategy-card">
+            <h4>📊 Account-Based Marketing</h4>
+            <p><strong>Core Concept:</strong> Personalized marketing to high-value target accounts</p>
+            <p><strong>Implementation:</strong> Account selection, personalized content, multi-touch campaigns</p>
+            <p><strong>Success Examples:</strong> Enterprise SaaS companies targeting Fortune 500</p>
+            <p><strong>Key Metrics:</strong> Account engagement, pipeline velocity, deal size</p>
+          </div>
+
+          <div class="strategy-card">
+            <h4>🎪 Community-Led Growth</h4>
+            <p><strong>Core Concept:</strong> Build communities that drive product adoption</p>
+            <p><strong>Implementation:</strong> User forums, events, certification programs</p>
+            <p><strong>Success Examples:</strong> Salesforce Trailhead, HubSpot Academy</p>
+            <p><strong>Key Metrics:</strong> Community engagement, member-to-customer conversion, advocacy</p>
+          </div>
+        </div>
+
+        <h3>SaaS Marketing Technology Stack</h3>
+        <div class="comparison-table">
+          <table>
+            <thead>
+              <tr>
+                <th>Category</th>
+                <th>Early Stage Tools</th>
+                <th>Growth Stage Tools</th>
+                <th>Scale Stage Tools</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>CRM</strong></td>
+                <td>HubSpot, Pipedrive</td>
+                <td>Salesforce, HubSpot Pro</td>
+                <td>Salesforce Enterprise, Custom</td>
+              </tr>
+              <tr>
+                <td><strong>Marketing Automation</strong></td>
+                <td>Mailchimp, ConvertKit</td>
+                <td>HubSpot, Marketo</td>
+                <td>Marketo, Pardot, Eloqua</td>
+              </tr>
+              <tr>
+                <td><strong>Analytics</strong></td>
+                <td>Google Analytics, Mixpanel</td>
+                <td>Amplitude, Segment</td>
+                <td>Custom analytics, Data warehouse</td>
+              </tr>
+              <tr>
+                <td><strong>Customer Success</strong></td>
+                <td>Intercom, Help Scout</td>
+                <td>Gainsight, ChurnZero</td>
+                <td>Custom CS platforms</td>
+              </tr>
+              <tr>
+                <td><strong>Content Management</strong></td>
+                <td>WordPress, Webflow</td>
+                <td>HubSpot CMS, Contentful</td>
+                <td>Custom CMS, Headless systems</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <section id="faq" class="faq-section">
+        <h2>Frequently Asked Questions</h2>
+
+        <div class="faq-item">
+          <div class="faq-question">What's the ideal LTV to CAC ratio for SaaS companies?</div>
+          <div class="faq-answer">The ideal LTV:CAC ratio is 3:1 or higher. Ratios below 3:1 suggest unsustainable unit economics, while ratios above 5:1 might indicate under-investment in growth. Also track CAC payback period (should be <18 months) and ensure you're calculating LTV conservatively with realistic churn assumptions.</div>
+        </div>
+
+        <div class="faq-item">
+          <div class="faq-question">How long should a SaaS free trial be?</div>
+          <div class="faq-answer">Most successful SaaS companies use 14-30 day trials. B2B products with complex setup benefit from 30+ days, while simpler tools can succeed with 7-14 days. Focus on time-to-value rather than trial length—if users experience core value within 3 days, shorter trials work better as they create urgency.</div>
+        </div>
+
+        <div class="faq-item">
+          <div class="faq-question">When should we invest in paid advertising vs. organic marketing?</div>
+          <div class="faq-answer">Start with organic (content, SEO) to understand messaging and customer acquisition patterns. Add paid advertising when you have proven product-market fit and can afford $5K+ monthly ad spend. Paid ads work best when you have optimized landing pages and can measure clear ROI within 3-6 months.</div>
+        </div>
+
+        <div class="faq-item">
+          <div class="faq-question">What's considered good monthly churn for a SaaS business?</div>
+          <div class="faq-answer">Good monthly churn rates: SMB SaaS: 3-7%, Mid-market: 1-3%, Enterprise: <1%. However, focus more on net revenue retention (should be >100%). If you're losing customers but expanding revenue from remaining customers faster than churn, your business can still grow sustainably.</div>
+        </div>
+
+        <div class="faq-item">
+          <div class="faq-question">How do we transition from founder-led sales to scalable marketing?</div>
+          <div class="faq-answer">Document your successful sales process first. Identify which leads convert best, what messaging works, and common objections. Then systemize: create content around successful talking points, build lead qualification processes, and gradually shift from outbound sales to inbound marketing that attracts similar high-quality prospects.</div>
+        </div>
+
+        <div class="faq-item">
+          <div class="faq-question">Should we focus on new customer acquisition or expansion revenue?</div>
+          <div class="faq-answer">Both, but prioritize retention first. A 5% increase in retention can boost profits 25-95%. Once you have strong retention (>90% annually), balance acquisition and expansion. High-performing SaaS companies get 20-40% of total revenue from expansion (upsells, cross-sells) within existing accounts.</div>
+        </div>
+
+        <div class="faq-item">
+          <div class="faq-question">What marketing metrics should we track as an early-stage SaaS?</div>
+          <div class="faq-answer">Focus on: 1) Monthly Recurring Revenue (MRR) growth, 2) Customer Acquisition Cost (CAC), 3) Monthly churn rate, 4) Trial-to-paid conversion rate, 5) Time-to-value for new users. Avoid vanity metrics like total signups or website traffic unless they clearly correlate with revenue growth.</div>
+        </div>
+
+        <div class="faq-item">
+          <div class="faq-question">How do we compete against bigger SaaS companies with larger marketing budgets?</div>
+          <div class="faq-answer">Focus on niche expertise and superior customer experience. Target specific use cases or industries where you can outperform generalist solutions. Invest heavily in content marketing and customer success to build word-of-mouth growth. Partner with complementary tools rather than competing directly with established platforms.</div>
+        </div>
+      </section>
+
+      <div class="cta-cards">
+        <div class="cta-card">
+          <h4>🚀 Micro SaaS</h4>
+          <p>Learn how to build and bootstrap profitable SaaS products with minimal resources and maximum efficiency.</p>
+          <a href="/micro-saas-bootstrapping" class="cta-button">SaaS Building</a>
+        </div>
+
+        <div class="cta-card">
+          <h4>📧 Email Marketing</h4>
+          <p>Master automated email sequences and marketing automation for SaaS customer nurturing and retention.</p>
+          <a href="/email-marketing-automation" class="cta-button">Email Strategy</a>
+        </div>
+
+        <div class="cta-card">
+          <h4>📱 Social Media</h4>
+          <p>Leverage social media algorithms and growth strategies to build awareness and drive SaaS signups.</p>
+          <a href="/social-media-algorithms-growth" class="cta-button">Social Growth</a>
+        </div>
+      </div>
+    </main>
+
+    <aside class="sidebar">
+      <h3>Contents</h3>
+      <ul>
+        <li><a href="#saas-marketing-fundamentals">Marketing Fundamentals</a></li>
+        <li><a href="#customer-acquisition">Customer Acquisition</a></li>
+        <li><a href="#cac-calculator">CAC Calculator</a></li>
+        <li><a href="#conversion-optimization">Conversion Optimization</a></li>
+        <li><a href="#retention-growth">Retention & Growth</a></li>
+        <li><a href="#scaling-strategies">Scaling Strategies</a></li>
+        <li><a href="#faq">FAQ</a></li>
+      </ul>
+    </aside>
+  </div>
+</div>
+
+<script>
+function calculateSaaSMetrics() {
+  const monthlySpend = parseFloat(document.getElementById('monthlySpend').value) || 0;
+  const newCustomers = parseInt(document.getElementById('newCustomers').value) || 0;
+  const avgMRR = parseFloat(document.getElementById('avgMRR').value) || 0;
+  const churnRate = parseFloat(document.getElementById('churnRate').value) || 0;
+  const grossMargin = parseFloat(document.getElementById('grossMargin').value) || 0;
+  
+  if (monthlySpend === 0 || newCustomers === 0 || avgMRR === 0) {
+    alert('Please fill in marketing spend, new customers, and average MRR');
+    return;
+  }
+  
+  // Calculate metrics
+  const cac = monthlySpend / newCustomers;
+  const customerLifespan = 1 / (churnRate / 100); // months
+  const ltv = avgMRR * customerLifespan * (grossMargin / 100);
+  const ltvCacRatio = ltv / cac;
+  const cacPaybackMonths = cac / (avgMRR * (grossMargin / 100));
+  const monthlyChurnRevenue = (avgMRR * newCustomers * (churnRate / 100));
+  
+  // Determine status colors and messages
+  const getLTVCACStatus = (ratio) => {
+    if (ratio >= 3) return { status: 'Healthy', color: '#4ade80' };
+    if (ratio >= 2) return { status: 'Improving', color: '#fbbf24' };
+    return { status: 'Concerning', color: '#f87171' };
+  };
+  
+  const getPaybackStatus = (months) => {
+    if (months <= 12) return { status: 'Excellent', color: '#4ade80' };
+    if (months <= 18) return { status: 'Good', color: '#fbbf24' };
+    return { status: 'Poor', color: '#f87171' };
+  };
+  
+  const getChurnStatus = (rate) => {
+    if (rate <= 5) return { status: 'Low', color: '#4ade80' };
+    if (rate <= 10) return { status: 'Moderate', color: '#fbbf24' };
+    return { status: 'High', color: '#f87171' };
+  };
+  
+  const ltvCacStatus = getLTVCACStatus(ltvCacRatio);
+  const paybackStatus = getPaybackStatus(cacPaybackMonths);
+  const churnStatus = getChurnStatus(churnRate);
+  
+  // Display results
+  const breakdown = document.getElementById('metricsBreakdown');
+  breakdown.innerHTML = `
+    <div class="breakdown-item">
+      <div class="breakdown-label">Customer Acquisition Cost</div>
+      <div class="breakdown-value">$${cac.toFixed(0)}</div>
+      <div class="breakdown-status">Per customer</div>
+    </div>
+    <div class="breakdown-item">
+      <div class="breakdown-label">Lifetime Value</div>
+      <div class="breakdown-value">$${ltv.toFixed(0)}</div>
+      <div class="breakdown-status">${customerLifespan.toFixed(1)} month lifespan</div>
+    </div>
+    <div class="breakdown-item">
+      <div class="breakdown-label">LTV:CAC Ratio</div>
+      <div class="breakdown-value">${ltvCacRatio.toFixed(1)}:1</div>
+      <div class="breakdown-status" style="color: ${ltvCacStatus.color}">${ltvCacStatus.status}</div>
+    </div>
+    <div class="breakdown-item">
+      <div class="breakdown-label">CAC Payback Period</div>
+      <div class="breakdown-value">${cacPaybackMonths.toFixed(1)} mo</div>
+      <div class="breakdown-status" style="color: ${paybackStatus.color}">${paybackStatus.status}</div>
+    </div>
+    <div class="breakdown-item">
+      <div class="breakdown-label">Monthly Churn Rate</div>
+      <div class="breakdown-value">${churnRate.toFixed(1)}%</div>
+      <div class="breakdown-status" style="color: ${churnStatus.color}">${churnStatus.status}</div>
+    </div>
+    <div class="breakdown-item">
+      <div class="breakdown-label">Monthly Churn Loss</div>
+      <div class="breakdown-value">$${monthlyChurnRevenue.toFixed(0)}</div>
+      <div class="breakdown-status">Revenue impact</div>
+    </div>
+  `;
+  
+  document.getElementById('metricsResults').style.display = 'block';
+}
+</script>

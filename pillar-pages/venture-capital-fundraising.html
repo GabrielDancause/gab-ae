@@ -1,0 +1,1299 @@
+<style>
+  .vcf-container {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 2rem;
+    color: #e2e8f0;
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    line-height: 1.8;
+  }
+  .vcf-header {
+    text-align: center;
+    margin-bottom: 4rem;
+    padding-top: 3rem;
+  }
+  .gradient-h1 {
+    font-size: clamp(2.2rem, 5vw, 3.5rem);
+    font-weight: 800;
+    background: linear-gradient(135deg, #ffffff 0%, #a5b4fc 50%, #818cf8 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    margin-bottom: 1rem;
+    line-height: 1.15;
+    letter-spacing: -0.02em;
+  }
+  .vcf-subtitle {
+    font-size: 1.2rem;
+    color: #94a3b8;
+    max-width: 750px;
+    margin: 0 auto;
+  }
+  .breadcrumb {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    justify-content: center;
+    margin-bottom: 2rem;
+    font-size: 0.85rem;
+  }
+  .breadcrumb a {
+    color: #818cf8;
+    text-decoration: none;
+  }
+  .breadcrumb a:hover { text-decoration: underline; }
+  .breadcrumb span { color: #475569; }
+  .updated-badge {
+    display: inline-block;
+    background: rgba(129, 140, 248, 0.15);
+    color: #a5b4fc;
+    padding: 0.4rem 1rem;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    margin-bottom: 2rem;
+  }
+  .content-wrapper {
+    display: grid;
+    grid-template-columns: 1fr 280px;
+    gap: 4rem;
+    margin-top: 3rem;
+  }
+  .main-content {
+    min-width: 0;
+  }
+  .sidebar {
+    position: sticky;
+    top: 2rem;
+    height: fit-content;
+    background: #12121a;
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 16px;
+    padding: 1.5rem;
+  }
+  .sidebar h3 {
+    color: #ffffff;
+    font-size: 0.9rem;
+    font-weight: 600;
+    margin: 0 0 1rem 0;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+  .sidebar ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+  .sidebar li {
+    margin: 0;
+  }
+  .sidebar a {
+    display: block;
+    color: #94a3b8;
+    text-decoration: none;
+    padding: 0.5rem 0;
+    border-bottom: 1px solid rgba(255,255,255,0.05);
+    font-size: 0.85rem;
+    transition: color 0.2s;
+  }
+  .sidebar a:hover {
+    color: #a5b4fc;
+  }
+  .section {
+    margin: 4rem 0;
+    scroll-margin-top: 2rem;
+  }
+  .section h2 {
+    color: #ffffff;
+    font-size: 1.8rem;
+    font-weight: 700;
+    margin-bottom: 1.5rem;
+  }
+  .section h3 {
+    color: #e2e8f0;
+    font-size: 1.3rem;
+    font-weight: 600;
+    margin: 2rem 0 1rem 0;
+  }
+  .stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1.5rem;
+    margin: 2rem 0;
+  }
+  .stat-card {
+    background: #12121a;
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 14px;
+    padding: 1.5rem;
+    text-align: center;
+  }
+  .stat-number {
+    font-size: 2.5rem;
+    font-weight: 800;
+    color: #818cf8;
+    display: block;
+    line-height: 1;
+  }
+  .stat-label {
+    color: #94a3b8;
+    font-size: 0.9rem;
+    margin-top: 0.5rem;
+  }
+  .funding-stages {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 2rem;
+    margin: 2rem 0;
+  }
+  .stage-card {
+    background: #12121a;
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 16px;
+    padding: 2rem;
+    position: relative;
+    overflow: hidden;
+  }
+  .stage-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, #818cf8, #a5b4fc);
+  }
+  .stage-card h4 {
+    color: #ffffff;
+    font-size: 1.2rem;
+    font-weight: 600;
+    margin-bottom: 1rem;
+  }
+  .stage-badge {
+    background: rgba(129, 140, 248, 0.15);
+    color: #a5b4fc;
+    padding: 0.3rem 0.8rem;
+    border-radius: 8px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    display: inline-block;
+    margin-bottom: 1rem;
+  }
+  .callout {
+    background: rgba(34, 211, 238, 0.1);
+    border-left: 4px solid #22d3ee;
+    border-radius: 0 8px 8px 0;
+    padding: 1.5rem;
+    margin: 2rem 0;
+  }
+  .callout.warning {
+    background: rgba(251, 191, 36, 0.1);
+    border-left-color: #fbbf24;
+  }
+  .callout.success {
+    background: rgba(74, 222, 128, 0.1);
+    border-left-color: #4ade80;
+  }
+  .callout.danger {
+    background: rgba(239, 68, 68, 0.1);
+    border-left-color: #ef4444;
+  }
+  .callout h4 {
+    color: #ffffff;
+    font-size: 1rem;
+    font-weight: 600;
+    margin: 0 0 0.5rem 0;
+  }
+  .comparison-table {
+    width: 100%;
+    background: #12121a;
+    border-radius: 16px;
+    overflow: hidden;
+    border: 1px solid rgba(255,255,255,0.08);
+    margin: 2rem 0;
+  }
+  .comparison-table th {
+    background: #1e293b;
+    color: #ffffff;
+    padding: 1rem;
+    text-align: left;
+    font-weight: 600;
+  }
+  .comparison-table td {
+    padding: 1rem;
+    border-bottom: 1px solid rgba(255,255,255,0.05);
+    color: #e2e8f0;
+  }
+  .comparison-table tr:last-child td {
+    border-bottom: none;
+  }
+  .tier-high { color: #4ade80; }
+  .tier-medium { color: #fbbf24; }
+  .tier-low { color: #f87171; }
+  .valuation-calculator {
+    background: #12121a;
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 16px;
+    padding: 2rem;
+    margin: 3rem 0;
+  }
+  .valuation-calculator h3 {
+    color: #ffffff;
+    font-size: 1.3rem;
+    font-weight: 600;
+    margin-bottom: 1.5rem;
+    text-align: center;
+  }
+  .calc-inputs {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1rem;
+    margin-bottom: 2rem;
+  }
+  .calc-input {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+  .calc-input label {
+    color: #94a3b8;
+    font-size: 0.85rem;
+    font-weight: 500;
+  }
+  .calc-input input, .calc-input select {
+    background: #1e293b;
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 8px;
+    padding: 0.75rem;
+    color: #e2e8f0;
+    font-size: 0.9rem;
+  }
+  .calc-input input:focus, .calc-input select:focus {
+    outline: none;
+    border-color: #818cf8;
+  }
+  .calc-button {
+    background: #818cf8;
+    color: #ffffff;
+    border: none;
+    border-radius: 8px;
+    padding: 0.75rem 2rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s;
+    width: 100%;
+  }
+  .calc-button:hover {
+    background: #6366f1;
+  }
+  .calc-results {
+    background: rgba(129, 140, 248, 0.1);
+    border-radius: 12px;
+    padding: 1.5rem;
+    margin-top: 1.5rem;
+    display: none;
+  }
+  .calc-results h4 {
+    color: #a5b4fc;
+    font-size: 1.1rem;
+    margin-bottom: 1rem;
+  }
+  .result-breakdown {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 1rem;
+    margin-top: 1rem;
+  }
+  .breakdown-item {
+    background: rgba(255,255,255,0.02);
+    padding: 1rem;
+    border-radius: 8px;
+    text-align: center;
+  }
+  .breakdown-label {
+    color: #94a3b8;
+    font-size: 0.8rem;
+    margin-bottom: 0.25rem;
+  }
+  .breakdown-value {
+    color: #e2e8f0;
+    font-weight: 600;
+    font-size: 0.9rem;
+  }
+  .breakdown-status {
+    color: #818cf8;
+    font-size: 0.75rem;
+    margin-top: 0.25rem;
+  }
+  .strategy-cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 1.5rem;
+    margin: 2rem 0;
+  }
+  .strategy-card {
+    background: #12121a;
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 14px;
+    padding: 1.5rem;
+  }
+  .strategy-card h4 {
+    color: #ffffff;
+    font-size: 1.1rem;
+    font-weight: 600;
+    margin-bottom: 1rem;
+  }
+  .investor-types {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1.5rem;
+    margin: 2rem 0;
+  }
+  .investor-card {
+    background: #12121a;
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 12px;
+    padding: 1.5rem;
+    text-align: center;
+  }
+  .investor-card h5 {
+    color: #ffffff;
+    margin-bottom: 0.5rem;
+    font-size: 1rem;
+  }
+  .investor-description {
+    font-size: 0.9rem;
+    color: #94a3b8;
+    margin-bottom: 1rem;
+  }
+  .investor-check {
+    font-size: 0.8rem;
+    color: #818cf8;
+    font-weight: 600;
+  }
+  .faq-section {
+    margin: 4rem 0;
+  }
+  .faq-item {
+    background: #12121a;
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 14px;
+    margin-bottom: 1rem;
+    overflow: hidden;
+  }
+  .faq-question {
+    padding: 1.5rem;
+    color: #ffffff;
+    font-weight: 600;
+    cursor: pointer;
+    border-bottom: 1px solid rgba(255,255,255,0.05);
+  }
+  .faq-answer {
+    padding: 1.5rem;
+    color: #94a3b8;
+  }
+  .cta-cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1.5rem;
+    margin: 3rem 0;
+  }
+  .cta-card {
+    background: linear-gradient(135deg, #1e293b, #334155);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 16px;
+    padding: 2rem;
+    text-align: center;
+  }
+  .cta-card h4 {
+    color: #ffffff;
+    font-size: 1.1rem;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+  }
+  .cta-card p {
+    color: #94a3b8;
+    font-size: 0.9rem;
+    margin-bottom: 1.5rem;
+  }
+  .cta-button {
+    display: inline-block;
+    background: #818cf8;
+    color: #ffffff;
+    padding: 0.7rem 1.5rem;
+    border-radius: 8px;
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 0.9rem;
+    transition: background 0.2s;
+  }
+  .cta-button:hover {
+    background: #6366f1;
+  }
+  
+  @media (max-width: 1024px) {
+    .content-wrapper {
+      grid-template-columns: 1fr;
+      gap: 2rem;
+    }
+    .sidebar {
+      position: relative;
+      top: 0;
+      order: -1;
+    }
+  }
+  
+  @media (max-width: 768px) {
+    .vcf-container {
+      padding: 1rem;
+    }
+    .breadcrumb {
+      flex-wrap: wrap;
+    }
+    .stats-grid {
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    }
+    .funding-stages {
+      grid-template-columns: 1fr;
+    }
+    .strategy-cards {
+      grid-template-columns: 1fr;
+    }
+    .investor-types {
+      grid-template-columns: 1fr;
+    }
+    .cta-cards {
+      grid-template-columns: 1fr;
+    }
+    .calc-inputs {
+      grid-template-columns: 1fr;
+    }
+    .result-breakdown {
+      grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+    }
+  }
+</style>
+
+<div class="vcf-container">
+  <div class="vcf-header">
+    <div class="breadcrumb">
+      <a href="/apex-guides">Apex Guides</a>
+      <span>›</span>
+      <a href="/capital-markets-wealth-guide-2026">Capital Markets & Wealth Architecture</a>
+      <span>›</span>
+      <span style="color: #cbd5e1;">Current</span>
+    </div>
+    
+    <div class="updated-badge">
+      💰 Updated March 2026
+    </div>
+    
+    <h1 class="gradient-h1">Venture Capital Fundraising</h1>
+    <p class="vcf-subtitle">Master the complete VC fundraising process from pre-seed to Series A+. Navigate investor meetings, term sheets, due diligence, and closing with strategic frameworks that maximize valuation and minimize dilution.</p>
+  </div>
+
+  <div class="content-wrapper">
+    <main class="main-content">
+      <div class="stats-grid">
+        <div class="stat-card">
+          <span class="stat-number">0.05%</span>
+          <div class="stat-label">Startups that raise VC funding</div>
+        </div>
+        <div class="stat-card">
+          <span class="stat-number">$2.3M</span>
+          <div class="stat-label">Average Series A round size (2026)</div>
+        </div>
+        <div class="stat-card">
+          <span class="stat-number">18%</span>
+          <div class="stat-label">Average equity dilution per round</div>
+        </div>
+        <div class="stat-card">
+          <span class="stat-number">6</span>
+          <div class="stat-label">Months average fundraising timeline</div>
+        </div>
+      </div>
+
+      <section id="vc-fundraising-fundamentals" class="section">
+        <h2>Venture Capital Fundamentals</h2>
+        <p>Venture capital represents the highest-stakes, highest-reward form of startup funding. Only 0.05% of startups ever raise VC funding, but those that do gain access to significant capital, strategic expertise, and powerful networks. Understanding VC fundamentals is crucial whether you're raising capital or evaluating if VC-backed growth is right for your business.</p>
+
+        <div class="callout">
+          <h4>💡 The VC Reality Check</h4>
+          <p>VCs invest in businesses with potential for 10x+ returns within 7-10 years. They're not buying existing businesses—they're funding future possibilities. Your pitch must demonstrate massive market opportunity, defensible advantages, and a path to $100M+ revenue. If your business can't scale to those levels, bootstrap or consider alternative funding.</p>
+        </div>
+
+        <h3>VC Funding Stages</h3>
+        <div class="funding-stages">
+          <div class="stage-card">
+            <div class="stage-badge">Pre-Seed</div>
+            <h4>💡 Pre-Seed ($100K-$500K)</h4>
+            <p><strong>Stage Focus:</strong> Validate problem-solution fit, build MVP</p>
+            <p><strong>Key Metrics:</strong> Customer interviews, early signups, prototype feedback</p>
+            <p><strong>Investors:</strong> Angel investors, pre-seed VCs, accelerators</p>
+            <p><strong>Typical Dilution:</strong> 10-20% equity</p>
+            <p><strong>Use of Funds:</strong> Product development, initial team, market validation</p>
+          </div>
+
+          <div class="stage-card">
+            <div class="stage-badge">Seed</div>
+            <h4>🌱 Seed ($500K-$3M)</h4>
+            <p><strong>Stage Focus:</strong> Achieve product-market fit, early traction</p>
+            <p><strong>Key Metrics:</strong> Revenue growth, user engagement, retention rates</p>
+            <p><strong>Investors:</strong> Seed VCs, super angels, strategic investors</p>
+            <p><strong>Typical Dilution:</strong> 15-25% equity</p>
+            <p><strong>Use of Funds:</strong> Team building, marketing, product iteration</p>
+          </div>
+
+          <div class="stage-card">
+            <div class="stage-badge">Series A</div>
+            <h4>📈 Series A ($3M-$15M)</h4>
+            <p><strong>Stage Focus:</strong> Scale proven business model</p>
+            <p><strong>Key Metrics:</strong> $1M+ ARR, strong unit economics, market expansion</p>
+            <p><strong>Investors:</strong> Tier 1 VCs, growth-stage investors</p>
+            <p><strong>Typical Dilution:</strong> 20-30% equity</p>
+            <p><strong>Use of Funds:</strong> Sales/marketing scale, geographic expansion</p>
+          </div>
+
+          <div class="stage-card">
+            <div class="stage-badge">Series B+</div>
+            <h4>🚀 Series B+ ($15M-$100M+)</h4>
+            <p><strong>Stage Focus:</strong> Market leadership, international expansion</p>
+            <p><strong>Key Metrics:</strong> $10M+ ARR, market share, competitive moats</p>
+            <p><strong>Investors:</strong> Growth equity, late-stage VCs, strategic investors</p>
+            <p><strong>Typical Dilution:</strong> 15-25% per round</p>
+            <p><strong>Use of Funds:</strong> Global expansion, acquisitions, IPO preparation</p>
+          </div>
+        </div>
+
+        <div class="callout success">
+          <h4>✅ Stage Readiness Indicators</h4>
+          <p><strong>Pre-Seed:</strong> Problem validation + founding team + early prototype<br>
+          <strong>Seed:</strong> Product-market fit signals + initial revenue + user growth<br>
+          <strong>Series A:</strong> Proven business model + strong unit economics + $1M+ ARR<br>
+          <strong>Series B+:</strong> Market leadership + scalable operations + predictable growth</p>
+        </div>
+      </section>
+
+      <section id="investor-landscape" class="section">
+        <h2>Understanding the Investor Landscape</h2>
+
+        <div class="callout warning">
+          <h4>⚠️ Investor Fit is Everything</h4>
+          <p>Raising money from the wrong investors can be worse than not raising at all. Misaligned investors provide poor advice, create governance issues, and hurt future fundraising. Spend 80% of your time on investor qualification and 20% on pitching. Quality over quantity always.</p>
+        </div>
+
+        <h3>Types of VC Investors</h3>
+        <div class="investor-types">
+          <div class="investor-card">
+            <h5>🏆 Tier 1 VCs</h5>
+            <div class="investor-description">
+              Top-tier funds with best entrepreneurs, exits, and networks
+            </div>
+            <div class="investor-check">Check Size: $5M-$25M+</div>
+          </div>
+
+          <div class="investor-card">
+            <h5>🎯 Specialized VCs</h5>
+            <div class="investor-description">
+              Industry-focused funds with deep sector expertise
+            </div>
+            <div class="investor-check">Check Size: $2M-$10M</div>
+          </div>
+
+          <div class="investor-card">
+            <h5>👼 Super Angels</h5>
+            <div class="investor-description">
+              Successful entrepreneurs investing their own capital
+            </div>
+            <div class="investor-check">Check Size: $100K-$1M</div>
+          </div>
+
+          <div class="investor-card">
+            <h5>🏢 Corporate VCs</h5>
+            <div class="investor-description">
+              Strategic arms of large companies seeking innovation
+            </div>
+            <div class="investor-check">Check Size: $1M-$20M</div>
+          </div>
+
+          <div class="investor-card">
+            <h5>🌍 Geographic VCs</h5>
+            <div class="investor-description">
+              Regional funds focused on specific geographic markets
+            </div>
+            <div class="investor-check">Check Size: $500K-$5M</div>
+          </div>
+
+          <div class="investor-card">
+            <h5>⚡ Accelerator VCs</h5>
+            <div class="investor-description">
+              Program-based investors providing mentorship and capital
+            </div>
+            <div class="investor-check">Check Size: $100K-$500K</div>
+          </div>
+        </div>
+
+        <h3>Investor Research & Targeting</h3>
+        <div class="strategy-cards">
+          <div class="strategy-card">
+            <h4>📊 Fund Research</h4>
+            <p><strong>Portfolio Analysis:</strong> Study their investments in similar companies, stages, and sectors</p>
+            <p><strong>Investment Thesis:</strong> Understand their stated focus areas and recent trends</p>
+            <p><strong>Performance History:</strong> Research fund returns, successful exits, and portfolio support</p>
+            <p><strong>Team Dynamics:</strong> Identify decision-makers and their backgrounds</p>
+          </div>
+
+          <div class="strategy-card">
+            <h4>🎯 Targeting Strategy</h4>
+            <p><strong>Tier Approach:</strong> Prioritize Tier 1 funds but have backup options</p>
+            <p><strong>Stage Alignment:</strong> Target funds actively investing at your stage</p>
+            <p><strong>Industry Focus:</strong> Prioritize funds with sector expertise</p>
+            <p><strong>Geographic Relevance:</strong> Consider funds that invest in your market</p>
+          </div>
+
+          <div class="strategy-card">
+            <h4>🤝 Warm Introductions</h4>
+            <p><strong>Portfolio Connections:</strong> Get introduced through existing portfolio companies</p>
+            <p><strong>Entrepreneur Networks:</strong> Leverage relationships with other founders</p>
+            <p><strong>Professional Services:</strong> Use lawyers, bankers, and consultants for intros</p>
+            <p><strong>Industry Events:</strong> Meet investors at conferences and startup events</p>
+          </div>
+        </strategy-cards>
+
+        <div class="comparison-table">
+          <table>
+            <thead>
+              <tr>
+                <th>Investor Type</th>
+                <th>Decision Speed</th>
+                <th>Due Diligence Depth</th>
+                <th>Value-Add</th>
+                <th>Portfolio Support</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>Tier 1 VC</strong></td>
+                <td class="tier-low">Slow (8-16 weeks)</td>
+                <td class="tier-high">Very Deep</td>
+                <td class="tier-high">Exceptional</td>
+                <td class="tier-high">Extensive</td>
+              </tr>
+              <tr>
+                <td><strong>Specialized VC</strong></td>
+                <td class="tier-medium">Medium (6-12 weeks)</td>
+                <td class="tier-high">Deep</td>
+                <td class="tier-high">High (sector-specific)</td>
+                <td class="tier-high">Strong</td>
+              </tr>
+              <tr>
+                <td><strong>Super Angel</strong></td>
+                <td class="tier-high">Fast (2-6 weeks)</td>
+                <td class="tier-medium">Medium</td>
+                <td class="tier-medium">Variable</td>
+                <td class="tier-medium">Personal attention</td>
+              </tr>
+              <tr>
+                <td><strong>Corporate VC</strong></td>
+                <td class="tier-low">Very Slow (12-24 weeks)</td>
+                <td class="tier-high">Very Deep</td>
+                <td class="tier-medium">Strategic partnerships</td>
+                <td class="tier-low">Limited</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <section id="valuation-calculator" class="section">
+        <div class="valuation-calculator">
+          <h3>💰 Startup Valuation Calculator</h3>
+          <p>Estimate your startup's valuation and fundraising terms based on key metrics and market comparables.</p>
+          
+          <div class="calc-inputs">
+            <div class="calc-input">
+              <label for="annualRevenue">Annual Revenue (ARR/MRR*12)</label>
+              <input type="number" id="annualRevenue" placeholder="2000000">
+            </div>
+            
+            <div class="calc-input">
+              <label for="revenueGrowth">Revenue Growth Rate (%)</label>
+              <input type="number" id="revenueGrowth" placeholder="150" step="1">
+            </div>
+            
+            <div class="calc-input">
+              <label for="grossMargin">Gross Margin (%)</label>
+              <input type="number" id="grossMargin" placeholder="80" step="1">
+            </div>
+            
+            <div class="calc-input">
+              <label for="fundingStage">Funding Stage</label>
+              <select id="fundingStage">
+                <option value="pre-seed">Pre-Seed</option>
+                <option value="seed">Seed</option>
+                <option value="series-a">Series A</option>
+                <option value="series-b">Series B</option>
+              </select>
+            </div>
+            
+            <div class="calc-input">
+              <label for="industry">Industry Sector</label>
+              <select id="industry">
+                <option value="saas">SaaS</option>
+                <option value="marketplace">Marketplace</option>
+                <option value="ecommerce">E-commerce</option>
+                <option value="fintech">Fintech</option>
+                <option value="healthtech">Healthtech</option>
+                <option value="edtech">Edtech</option>
+              </select>
+            </div>
+            
+            <div class="calc-input">
+              <label for="fundingAmount">Funding Amount Needed ($)</label>
+              <input type="number" id="fundingAmount" placeholder="5000000">
+            </div>
+          </div>
+          
+          <button class="calc-button" onclick="calculateValuation()">Calculate Valuation</button>
+          
+          <div class="calc-results" id="valuationResults">
+            <h4>Your Startup Valuation Analysis</h4>
+            <div class="result-breakdown" id="valuationBreakdown">
+              <!-- Results will be populated here -->
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="pitch-deck-strategy" class="section">
+        <h2>Pitch Deck Strategy</h2>
+
+        <div class="callout">
+          <h4>🎯 Pitch Deck Psychology</h4>
+          <p>Your pitch deck isn't about explaining your business—it's about generating interest for a meeting. VCs see 1000+ decks annually and fund <3%. Your deck must capture attention in 3 minutes and create FOMO (fear of missing out). Tell a compelling story, not a feature list.</p>
+        </div>
+
+        <h3>Essential Pitch Deck Structure</h3>
+        <div class="funding-stages">
+          <div class="stage-card">
+            <h4>1. 🎯 Problem</h4>
+            <p><strong>Goal:</strong> Establish urgency and market need</p>
+            <p><strong>Content:</strong> Specific customer pain point with quantified impact</p>
+            <p><strong>Best Practice:</strong> Use customer quotes and real examples</p>
+            <p><strong>Common Mistake:</strong> Generic problems that don't resonate</p>
+          </div>
+
+          <div class="stage-card">
+            <h4>2. 💡 Solution</h4>
+            <p><strong>Goal:</strong> Demonstrate unique approach to solving the problem</p>
+            <p><strong>Content:</strong> Core product functionality and key differentiators</p>
+            <p><strong>Best Practice:</strong> Show actual product screenshots or demo</p>
+            <p><strong>Common Mistake:</strong> Feature laundry lists without clear value</p>
+          </div>
+
+          <div class="stage-card">
+            <h4>3. 📊 Market Size</h4>
+            <p><strong>Goal:</strong> Prove opportunity is large enough for venture returns</p>
+            <p><strong>Content:</strong> TAM, SAM, SOM with bottoms-up analysis</p>
+            <p><strong>Best Practice:</strong> Focus on serviceable addressable market</p>
+            <p><strong>Common Mistake:</strong> Overly broad market definitions</p>
+          </div>
+
+          <div class="stage-card">
+            <h4>4. 💰 Business Model</h4>
+            <p><strong>Goal:</strong> Show clear path to revenue and profitability</p>
+            <p><strong>Content:</strong> Revenue streams, pricing strategy, unit economics</p>
+            <p><strong>Best Practice:</strong> Include LTV/CAC ratios and payback periods</p>
+            <p><strong>Common Mistake:</strong> Vague monetization without specifics</p>
+          </div>
+
+          <div class="stage-card">
+            <h4>5. 📈 Traction</h4>
+            <p><strong>Goal:</strong> Prove market validation and momentum</p>
+            <p><strong>Content:</strong> Revenue growth, user metrics, key partnerships</p>
+            <p><strong>Best Practice:</strong> Use specific numbers and growth trajectories</p>
+            <p><strong>Common Mistake:</strong> Vanity metrics instead of business impact</p>
+          </div>
+
+          <div class="stage-card">
+            <h4>6. 🥊 Competition</h4>
+            <p><strong>Goal:</strong> Acknowledge competition while highlighting advantages</p>
+            <p><strong>Content:</strong> Competitive landscape and positioning matrix</p>
+            <p><strong>Best Practice:</strong> Show awareness without dismissing competitors</p>
+            <p><strong>Common Mistake:</strong> "We have no competition" statements</p>
+          </div>
+
+          <div class="stage-card">
+            <h4>7. 👥 Team</h4>
+            <p><strong>Goal:</strong> Demonstrate ability to execute the vision</p>
+            <p><strong>Content:</strong> Founder backgrounds, relevant experience, achievements</p>
+            <p><strong>Best Practice:</strong> Highlight domain expertise and complementary skills</p>
+            <p><strong>Common Mistake:</strong> Generic bios without relevant accomplishments</p>
+          </div>
+
+          <div class="stage-card">
+            <h4>8. 💸 Financials</h4>
+            <p><strong>Goal:</strong> Show realistic projections and growth potential</p>
+            <p><strong>Content:</strong> 5-year revenue/expense projections with key assumptions</p>
+            <p><strong>Best Practice:</strong> Conservative scenarios with clear drivers</p>
+            <p><strong>Common Mistake:</strong> Hockey stick projections without justification</p>
+          </div>
+
+          <div class="stage-card">
+            <h4>9. 🎯 Ask & Use of Funds</h4>
+            <p><strong>Goal:</strong> Specify funding needs and deployment strategy</p>
+            <p><strong>Content:</strong> Funding amount, timeline, milestone achievements</p>
+            <p><strong>Best Practice:</strong> Tie funding to specific growth metrics</p>
+            <p><strong>Common Mistake:</strong> Vague use of funds without measurable outcomes</p>
+          </div>
+        </div>
+
+        <h3>Pitch Deck Best Practices</h3>
+        <div class="strategy-cards">
+          <div class="strategy-card">
+            <h4>🎨 Design & Storytelling</h4>
+            <p><strong>Visual Hierarchy:</strong> Clean design with clear information flow</p>
+            <p><strong>Data Visualization:</strong> Charts and graphs over text bullets</p>
+            <p><strong>Consistent Branding:</strong> Professional appearance throughout</p>
+            <p><strong>Story Arc:</strong> Problem → Solution → Opportunity → Execution</p>
+          </div>
+
+          <div class="strategy-card">
+            <h4>⏰ Timing & Pacing</h4>
+            <p><strong>10/20/30 Rule:</strong> 10 slides, 20 minutes, 30-point font minimum</p>
+            <p><strong>Leave Time for Questions:</strong> Aim for 12-15 minute presentation</p>
+            <p><strong>Practice Transitions:</strong> Smooth flow between sections</p>
+            <p><strong>Anticipate Questions:</strong> Prepare detailed backup slides</p>
+          </div>
+
+          <div class="strategy-card">
+            <h4>📊 Data & Metrics</h4>
+            <p><strong>Be Specific:</strong> Use exact numbers, not ranges</p>
+            <p><strong>Show Growth:</strong> Trends matter more than absolute numbers</p>
+            <p><strong>Contextualize:</strong> Compare to industry benchmarks</p>
+            <p><strong>Address Weaknesses:</strong> Acknowledge limitations honestly</p>
+          </div>
+        </div>
+
+        <div class="callout danger">
+          <h4>🚨 Pitch Deck Red Flags</h4>
+          <p><strong>No Clear Problem:</strong> Solution looking for a problem to solve<br>
+          <strong>Weak Traction:</strong> No evidence of market validation or customer demand<br>
+          <strong>Unrealistic Projections:</strong> Hockey stick growth without justification<br>
+          <strong>Poor Team Fit:</strong> Founders lacking relevant experience or domain expertise<br>
+          <strong>Unclear Ask:</strong> Vague funding requirements without specific milestones</p>
+        </div>
+      </section>
+
+      <section id="term-sheets-negotiation" class="section">
+        <h2>Term Sheets & Negotiation</h2>
+
+        <div class="callout warning">
+          <h4>⚠️ Term Sheets Shape Your Future</h4>
+          <p>Term sheets determine more than just valuation—they define control, downside protection, and exit economics. A higher valuation with bad terms can be worse than lower valuation with founder-friendly terms. Understand every clause because you'll live with these terms for years.</p>
+        </div>
+
+        <h3>Key Term Sheet Components</h3>
+        <div class="comparison-table">
+          <table>
+            <thead>
+              <tr>
+                <th>Term</th>
+                <th>Definition</th>
+                <th>Founder Impact</th>
+                <th>Negotiation Priority</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>Valuation</strong></td>
+                <td>Pre-money company value</td>
+                <td class="tier-high">Determines ownership dilution</td>
+                <td class="tier-high">High</td>
+              </tr>
+              <tr>
+                <td><strong>Liquidation Preference</strong></td>
+                <td>Payout order in exit/sale scenarios</td>
+                <td class="tier-high">Affects exit proceeds distribution</td>
+                <td class="tier-high">Critical</td>
+              </tr>
+              <tr>
+                <td><strong>Board Composition</strong></td>
+                <td>Board seats and voting control</td>
+                <td class="tier-high">Controls major decisions</td>
+                <td class="tier-high">High</td>
+              </tr>
+              <tr>
+                <td><strong>Anti-Dilution</strong></td>
+                <td>Protection from down rounds</td>
+                <td class="tier-medium">Affects future fundraising flexibility</td>
+                <td class="tier-medium">Medium</td>
+              </tr>
+              <tr>
+                <td><strong>Option Pool</strong></td>
+                <td>Employee stock option allocation</td>
+                <td class="tier-medium">Dilutes founder ownership</td>
+                <td class="tier-medium">Medium</td>
+              </tr>
+              <tr>
+                <td><strong>Drag-Along Rights</strong></td>
+                <td>Force minority shareholders to sell</td>
+                <td class="tier-low">Limits exit control</td>
+                <td class="tier-low">Low</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <h3>Negotiation Strategies</h3>
+        <div class="strategy-cards">
+          <div class="strategy-card">
+            <h4>💰 Valuation Negotiation</h4>
+            <p><strong>Anchor High:</strong> Start with ambitious but defensible valuation</p>
+            <p><strong>Use Comparables:</strong> Recent funding rounds in similar companies</p>
+            <p><strong>Multiple Metrics:</strong> Revenue multiples, growth rates, market position</p>
+            <p><strong>Future Milestones:</strong> Tie higher valuations to performance targets</p>
+          </div>
+
+          <div class="strategy-card">
+            <h4>🎛️ Control Terms</h4>
+            <p><strong>Board Independence:</strong> Maintain founder control or equal representation</p>
+            <p><strong>Protective Provisions:</strong> Limit investor veto rights to major decisions</p>
+            <p><strong>Information Rights:</strong> Balance transparency with operational flexibility</p>
+            <p><strong>Approval Rights:</strong> Minimize investor approval requirements</p>
+          </div>
+
+          <div class="strategy-card">
+            <h4>🛡️ Downside Protection</h4>
+            <p><strong>Liquidation Preference:</strong> Negotiate 1x non-participating preferred</p>
+            <p><strong>Anti-Dilution:</strong> Prefer narrow-based over broad-based weighting</p>
+            <p><strong>Pay-to-Play:</strong> Ensure future funding participation requirements</p>
+            <p><strong>Drag-Along Threshold:</strong> Set high thresholds for forced sales</p>
+          </div>
+
+          <div class="strategy-card">
+            <h4>📊 Economic Terms</h4>
+            <p><strong>Option Pool:</strong> Size and refresh timing for employee equity</p>
+            <p><strong>Participation Rights:</strong> Limit double-dip scenarios</p>
+            <p><strong>Conversion Rights:</strong> Automatic conversion triggers</p>
+            <p><strong>Dividend Rights:</strong> Cumulative vs. non-cumulative preferences</p>
+          </div>
+        </div>
+
+        <div class="callout success">
+          <h4>✅ Term Sheet Negotiation Checklist</h4>
+          <p><strong>Get Multiple Term Sheets:</strong> Competition improves terms significantly<br>
+          <strong>Use Experienced Counsel:</strong> Startup-focused lawyers understand market terms<br>
+          <strong>Focus on Control:</strong> Valuation matters less than governance and voting<br>
+          <strong>Plan for Success:</strong> Consider how terms affect future rounds and exits<br>
+          <strong>Document Everything:</strong> Ensure all negotiated terms are in writing</p>
+        </div>
+      </section>
+
+      <section id="due-diligence-closing" class="section">
+        <h2>Due Diligence & Closing</h2>
+
+        <div class="callout">
+          <h4>🔍 Due Diligence Deep Dive</h4>
+          <p>Due diligence is where deals die. After term sheet signing, investors conduct comprehensive business analysis that can take 4-12 weeks. Being prepared with organized documentation and transparent communication accelerates the process and builds investor confidence.</p>
+        </div>
+
+        <h3>Due Diligence Categories</h3>
+        <div class="funding-stages">
+          <div class="stage-card">
+            <h4>💼 Legal Due Diligence</h4>
+            <p><strong>Corporate Structure:</strong> Cap table, bylaws, board resolutions</p>
+            <p><strong>Contracts:</strong> Customer agreements, vendor contracts, employment terms</p>
+            <p><strong>Intellectual Property:</strong> Patents, trademarks, IP assignments</p>
+            <p><strong>Compliance:</strong> Regulatory compliance, licenses, permits</p>
+            <p><strong>Litigation:</strong> Current or potential legal disputes</p>
+          </div>
+
+          <div class="stage-card">
+            <h4>📊 Financial Due Diligence</h4>
+            <p><strong>Financial Statements:</strong> Audited or reviewed financial statements</p>
+            <p><strong>Revenue Recognition:</strong> Accounting policies and practices</p>
+            <p><strong>Cash Flow:</strong> Historical and projected cash flow analysis</p>
+            <p><strong>Unit Economics:</strong> Customer acquisition and retention metrics</p>
+            <p><strong>Projections:</strong> Budget assumptions and scenario analysis</p>
+          </div>
+
+          <div class="stage-card">
+            <h4>🏢 Business Due Diligence</h4>
+            <p><strong>Market Analysis:</strong> TAM, competitive landscape, positioning</p>
+            <p><strong>Customer Validation:</strong> Customer interviews and references</p>
+            <p><strong>Product/Technology:</strong> Technical architecture and roadmap</p>
+            <p><strong>Operations:</strong> Key processes, systems, and capabilities</p>
+            <p><strong>Team Assessment:</strong> Management team evaluation and references</p>
+          </div>
+
+          <div class="stage-card">
+            <h4>🔒 Technical Due Diligence</h4>
+            <p><strong>Code Review:</strong> Software architecture and code quality</p>
+            <p><strong>Security Assessment:</strong> Data protection and cybersecurity measures</p>
+            <p><strong>Scalability Analysis:</strong> Infrastructure and performance capabilities</p>
+            <p><strong>Data Management:</strong> Data governance and analytics capabilities</p>
+            <p><strong>Tech Stack:</strong> Technology choices and technical debt</p>
+          </div>
+        </div>
+
+        <h3>Due Diligence Preparation</h3>
+        <div class="strategy-cards">
+          <div class="strategy-card">
+            <h4>📁 Data Room Organization</h4>
+            <p><strong>Structured Folders:</strong> Organize documents by category (legal, financial, business)</p>
+            <p><strong>Current Documentation:</strong> Ensure all documents are up-to-date and accurate</p>
+            <p><strong>Executive Summaries:</strong> Provide overview documents for complex areas</p>
+            <p><strong>Access Controls:</strong> Manage document access and track reviewer activity</p>
+          </div>
+
+          <div class="strategy-card">
+            <h4>🎯 Process Management</h4>
+            <p><strong>Project Manager:</strong> Designate someone to coordinate the process</p>
+            <p><strong>Response Timeline:</strong> Set expectations for document requests and questions</p>
+            <p><strong>Expert Resources:</strong> Engage lawyers, accountants, and advisors as needed</p>
+            <p><strong>Communication Plan:</strong> Regular updates on progress and any issues</p>
+          </div>
+
+          <div class="strategy-card">
+            <h4>🛠️ Issue Resolution</h4>
+            <p><strong>Identify Risks Early:</strong> Address potential concerns proactively</p>
+            <p><strong>Mitigation Plans:</strong> Develop solutions for identified problems</p>
+            <p><strong>Transparent Communication:</strong> Disclose issues honestly with context</p>
+            <p><strong>External Validation:</strong> Use customer references and third-party validations</p>
+          </div>
+        </div>
+
+        <h3>Closing Process</h3>
+        <div class="comparison-table">
+          <table>
+            <thead>
+              <tr>
+                <th>Closing Phase</th>
+                <th>Timeline</th>
+                <th>Key Activities</th>
+                <th>Potential Issues</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>Document Drafting</strong></td>
+                <td>2-4 weeks</td>
+                <td>Legal document preparation and review</td>
+                <td>Term sheet deviations, complex structures</td>
+              </tr>
+              <tr>
+                <td><strong>Signature Process</strong></td>
+                <td>1-2 weeks</td>
+                <td>Document execution and signature collection</td>
+                <td>Investor approval delays, coordination issues</td>
+              </tr>
+              <tr>
+                <td><strong>Conditions Satisfaction</strong></td>
+                <td>1-3 weeks</td>
+                <td>Closing conditions fulfillment</td>
+                <td>Regulatory approvals, third-party consents</td>
+              </tr>
+              <tr>
+                <td><strong>Funding Transfer</strong></td>
+                <td>1-5 days</td>
+                <td>Wire transfer and fund receipt</td>
+                <td>Banking issues, international transfers</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="callout danger">
+          <h4>🚨 Common Closing Killers</h4>
+          <p><strong>Financial Discrepancies:</strong> Unexplained revenue or expense variations<br>
+          <strong>Legal Issues:</strong> IP disputes, employment problems, regulatory violations<br>
+          <strong>Customer Concentration:</strong> Over-dependence on major customers<br>
+          <strong>Team Departures:</strong> Key employee resignations during process<br>
+          <strong>Market Changes:</strong> Competitive threats or market downturns</p>
+        </div>
+      </section>
+
+      <section id="faq" class="faq-section">
+        <h2>Frequently Asked Questions</h2>
+
+        <div class="faq-item">
+          <div class="faq-question">How do I know if my startup is ready for VC funding?</div>
+          <div class="faq-answer">VC readiness requires: 1) Product-market fit with strong customer validation, 2) Scalable business model with clear unit economics, 3) Large addressable market (>$1B TAM), 4) Strong founding team with domain expertise, 5) Growth potential for 10x+ returns. If you can't check all boxes, consider alternative funding or more development time.</div>
+        </div>
+
+        <div class="faq-item">
+          <div class="faq-question">What's a realistic timeline for raising a VC round?</div>
+          <div class="faq-answer">Expect 4-9 months total: 1-2 months preparation (deck, financials, data room), 3-6 months fundraising process (meetings, due diligence), 1-2 months closing. First-time founders often take longer. Having warm introductions and strong traction can accelerate the timeline significantly.</div>
+        </div>
+
+        <div class="faq-item">
+          <div class="faq-question">How much equity should I give up in each round?</div>
+          <div class="faq-answer">Typical ranges: Pre-seed (10-20%), Seed (15-25%), Series A (20-30%), Series B+ (15-25%). Total founder dilution after Series A is usually 50-70%. Focus on absolute ownership value rather than percentage—10% of a $100M company beats 50% of a $5M company.</div>
+        </div>
+
+        <div class="faq-item">
+          <div class="faq-question">Should I take the highest valuation offer?</div>
+          <div class="faq-answer">Not necessarily. Consider: 1) Quality of investor (expertise, network, support), 2) Terms beyond valuation (board control, liquidation preferences), 3) Strategic value and alignment, 4) Reference checks with portfolio companies. A 20% lower valuation with great investors often creates more long-term value.</div>
+        </div>
+
+        <div class="faq-item">
+          <div class="faq-question">What if VCs pass on my startup?</div>
+          <div class="faq-answer">Rejections are normal—99.95% of startups don't get VC funding. Ask for specific feedback, address concerns, and consider: 1) Alternative funding (revenue-based, angels, grants), 2) More customer traction before reapproaching, 3) Pivot based on market feedback, 4) Bootstrap to profitability. Many successful companies were initially rejected by VCs.</div>
+        </div>
+
+        <div class="faq-item">
+          <div class="faq-question">How do I maintain control after taking VC money?</div>
+          <div class="faq-answer">Strategies include: 1) Negotiate board composition (independent directors vs. investor seats), 2) Maintain voting control through dual-class shares, 3) Limit protective provisions to major decisions only, 4) Set high thresholds for investor approvals, 5) Include founder-friendly terms like single-trigger acceleration. Control often matters more than valuation.</div>
+        </div>
+
+        <div class="faq-item">
+          <div class="faq-question">What's the difference between pre-money and post-money valuation?</div>
+          <div class="faq-answer">Pre-money valuation is your company's value before investment. Post-money = pre-money + investment amount. If your pre-money valuation is $8M and you raise $2M, post-money is $10M. The investor owns 20% ($2M/$10M). Always clarify which valuation is being discussed to avoid misunderstandings.</div>
+        </div>
+
+        <div class="faq-item">
+          <div class="faq-question">Can I negotiate term sheet terms besides valuation?</div>
+          <div class="faq-answer">Absolutely. Key negotiable terms include: liquidation preferences (aim for 1x non-participating), board composition, option pool size, anti-dilution provisions, drag-along thresholds, and protective provisions. Often these terms have more long-term impact than valuation. Use experienced startup counsel and don't accept "standard" terms without review.</div>
+        </div>
+      </section>
+
+      <div class="cta-cards">
+        <div class="cta-card">
+          <h4>📋 Business Planning</h4>
+          <p>Master business plan creation and startup strategy development for VC-ready companies.</p>
+          <a href="/business-plan-startup-strategy" class="cta-button">Business Strategy</a>
+        </div>
+
+        <div class="cta-card">
+          <h4>🚀 Micro SaaS</h4>
+          <p>Learn to build profitable SaaS businesses without VC funding through bootstrapping strategies.</p>
+          <a href="/micro-saas-bootstrapping" class="cta-button">SaaS Building</a>
+        </div>
+
+        <div class="cta-card">
+          <h4>💰 Real Estate</h4>
+          <p>Explore alternative investment strategies for building wealth outside the startup ecosystem.</p>
+          <a href="/real-estate-investing" class="cta-button">Real Estate Guide</a>
+        </div>
+      </div>
+    </main>
+
+    <aside class="sidebar">
+      <h3>Contents</h3>
+      <ul>
+        <li><a href="#vc-fundraising-fundamentals">VC Fundamentals</a></li>
+        <li><a href="#investor-landscape">Investor Landscape</a></li>
+        <li><a href="#valuation-calculator">Valuation Calculator</a></li>
+        <li><a href="#pitch-deck-strategy">Pitch Deck Strategy</a></li>
+        <li><a href="#term-sheets-negotiation">Term Sheets & Negotiation</a></li>
+        <li><a href="#due-diligence-closing">Due Diligence & Closing</a></li>
+        <li><a href="#faq">FAQ</a></li>
+      </ul>
+    </aside>
+  </div>
+</div>
+
+<script>
+function calculateValuation() {
+  const annualRevenue = parseFloat(document.getElementById('annualRevenue').value) || 0;
+  const revenueGrowth = parseFloat(document.getElementById('revenueGrowth').value) || 0;
+  const grossMargin = parseFloat(document.getElementById('grossMargin').value) || 0;
+  const fundingStage = document.getElementById('fundingStage').value;
+  const industry = document.getElementById('industry').value;
+  const fundingAmount = parseFloat(document.getElementById('fundingAmount').value) || 0;
+  
+  if (annualRevenue === 0 || fundingAmount === 0) {
+    alert('Please fill in annual revenue and funding amount');
+    return;
+  }
+  
+  // Industry multipliers for revenue-based valuation
+  const industryMultipliers = {
+    saas: { base: 8, growth: 0.05, margin: 0.03 },
+    marketplace: { base: 6, growth: 0.04, margin: 0.02 },
+    ecommerce: { base: 4, growth: 0.03, margin: 0.01 },
+    fintech: { base: 10, growth: 0.06, margin: 0.04 },
+    healthtech: { base: 7, growth: 0.04, margin: 0.03 },
+    edtech: { base: 5, growth: 0.03, margin: 0.02 }
+  };
+  
+  // Stage multipliers
+  const stageMultipliers = {
+    'pre-seed': 0.5,
+    'seed': 0.8,
+    'series-a': 1.0,
+    'series-b': 1.2
+  };
+  
+  const industryData = industryMultipliers[industry];
+  const stageMultiplier = stageMultipliers[fundingStage];
+  
+  // Calculate base valuation
+  let revenueMultiple = industryData.base * stageMultiplier;
+  
+  // Adjust for growth rate
+  revenueMultiple += (revenueGrowth / 100) * industryData.growth * 100;
+  
+  // Adjust for gross margin
+  revenueMultiple += (grossMargin / 100) * industryData.margin * 100;
+  
+  // Calculate valuations
+  const estimatedValuation = annualRevenue * revenueMultiple;
+  const equityDilution = (fundingAmount / (estimatedValuation + fundingAmount)) * 100;
+  
+  // Calculate post-money valuation
+  const postMoneyValuation = estimatedValuation + fundingAmount;
+  
+  // Calculate founder ownership after round
+  const founderOwnershipAfter = 100 - equityDilution;
+  
+  // Calculate metrics
+  const revenueMultipleActual = estimatedValuation / annualRevenue;
+  const fundingRunway = fundingAmount / (annualRevenue * 0.1); // Assume 10% of revenue as monthly burn
+  
+  // Determine valuation tier
+  const getValuationTier = (valuation) => {
+    if (valuation > 50000000) return { tier: 'High', color: '#4ade80' };
+    if (valuation > 10000000) return { tier: 'Market', color: '#fbbf24' };
+    return { tier: 'Conservative', color: '#818cf8' };
+  };
+  
+  const valuationTier = getValuationTier(estimatedValuation);
+  
+  // Display results
+  const breakdown = document.getElementById('valuationBreakdown');
+  breakdown.innerHTML = `
+    <div class="breakdown-item">
+      <div class="breakdown-label">Estimated Pre-Money</div>
+      <div class="breakdown-value">$${(estimatedValuation / 1000000).toFixed(1)}M</div>
+      <div class="breakdown-status" style="color: ${valuationTier.color}">${valuationTier.tier}</div>
+    </div>
+    <div class="breakdown-item">
+      <div class="breakdown-label">Post-Money Valuation</div>
+      <div class="breakdown-value">$${(postMoneyValuation / 1000000).toFixed(1)}M</div>
+      <div class="breakdown-status">After investment</div>
+    </div>
+    <div class="breakdown-item">
+      <div class="breakdown-label">Equity Dilution</div>
+      <div class="breakdown-value">${equityDilution.toFixed(1)}%</div>
+      <div class="breakdown-status">Ownership given up</div>
+    </div>
+    <div class="breakdown-item">
+      <div class="breakdown-label">Revenue Multiple</div>
+      <div class="breakdown-value">${revenueMultipleActual.toFixed(1)}x</div>
+      <div class="breakdown-status">Valuation/ARR ratio</div>
+    </div>
+    <div class="breakdown-item">
+      <div class="breakdown-label">Funding Runway</div>
+      <div class="breakdown-value">${fundingRunway.toFixed(0)} months</div>
+      <div class="breakdown-status">Estimated runway</div>
+    </div>
+    <div class="breakdown-item">
+      <div class="breakdown-label">Founder Ownership</div>
+      <div class="breakdown-value">${founderOwnershipAfter.toFixed(1)}%</div>
+      <div class="breakdown-status">After this round</div>
+    </div>
+  `;
+  
+  document.getElementById('valuationResults').style.display = 'block';
+}
+</script>

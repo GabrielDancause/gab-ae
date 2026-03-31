@@ -1,0 +1,1268 @@
+<style>
+  .bps-container {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 2rem;
+    color: #e2e8f0;
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    line-height: 1.8;
+  }
+  .bps-header {
+    text-align: center;
+    margin-bottom: 4rem;
+    padding-top: 3rem;
+  }
+  .gradient-h1 {
+    font-size: clamp(2.2rem, 5vw, 3.5rem);
+    font-weight: 800;
+    background: linear-gradient(135deg, #ffffff 0%, #a5b4fc 50%, #818cf8 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    margin-bottom: 1rem;
+    line-height: 1.15;
+    letter-spacing: -0.02em;
+  }
+  .bps-subtitle {
+    font-size: 1.2rem;
+    color: #94a3b8;
+    max-width: 750px;
+    margin: 0 auto;
+  }
+  .breadcrumb {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    justify-content: center;
+    margin-bottom: 2rem;
+    font-size: 0.85rem;
+  }
+  .breadcrumb a {
+    color: #818cf8;
+    text-decoration: none;
+  }
+  .breadcrumb a:hover { text-decoration: underline; }
+  .breadcrumb span { color: #475569; }
+  .updated-badge {
+    display: inline-block;
+    background: rgba(129, 140, 248, 0.15);
+    color: #a5b4fc;
+    padding: 0.4rem 1rem;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    margin-bottom: 2rem;
+  }
+  .content-wrapper {
+    display: grid;
+    grid-template-columns: 1fr 280px;
+    gap: 4rem;
+    margin-top: 3rem;
+  }
+  .main-content {
+    min-width: 0;
+  }
+  .sidebar {
+    position: sticky;
+    top: 2rem;
+    height: fit-content;
+    background: #12121a;
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 16px;
+    padding: 1.5rem;
+  }
+  .sidebar h3 {
+    color: #ffffff;
+    font-size: 0.9rem;
+    font-weight: 600;
+    margin: 0 0 1rem 0;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+  .sidebar ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+  .sidebar li {
+    margin: 0;
+  }
+  .sidebar a {
+    display: block;
+    color: #94a3b8;
+    text-decoration: none;
+    padding: 0.5rem 0;
+    border-bottom: 1px solid rgba(255,255,255,0.05);
+    font-size: 0.85rem;
+    transition: color 0.2s;
+  }
+  .sidebar a:hover {
+    color: #a5b4fc;
+  }
+  .section {
+    margin: 4rem 0;
+    scroll-margin-top: 2rem;
+  }
+  .section h2 {
+    color: #ffffff;
+    font-size: 1.8rem;
+    font-weight: 700;
+    margin-bottom: 1.5rem;
+  }
+  .section h3 {
+    color: #e2e8f0;
+    font-size: 1.3rem;
+    font-weight: 600;
+    margin: 2rem 0 1rem 0;
+  }
+  .stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1.5rem;
+    margin: 2rem 0;
+  }
+  .stat-card {
+    background: #12121a;
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 14px;
+    padding: 1.5rem;
+    text-align: center;
+  }
+  .stat-number {
+    font-size: 2.5rem;
+    font-weight: 800;
+    color: #818cf8;
+    display: block;
+    line-height: 1;
+  }
+  .stat-label {
+    color: #94a3b8;
+    font-size: 0.9rem;
+    margin-top: 0.5rem;
+  }
+  .process-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 2rem;
+    margin: 2rem 0;
+  }
+  .process-card {
+    background: #12121a;
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 16px;
+    padding: 2rem;
+    position: relative;
+    overflow: hidden;
+  }
+  .process-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, #818cf8, #a5b4fc);
+  }
+  .process-card h4 {
+    color: #ffffff;
+    font-size: 1.2rem;
+    font-weight: 600;
+    margin-bottom: 1rem;
+  }
+  .step-badge {
+    background: rgba(129, 140, 248, 0.15);
+    color: #a5b4fc;
+    padding: 0.3rem 0.8rem;
+    border-radius: 8px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    display: inline-block;
+    margin-bottom: 1rem;
+  }
+  .callout {
+    background: rgba(34, 211, 238, 0.1);
+    border-left: 4px solid #22d3ee;
+    border-radius: 0 8px 8px 0;
+    padding: 1.5rem;
+    margin: 2rem 0;
+  }
+  .callout.warning {
+    background: rgba(251, 191, 36, 0.1);
+    border-left-color: #fbbf24;
+  }
+  .callout.success {
+    background: rgba(74, 222, 128, 0.1);
+    border-left-color: #4ade80;
+  }
+  .callout.danger {
+    background: rgba(239, 68, 68, 0.1);
+    border-left-color: #ef4444;
+  }
+  .callout h4 {
+    color: #ffffff;
+    font-size: 1rem;
+    font-weight: 600;
+    margin: 0 0 0.5rem 0;
+  }
+  .comparison-table {
+    width: 100%;
+    background: #12121a;
+    border-radius: 16px;
+    overflow: hidden;
+    border: 1px solid rgba(255,255,255,0.08);
+    margin: 2rem 0;
+  }
+  .comparison-table th {
+    background: #1e293b;
+    color: #ffffff;
+    padding: 1rem;
+    text-align: left;
+    font-weight: 600;
+  }
+  .comparison-table td {
+    padding: 1rem;
+    border-bottom: 1px solid rgba(255,255,255,0.05);
+    color: #e2e8f0;
+  }
+  .comparison-table tr:last-child td {
+    border-bottom: none;
+  }
+  .tier-high { color: #4ade80; }
+  .tier-medium { color: #fbbf24; }
+  .tier-low { color: #f87171; }
+  .financial-calculator {
+    background: #12121a;
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 16px;
+    padding: 2rem;
+    margin: 3rem 0;
+  }
+  .financial-calculator h3 {
+    color: #ffffff;
+    font-size: 1.3rem;
+    font-weight: 600;
+    margin-bottom: 1.5rem;
+    text-align: center;
+  }
+  .calc-inputs {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1rem;
+    margin-bottom: 2rem;
+  }
+  .calc-input {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+  .calc-input label {
+    color: #94a3b8;
+    font-size: 0.85rem;
+    font-weight: 500;
+  }
+  .calc-input input, .calc-input select {
+    background: #1e293b;
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 8px;
+    padding: 0.75rem;
+    color: #e2e8f0;
+    font-size: 0.9rem;
+  }
+  .calc-input input:focus, .calc-input select:focus {
+    outline: none;
+    border-color: #818cf8;
+  }
+  .calc-button {
+    background: #818cf8;
+    color: #ffffff;
+    border: none;
+    border-radius: 8px;
+    padding: 0.75rem 2rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s;
+    width: 100%;
+  }
+  .calc-button:hover {
+    background: #6366f1;
+  }
+  .calc-results {
+    background: rgba(129, 140, 248, 0.1);
+    border-radius: 12px;
+    padding: 1.5rem;
+    margin-top: 1.5rem;
+    display: none;
+  }
+  .calc-results h4 {
+    color: #a5b4fc;
+    font-size: 1.1rem;
+    margin-bottom: 1rem;
+  }
+  .result-breakdown {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 1rem;
+    margin-top: 1rem;
+  }
+  .breakdown-item {
+    background: rgba(255,255,255,0.02);
+    padding: 1rem;
+    border-radius: 8px;
+    text-align: center;
+  }
+  .breakdown-label {
+    color: #94a3b8;
+    font-size: 0.8rem;
+    margin-bottom: 0.25rem;
+  }
+  .breakdown-value {
+    color: #e2e8f0;
+    font-weight: 600;
+    font-size: 0.9rem;
+  }
+  .breakdown-status {
+    color: #818cf8;
+    font-size: 0.75rem;
+    margin-top: 0.25rem;
+  }
+  .strategy-cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 1.5rem;
+    margin: 2rem 0;
+  }
+  .strategy-card {
+    background: #12121a;
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 14px;
+    padding: 1.5rem;
+  }
+  .strategy-card h4 {
+    color: #ffffff;
+    font-size: 1.1rem;
+    font-weight: 600;
+    margin-bottom: 1rem;
+  }
+  .framework-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1.5rem;
+    margin: 2rem 0;
+  }
+  .framework-card {
+    background: #12121a;
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 12px;
+    padding: 1.5rem;
+    text-align: center;
+  }
+  .framework-card h5 {
+    color: #ffffff;
+    margin-bottom: 0.5rem;
+    font-size: 1rem;
+  }
+  .framework-description {
+    font-size: 0.9rem;
+    color: #94a3b8;
+    margin-bottom: 1rem;
+  }
+  .framework-example {
+    font-size: 0.8rem;
+    color: #818cf8;
+    font-style: italic;
+  }
+  .faq-section {
+    margin: 4rem 0;
+  }
+  .faq-item {
+    background: #12121a;
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 14px;
+    margin-bottom: 1rem;
+    overflow: hidden;
+  }
+  .faq-question {
+    padding: 1.5rem;
+    color: #ffffff;
+    font-weight: 600;
+    cursor: pointer;
+    border-bottom: 1px solid rgba(255,255,255,0.05);
+  }
+  .faq-answer {
+    padding: 1.5rem;
+    color: #94a3b8;
+  }
+  .cta-cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1.5rem;
+    margin: 3rem 0;
+  }
+  .cta-card {
+    background: linear-gradient(135deg, #1e293b, #334155);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 16px;
+    padding: 2rem;
+    text-align: center;
+  }
+  .cta-card h4 {
+    color: #ffffff;
+    font-size: 1.1rem;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+  }
+  .cta-card p {
+    color: #94a3b8;
+    font-size: 0.9rem;
+    margin-bottom: 1.5rem;
+  }
+  .cta-button {
+    display: inline-block;
+    background: #818cf8;
+    color: #ffffff;
+    padding: 0.7rem 1.5rem;
+    border-radius: 8px;
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 0.9rem;
+    transition: background 0.2s;
+  }
+  .cta-button:hover {
+    background: #6366f1;
+  }
+  
+  @media (max-width: 1024px) {
+    .content-wrapper {
+      grid-template-columns: 1fr;
+      gap: 2rem;
+    }
+    .sidebar {
+      position: relative;
+      top: 0;
+      order: -1;
+    }
+  }
+  
+  @media (max-width: 768px) {
+    .bps-container {
+      padding: 1rem;
+    }
+    .breadcrumb {
+      flex-wrap: wrap;
+    }
+    .stats-grid {
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    }
+    .process-grid {
+      grid-template-columns: 1fr;
+    }
+    .strategy-cards {
+      grid-template-columns: 1fr;
+    }
+    .framework-grid {
+      grid-template-columns: 1fr;
+    }
+    .cta-cards {
+      grid-template-columns: 1fr;
+    }
+    .calc-inputs {
+      grid-template-columns: 1fr;
+    }
+    .result-breakdown {
+      grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+    }
+  }
+</style>
+
+<div class="bps-container">
+  <div class="bps-header">
+    <div class="breadcrumb">
+      <a href="/apex-guides">Apex Guides</a>
+      <span>›</span>
+      <a href="/education-knowledge-commerce-guide-2026">Education, Knowledge Commerce & Micro-SaaS</a>
+      <span>›</span>
+      <span style="color: #cbd5e1;">Current</span>
+    </div>
+    
+    <div class="updated-badge">
+      📋 Updated March 2026
+    </div>
+    
+    <h1 class="gradient-h1">Business Plan & Startup Strategy</h1>
+    <p class="bps-subtitle">Create winning business plans and startup strategies that attract funding, guide execution, and scale sustainably. From lean canvas to financial projections, build your roadmap to success.</p>
+  </div>
+
+  <div class="content-wrapper">
+    <main class="main-content">
+      <div class="stats-grid">
+        <div class="stat-card">
+          <span class="stat-number">90%</span>
+          <div class="stat-label">Startups fail due to poor planning</div>
+        </div>
+        <div class="stat-card">
+          <span class="stat-number">2.5x</span>
+          <div class="stat-label">Growth rate with formal business plan</div>
+        </div>
+        <div class="stat-card">
+          <span class="stat-number">$50K</span>
+          <div class="stat-label">Average startup capital needed</div>
+        </div>
+        <div class="stat-card">
+          <span class="stat-number">18</span>
+          <div class="stat-label">Months to reach product-market fit</div>
+        </div>
+      </div>
+
+      <section id="business-planning-fundamentals" class="section">
+        <h2>Business Planning Fundamentals</h2>
+        <p>Successful startups begin with strategic planning that balances vision with execution. While 90% of startups fail, companies with formal business plans are 2.5x more likely to succeed. Modern business planning emphasizes lean methodology, rapid validation, and iterative improvement over lengthy documents that become outdated quickly.</p>
+
+        <div class="callout">
+          <h4>💡 Modern Business Planning Philosophy</h4>
+          <p>Traditional 50-page business plans are dead. Today's successful entrepreneurs use lean canvases, hypothesis-driven planning, and rapid testing to build businesses that adapt to market reality. Focus on assumptions that need validation, not predictions that can't be verified.</p>
+        </div>
+
+        <h3>Business Plan Types & When to Use Them</h3>
+        <div class="comparison-table">
+          <table>
+            <thead>
+              <tr>
+                <th>Plan Type</th>
+                <th>Length</th>
+                <th>Time to Create</th>
+                <th>Best Use Case</th>
+                <th>Update Frequency</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>Lean Canvas</strong></td>
+                <td class="tier-high">1 page</td>
+                <td>2-4 hours</td>
+                <td>Early-stage validation, team alignment</td>
+                <td>Weekly</td>
+              </tr>
+              <tr>
+                <td><strong>Pitch Deck</strong></td>
+                <td class="tier-medium">10-15 slides</td>
+                <td>1-2 weeks</td>
+                <td>Investor presentations, stakeholder buy-in</td>
+                <td>Monthly</td>
+              </tr>
+              <tr>
+                <td><strong>Executive Summary</strong></td>
+                <td class="tier-medium">2-5 pages</td>
+                <td>3-5 days</td>
+                <td>Partnerships, strategic planning</td>
+                <td>Quarterly</td>
+              </tr>
+              <tr>
+                <td><strong>Formal Business Plan</strong></td>
+                <td class="tier-low">15-40 pages</td>
+                <td>4-8 weeks</td>
+                <td>Bank loans, SBA funding, formal investors</td>
+                <td>Annually</td>
+              </tr>
+              <tr>
+                <td><strong>Strategic Plan</strong></td>
+                <td class="tier-low">20-50 pages</td>
+                <td>2-3 months</td>
+                <td>Scaling companies, board governance</td>
+                <td>Annually</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="callout success">
+          <h4>✅ The Progressive Planning Approach</h4>
+          <p><strong>Week 1:</strong> Complete lean canvas and validate core assumptions<br>
+          <strong>Month 1:</strong> Create pitch deck and financial projections<br>
+          <strong>Month 3:</strong> Develop executive summary and go-to-market strategy<br>
+          <strong>Month 6+:</strong> Formal business plan if needed for funding/partnerships</p>
+        </div>
+      </section>
+
+      <section id="lean-canvas-framework" class="section">
+        <h2>Lean Canvas Framework</h2>
+
+        <div class="callout">
+          <h4>🎯 Why Lean Canvas Works</h4>
+          <p>The lean canvas focuses on assumptions and customer problems rather than detailed projections. It's designed for speed, clarity, and iteration—exactly what early-stage startups need. Most successful entrepreneurs can articulate their entire business model in under 20 minutes using this framework.</p>
+        </div>
+
+        <h3>9 Essential Lean Canvas Components</h3>
+        <div class="process-grid">
+          <div class="process-card">
+            <div class="step-badge">1</div>
+            <h4>🎯 Problem</h4>
+            <p><strong>Define:</strong> Top 1-3 problems your customers face</p>
+            <p><strong>Framework:</strong> Identify existing alternatives and why they're inadequate</p>
+            <p><strong>Validation:</strong> Interview 20+ potential customers to confirm problem significance</p>
+            <p><strong>Example:</strong> "Small businesses lose 30% revenue due to poor inventory management"</p>
+          </div>
+
+          <div class="process-card">
+            <div class="step-badge">2</div>
+            <h4>🏆 Solution</h4>
+            <p><strong>Define:</strong> Minimum viable solution addressing core problems</p>
+            <p><strong>Framework:</strong> Focus on must-have features, not nice-to-haves</p>
+            <p><strong>Validation:</strong> Build prototype or MVP for early customer feedback</p>
+            <p><strong>Example:</strong> "AI-powered inventory optimization dashboard with 2-click setup"</p>
+          </div>
+
+          <div class="process-card">
+            <div class="step-badge">3</div>
+            <h4>🎁 Unique Value Proposition</h4>
+            <p><strong>Define:</strong> Single, compelling reason customers should choose you</p>
+            <p><strong>Framework:</strong> [Target Customer] gets [Benefit] by [Unique Mechanism]</p>
+            <p><strong>Validation:</strong> A/B testing landing page headlines and conversion rates</p>
+            <p><strong>Example:</strong> "Increase profits 25% in 90 days with AI that never sleeps"</p>
+          </div>
+
+          <div class="process-card">
+            <div class="step-badge">4</div>
+            <h4>🎪 Unfair Advantage</h4>
+            <p><strong>Define:</strong> Something competitors can't easily copy or acquire</p>
+            <p><strong>Framework:</strong> Network effects, data advantages, exclusive partnerships</p>
+            <p><strong>Validation:</strong> Assess competitive landscape and barriers to entry</p>
+            <p><strong>Example:</strong> "Proprietary dataset from 10,000+ retail partners"</p>
+          </div>
+
+          <div class="process-card">
+            <div class="step-badge">5</div>
+            <h4>👥 Customer Segments</h4>
+            <p><strong>Define:</strong> Specific groups of people with shared characteristics</p>
+            <p><strong>Framework:</strong> Demographics, psychographics, behaviors, needs</p>
+            <p><strong>Validation:</strong> Interview customers in each segment separately</p>
+            <p><strong>Example:</strong> "E-commerce stores: $1-10M revenue, 100-1000 SKUs, 2-person team"</p>
+          </div>
+
+          <div class="process-card">
+            <div class="step-badge">6</div>
+            <h4>📊 Key Metrics</h4>
+            <p><strong>Define:</strong> Numbers that determine business success or failure</p>
+            <p><strong>Framework:</strong> Leading indicators, not vanity metrics</p>
+            <p><strong>Validation:</strong> Track metrics that predict revenue and retention</p>
+            <p><strong>Example:</strong> "Monthly active users, inventory turnover rate, customer LTV"</p>
+          </div>
+
+          <div class="process-card">
+            <div class="step-badge">7</div>
+            <h4>📢 Channels</h4>
+            <p><strong>Define:</strong> How you reach and deliver value to customers</p>
+            <p><strong>Framework:</strong> Awareness, acquisition, retention, revenue channels</p>
+            <p><strong>Validation:</strong> Test 2-3 channels with small budgets before scaling</p>
+            <p><strong>Example:</strong> "SEM, content marketing, partner integrations, inside sales"</p>
+          </div>
+
+          <div class="process-card">
+            <div class="step-badge">8</div>
+            <h4>💰 Revenue Streams</h4>
+            <p><strong>Define:</strong> How and when customers pay for your value</p>
+            <p><strong>Framework:</strong> Subscription, transaction, licensing, advertising models</p>
+            <p><strong>Validation:</strong> Test pricing models with early customers</p>
+            <p><strong>Example:</strong> "SaaS subscription $97/month + 2% transaction fees on sales"</p>
+          </div>
+
+          <div class="process-card">
+            <div class="step-badge">9</div>
+            <h4>💸 Cost Structure</h4>
+            <p><strong>Define:</strong> Fixed and variable costs to operate your business</p>
+            <p><strong>Framework:</strong> Customer acquisition, operations, personnel, technology</p>
+            <p><strong>Validation:</strong> Build unit economics model showing path to profitability</p>
+            <p><strong>Example:</strong> "CAC $150, hosting $0.50/user, support $12/customer/month"</p>
+          </div>
+        </div>
+
+        <h3>Lean Canvas Validation Process</h3>
+        <div class="strategy-cards">
+          <div class="strategy-card">
+            <h4>📅 Week 1: Problem Validation</h4>
+            <p><strong>Goal:</strong> Confirm problem significance and urgency</p>
+            <p><strong>Activities:</strong> Customer interviews, surveys, market research</p>
+            <p><strong>Success Metric:</strong> 80% of interviewed customers confirm problem as "urgent"</p>
+            <p><strong>Red Flag:</strong> Customers say "nice to have" or can't quantify problem impact</p>
+          </div>
+
+          <div class="strategy-card">
+            <h4>🛠️ Week 2-4: Solution Validation</h4>
+            <p><strong>Goal:</strong> Test solution concepts with target customers</p>
+            <p><strong>Activities:</strong> Mockups, prototypes, landing page testing</p>
+            <p><strong>Success Metric:</strong> 60%+ of customers express purchase intent</p>
+            <p><strong>Red Flag:</strong> Customers understand problem but don't want your solution</p>
+          </div>
+
+          <div class="strategy-card">
+            <h4>💳 Week 5-8: Market Validation</h4>
+            <p><strong>Goal:</strong> Validate pricing, channels, and business model</p>
+            <p><strong>Activities:</strong> Pre-sales, MVPs, pilot programs</p>
+            <p><strong>Success Metric:</strong> Paying customers and positive unit economics</p>
+            <p><strong>Red Flag:</strong> Can't find customers willing to pay or costs exceed revenue</p>
+          </div>
+        </div>
+      </section>
+
+      <section id="financial-calculator" class="section">
+        <div class="financial-calculator">
+          <h3>💰 Startup Financial Planning Calculator</h3>
+          <p>Calculate your startup financial requirements, runway, and key metrics for business planning.</p>
+          
+          <div class="calc-inputs">
+            <div class="calc-input">
+              <label for="monthlyRevenue">Expected Monthly Revenue (Month 12)</label>
+              <input type="number" id="monthlyRevenue" placeholder="25000">
+            </div>
+            
+            <div class="calc-input">
+              <label for="monthlyExpenses">Fixed Monthly Expenses</label>
+              <input type="number" id="monthlyExpenses" placeholder="15000">
+            </div>
+            
+            <div class="calc-input">
+              <label for="oneTimeCosts">One-Time Startup Costs</label>
+              <input type="number" id="oneTimeCosts" placeholder="50000">
+            </div>
+            
+            <div class="calc-input">
+              <label for="grossMargin">Gross Margin (%)</label>
+              <input type="number" id="grossMargin" placeholder="70" step="0.1">
+            </div>
+            
+            <div class="calc-input">
+              <label for="growthRate">Monthly Revenue Growth (%)</label>
+              <input type="number" id="growthRate" placeholder="15" step="0.1">
+            </div>
+            
+            <div class="calc-input">
+              <label for="teamSize">Team Size (Month 12)</label>
+              <input type="number" id="teamSize" placeholder="8">
+            </div>
+          </div>
+          
+          <button class="calc-button" onclick="calculateStartupFinancials()">Calculate Financial Plan</button>
+          
+          <div class="calc-results" id="financialResults">
+            <h4>Your Startup Financial Projections</h4>
+            <div class="result-breakdown" id="financialBreakdown">
+              <!-- Results will be populated here -->
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="business-model-frameworks" class="section">
+        <h2>Business Model Frameworks</h2>
+
+        <div class="callout warning">
+          <h4>⚠️ Business Model Selection Reality</h4>
+          <p>Your business model choice impacts everything: customer acquisition, pricing, scaling potential, and exit opportunities. Many startups fail because they choose business models that don't match their market, capabilities, or growth ambitions. Test models early and iterate based on data.</p>
+        </div>
+
+        <h3>Popular Business Model Frameworks</h3>
+        <div class="framework-grid">
+          <div class="framework-card">
+            <h5>🔄 SaaS (Software as a Service)</h5>
+            <div class="framework-description">
+              Recurring subscription revenue for cloud-based software solutions
+            </div>
+            <div class="framework-example">
+              Examples: Salesforce, HubSpot, Slack
+            </div>
+          </div>
+
+          <div class="framework-card">
+            <h5>🛒 E-commerce</h5>
+            <div class="framework-description">
+              Selling physical or digital products directly to consumers online
+            </div>
+            <div class="framework-example">
+              Examples: Shopify stores, Amazon FBA, dropshipping
+            </div>
+          </div>
+
+          <div class="framework-card">
+            <h5>🎪 Marketplace</h5>
+            <div class="framework-description">
+              Connecting buyers and sellers, earning through transactions or subscriptions
+            </div>
+            <div class="framework-example">
+              Examples: Airbnb, Uber, Etsy, Upwork
+            </div>
+          </div>
+
+          <div class="framework-card">
+            <h5>📱 Freemium</h5>
+            <div class="framework-description">
+              Free basic service with premium paid features or capabilities
+            </div>
+            <div class="framework-example">
+              Examples: Spotify, Zoom, Canva, LinkedIn
+            </div>
+          </div>
+
+          <div class="framework-card">
+            <h5>📊 Data & Analytics</h5>
+            <div class="framework-description">
+              Monetizing data insights through subscriptions, APIs, or consulting
+            </div>
+            <div class="framework-example">
+              Examples: Bloomberg, PitchBook, CB Insights
+            </div>
+          </div>
+
+          <div class="framework-card">
+            <h5>🎓 Education & Training</h5>
+            <div class="framework-description">
+              Online courses, certifications, and learning platforms
+            </div>
+            <div class="framework-example">
+              Examples: Coursera, MasterClass, Skillshare
+            </div>
+          </div>
+        </div>
+
+        <h3>Business Model Selection Matrix</h3>
+        <div class="comparison-table">
+          <table>
+            <thead>
+              <tr>
+                <th>Model</th>
+                <th>Startup Capital</th>
+                <th>Time to Revenue</th>
+                <th>Scaling Potential</th>
+                <th>Competitive Moats</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>SaaS</strong></td>
+                <td class="tier-medium">Medium ($50K-500K)</td>
+                <td class="tier-medium">6-18 months</td>
+                <td class="tier-high">Very High</td>
+                <td class="tier-high">Strong (switching costs)</td>
+              </tr>
+              <tr>
+                <td><strong>E-commerce</strong></td>
+                <td class="tier-medium">Low-Medium ($5K-100K)</td>
+                <td class="tier-high">1-6 months</td>
+                <td class="tier-medium">Medium</td>
+                <td class="tier-medium">Medium (brand, supply)</td>
+              </tr>
+              <tr>
+                <td><strong>Marketplace</strong></td>
+                <td class="tier-high">High ($100K-1M)</td>
+                <td class="tier-low">12-36 months</td>
+                <td class="tier-high">Very High</td>
+                <td class="tier-high">Very Strong (network effects)</td>
+              </tr>
+              <tr>
+                <td><strong>Freemium</strong></td>
+                <td class="tier-medium">Medium ($25K-250K)</td>
+                <td class="tier-low">6-24 months</td>
+                <td class="tier-high">High</td>
+                <td class="tier-medium">Medium (product, data)</td>
+              </tr>
+              <tr>
+                <td><strong>Consulting/Services</strong></td>
+                <td class="tier-high">Very Low ($1K-10K)</td>
+                <td class="tier-high">1-3 months</td>
+                <td class="tier-low">Low</td>
+                <td class="tier-low">Low (expertise only)</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="callout success">
+          <h4>✅ Business Model Validation Checklist</h4>
+          <p><strong>Customer Willingness:</strong> Do customers actually pay for this type of solution?<br>
+          <strong>Market Size:</strong> Is the total addressable market large enough for meaningful business?<br>
+          <strong>Unit Economics:</strong> Can you acquire customers profitably and scale efficiently?<br>
+          <strong>Competitive Advantage:</strong> What prevents competitors from copying your approach?</p>
+        </div>
+      </section>
+
+      <section id="go-to-market-strategy" class="section">
+        <h2>Go-to-Market Strategy</h2>
+
+        <div class="callout">
+          <h4>🎯 GTM Strategy Foundation</h4>
+          <p>Your go-to-market strategy determines how you'll reach customers, deliver value, and generate revenue. Most startups fail not because they build poor products, but because they can't consistently acquire customers at sustainable costs. Plan your customer acquisition before you build.</p>
+        </div>
+
+        <h3>GTM Strategy Framework</h3>
+        <div class="process-grid">
+          <div class="process-card">
+            <h4>🎯 Target Customer Definition</h4>
+            <p><strong>Goal:</strong> Identify your ideal customer profile (ICP)</p>
+            <p><strong>Components:</strong></p>
+            <ul>
+              <li>Demographics: Company size, industry, location, budget</li>
+              <li>Psychographics: Pain points, motivations, decision process</li>
+              <li>Behaviors: Where they seek information, how they buy</li>
+              <li>Success metrics: How they measure ROI and success</li>
+            </ul>
+            <p><strong>Validation:</strong> Interview 50+ prospects to confirm assumptions</p>
+          </div>
+
+          <div class="process-card">
+            <h4>📢 Channel Strategy</h4>
+            <p><strong>Goal:</strong> Select 2-3 customer acquisition channels for testing</p>
+            <p><strong>Channel Categories:</strong></p>
+            <ul>
+              <li>Inbound: SEO, content marketing, social media, referrals</li>
+              <li>Outbound: Sales outreach, cold email, advertising, events</li>
+              <li>Partnership: Integrations, affiliates, channel partners</li>
+              <li>Product-led: Viral features, freemium, word-of-mouth</li>
+            </ul>
+            <p><strong>Selection Criteria:</strong> Customer habits, budget, timeline, capabilities</p>
+          </div>
+
+          <div class="process-card">
+            <h4>💰 Pricing & Positioning</h4>
+            <p><strong>Goal:</strong> Price to capture value while enabling growth</p>
+            <p><strong>Pricing Strategies:</strong></p>
+            <ul>
+              <li>Value-based: Price relative to customer ROI</li>
+              <li>Competitive: Price relative to alternatives</li>
+              <li>Cost-plus: Price relative to delivery costs</li>
+              <li>Penetration: Low price for market share</li>
+            </ul>
+            <p><strong>Testing:</strong> A/B test pricing with different customer segments</p>
+          </div>
+
+          <div class="process-card">
+            <h4>📊 Success Metrics</h4>
+            <p><strong>Goal:</strong> Track leading indicators that predict business success</p>
+            <p><strong>Key Metrics:</strong></p>
+            <ul>
+              <li>Acquisition: Customer acquisition cost (CAC), conversion rates</li>
+              <li>Activation: Time-to-value, feature adoption, usage metrics</li>
+              <li>Revenue: Monthly recurring revenue (MRR), average deal size</li>
+              <li>Retention: Churn rate, net promoter score (NPS), expansion</li>
+            </ul>
+            <p><strong>Cadence:</strong> Weekly metric reviews with monthly deep-dives</p>
+          </div>
+        </div>
+
+        <h3>Customer Acquisition Channels</h3>
+        <div class="strategy-cards">
+          <div class="strategy-card">
+            <h4>🔍 Content Marketing & SEO</h4>
+            <p><strong>Best For:</strong> B2B SaaS, educational products, long sales cycles</p>
+            <p><strong>Timeline:</strong> 6-18 months to see significant results</p>
+            <p><strong>Investment:</strong> $3K-15K/month for content creation and optimization</p>
+            <p><strong>Success Metrics:</strong> Organic traffic growth, keyword rankings, lead quality</p>
+            <p><strong>Advantage:</strong> Compounds over time, builds authority, lower long-term costs</p>
+          </div>
+
+          <div class="strategy-card">
+            <h4>💰 Paid Advertising</h4>
+            <p><strong>Best For:</strong> Consumer products, high-LTV services, established businesses</p>
+            <p><strong>Timeline:</strong> 1-3 months to optimize campaigns</p>
+            <p><strong>Investment:</strong> $5K-50K/month depending on market and competition</p>
+            <p><strong>Success Metrics:</strong> Cost per acquisition, return on ad spend, lifetime value</p>
+            <p><strong>Advantage:</strong> Fast results, scalable, precise targeting capabilities</p>
+          </div>
+
+          <div class="strategy-card">
+            <h4>🤝 Partnership & Integrations</h4>
+            <p><strong>Best For:</strong> B2B tools, complementary services, established markets</p>
+            <p><strong>Timeline:</strong> 3-12 months to establish partnerships</p>
+            <p><strong>Investment:</strong> Team time plus revenue sharing (20-50%)</p>
+            <p><strong>Success Metrics:</strong> Partner-sourced revenue, integration adoption, joint success</p>
+            <p><strong>Advantage:</strong> Credibility transfer, shared customer acquisition costs</p>
+          </div>
+
+          <div class="strategy-card">
+            <h4>📞 Sales Outreach</h4>
+            <p><strong>Best For:</strong> Enterprise sales, high-touch services, complex products</p>
+            <p><strong>Timeline:</strong> 2-6 months to build effective sales process</p>
+            <p><strong>Investment:</strong> $80K-150K per sales rep annually</p>
+            <p><strong>Success Metrics:</strong> Lead response rate, meeting-to-opportunity rate, close rate</p>
+            <p><strong>Advantage:</strong> Direct customer feedback, relationship building, high-value deals</p>
+          </div>
+        </div>
+
+        <div class="callout danger">
+          <h4>🚨 Common GTM Mistakes</h4>
+          <p><strong>Channel Spreading:</strong> Testing too many channels simultaneously<br>
+          <strong>Premature Scaling:</strong> Increasing spend before optimizing conversion<br>
+          <strong>Wrong Positioning:</strong> Focusing on features instead of customer outcomes<br>
+          <strong>Metric Confusion:</strong> Tracking vanity metrics instead of revenue drivers</p>
+        </div>
+      </section>
+
+      <section id="funding-strategy" class="section">
+        <h2>Funding Strategy & Options</h2>
+
+        <div class="callout warning">
+          <h4>⚠️ The Funding Reality Check</h4>
+          <p>Only 0.05% of startups raise venture capital. Most successful businesses are bootstrapped or use alternative funding. Before seeking external funding, prove you can generate revenue and understand your capital requirements clearly. Funding is not a business strategy—it's fuel for a working business model.</p>
+        </div>
+
+        <h3>Funding Options Comparison</h3>
+        <div class="comparison-table">
+          <table>
+            <thead>
+              <tr>
+                <th>Funding Type</th>
+                <th>Typical Amount</th>
+                <th>Timeline</th>
+                <th>Equity Given</th>
+                <th>Best Use Case</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>Bootstrapping</strong></td>
+                <td>$0-50K</td>
+                <td class="tier-high">Immediate</td>
+                <td class="tier-high">0%</td>
+                <td>Service businesses, low-capital models</td>
+              </tr>
+              <tr>
+                <td><strong>Friends & Family</strong></td>
+                <td>$10K-100K</td>
+                <td class="tier-high">2-8 weeks</td>
+                <td class="tier-medium">5-15%</td>
+                <td>Early validation, prototype development</td>
+              </tr>
+              <tr>
+                <td><strong>Angel Investors</strong></td>
+                <td>$25K-500K</td>
+                <td class="tier-medium">3-6 months</td>
+                <td class="tier-medium">10-25%</td>
+                <td>Product-market fit, initial traction</td>
+              </tr>
+              <tr>
+                <td><strong>Seed VC</strong></td>
+                <td>$500K-3M</td>
+                <td class="tier-low">6-12 months</td>
+                <td class="tier-low">15-30%</td>
+                <td>Proven traction, scalable business model</td>
+              </tr>
+              <tr>
+                <td><strong>Series A</strong></td>
+                <td>$3M-15M</td>
+                <td class="tier-low">6-18 months</td>
+                <td class="tier-low">20-40%</td>
+                <td>Scaling, market expansion</td>
+              </tr>
+              <tr>
+                <td><strong>Revenue-Based Financing</strong></td>
+                <td>$50K-2M</td>
+                <td class="tier-medium">1-3 months</td>
+                <td class="tier-high">0%</td>
+                <td>SaaS with recurring revenue</td>
+              </tr>
+              <tr>
+                <td><strong>Bank/SBA Loans</strong></td>
+                <td>$25K-500K</td>
+                <td class="tier-medium">2-4 months</td>
+                <td class="tier-high">0%</td>
+                <td>Established businesses, asset purchases</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <h3>When to Raise Capital</h3>
+        <div class="strategy-cards">
+          <div class="strategy-card">
+            <h4>💡 Pre-Revenue (Friends & Family)</h4>
+            <p><strong>Raise When:</strong> You have clear problem validation and solution concept</p>
+            <p><strong>Use Funds For:</strong> MVP development, initial market testing, living expenses</p>
+            <p><strong>Key Metrics:</strong> Customer interviews, prototype feedback, early signups</p>
+            <p><strong>Typical Amount:</strong> $25K-100K to reach initial traction</p>
+          </div>
+
+          <div class="strategy-card">
+            <h4>📈 Early Traction (Angel/Seed)</h4>
+            <p><strong>Raise When:</strong> You have paying customers and repeatable acquisition</p>
+            <p><strong>Use Funds For:</strong> Team building, product development, marketing scale</p>
+            <p><strong>Key Metrics:</strong> MRR growth, CAC/LTV ratios, retention rates</p>
+            <p><strong>Typical Amount:</strong> $250K-2M for 12-18 months runway</p>
+          </div>
+
+          <div class="strategy-card">
+            <h4>🚀 Growth Stage (Series A+)</h4>
+            <p><strong>Raise When:</strong> You have product-market fit and clear scaling path</p>
+            <p><strong>Use Funds For:</strong> Geographic expansion, new products, team scaling</p>
+            <p><strong>Key Metrics:</strong> Net revenue retention >110%, efficient growth, market size</p>
+            <p><strong>Typical Amount:</strong> $3M+ for aggressive market capture</p>
+          </div>
+        </div>
+
+        <div class="callout success">
+          <h4>✅ Investor Readiness Checklist</h4>
+          <p><strong>Traction:</strong> Growing revenue, satisfied customers, market validation<br>
+          <strong>Team:</strong> Proven ability to execute, relevant experience, complementary skills<br>
+          <strong>Market:</strong> Large addressable market, clear customer segments<br>
+          <strong>Business Model:</strong> Path to profitability, scalable unit economics<br>
+          <strong>Financials:</strong> 3-year projections, detailed assumptions, realistic growth</p>
+        </div>
+      </section>
+
+      <section id="faq" class="faq-section">
+        <h2>Frequently Asked Questions</h2>
+
+        <div class="faq-item">
+          <div class="faq-question">Do I really need a formal business plan?</div>
+          <div class="faq-answer">For most startups, a lean canvas is sufficient initially. You need formal business plans for bank loans, SBA funding, or certain types of investors. Focus on validating assumptions and building the business rather than writing lengthy documents. Update your plan as you learn from real customers and market feedback.</div>
+        </div>
+
+        <div class="faq-item">
+          <div class="faq-question">How do I know if my business idea is viable?</div>
+          <div class="faq-answer">Viability requires three elements: 1) Customers have a significant problem they'll pay to solve, 2) Your solution effectively solves that problem, 3) You can reach and acquire customers profitably. Test these through customer interviews, prototypes, and small-scale selling before building the full product.</div>
+        </div>
+
+        <div class="faq-item">
+          <div class="faq-question">What's the biggest mistake in startup planning?</div>
+          <div class="faq-answer">Building solutions without validating customer problems. Many entrepreneurs fall in love with their ideas and skip customer development. Spend 80% of early time talking to potential customers and 20% building. It's easier to pivot your solution than to find new customers for a product nobody wants.</div>
+        </div>
+
+        <div class="faq-item">
+          <div class="faq-question">How much startup capital do I need?</div>
+          <div class="faq-answer">Depends on your business model. Service businesses: $5K-25K. E-commerce: $10K-100K. SaaS: $25K-500K. Hardware: $100K-1M+. Calculate your monthly expenses plus one-time costs, then multiply by 12-24 months for adequate runway. Consider revenue generation timeline in your calculations.</div>
+        </div>
+
+        <div class="faq-item">
+          <div class="faq-question">Should I bootstrap or seek investors?</div>
+          <div class="faq-answer">Bootstrap if you can reach profitability within 12-18 months and don't need massive capital for inventory, equipment, or rapid scaling. Seek investors if you're building a venture-scale business (potential for $100M+ revenue) or need significant upfront capital. Investors aren't just money—they bring expertise and networks.</div>
+        </div>
+
+        <div class="faq-item">
+          <div class="faq-question">How do I validate my business model?</div>
+          <div class="faq-answer">Start with customer interviews to validate the problem. Build a minimal solution (prototype, landing page, or manual service) and test willingness to pay. Track key metrics: customer acquisition cost, conversion rates, and retention. A valid business model acquires customers profitably and retains them successfully.</div>
+        </div>
+
+        <div class="faq-item">
+          <div class="faq-question">What should be in my pitch deck?</div>
+          <div class="faq-answer">Essential slides: Problem, Solution, Market Size, Business Model, Traction, Competition, Team, Financials, Funding Ask, Use of Funds. Keep it to 10-12 slides for presentations, with appendix for detailed questions. Focus on the story: what problem you're solving, why now, and why your team can win.</div>
+        </div>
+
+        <div class="faq-item">
+          <div class="faq-question">When should I quit my day job?</div>
+          <div class="faq-answer">When your business income consistently covers your living expenses for 3+ months and shows growth trajectory. Alternatively, when you have 6-12 months of savings plus clear path to revenue within that timeframe. Many successful entrepreneurs transition gradually: reduce hours, freelance, then full-time entrepreneurship.</div>
+        </div>
+      </section>
+
+      <div class="cta-cards">
+        <div class="cta-card">
+          <h4>🚀 Micro SaaS</h4>
+          <p>Learn how to build and validate SaaS businesses with minimal resources and maximum efficiency.</p>
+          <a href="/micro-saas-bootstrapping" class="cta-button">SaaS Strategy</a>
+        </div>
+
+        <div class="cta-card">
+          <h4>💰 Real Estate</h4>
+          <p>Explore real estate investing strategies for building wealth and passive income streams.</p>
+          <a href="/real-estate-investing" class="cta-button">Real Estate Guide</a>
+        </div>
+
+        <div class="cta-card">
+          <h4>📈 Productivity</h4>
+          <p>Master personal productivity systems to execute your business plan efficiently and effectively.</p>
+          <a href="/personal-productivity-systems" class="cta-button">Productivity Systems</a>
+        </div>
+      </div>
+    </main>
+
+    <aside class="sidebar">
+      <h3>Contents</h3>
+      <ul>
+        <li><a href="#business-planning-fundamentals">Planning Fundamentals</a></li>
+        <li><a href="#lean-canvas-framework">Lean Canvas Framework</a></li>
+        <li><a href="#financial-calculator">Financial Calculator</a></li>
+        <li><a href="#business-model-frameworks">Business Model Frameworks</a></li>
+        <li><a href="#go-to-market-strategy">Go-to-Market Strategy</a></li>
+        <li><a href="#funding-strategy">Funding Strategy</a></li>
+        <li><a href="#faq">FAQ</a></li>
+      </ul>
+    </aside>
+  </div>
+</div>
+
+<script>
+function calculateStartupFinancials() {
+  const monthlyRevenue = parseFloat(document.getElementById('monthlyRevenue').value) || 0;
+  const monthlyExpenses = parseFloat(document.getElementById('monthlyExpenses').value) || 0;
+  const oneTimeCosts = parseFloat(document.getElementById('oneTimeCosts').value) || 0;
+  const grossMargin = parseFloat(document.getElementById('grossMargin').value) || 0;
+  const growthRate = parseFloat(document.getElementById('growthRate').value) || 0;
+  const teamSize = parseInt(document.getElementById('teamSize').value) || 0;
+  
+  if (monthlyRevenue === 0 || monthlyExpenses === 0) {
+    alert('Please fill in monthly revenue and expenses');
+    return;
+  }
+  
+  // Calculate metrics
+  const grossProfit = monthlyRevenue * (grossMargin / 100);
+  const netProfit = grossProfit - monthlyExpenses;
+  const profitMargin = (netProfit / monthlyRevenue) * 100;
+  
+  // Calculate runway and capital needs
+  const monthsToBreakeven = monthlyExpenses / (grossProfit || 1);
+  const capitalNeeded = oneTimeCosts + (monthlyExpenses * Math.max(monthsToBreakeven, 12));
+  const revenuePerEmployee = monthlyRevenue / Math.max(teamSize, 1);
+  
+  // Calculate 12-month projections
+  const month12Revenue = monthlyRevenue * Math.pow(1 + (growthRate / 100), 12);
+  const month12Expenses = monthlyExpenses * 1.2; // Assume 20% expense growth
+  const month12Profit = (month12Revenue * (grossMargin / 100)) - month12Expenses;
+  
+  // Determine status and colors
+  const getProfitabilityStatus = (months) => {
+    if (months <= 12) return { status: 'Good', color: '#4ade80' };
+    if (months <= 24) return { status: 'Moderate', color: '#fbbf24' };
+    return { status: 'Concerning', color: '#f87171' };
+  };
+  
+  const getMarginStatus = (margin) => {
+    if (margin >= 20) return { status: 'Healthy', color: '#4ade80' };
+    if (margin >= 10) return { status: 'Moderate', color: '#fbbf24' };
+    return { status: 'Low', color: '#f87171' };
+  };
+  
+  const profitabilityStatus = getProfitabilityStatus(monthsToBreakeven);
+  const marginStatus = getMarginStatus(profitMargin);
+  
+  // Display results
+  const breakdown = document.getElementById('financialBreakdown');
+  breakdown.innerHTML = `
+    <div class="breakdown-item">
+      <div class="breakdown-label">Monthly Gross Profit</div>
+      <div class="breakdown-value">$${grossProfit.toLocaleString()}</div>
+      <div class="breakdown-status">${grossMargin}% margin</div>
+    </div>
+    <div class="breakdown-item">
+      <div class="breakdown-label">Monthly Net Profit</div>
+      <div class="breakdown-value">$${netProfit.toLocaleString()}</div>
+      <div class="breakdown-status" style="color: ${marginStatus.color}">${marginStatus.status}</div>
+    </div>
+    <div class="breakdown-item">
+      <div class="breakdown-label">Capital Required</div>
+      <div class="breakdown-value">$${capitalNeeded.toLocaleString()}</div>
+      <div class="breakdown-status">18-month runway</div>
+    </div>
+    <div class="breakdown-item">
+      <div class="breakdown-label">Breakeven Timeline</div>
+      <div class="breakdown-value">${monthsToBreakeven.toFixed(1)} months</div>
+      <div class="breakdown-status" style="color: ${profitabilityStatus.color}">${profitabilityStatus.status}</div>
+    </div>
+    <div class="breakdown-item">
+      <div class="breakdown-label">Revenue per Employee</div>
+      <div class="breakdown-value">$${revenuePerEmployee.toLocaleString()}</div>
+      <div class="breakdown-status">Monthly productivity</div>
+    </div>
+    <div class="breakdown-item">
+      <div class="breakdown-label">Year 1 Projection</div>
+      <div class="breakdown-value">$${month12Profit.toLocaleString()}</div>
+      <div class="breakdown-status">Monthly profit (Month 12)</div>
+    </div>
+  `;
+  
+  document.getElementById('financialResults').style.display = 'block';
+}
+</script>

@@ -1,0 +1,1021 @@
+<style>
+  .fire-container {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 2rem;
+    color: #e2e8f0;
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    line-height: 1.8;
+  }
+  .fire-header {
+    text-align: center;
+    margin-bottom: 4rem;
+    padding-top: 3rem;
+  }
+  .gradient-h1 {
+    font-size: clamp(2.2rem, 5vw, 3.5rem);
+    font-weight: 800;
+    background: linear-gradient(135deg, #ffffff 0%, #a5b4fc 50%, #818cf8 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    margin-bottom: 1rem;
+    line-height: 1.15;
+    letter-spacing: -0.02em;
+  }
+  .fire-subtitle {
+    font-size: 1.2rem;
+    color: #94a3b8;
+    max-width: 750px;
+    margin: 0 auto;
+  }
+  .breadcrumb {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    justify-content: center;
+    margin-bottom: 2rem;
+    font-size: 0.85rem;
+  }
+  .breadcrumb a {
+    color: #818cf8;
+    text-decoration: none;
+  }
+  .breadcrumb a:hover { text-decoration: underline; }
+  .breadcrumb span { color: #475569; }
+  .updated-badge {
+    display: inline-block;
+    background: rgba(129, 140, 248, 0.15);
+    color: #a5b4fc;
+    padding: 0.4rem 1rem;
+    border-radius: 20px;
+    font-size: 0.85rem;
+    margin-bottom: 1.5rem;
+    border: 1px solid rgba(129, 140, 248, 0.3);
+  }
+
+  /* Sticky TOC */
+  .fire-layout {
+    display: grid;
+    grid-template-columns: 260px 1fr;
+    gap: 4rem;
+    align-items: start;
+  }
+  .sticky-toc {
+    position: sticky;
+    top: 2rem;
+    background: #12121a;
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 14px;
+    padding: 1.5rem;
+  }
+  .sticky-toc h3 {
+    margin: 0 0 1rem;
+    color: #fff;
+    font-size: 0.9rem;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    padding-bottom: 0.8rem;
+    border-bottom: 1px solid rgba(255,255,255,0.08);
+  }
+  .sticky-toc ul { list-style: none; padding: 0; margin: 0; }
+  .sticky-toc li { margin-bottom: 0.7rem; }
+  .sticky-toc a {
+    color: #94a3b8;
+    text-decoration: none;
+    font-size: 0.88rem;
+    transition: all 0.2s;
+    display: block;
+  }
+  .sticky-toc a:hover { color: #818cf8; transform: translateX(3px); }
+
+  /* Content sections */
+  .section { margin-bottom: 5rem; scroll-margin-top: 2rem; }
+  .section h2 {
+    font-size: 2rem;
+    color: #fff;
+    margin-bottom: 1.2rem;
+    padding-bottom: 0.8rem;
+    border-bottom: 1px solid rgba(255,255,255,0.08);
+    letter-spacing: -0.02em;
+  }
+  .section h3 {
+    font-size: 1.35rem;
+    color: #e2e8f0;
+    margin-top: 2.5rem;
+    margin-bottom: 0.8rem;
+  }
+  .section p {
+    margin-bottom: 1.3rem;
+    font-size: 1.05rem;
+    color: #cbd5e1;
+  }
+  .section ul, .section ol {
+    margin-bottom: 1.5rem;
+    padding-left: 1.5rem;
+    color: #cbd5e1;
+    font-size: 1.05rem;
+  }
+  .section li { margin-bottom: 0.5rem; }
+
+  /* Callout boxes */
+  .callout {
+    border-left: 4px solid #818cf8;
+    background: linear-gradient(90deg, rgba(129, 140, 248, 0.1) 0%, rgba(129, 140, 248, 0.02) 100%);
+    padding: 1.3rem 1.8rem;
+    border-radius: 0 12px 12px 0;
+    margin: 2rem 0;
+    font-size: 1.05rem;
+    color: #e2e8f0;
+  }
+  .callout.warning {
+    border-left-color: #f59e0b;
+    background: linear-gradient(90deg, rgba(245, 158, 11, 0.1) 0%, rgba(245, 158, 11, 0.02) 100%);
+  }
+  .callout.success {
+    border-left-color: #10b981;
+    background: linear-gradient(90deg, rgba(16, 185, 129, 0.1) 0%, rgba(16, 185, 129, 0.02) 100%);
+  }
+  .callout strong { color: #fff; }
+
+  /* Data tables */
+  .data-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 2rem 0;
+    font-size: 0.95rem;
+  }
+  .data-table thead {
+    background: rgba(129, 140, 248, 0.1);
+  }
+  .data-table th {
+    padding: 0.8rem 1rem;
+    text-align: left;
+    color: #a5b4fc;
+    font-weight: 600;
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    border-bottom: 1px solid rgba(255,255,255,0.1);
+  }
+  .data-table td {
+    padding: 0.8rem 1rem;
+    color: #cbd5e1;
+    border-bottom: 1px solid rgba(255,255,255,0.04);
+  }
+  .data-table tbody tr:hover {
+    background: rgba(255,255,255,0.02);
+  }
+  .val-good { color: #4ade80; font-weight: 600; }
+  .val-great { color: #22d3ee; font-weight: 700; }
+  .val-meh { color: #fbbf24; }
+
+  /* Tool cards */
+  .tool-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 1.2rem;
+    margin: 2rem 0;
+  }
+  .tool-card {
+    background: #12121a;
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 14px;
+    padding: 1.8rem;
+    transition: border-color 0.2s;
+  }
+  .tool-card:hover { border-color: rgba(129, 140, 248, 0.4); }
+  .tool-card h4 {
+    color: #fff;
+    font-size: 1.15rem;
+    margin: 0 0 0.5rem;
+  }
+  .tool-card .tool-type {
+    font-size: 0.75rem;
+    color: #818cf8;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    font-weight: 600;
+    margin-bottom: 0.6rem;
+  }
+  .tool-card p {
+    color: #94a3b8;
+    font-size: 0.95rem;
+    margin: 0 0 0.8rem;
+    line-height: 1.5;
+  }
+  .tool-card .tool-price {
+    font-size: 0.85rem;
+    color: #64748b;
+  }
+
+  /* Interactive calculator */
+  .calc-box {
+    background: #12121a;
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 16px;
+    padding: 2.5rem;
+    margin: 2.5rem 0;
+  }
+  .calc-box h3 {
+    color: #fff;
+    margin: 0 0 1.5rem;
+    font-size: 1.4rem;
+  }
+  .calc-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.5rem;
+    margin-bottom: 1.5rem;
+  }
+  .calc-field label {
+    display: block;
+    font-size: 0.8rem;
+    color: #94a3b8;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    margin-bottom: 0.4rem;
+  }
+  .calc-field input, .calc-field select {
+    width: 100%;
+    padding: 0.7rem 1rem;
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 8px;
+    color: #fff;
+    font-size: 1rem;
+    font-family: inherit;
+    box-sizing: border-box;
+  }
+  .calc-field input:focus, .calc-field select:focus {
+    outline: none;
+    border-color: #818cf8;
+  }
+  .calc-field select option { background: #12121a; color: #fff; }
+  .calc-btn {
+    display: inline-block;
+    background: #818cf8;
+    color: #fff;
+    border: none;
+    padding: 0.8rem 2rem;
+    border-radius: 10px;
+    font-weight: 600;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: all 0.2s;
+    font-family: inherit;
+  }
+  .calc-btn:hover { background: #6366f1; transform: translateY(-2px); }
+  .calc-result {
+    margin-top: 1.5rem;
+    padding: 1.5rem;
+    background: rgba(129, 140, 248, 0.08);
+    border-radius: 12px;
+    display: none;
+  }
+  .calc-result .big-number {
+    font-size: 2.5rem;
+    font-weight: 800;
+    color: #4ade80;
+    line-height: 1;
+  }
+  .calc-result .big-label {
+    font-size: 0.85rem;
+    color: #94a3b8;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    margin-top: 0.3rem;
+  }
+  .calc-result .breakdown {
+    margin-top: 1rem;
+    font-size: 0.95rem;
+    color: #cbd5e1;
+  }
+
+  /* FIRE type comparison */
+  .fire-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1.5rem;
+    margin: 2rem 0;
+  }
+  .fire-card {
+    background: #12121a;
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 14px;
+    padding: 2rem;
+    text-align: center;
+    transition: border-color 0.2s;
+  }
+  .fire-card:hover { border-color: rgba(255,255,255,0.2); }
+  .fire-name {
+    font-size: 1.3rem;
+    font-weight: 700;
+    color: #fff;
+    margin-bottom: 0.3rem;
+  }
+  .fire-timeline {
+    font-size: 0.85rem;
+    color: #64748b;
+    margin-bottom: 1.2rem;
+  }
+  .fire-stat {
+    display: flex;
+    justify-content: space-between;
+    padding: 0.5rem 0;
+    border-top: 1px solid rgba(255,255,255,0.04);
+    font-size: 0.9rem;
+  }
+  .fire-stat-label { color: #94a3b8; }
+  .fire-stat-value { color: #e2e8f0; font-weight: 600; }
+
+  /* Strategy cards */
+  .strategy-card {
+    background: #12121a;
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 14px;
+    padding: 2rem;
+    margin: 1.5rem 0;
+    position: relative;
+    overflow: hidden;
+  }
+  .strategy-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0;
+    width: 4px; height: 100%;
+    background: #818cf8;
+  }
+  .strategy-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+  .strategy-title { color: #fff; font-size: 1.25rem; font-weight: 700; margin: 0; }
+  .strategy-tags { display: flex; gap: 0.5rem; flex-wrap: wrap; }
+  .strategy-tag {
+    font-size: 0.7rem;
+    padding: 0.2rem 0.5rem;
+    border-radius: 4px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+  .tag-timeline { background: rgba(74, 222, 128, 0.15); color: #4ade80; }
+  .tag-risk { background: rgba(248, 113, 113, 0.15); color: #f87171; }
+  .tag-difficulty { background: rgba(251, 191, 36, 0.15); color: #fbbf24; }
+  .strategy-body { color: #cbd5e1; font-size: 1rem; }
+  .strategy-body p { margin-bottom: 0.8rem; }
+
+  /* CTA */
+  .cta-card {
+    display: block;
+    background: #12121a;
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 16px;
+    padding: 2rem;
+    text-decoration: none;
+    transition: all 0.3s;
+    position: relative;
+    overflow: hidden;
+    margin: 2.5rem 0;
+  }
+  .cta-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0;
+    width: 4px; height: 100%;
+    background: #818cf8;
+  }
+  .cta-card:hover { transform: translateY(-4px); border-color: #818cf8; }
+  .cta-card h4 { color: #fff; font-size: 1.3rem; margin: 0 0 0.5rem; }
+  .cta-card p { color: #94a3b8; margin: 0; font-size: 1rem; }
+
+  /* FAQ */
+  .faq-section {
+    margin-top: 5rem;
+    border-top: 1px solid rgba(255,255,255,0.08);
+    padding-top: 4rem;
+  }
+  .faq-section h2 {
+    font-size: 2rem;
+    color: #fff;
+    margin-bottom: 2rem;
+    text-align: center;
+  }
+  .faq-item {
+    background: #12121a;
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 14px;
+    padding: 1.5rem;
+    margin-bottom: 1rem;
+  }
+  .faq-item:hover { border-color: rgba(129, 140, 248, 0.3); }
+  .faq-item h3 { margin: 0 0 0.7rem; color: #fff; font-size: 1.1rem; }
+  .faq-item p { margin: 0; color: #94a3b8; font-size: 1rem; }
+
+  @media (max-width: 1024px) {
+    .fire-layout { grid-template-columns: 1fr; gap: 2rem; }
+    .sticky-toc { position: relative; top: 0; }
+    .fire-grid { grid-template-columns: 1fr; }
+  }
+  @media (max-width: 768px) {
+    .gradient-h1 { font-size: 2rem; }
+    .fire-container { padding: 1rem; }
+    .calc-row { grid-template-columns: 1fr; }
+    .tool-grid { grid-template-columns: 1fr; }
+  }
+</style>
+
+<div class="fire-container">
+  <div class="fire-header">
+    <div class="breadcrumb">
+      <a href="/apex-guides">Apex Guides</a>
+      <span>›</span>
+      <a href="/capital-markets-wealth-guide-2026">Capital Markets & Wealth Architecture</a>
+      <span>›</span>
+      <span style="color: #cbd5e1;">Current</span>
+    </div>
+    <span class="updated-badge">🔥 Updated March 2026</span>
+    <h1 class="gradient-h1">The FIRE Movement — The Complete Playbook</h1>
+    <p class="fire-subtitle">Financial Independence, Retire Early. Every strategy, tool, and calculation to escape the 9-to-5 permanently. From lean FIRE to fat FIRE to geographic arbitrage — this is your roadmap to freedom.</p>
+  </div>
+
+  <div class="fire-layout">
+    <aside>
+      <nav class="sticky-toc">
+        <h3>Contents</h3>
+        <ul>
+          <li><a href="#fundamentals">1. FIRE Fundamentals</a></li>
+          <li><a href="#fire-types">2. The Three Paths</a></li>
+          <li><a href="#calculator">3. FIRE Calculator</a></li>
+          <li><a href="#strategies">4. Wealth Building Strategies</a></li>
+          <li><a href="#optimization">5. Expense Optimization</a></li>
+          <li><a href="#geography">6. Geographic Arbitrage</a></li>
+          <li><a href="#tools">7. The FIRE Tool Stack</a></li>
+          <li><a href="#common-mistakes">8. Common Mistakes</a></li>
+          <li><a href="#faq">9. FAQ</a></li>
+        </ul>
+      </nav>
+    </aside>
+
+    <main>
+
+      <!-- SECTION 1: FUNDAMENTALS -->
+      <section id="fundamentals" class="section">
+        <h2>1. The Mathematical Foundation of FIRE</h2>
+        <p>FIRE isn't about extreme frugality or getting lucky with investments. It's pure mathematics: achieve a savings rate high enough that your investments generate enough passive income to cover your living expenses. The magic number is <strong>25x your annual expenses</strong> — known as the 4% rule.</p>
+        
+        <p>Here's the math: If you need $40,000 per year to live, you need $1 million invested ($40k ÷ 0.04 = $1M). At a 4% safe withdrawal rate, your portfolio generates $40,000 annually without touching the principal. Your money works while you sleep, permanently.</p>
+
+        <div class="callout">
+          <strong>The core insight:</strong> FIRE is about optimizing the savings rate, not just income. Someone earning $100k and spending $40k (60% savings rate) reaches FIRE faster than someone earning $200k and spending $150k (25% savings rate). The high earner needs $3.75M to retire. The efficient earner needs just $1M.
+        </div>
+
+        <p>Traditional retirement planning assumes 40+ working years with 10-15% savings rates. FIRE flips this: save 50%+ of income and retire in 10-17 years instead of 40+. The trade-off is temporary lifestyle optimization for permanent time freedom.</p>
+
+        <h3>Why the 4% Rule Works</h3>
+        <p>The 4% rule comes from the Trinity Study, which analyzed historical market data from 1926-1995. A retiree withdrawing 4% annually from a balanced portfolio (stocks/bonds) had a 96% success rate over 30-year retirement periods, even accounting for inflation and market crashes.</p>
+        
+        <p>Recent studies suggest 3.5% is safer for early retirees (50+ year retirement periods), while 4.5% works for geographical arbitrage situations. The key is flexibility: withdraw less during market downturns, more during booms. This sequence-of-returns risk management is what separates successful FIRE from failed FIRE.</p>
+
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>Savings Rate</th>
+              <th>Years to FIRE</th>
+              <th>Working Years</th>
+              <th>Retirement Years</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>10% (traditional)</td>
+              <td class="val-meh">51 years</td>
+              <td>43 years</td>
+              <td>20+ years</td>
+            </tr>
+            <tr>
+              <td>25%</td>
+              <td class="val-meh">32 years</td>
+              <td>32 years</td>
+              <td>30+ years</td>
+            </tr>
+            <tr>
+              <td>50%</td>
+              <td class="val-good">17 years</td>
+              <td>17 years</td>
+              <td>45+ years</td>
+            </tr>
+            <tr>
+              <td>65%</td>
+              <td class="val-great">10 years</td>
+              <td>10 years</td>
+              <td>50+ years</td>
+            </tr>
+            <tr>
+              <td>75%</td>
+              <td class="val-great">7 years</td>
+              <td>7 years</td>
+              <td>55+ years</td>
+            </tr>
+          </tbody>
+        </table>
+      </section>
+
+      <!-- SECTION 2: FIRE TYPES -->
+      <section id="fire-types" class="section">
+        <h2>2. The Three Paths to Financial Independence</h2>
+        <p>FIRE isn't one-size-fits-all. Your target number depends on your desired lifestyle, risk tolerance, and geographic flexibility. Each path has different trade-offs and timelines.</p>
+
+        <div class="fire-grid">
+          <div class="fire-card">
+            <div class="fire-name">🔥 Lean FIRE</div>
+            <div class="fire-timeline">10-15 years</div>
+            <div class="fire-stat"><span class="fire-stat-label">Target amount</span><span class="fire-stat-value">$625k-1M</span></div>
+            <div class="fire-stat"><span class="fire-stat-label">Annual budget</span><span class="fire-stat-value">$25k-40k</span></div>
+            <div class="fire-stat"><span class="fire-stat-label">Savings rate</span><span class="fire-stat-value">50-70%</span></div>
+            <div class="fire-stat"><span class="fire-stat-label">Best for</span><span class="fire-stat-value">Minimalists, geo-arbitrage</span></div>
+          </div>
+          <div class="fire-card">
+            <div class="fire-name">🚀 Regular FIRE</div>
+            <div class="fire-timeline">15-20 years</div>
+            <div class="fire-stat"><span class="fire-stat-label">Target amount</span><span class="fire-stat-value">$1M-2.5M</span></div>
+            <div class="fire-stat"><span class="fire-stat-label">Annual budget</span><span class="fire-stat-value">$40k-100k</span></div>
+            <div class="fire-stat"><span class="fire-stat-label">Savings rate</span><span class="fire-stat-value">40-60%</span></div>
+            <div class="fire-stat"><span class="fire-stat-label">Best for</span><span class="fire-stat-value">Middle-class lifestyle</span></div>
+          </div>
+          <div class="fire-card">
+            <div class="fire-name">💎 Fat FIRE</div>
+            <div class="fire-timeline">20-25 years</div>
+            <div class="fire-stat"><span class="fire-stat-label">Target amount</span><span class="fire-stat-value">$2.5M-10M+</span></div>
+            <div class="fire-stat"><span class="fire-stat-label">Annual budget</span><span class="fire-stat-value">$100k-400k+</span></div>
+            <div class="fire-stat"><span class="fire-stat-label">Savings rate</span><span class="fire-stat-value">30-50%</span></div>
+            <div class="fire-stat"><span class="fire-stat-label">Best for</span><span class="fire-stat-value">High earners, luxury</span></div>
+          </div>
+        </div>
+
+        <h3>Lean FIRE: The Minimalist Path</h3>
+        <p>Lean FIRE targets $25k-40k annual expenses, requiring $625k-1M in investments. This path emphasizes lifestyle optimization, geographic arbitrage, and extreme efficiency. Practitioners often live internationally in low-cost, high-quality-of-life countries, or in LCOL areas domestically.</p>
+        <p><strong>Advantages:</strong> Fastest to achieve, teaches valuable optimization skills, provides maximum flexibility. <strong>Disadvantages:</strong> Limited buffer for unexpected expenses, requires ongoing expense discipline, may not cover family situations or health emergencies.</p>
+
+        <h3>Regular FIRE: The Balanced Approach</h3>
+        <p>Regular FIRE maintains a middle-class lifestyle while achieving financial independence. Target ranges from $1M-2.5M depending on location and family size. This path balances optimization with comfort, allowing for vacations, dining out, and moderate luxury spending.</p>
+        <p><strong>Advantages:</strong> Sustainable lifestyle, adequate emergency buffer, socially normal spending patterns. <strong>Disadvantages:</strong> Longer timeline than lean FIRE, requires higher income or longer savings period.</p>
+
+        <h3>Fat FIRE: The Luxury Route</h3>
+        <p>Fat FIRE maintains or improves upon high-earning lifestyles in retirement. Targets $2.5M+ for $100k+ annual budgets. This path allows first-class travel, expensive hobbies, premium healthcare, and generous giving while maintaining financial independence.</p>
+        <p><strong>Advantages:</strong> No lifestyle compromises, large safety buffer, ability to help family financially. <strong>Disadvantages:</strong> Requires very high incomes or extended saving periods, may encourage lifestyle inflation during accumulation.</p>
+
+        <div class="callout success">
+          <strong>Hybrid approach:</strong> Many successful FIRE practitioners use a "glide path" — start with lean FIRE for freedom, then continue building wealth toward regular or fat FIRE for increased comfort. This gives you financial independence early with the option to improve lifestyle later.
+        </div>
+      </section>
+
+      <!-- SECTION 3: CALCULATOR -->
+      <section id="calculator" class="section">
+        <h2>3. FIRE Independence Calculator</h2>
+        <p>Calculate your personalized path to financial independence based on your current situation and goals.</p>
+
+        <div class="calc-box">
+          <h3>🔥 Your FIRE Timeline Calculator</h3>
+          <div class="calc-row">
+            <div class="calc-field">
+              <label>Current age</label>
+              <input type="number" id="currentAge" placeholder="e.g. 28" value="28">
+            </div>
+            <div class="calc-field">
+              <label>Annual income ($)</label>
+              <input type="number" id="annualIncome" placeholder="e.g. 80000" value="80000">
+            </div>
+          </div>
+          <div class="calc-row">
+            <div class="calc-field">
+              <label>Annual expenses ($)</label>
+              <input type="number" id="annualExpenses" placeholder="e.g. 40000" value="40000">
+            </div>
+            <div class="calc-field">
+              <label>Current savings ($)</label>
+              <input type="number" id="currentSavings" placeholder="e.g. 50000" value="50000">
+            </div>
+          </div>
+          <div class="calc-row">
+            <div class="calc-field">
+              <label>Expected annual return</label>
+              <select id="expectedReturn">
+                <option value="0.06">6% (Conservative)</option>
+                <option value="0.07" selected>7% (Balanced)</option>
+                <option value="0.08">8% (Aggressive)</option>
+                <option value="0.09">9% (Optimistic)</option>
+              </select>
+            </div>
+            <div class="calc-field">
+              <label>FIRE target</label>
+              <select id="fireTarget">
+                <option value="25">Lean FIRE (25x expenses)</option>
+                <option value="27" selected>Standard FIRE (27x expenses)</option>
+                <option value="30">Conservative FIRE (30x expenses)</option>
+                <option value="33">Very Conservative (33x expenses)</option>
+              </select>
+            </div>
+          </div>
+          <button class="calc-btn" onclick="calculateFIRE()">Calculate My FIRE Timeline</button>
+
+          <div class="calc-result" id="fireResult">
+            <div class="big-number" id="fireAge"></div>
+            <div class="big-label">FIRE Age</div>
+            <div class="breakdown" id="fireBreakdown"></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- SECTION 4: STRATEGIES -->
+      <section id="strategies" class="section">
+        <h2>4. Proven Wealth Building Strategies</h2>
+
+        <div class="strategy-card">
+          <div class="strategy-header">
+            <h3 class="strategy-title">Index Fund Portfolio (The Foundation)</h3>
+            <div class="strategy-tags">
+              <span class="strategy-tag tag-timeline">Passive</span>
+              <span class="strategy-tag tag-risk">Low risk</span>
+            </div>
+          </div>
+          <div class="strategy-body">
+            <p>Total stock market index funds (VTSAX, FZROX) + international diversification (VTIAX) + optional bonds (VBTLX). This three-fund portfolio captures global market returns with minimal fees (0.03-0.10% expense ratios).</p>
+            <p><strong>Allocation:</strong> 70% US total market, 20% international, 10% bonds (adjust based on age and risk tolerance). Rebalance annually or when allocations drift 5%+. Expected return: 7-8% annually over decades.</p>
+            <p><strong>Why it works:</strong> Captures market-wide growth, requires no stock picking skills, historically outperforms 90% of actively managed funds over 15+ year periods. Warren Buffett's recommended approach for most investors.</p>
+          </div>
+        </div>
+
+        <div class="strategy-card">
+          <div class="strategy-header">
+            <h3 class="strategy-title">Real Estate Investment (Rental Properties)</h3>
+            <div class="strategy-tags">
+              <span class="strategy-tag tag-timeline">Active</span>
+              <span class="strategy-tag tag-risk">Medium risk</span>
+            </div>
+          </div>
+          <div class="strategy-body">
+            <p>Purchase rental properties in growing markets with positive cash flow. Target 1% rule: monthly rent should equal 1% of purchase price. Use leverage (mortgages) to amplify returns and build multiple properties over time.</p>
+            <p><strong>Target metrics:</strong> 8-12% cash-on-cash returns, positive monthly cash flow after all expenses, markets with population/job growth. House hacking (live in duplex, rent other units) accelerates early accumulation.</p>
+            <p><strong>Scaling strategy:</strong> Refinance appreciated properties to extract equity, use for down payments on additional properties. Build portfolio of 5-10 properties generating $500-1000 monthly cash flow each.</p>
+          </div>
+        </div>
+
+        <div class="strategy-card">
+          <div class="strategy-header">
+            <h3 class="strategy-title">Business Ownership & Side Hustles</h3>
+            <div class="strategy-tags">
+              <span class="strategy-tag tag-timeline">Variable</span>
+              <span class="strategy-tag tag-risk">High risk</span>
+            </div>
+          </div>
+          <div class="strategy-body">
+            <p>Build scalable businesses that generate passive income streams. Focus on digital products, service businesses, or rental/royalty income that doesn't require constant time investment to maintain revenue.</p>
+            <p><strong>High-ROI models:</strong> SaaS software, online courses, affiliate marketing, dropshipping, content creation with monetization, consulting businesses with productized offerings.</p>
+            <p><strong>Exit strategy:</strong> Build businesses to sell for 3-5x annual profit, or structure for passive income generation. Many FIRE practitioners use business exits to accelerate their timeline by 5-10 years.</p>
+          </div>
+        </div>
+
+        <div class="strategy-card">
+          <div class="strategy-header">
+            <h3 class="strategy-title">Tax Optimization Strategies</h3>
+            <div class="strategy-tags">
+              <span class="strategy-tag tag-timeline">Ongoing</span>
+              <span class="strategy-tag tag-risk">Low risk</span>
+            </div>
+          </div>
+          <div class="strategy-body">
+            <p>Maximize tax-advantaged accounts (401k, IRA, HSA), implement tax-loss harvesting, consider Roth conversions during low-income years, and plan withdrawal strategies to minimize lifetime tax burden.</p>
+            <p><strong>Account priority:</strong> Employer 401k match → HSA max → Roth IRA → 401k max → taxable accounts. HSAs are triple tax-advantaged and become additional retirement accounts at age 65.</p>
+            <p><strong>Advanced tactics:</strong> Mega backdoor Roth for high earners, tax-loss harvesting to offset gains, geographic arbitrage to low-tax states, Roth conversion ladder for early retirement access.</p>
+          </div>
+        </div>
+
+        <div class="strategy-card">
+          <div class="strategy-header">
+            <h3 class="strategy-title">Alternative Investments</h3>
+            <div class="strategy-tags">
+              <span class="strategy-tag tag-timeline">Varies</span>
+              <span class="strategy-tag tag-difficulty">High complexity</span>
+            </div>
+          </div>
+          <div class="strategy-body">
+            <p>REITs, peer-to-peer lending, cryptocurrency, commodities, and collectibles. These provide portfolio diversification and potential inflation protection, but require specialized knowledge and higher risk tolerance.</p>
+            <p><strong>Allocation strategy:</strong> Keep alternatives to 5-20% of total portfolio. REITs via index funds (VNQ) provide real estate exposure without direct ownership hassles. Bitcoin/crypto as 1-5% "moon shot" allocation.</p>
+            <p><strong>Warning:</strong> Don't chase high returns in unfamiliar investments. Stick to broad market index funds for 80%+ of portfolio unless you have deep expertise in specific alternative asset classes.</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- SECTION 5: OPTIMIZATION -->
+      <section id="optimization" class="section">
+        <h2>5. Expense Optimization — The Big Wins</h2>
+        <p>Reducing expenses has a dual benefit: it lowers your FIRE target number (fewer expenses to cover) and increases your savings rate (more money to invest). Focus on the big categories where small percentage improvements create large absolute savings.</p>
+
+        <h3>Housing (25-35% of Budget)</h3>
+        <p>Your largest expense category offers the biggest optimization opportunity. Every $500/month saved in housing costs reduces your FIRE target by $150,000 (25x rule). Consider:</p>
+        <ul>
+          <li><strong>House hacking:</strong> Buy duplex, live in one unit, rent the other. Often results in free or negative-cost housing.</li>
+          <li><strong>Geographic arbitrage:</strong> Move from HCOL to LCOL areas. A $4,000/month SF apartment becomes $1,200/month in Austin or $800/month in Nashville.</li>
+          <li><strong>Refinancing:</strong> 1% interest rate reduction on $400k mortgage saves $4,000 annually.</li>
+          <li><strong>Shared housing:</strong> Roommates, co-living spaces, or multi-generational housing reduce costs 30-50%.</li>
+        </ul>
+
+        <h3>Transportation (10-20% of Budget)</h3>
+        <p>Cars are wealth destroyers for most people. The average American spends $9,000+ annually on car payments, insurance, gas, and maintenance. Optimization strategies:</p>
+        <ul>
+          <li><strong>Car-free living:</strong> Possible in dense cities with good transit. Saves $8,000-12,000 annually.</li>
+          <li><strong>One-car households:</strong> Two-car families can often function with one car plus occasional rideshare/rental.</li>
+          <li><strong>Reliable used cars:</strong> 3-5 year old vehicles provide 80% of new car utility at 50% of the cost.</li>
+          <li><strong>Motorcycle commuting:</strong> 60+ MPG, minimal maintenance, often faster than cars in traffic.</li>
+        </ul>
+
+        <h3>Food (10-15% of Budget)</h3>
+        <p>Americans spend $3,500-7,000 annually on food. Optimization without deprivation:</p>
+        <ul>
+          <li><strong>Meal planning & batch cooking:</strong> Reduces costs 40-60% vs. eating out regularly.</li>
+          <li><strong>Strategic restaurant choices:</strong> Happy hour, lunch specials, ethnic cuisines offer better value than trendy dinner spots.</li>
+          <li><strong>Bulk purchasing:</strong> Costco/warehouse stores for non-perishables and freezable items.</li>
+          <li><strong>Garden growing:</strong> Herbs, lettuce, tomatoes provide high value-per-effort.</li>
+        </ul>
+
+        <div class="callout warning">
+          <strong>Optimization warning:</strong> Don't optimize away joy. The goal is sustainable long-term spending reduction, not miserable short-term deprivation. Cut ruthlessly on things you don't care about to spend freely on things you love.
+        </div>
+      </section>
+
+      <!-- SECTION 6: GEOGRAPHY -->
+      <section id="geography" class="section">
+        <h2>6. Geographic Arbitrage — The FIRE Accelerator</h2>
+        <p>Moving from high-cost to low-cost locations while maintaining income can cut 5-10 years off your FIRE timeline. The arbitrage works for both domestic moves and international relocation.</p>
+
+        <h3>Domestic Geographic Arbitrage</h3>
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>Location Type</th>
+              <th>Housing Cost</th>
+              <th>Total Cost of Living</th>
+              <th>FIRE Acceleration</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>VHCOL (SF, NYC, Seattle)</td>
+              <td class="val-meh">$3,000-6,000/mo</td>
+              <td class="val-meh">$6,000-10,000/mo</td>
+              <td class="val-meh">Baseline</td>
+            </tr>
+            <tr>
+              <td>HCOL (Austin, Denver, Portland)</td>
+              <td class="val-good">$1,800-3,500/mo</td>
+              <td class="val-good">$4,000-6,500/mo</td>
+              <td class="val-good">3-5 years faster</td>
+            </tr>
+            <tr>
+              <td>MCOL (Nashville, Raleigh, Phoenix)</td>
+              <td class="val-good">$1,200-2,500/mo</td>
+              <td class="val-good">$3,000-5,000/mo</td>
+              <td class="val-great">5-7 years faster</td>
+            </tr>
+            <tr>
+              <td>LCOL (Boise, Chattanooga, suburbs)</td>
+              <td class="val-great">$800-1,800/mo</td>
+              <td class="val-great">$2,500-4,000/mo</td>
+              <td class="val-great">7-10 years faster</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <h3>International Geographic Arbitrage</h3>
+        <p>Living internationally on a U.S. income provides the ultimate arbitrage opportunity. Quality of life often improves while costs plummet. Popular FIRE destinations:</p>
+        <ul>
+          <li><strong>Portugal:</strong> D7 visa, excellent healthcare, $1,500-2,500/month total living costs in Lisbon/Porto.</li>
+          <li><strong>Mexico:</strong> Close to U.S., great weather, $1,000-2,000/month in Playa del Carmen/Merida.</li>
+          <li><strong>Thailand:</strong> Elite visa options, modern infrastructure, $1,200-2,200/month in Bangkok/Chiang Mai.</li>
+          <li><strong>Malaysia:</strong> MM2H program, English-speaking, $1,000-1,800/month in Kuala Lumpur/Penang.</li>
+          <li><strong>Costa Rica:</strong> Pensionado visa, stable democracy, $1,500-2,500/month.</li>
+        </ul>
+
+        <div class="callout success">
+          <strong>The nomad strategy:</strong> Many FIRE practitioners become location-independent before reaching full FIRE. Combine remote work income with international low costs of living to accelerate savings rates to 70-80%. Spend 3-6 months in different countries to find your ideal base.
+        </div>
+
+        <a href="/cost-of-living-geo-arbitrage" class="cta-card">
+          <h4>🌍 Master Geographic Arbitrage</h4>
+          <p>Deep dive into cost of living optimization, visa strategies, and the best FIRE-friendly destinations worldwide.</p>
+        </a>
+      </section>
+
+      <!-- SECTION 7: TOOLS -->
+      <section id="tools" class="section">
+        <h2>7. The Essential FIRE Tool Stack</h2>
+        <p>Successful FIRE requires tracking, optimization, and automation. These tools handle the mechanics so you can focus on the strategy.</p>
+
+        <div class="tool-grid">
+          <div class="tool-card">
+            <div class="tool-type">Net Worth Tracking</div>
+            <h4>Personal Capital</h4>
+            <p>Free comprehensive wealth tracking. Links all accounts (bank, investment, retirement, debt) for automatic net worth calculation and investment analysis.</p>
+            <div class="tool-price">Free</div>
+          </div>
+          <div class="tool-card">
+            <div class="tool-type">Expense Tracking</div>
+            <h4>Mint / YNAB</h4>
+            <p>Automated expense categorization and budgeting. Mint is free, YNAB ($99/yr) offers more detailed budgeting methodology and control.</p>
+            <div class="tool-price">Free / $99/year</div>
+          </div>
+          <div class="tool-card">
+            <div class="tool-type">Investment Platform</div>
+            <h4>Vanguard / Fidelity</h4>
+            <p>Low-cost index fund brokerages. Vanguard invented index investing, Fidelity offers zero-fee index funds. Both provide excellent FIRE-focused investment options.</p>
+            <div class="tool-price">0.03-0.10% expense ratios</div>
+          </div>
+          <div class="tool-card">
+            <div class="tool-type">Tax Optimization</div>
+            <h4>TurboTax / FreeTaxUSA</h4>
+            <p>Tax preparation with optimization suggestions. FreeTaxUSA offers similar features to TurboTax at fraction of the cost ($15 vs $100+).</p>
+            <div class="tool-price">$15-100/year</div>
+          </div>
+          <div class="tool-card">
+            <div class="tool-type">FIRE Planning</div>
+            <h4>FIRECalc</h4>
+            <p>Monte Carlo simulation using historical market data to test FIRE scenarios. Shows probability of success over different time periods and market conditions.</p>
+            <div class="tool-price">Free</div>
+          </div>
+          <div class="tool-card">
+            <div class="tool-type">Real Estate</div>
+            <h4>BiggerPockets Calculator</h4>
+            <p>Rental property analysis tools. Calculate cash flow, cap rates, and ROI for potential real estate investments. Includes BRRRR strategy modeling.</p>
+            <div class="tool-price">Free basic / $40/month pro</div>
+          </div>
+          <div class="tool-card">
+            <div class="tool-type">Banking</div>
+            <h4>High-Yield Savings</h4>
+            <p>Marcus, Ally, Discover offer 4-5% APY vs 0.01% at traditional banks. Essential for emergency funds and cash allocation during FIRE accumulation.</p>
+            <div class="tool-price">4-5% APY</div>
+          </div>
+          <div class="tool-card">
+            <div class="tool-type">Automation</div>
+            <h4>Automatic Investments</h4>
+            <p>Dollar-cost averaging through automatic transfers and investments. Set up payroll deductions to investment accounts to remove manual decision-making.</p>
+            <div class="tool-price">Built-in to most brokerages</div>
+          </div>
+          <div class="tool-card">
+            <div class="tool-type">International</div>
+            <h4>Wise (formerly TransferWise)</h4>
+            <p>Low-cost international money transfers and multi-currency accounts. Essential for geographic arbitrage and international FIRE implementation.</p>
+            <div class="tool-price">0.5-2% transfer fees</div>
+          </div>
+        </div>
+      </section>
+
+      <!-- SECTION 8: COMMON MISTAKES -->
+      <section id="common-mistakes" class="section">
+        <h2>8. Common FIRE Mistakes That Cost Years</h2>
+        
+        <ul>
+          <li><strong>Underestimating healthcare costs.</strong> Health insurance for early retirees costs $400-1,200/month for individuals, $1,200-2,500/month for families. Factor this into your FIRE budget, especially if leaving employer coverage.</li>
+          
+          <li><strong>Ignoring sequence of returns risk.</strong> Market crashes in early retirement years can destroy FIRE plans. Have 1-2 years of expenses in cash/bonds as a buffer. Consider working part-time for the first few years to reduce portfolio withdrawals.</li>
+          
+          <li><strong>Lifestyle inflation during accumulation.</strong> As income grows, expenses often grow proportionally, negating savings rate improvements. Track your savings rate monthly and resist lifestyle creep.</li>
+          
+          <li><strong>Oversaving in tax-deferred accounts.</strong> 401k/IRA withdrawals before age 59.5 face penalties. Build substantial taxable investments for early retirement bridge years, or plan Roth conversion ladders.</li>
+          
+          <li><strong>Not stress-testing the plan.</strong> Run your numbers through recession scenarios, inflation periods, and major expense shocks (home repairs, medical emergencies). Build cushions accordingly.</li>
+          
+          <li><strong>Forgetting about taxes in retirement.</strong> Traditional 401k/IRA withdrawals are fully taxable. Plan withdrawal strategies to stay in low tax brackets, especially if retiring to a high-tax state.</li>
+          
+          <li><strong>All-or-nothing thinking.</strong> FIRE isn't binary. Partial financial independence gives you career flexibility, negotiating power, and reduced stress even if you're not fully retired.</li>
+          
+          <li><strong>Neglecting relationships and health.</strong> Extreme frugality can damage social relationships and health. Budget for social activities, hobbies, and preventive healthcare during accumulation years.</li>
+        </ul>
+
+        <div class="callout warning">
+          <strong>The biggest mistake:</strong> Perfectionism paralysis. Many people spend years optimizing their plan instead of starting. An 80% optimal plan that you start today beats a 100% optimal plan that you start next year. Begin with broad market index funds and optimize later.
+        </div>
+      </section>
+
+    </main>
+  </div>
+
+  <!-- FAQ -->
+  <section id="faq" class="faq-section">
+    <h2>Frequently Asked Questions</h2>
+
+    <div class="faq-item">
+      <h3>Is FIRE realistic for average income earners?</h3>
+      <p>Yes, but requires lifestyle optimization and potentially longer timelines. Couples earning $80k combined can achieve lean FIRE in 15-20 years with 50% savings rates. The key is expense optimization, not just income maximization. Many FIRE success stories come from teachers, nurses, and other middle-income professions.</p>
+    </div>
+
+    <div class="faq-item">
+      <h3>What if the stock market crashes right when I retire?</h3>
+      <p>This "sequence of returns risk" is the biggest threat to early retirement. Mitigations: maintain 1-2 years expenses in cash/bonds, consider part-time work for first few years, be willing to reduce expenses during down markets, or delay retirement by a few years if markets crash near your target date.</p>
+    </div>
+
+    <div class="faq-item">
+      <h3>How do I access retirement accounts before age 59.5?</h3>
+      <p>Several strategies: Roth IRA contributions (not earnings) can be withdrawn penalty-free after 5 years. Roth conversion ladders allow tax-free access to converted funds after 5 years. SEPP (substantially equal periodic payments) allows penalty-free 401k withdrawals. Build substantial taxable accounts for bridge years.</p>
+    </div>
+
+    <div class="faq-item">
+      <h3>What about healthcare coverage without employer insurance?</h3>
+      <p>ACA marketplace plans cost $400-1,200/month for individuals. Consider healthcare sharing ministries ($200-400/month), short-term medical plans, or geographic arbitrage to countries with affordable healthcare. Factor $6,000-15,000 annually for health insurance and medical expenses in your FIRE budget.</p>
+    </div>
+
+    <div class="faq-item">
+      <h3>Should I pay off my mortgage before pursuing FIRE?</h3>
+      <p>Depends on the interest rate. With rates below 4%, investing typically generates higher returns than paying extra principal. With rates above 6%, paying off the mortgage might make sense. Consider your risk tolerance and desire for guaranteed returns vs. potential market gains.</p>
+    </div>
+
+    <div class="faq-item">
+      <h3>Is the 4% withdrawal rate still safe?</h3>
+      <p>For 30-year retirements, yes. For 50+ year early retirements, consider 3.5% for extra safety. The key is flexibility — withdraw less during market downturns, more during booms. Many FIRE retirees also generate some income through part-time work, side businesses, or seasonal employment, reducing portfolio pressure.</p>
+    </div>
+
+    <div class="faq-item">
+      <h3>How do I maintain social relationships while pursuing FIRE?</h3>
+      <p>Budget for social activities that matter to you. Find friends who share similar values or are pursuing FIRE themselves. Focus spending on experiences with loved ones while cutting spending on material possessions. Many FIRE practitioners find their relationships improve as financial stress decreases.</p>
+    </div>
+
+    <div class="faq-item">
+      <h3>What if I get bored in early retirement?</h3>
+      <p>FIRE enables pursuing meaningful work without financial pressure — volunteer work, passion projects, entrepreneurship, or part-time employment in fields you enjoy. Many FIRE retirees are more productive and fulfilled than during their corporate careers because they're working by choice, not necessity.</p>
+    </div>
+  </section>
+
+</div>
+
+<script>
+function calculateFIRE() {
+  const currentAge = parseFloat(document.getElementById('currentAge').value) || 0;
+  const annualIncome = parseFloat(document.getElementById('annualIncome').value) || 0;
+  const annualExpenses = parseFloat(document.getElementById('annualExpenses').value) || 0;
+  const currentSavings = parseFloat(document.getElementById('currentSavings').value) || 0;
+  const expectedReturn = parseFloat(document.getElementById('expectedReturn').value) || 0.07;
+  const fireMultiple = parseFloat(document.getElementById('fireTarget').value) || 25;
+
+  if (currentAge === 0 || annualIncome === 0 || annualExpenses === 0) return;
+
+  const annualSavings = annualIncome - annualExpenses;
+  const savingsRate = (annualSavings / annualIncome) * 100;
+  const fireTarget = annualExpenses * fireMultiple;
+  
+  // Calculate years to FIRE using compound interest formula
+  // Future Value = Present Value * (1 + r)^n + PMT * [((1 + r)^n - 1) / r]
+  // Solve for n (years)
+  
+  let years = 0;
+  let currentValue = currentSavings;
+  
+  while (currentValue < fireTarget && years < 50) {
+    currentValue = currentValue * (1 + expectedReturn) + annualSavings;
+    years++;
+  }
+  
+  const fireAge = currentAge + years;
+  const totalInvested = currentSavings + (annualSavings * years);
+  const investmentGains = fireTarget - totalInvested;
+
+  const resultEl = document.getElementById('fireResult');
+  const fireAgeEl = document.getElementById('fireAge');
+  const breakdownEl = document.getElementById('fireBreakdown');
+
+  resultEl.style.display = 'block';
+  fireAgeEl.textContent = fireAge.toFixed(0);
+  
+  breakdownEl.innerHTML = `
+    <p>💰 <strong>FIRE Target:</strong> $${fireTarget.toLocaleString()} (${fireMultiple}x your $${annualExpenses.toLocaleString()} expenses)</p>
+    <p>📊 <strong>Current Savings Rate:</strong> ${savingsRate.toFixed(1)}% ($${annualSavings.toLocaleString()}/year)</p>
+    <p>⏱️ <strong>Time to FIRE:</strong> ${years} years | <strong>Working until age:</strong> ${fireAge.toFixed(0)}</p>
+    <p>🎯 <strong>Total invested:</strong> $${totalInvested.toLocaleString()} → <strong>Investment growth:</strong> $${Math.max(0, investmentGains).toLocaleString()}</p>
+    <p>🔥 <strong>Annual passive income:</strong> $${(fireTarget * 0.04).toLocaleString()} (4% withdrawal rate)</p>
+  `;
+
+  // Add recommendations based on results
+  let recommendation = '';
+  if (savingsRate < 20) {
+    recommendation = '<p>💡 <strong>Tip:</strong> Increase savings rate to 25%+ to accelerate timeline significantly.</p>';
+  } else if (savingsRate > 50) {
+    recommendation = '<p>🔥 <strong>Excellent:</strong> High savings rate puts you on track for early FIRE!</p>';
+  } else {
+    recommendation = '<p>✅ <strong>Good progress:</strong> Solid savings rate. Consider optimizing major expenses for faster timeline.</p>';
+  }
+  
+  breakdownEl.innerHTML += recommendation;
+}
+
+// Auto-calculate when inputs change
+['currentAge', 'annualIncome', 'annualExpenses', 'currentSavings', 'expectedReturn', 'fireTarget'].forEach(id => {
+  const element = document.getElementById(id);
+  if (element) {
+    element.addEventListener('input', calculateFIRE);
+    element.addEventListener('change', calculateFIRE);
+  }
+});
+</script>

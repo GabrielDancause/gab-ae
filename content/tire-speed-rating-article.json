@@ -1,0 +1,54 @@
+[
+  {
+    "slug": "wrong-tire-speed-rating-insurance-claims-denied-2026",
+    "title": "Your Insurance Can Deny a Crash Claim If You're Running the Wrong Tire Speed Rating",
+    "description": "Most drivers don't know their tire speed rating — and insurance companies are increasingly using tire mismatch as grounds to deny or reduce accident claims. Here's what you need to know.",
+    "category": "business",
+    "image": "",
+    "imageAlt": "",
+    "lede": "That letter at the end of your tire size — the one most people ignore when buying new tires — could cost you your entire insurance claim. Tire speed ratings aren't just manufacturer suggestions; they're engineering specifications that define the maximum safe operating speed of your tires. Install tires with a lower speed rating than your vehicle requires, and some insurance companies are treating it as a modification that voids coverage.",
+    "tags": ["tires", "speed-rating", "car-insurance", "automotive", "safety", "driving"],
+    "sources": [
+      {"name": "Tire Industry Association", "url": "https://www.tireindustry.org"},
+      {"name": "NHTSA", "url": "https://www.nhtsa.gov"}
+    ],
+    "faqs": [
+      {
+        "q": "Can insurance deny a claim for wrong tire speed rating?",
+        "a": "In some jurisdictions, yes. If your vehicle requires H-rated tires (130 mph) and you installed S-rated tires (112 mph), and a tire-related accident occurs at highway speeds, insurers may argue the wrong tires contributed to the accident. It's treated similarly to installing non-approved aftermarket parts."
+      },
+      {
+        "q": "What tire speed rating do most cars need?",
+        "a": "Most family sedans and SUVs require S (112 mph) or T (118 mph) rated tires. Sport sedans typically need H (130 mph) or V (149 mph). Your owner's manual or the placard inside the driver's door lists the OEM specification."
+      },
+      {
+        "q": "Can I install a higher speed rating than required?",
+        "a": "Yes — installing a higher speed rating is always safe. A V-rated tire on a car that requires T-rated is fine. The issue is only when you go lower than specified, which reduces the tire's heat tolerance at sustained speeds."
+      }
+    ],
+    "sections": [
+      {
+        "heading": "The Letter Most Drivers Ignore",
+        "paragraphs": [
+          "A tire marked P225/65R17 102H tells you everything about that tire: 225mm width, 65% aspect ratio, radial construction, 17-inch rim, 1,874 lb load capacity, and a maximum sustained speed of 130 mph (that's what the 'H' means). Most drivers know their tire size. Almost nobody knows their speed rating — or that it matters beyond what seems like theoretical highway speeds.",
+          "Speed ratings aren't about speedometer numbers. They define the tire's heat tolerance at sustained speeds. A tire rated for 112 mph (S) generates significantly more heat at 85 mph sustained highway driving than one rated for 149 mph (V). In hot climates, on long highway drives, that heat differential can mean the difference between a tire that performs safely and one that degrades rapidly."
+        ]
+      },
+      {
+        "heading": "The Insurance Angle",
+        "paragraphs": [
+          "Insurance companies have gotten more sophisticated about investigating tire-related claims. Adjusters now routinely check whether the tires on a wrecked vehicle match OEM specifications — not just tread depth, but speed rating, load index, and tire size. If there's a mismatch, it can be flagged as a contributing factor.",
+          "The legal argument is straightforward: the vehicle manufacturer specified a minimum tire performance standard. If the owner installed tires below that standard and an accident occurred, the owner bears some responsibility for the equipment failure. It's the same logic used for aftermarket brake modifications or suspension changes.",
+          "Check your vehicle's required speed rating and understand what each letter means with our <a href=\"https://pleasestartplease.photonbuilder.com/tire-speed-rating-chart\" style=\"color:#EF4444;font-weight:600;\">Tire Speed Rating Chart</a> — a complete reference with lookup tool, max speeds in mph and km/h, and a visual guide to reading tire sidewall markings."
+        ]
+      },
+      {
+        "heading": "How to Check Your Speed Rating",
+        "paragraphs": [
+          "Your required tire speed rating is listed in three places: the owner's manual, the tire information placard on the driver's door jamb, and on your current tires' sidewall (assuming they haven't already been changed to non-OEM specs). The last letter in the tire size string is the speed rating — H, V, W, Y, or Z for most passenger vehicles.",
+          "When buying replacement tires, you can always go higher than the OEM rating but never lower. If your car came with H-rated tires (130 mph), V-rated (149 mph) is fine. T-rated (118 mph) is not. Many tire shops will sell you whatever fits the rim without mentioning speed ratings — it's your responsibility to know what your vehicle requires."
+        ]
+      }
+    ]
+  }
+]

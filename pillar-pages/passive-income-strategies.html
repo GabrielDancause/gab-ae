@@ -1,0 +1,1185 @@
+<style>
+  .pis-container {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 2rem;
+    color: #e2e8f0;
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    line-height: 1.8;
+  }
+  .pis-header {
+    text-align: center;
+    margin-bottom: 4rem;
+    padding-top: 3rem;
+  }
+  .gradient-h1 {
+    font-size: clamp(2.2rem, 5vw, 3.5rem);
+    font-weight: 800;
+    background: linear-gradient(135deg, #ffffff 0%, #a5b4fc 50%, #818cf8 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    margin-bottom: 1rem;
+    line-height: 1.15;
+    letter-spacing: -0.02em;
+  }
+  .pis-subtitle {
+    font-size: 1.2rem;
+    color: #94a3b8;
+    max-width: 750px;
+    margin: 0 auto;
+  }
+  .breadcrumb {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    justify-content: center;
+    margin-bottom: 2rem;
+    font-size: 0.85rem;
+  }
+  .breadcrumb a {
+    color: #818cf8;
+    text-decoration: none;
+  }
+  .breadcrumb a:hover { text-decoration: underline; }
+  .breadcrumb span { color: #475569; }
+  .updated-badge {
+    display: inline-block;
+    background: rgba(129, 140, 248, 0.15);
+    color: #a5b4fc;
+    padding: 0.4rem 1rem;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    margin-bottom: 2rem;
+  }
+  .content-wrapper {
+    display: grid;
+    grid-template-columns: 1fr 280px;
+    gap: 4rem;
+    margin-top: 3rem;
+  }
+  .main-content {
+    min-width: 0;
+  }
+  .sidebar {
+    position: sticky;
+    top: 2rem;
+    height: fit-content;
+    background: #12121a;
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 16px;
+    padding: 1.5rem;
+  }
+  .sidebar h3 {
+    color: #ffffff;
+    font-size: 0.9rem;
+    font-weight: 600;
+    margin: 0 0 1rem 0;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+  .sidebar ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+  .sidebar li {
+    margin: 0;
+  }
+  .sidebar a {
+    display: block;
+    color: #94a3b8;
+    text-decoration: none;
+    padding: 0.5rem 0;
+    border-bottom: 1px solid rgba(255,255,255,0.05);
+    font-size: 0.85rem;
+    transition: color 0.2s;
+  }
+  .sidebar a:hover {
+    color: #a5b4fc;
+  }
+  .section {
+    margin: 4rem 0;
+    scroll-margin-top: 2rem;
+  }
+  .section h2 {
+    color: #ffffff;
+    font-size: 1.8rem;
+    font-weight: 700;
+    margin-bottom: 1.5rem;
+  }
+  .section h3 {
+    color: #e2e8f0;
+    font-size: 1.3rem;
+    font-weight: 600;
+    margin: 2rem 0 1rem 0;
+  }
+  .stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1.5rem;
+    margin: 2rem 0;
+  }
+  .stat-card {
+    background: #12121a;
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 14px;
+    padding: 1.5rem;
+    text-align: center;
+  }
+  .stat-number {
+    font-size: 2.5rem;
+    font-weight: 800;
+    color: #818cf8;
+    display: block;
+    line-height: 1;
+  }
+  .stat-label {
+    color: #94a3b8;
+    font-size: 0.9rem;
+    margin-top: 0.5rem;
+  }
+  .income-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 2rem;
+    margin: 2rem 0;
+  }
+  .income-card {
+    background: #12121a;
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 16px;
+    padding: 2rem;
+    position: relative;
+    overflow: hidden;
+  }
+  .income-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, #818cf8, #a5b4fc);
+  }
+  .income-card h4 {
+    color: #ffffff;
+    font-size: 1.2rem;
+    font-weight: 600;
+    margin-bottom: 1rem;
+  }
+  .difficulty-badge {
+    background: rgba(129, 140, 248, 0.15);
+    color: #a5b4fc;
+    padding: 0.3rem 0.8rem;
+    border-radius: 8px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    display: inline-block;
+    margin-bottom: 1rem;
+  }
+  .difficulty-badge.beginner { background: rgba(74, 222, 128, 0.15); color: #4ade80; }
+  .difficulty-badge.intermediate { background: rgba(251, 191, 36, 0.15); color: #fbbf24; }
+  .difficulty-badge.advanced { background: rgba(248, 113, 113, 0.15); color: #f87171; }
+  .difficulty-badge.expert { background: rgba(147, 51, 234, 0.15); color: #9333ea; }
+  .callout {
+    background: rgba(34, 211, 238, 0.1);
+    border-left: 4px solid #22d3ee;
+    border-radius: 0 8px 8px 0;
+    padding: 1.5rem;
+    margin: 2rem 0;
+  }
+  .callout.warning {
+    background: rgba(251, 191, 36, 0.1);
+    border-left-color: #fbbf24;
+  }
+  .callout.success {
+    background: rgba(74, 222, 128, 0.1);
+    border-left-color: #4ade80;
+  }
+  .callout.danger {
+    background: rgba(239, 68, 68, 0.1);
+    border-left-color: #ef4444;
+  }
+  .callout h4 {
+    color: #ffffff;
+    font-size: 1rem;
+    font-weight: 600;
+    margin: 0 0 0.5rem 0;
+  }
+  .comparison-table {
+    width: 100%;
+    background: #12121a;
+    border-radius: 16px;
+    overflow: hidden;
+    border: 1px solid rgba(255,255,255,0.08);
+    margin: 2rem 0;
+  }
+  .comparison-table th {
+    background: #1e293b;
+    color: #ffffff;
+    padding: 1rem;
+    text-align: left;
+    font-weight: 600;
+  }
+  .comparison-table td {
+    padding: 1rem;
+    border-bottom: 1px solid rgba(255,255,255,0.05);
+    color: #e2e8f0;
+  }
+  .comparison-table tr:last-child td {
+    border-bottom: none;
+  }
+  .tier-high { color: #4ade80; }
+  .tier-medium { color: #fbbf24; }
+  .tier-low { color: #f87171; }
+  .income-calculator {
+    background: #12121a;
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 16px;
+    padding: 2rem;
+    margin: 3rem 0;
+  }
+  .income-calculator h3 {
+    color: #ffffff;
+    font-size: 1.3rem;
+    font-weight: 600;
+    margin-bottom: 1.5rem;
+    text-align: center;
+  }
+  .calc-inputs {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1rem;
+    margin-bottom: 2rem;
+  }
+  .calc-input {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+  .calc-input label {
+    color: #94a3b8;
+    font-size: 0.85rem;
+    font-weight: 500;
+  }
+  .calc-input input, .calc-input select {
+    background: #1e293b;
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 8px;
+    padding: 0.75rem;
+    color: #e2e8f0;
+    font-size: 0.9rem;
+  }
+  .calc-input input:focus, .calc-input select:focus {
+    outline: none;
+    border-color: #818cf8;
+  }
+  .calc-button {
+    background: #818cf8;
+    color: #ffffff;
+    border: none;
+    border-radius: 8px;
+    padding: 0.75rem 2rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s;
+    width: 100%;
+  }
+  .calc-button:hover {
+    background: #6366f1;
+  }
+  .calc-results {
+    background: rgba(129, 140, 248, 0.1);
+    border-radius: 12px;
+    padding: 1.5rem;
+    margin-top: 1.5rem;
+    display: none;
+  }
+  .calc-results h4 {
+    color: #a5b4fc;
+    font-size: 1.1rem;
+    margin-bottom: 1rem;
+  }
+  .result-breakdown {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 1rem;
+    margin-top: 1rem;
+  }
+  .breakdown-item {
+    background: rgba(255,255,255,0.02);
+    padding: 1rem;
+    border-radius: 8px;
+    text-align: center;
+  }
+  .breakdown-label {
+    color: #94a3b8;
+    font-size: 0.8rem;
+    margin-bottom: 0.25rem;
+  }
+  .breakdown-value {
+    color: #e2e8f0;
+    font-weight: 600;
+    font-size: 0.9rem;
+  }
+  .breakdown-status {
+    color: #818cf8;
+    font-size: 0.75rem;
+    margin-top: 0.25rem;
+  }
+  .strategy-cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 1.5rem;
+    margin: 2rem 0;
+  }
+  .strategy-card {
+    background: #12121a;
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 14px;
+    padding: 1.5rem;
+  }
+  .strategy-card h4 {
+    color: #ffffff;
+    font-size: 1.1rem;
+    font-weight: 600;
+    margin-bottom: 1rem;
+  }
+  .tool-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1.5rem;
+    margin: 2rem 0;
+  }
+  .tool-card {
+    background: #12121a;
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 12px;
+    padding: 1.5rem;
+    text-align: center;
+  }
+  .tool-card h5 {
+    color: #ffffff;
+    margin-bottom: 0.5rem;
+    font-size: 1rem;
+  }
+  .tool-description {
+    font-size: 0.9rem;
+    color: #94a3b8;
+    margin-bottom: 1rem;
+  }
+  .tool-pricing {
+    font-size: 0.8rem;
+    color: #818cf8;
+    font-weight: 600;
+  }
+  .faq-section {
+    margin: 4rem 0;
+  }
+  .faq-item {
+    background: #12121a;
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 14px;
+    margin-bottom: 1rem;
+    overflow: hidden;
+  }
+  .faq-question {
+    padding: 1.5rem;
+    color: #ffffff;
+    font-weight: 600;
+    cursor: pointer;
+    border-bottom: 1px solid rgba(255,255,255,0.05);
+  }
+  .faq-answer {
+    padding: 1.5rem;
+    color: #94a3b8;
+  }
+  .cta-cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1.5rem;
+    margin: 3rem 0;
+  }
+  .cta-card {
+    background: linear-gradient(135deg, #1e293b, #334155);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 16px;
+    padding: 2rem;
+    text-align: center;
+  }
+  .cta-card h4 {
+    color: #ffffff;
+    font-size: 1.1rem;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+  }
+  .cta-card p {
+    color: #94a3b8;
+    font-size: 0.9rem;
+    margin-bottom: 1.5rem;
+  }
+  .cta-button {
+    display: inline-block;
+    background: #818cf8;
+    color: #ffffff;
+    padding: 0.7rem 1.5rem;
+    border-radius: 8px;
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 0.9rem;
+    transition: background 0.2s;
+  }
+  .cta-button:hover {
+    background: #6366f1;
+  }
+  
+  @media (max-width: 1024px) {
+    .content-wrapper {
+      grid-template-columns: 1fr;
+      gap: 2rem;
+    }
+    .sidebar {
+      position: relative;
+      top: 0;
+      order: -1;
+    }
+  }
+  
+  @media (max-width: 768px) {
+    .pis-container {
+      padding: 1rem;
+    }
+    .breadcrumb {
+      flex-wrap: wrap;
+    }
+    .stats-grid {
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    }
+    .income-grid {
+      grid-template-columns: 1fr;
+    }
+    .strategy-cards {
+      grid-template-columns: 1fr;
+    }
+    .tool-grid {
+      grid-template-columns: 1fr;
+    }
+    .cta-cards {
+      grid-template-columns: 1fr;
+    }
+    .calc-inputs {
+      grid-template-columns: 1fr;
+    }
+    .result-breakdown {
+      grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+    }
+  }
+</style>
+
+<div class="pis-container">
+  <div class="pis-header">
+    <div class="breadcrumb">
+      <a href="/apex-guides">Apex Guides</a>
+      <span>›</span>
+      <a href="/capital-markets-wealth-guide-2026">Capital Markets & Wealth Architecture</a>
+      <span>›</span>
+      <span style="color: #cbd5e1;">Current</span>
+    </div>
+    
+    <div class="updated-badge">
+      💰 Updated March 2026
+    </div>
+    
+    <h1 class="gradient-h1">Passive Income Strategies</h1>
+    <p class="pis-subtitle">Build sustainable passive income streams through proven investment strategies, digital products, real estate, and business systems that generate money while you sleep.</p>
+  </div>
+
+  <div class="content-wrapper">
+    <main class="main-content">
+      <div class="stats-grid">
+        <div class="stat-card">
+          <span class="stat-number">$4,000</span>
+          <div class="stat-label">Average monthly passive income goal</div>
+        </div>
+        <div class="stat-card">
+          <span class="stat-number">7-10</span>
+          <div class="stat-label">Years to replace active income</div>
+        </div>
+        <div class="stat-card">
+          <span class="stat-number">25x</span>
+          <div class="stat-label">Rule for financial independence</div>
+        </div>
+        <div class="stat-card">
+          <span class="stat-number">3-5</span>
+          <div class="stat-label">Income streams recommended</div>
+        </div>
+      </div>
+
+      <section id="passive-income-fundamentals" class="section">
+        <h2>Passive Income Fundamentals</h2>
+        <p>True passive income generates cash flow with minimal ongoing effort after initial setup. Unlike active income from jobs or client work, passive income streams continue producing money even when you're not actively working. Building sustainable passive income requires upfront capital, time, or expertise—but the long-term payoff is financial freedom.</p>
+
+        <div class="callout">
+          <h4>💡 The Passive Income Spectrum</h4>
+          <p>Most "passive" income isn't completely hands-off. It exists on a spectrum from semi-passive (requiring occasional maintenance) to truly passive (dividends, index funds). The key is building systems that generate disproportionate returns relative to ongoing effort required.</p>
+        </div>
+
+        <h3>Passive Income Categories by Difficulty & Capital Required</h3>
+        <div class="income-grid">
+          <div class="income-card">
+            <div class="difficulty-badge beginner">Beginner Friendly</div>
+            <h4>📈 Investment Income</h4>
+            <p><strong>Capital Required:</strong> $1,000+</p>
+            <p><strong>Setup Time:</strong> Hours to days</p>
+            <p><strong>Monthly Income:</strong> $50-500+</p>
+            <p><strong>Examples:</strong> Index funds, dividends, REITs, bonds</p>
+            <p><strong>Pros:</strong> Truly passive, scalable, diversified</p>
+            <p><strong>Cons:</strong> Requires significant capital for meaningful income</p>
+          </div>
+
+          <div class="income-card">
+            <div class="difficulty-badge intermediate">Intermediate</div>
+            <h4>🏠 Real Estate Income</h4>
+            <p><strong>Capital Required:</strong> $25,000+</p>
+            <p><strong>Setup Time:</strong> Weeks to months</p>
+            <p><strong>Monthly Income:</strong> $200-2,000+</p>
+            <p><strong>Examples:</strong> Rental properties, REITs, house hacking</p>
+            <p><strong>Pros:</strong> Tangible assets, tax benefits, appreciation</p>
+            <p><strong>Cons:</strong> Property management, market risk, illiquid</p>
+          </div>
+
+          <div class="income-card">
+            <div class="difficulty-badge advanced">Advanced</div>
+            <h4>💻 Digital Products</h4>
+            <p><strong>Capital Required:</strong> $100-10,000</p>
+            <p><strong>Setup Time:</strong> Months</p>
+            <p><strong>Monthly Income:</strong> $100-10,000+</p>
+            <p><strong>Examples:</strong> Online courses, apps, books, templates</p>
+            <p><strong>Pros:</strong> High margins, scalable, global reach</p>
+            <p><strong>Cons:</strong> Requires expertise, marketing, competition</p>
+          </div>
+
+          <div class="income-card">
+            <div class="difficulty-badge expert">Expert Level</div>
+            <h4>🏢 Business Systems</h4>
+            <p><strong>Capital Required:</strong> $10,000+</p>
+            <p><strong>Setup Time:</strong> 1-3 years</p>
+            <p><strong>Monthly Income:</strong> $1,000-50,000+</p>
+            <p><strong>Examples:</strong> Drop shipping, franchises, automated services</p>
+            <p><strong>Pros:</strong> Unlimited potential, asset building</p>
+            <p><strong>Cons:</strong> Complex setup, management required</p>
+          </div>
+        </income-grid>
+
+        <div class="callout warning">
+          <h4>⚠️ Passive Income Myths vs. Reality</h4>
+          <p><strong>Myth:</strong> "Make money while you sleep from day one"<br>
+          <strong>Reality:</strong> Requires significant upfront work or capital investment<br><br>
+          <strong>Myth:</strong> "Set it and forget it forever"<br>
+          <strong>Reality:</strong> Most streams need periodic maintenance and optimization<br><br>
+          <strong>Myth:</strong> "Easy money with no skills required"<br>
+          <strong>Reality:</strong> Success requires learning, patience, and often specialized knowledge</p>
+        </div>
+
+        <div class="callout success">
+          <h4>✅ Passive Income Success Principles</h4>
+          <p><strong>Diversification:</strong> Build 3-5 different income streams<br>
+          <strong>Patience:</strong> Most streams take 6-18 months to become profitable<br>
+          <strong>Reinvestment:</strong> Compound early profits into growing the streams<br>
+          <strong>Automation:</strong> Systematize processes to reduce ongoing effort<br>
+          <strong>Quality Focus:</strong> Better to have fewer high-quality streams than many weak ones<br>
+          <strong>Tax Efficiency:</strong> Structure income streams for optimal tax treatment</p>
+        </div>
+      </section>
+
+      <section id="investment-income" class="section">
+        <h2>Investment-Based Passive Income</h2>
+
+        <div class="callout">
+          <h4>📊 Investment Income Foundation</h4>
+          <p>Investment income is the most scalable and truly passive form of income. With enough capital, you can live entirely off dividends, interest, and capital appreciation. The challenge is accumulating sufficient capital—typically 25x your annual expenses for complete financial independence.</p>
+        </div>
+
+        <div class="income-calculator">
+          <h3>💰 Passive Income Goal Calculator</h3>
+          <p>Calculate how much capital you need to generate your target passive income.</p>
+          
+          <div class="calc-inputs">
+            <div class="calc-input">
+              <label for="targetMonthlyIncome">Target Monthly Passive Income ($)</label>
+              <input type="number" id="targetMonthlyIncome" placeholder="4000">
+            </div>
+            
+            <div class="calc-input">
+              <label for="currentAge">Current Age</label>
+              <input type="number" id="currentAge" placeholder="30" min="18" max="80">
+            </div>
+            
+            <div class="calc-input">
+              <label for="targetAge">Target Age for Financial Independence</label>
+              <input type="number" id="targetAge" placeholder="50" min="25" max="80">
+            </div>
+            
+            <div class="calc-input">
+              <label for="currentSavings">Current Savings ($)</label>
+              <input type="number" id="currentSavings" placeholder="50000">
+            </div>
+            
+            <div class="calc-input">
+              <label for="monthlySavings">Monthly Savings Available ($)</label>
+              <input type="number" id="monthlySavings" placeholder="2000">
+            </div>
+            
+            <div class="calc-input">
+              <label for="expectedReturn">Expected Annual Return (%)</label>
+              <input type="number" id="expectedReturn" placeholder="7" min="1" max="15" step="0.1">
+            </div>
+          </div>
+          
+          <button class="calc-button" onclick="calculatePassiveIncome()">Calculate Path to FI</button>
+          
+          <div class="calc-results" id="incomeResults">
+            <h4>Your Financial Independence Analysis</h4>
+            <div class="result-breakdown" id="incomeBreakdown">
+              <!-- Results will be populated here -->
+            </div>
+          </div>
+        </div>
+
+        <h3>Investment Income Strategies</h3>
+        <div class="strategy-cards">
+          <div class="strategy-card">
+            <h4>📊 Index Fund Investing</h4>
+            <p><strong>Strategy:</strong> Buy broad market index funds (S&P 500, Total Market)</p>
+            <p><strong>Expected Return:</strong> 7-10% annually (historical average)</p>
+            <p><strong>Income Type:</strong> Capital appreciation + dividends (2-3%)</p>
+            <p><strong>Minimum Investment:</strong> $1 (fractional shares)</p>
+            <p><strong>Best For:</strong> Set-and-forget investors, beginners</p>
+          </div>
+
+          <div class="strategy-card">
+            <h4>💎 Dividend Growth Investing</h4>
+            <p><strong>Strategy:</strong> Buy stocks with history of increasing dividends</p>
+            <p><strong>Expected Return:</strong> 6-9% annually</p>
+            <p><strong>Income Type:</strong> Growing dividend payments</p>
+            <p><strong>Minimum Investment:</strong> $500-1,000 per stock</p>
+            <p><strong>Best For:</strong> Income-focused investors, retirees</p>
+          </div>
+
+          <div class="strategy-card">
+            <h4>🏢 Real Estate Investment Trusts (REITs)</h4>
+            <p><strong>Strategy:</strong> Own shares of commercial real estate portfolios</p>
+            <p><strong>Expected Return:</strong> 8-12% annually</p>
+            <p><strong>Income Type:</strong> High dividend yields (4-8%)</p>
+            <p><strong>Minimum Investment:</strong> $100-500</p>
+            <p><strong>Best For:</strong> Real estate exposure without property ownership</p>
+          </div>
+
+          <div class="strategy-card">
+            <h4>🔒 Bond Laddering</h4>
+            <p><strong>Strategy:</strong> Buy bonds with staggered maturity dates</p>
+            <p><strong>Expected Return:</strong> 3-6% annually</p>
+            <p><strong>Income Type:</strong> Regular interest payments</p>
+            <p><strong>Minimum Investment:</strong> $1,000 per bond</p>
+            <p><strong>Best For:</strong> Conservative income, capital preservation</p>
+          </div>
+        </strategy-cards>
+
+        <h3>Investment Income Comparison</h3>
+        <div class="comparison-table">
+          <table>
+            <thead>
+              <tr>
+                <th>Investment Type</th>
+                <th>Expected Return</th>
+                <th>Income Frequency</th>
+                <th>Risk Level</th>
+                <th>Liquidity</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>S&P 500 Index Fund</strong></td>
+                <td class="tier-high">7-10%</td>
+                <td>Quarterly (dividends)</td>
+                <td class="tier-medium">Medium</td>
+                <td class="tier-high">High</td>
+              </tr>
+              <tr>
+                <td><strong>High-Yield Savings</strong></td>
+                <td class="tier-low">4-5%</td>
+                <td>Monthly</td>
+                <td class="tier-high">Very Low</td>
+                <td class="tier-high">High</td>
+              </tr>
+              <tr>
+                <td><strong>Dividend Stocks</strong></td>
+                <td class="tier-medium">6-9%</td>
+                <td>Quarterly</td>
+                <td class="tier-medium">Medium-High</td>
+                <td class="tier-high">High</td>
+              </tr>
+              <tr>
+                <td><strong>REITs</strong></td>
+                <td class="tier-high">8-12%</td>
+                <td>Monthly/Quarterly</td>
+                <td class="tier-medium">Medium</td>
+                <td class="tier-medium">Medium</td>
+              </tr>
+              <tr>
+                <td><strong>Corporate Bonds</strong></td>
+                <td class="tier-low">4-7%</td>
+                <td>Semi-annual</td>
+                <td class="tier-medium">Low-Medium</td>
+                <td class="tier-medium">Medium</td>
+              </tr>
+              <tr>
+                <td><strong>Peer-to-Peer Lending</strong></td>
+                <td class="tier-medium">6-10%</td>
+                <td>Monthly</td>
+                <td class="tier-low">High</td>
+                <td class="tier-low">Low</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="callout success">
+          <h4>✅ Investment Income Best Practices</h4>
+          <p><strong>Start Early:</strong> Compound interest is your biggest advantage<br>
+          <strong>Automate Investments:</strong> Set up automatic monthly transfers<br>
+          <strong>Tax-Advantaged Accounts:</strong> Use 401k, IRA, HSA first<br>
+          <strong>Low Costs:</strong> Choose index funds with expense ratios under 0.2%<br>
+          <strong>Rebalancing:</strong> Maintain target allocation annually<br>
+          <strong>Emergency Fund First:</strong> 6 months expenses before investing</p>
+        </div>
+      </section>
+
+      <section id="digital-products" class="section">
+        <h2>Digital Product Income Streams</h2>
+
+        <div class="callout warning">
+          <h4>⚠️ Digital Products Reality Check</h4>
+          <p>Creating successful digital products requires real expertise, significant upfront work, and ongoing marketing. Most digital products fail or generate minimal income. Success often comes from solving specific problems for defined audiences, not following generic "passive income" formulas.</p>
+        </div>
+
+        <h3>High-Potential Digital Products</h3>
+        <div class="tool-grid">
+          <div class="tool-card">
+            <h5>🎓 Online Courses</h5>
+            <div class="tool-description">
+              Teach skills you've mastered through video lessons and exercises
+            </div>
+            <div class="tool-pricing">Setup: $500-5,000 | Potential: $1,000-50,000/month</div>
+          </div>
+
+          <div class="tool-card">
+            <h5>📱 Mobile Apps</h5>
+            <div class="tool-description">
+              Utility apps, games, or productivity tools with recurring revenue
+            </div>
+            <div class="tool-pricing">Setup: $5,000-50,000 | Potential: $500-100,000/month</div>
+          </div>
+
+          <div class="tool-card">
+            <h5>📚 Digital Books</h5>
+            <div class="tool-description">
+              Kindle books, audiobooks, or specialized industry guides
+            </div>
+            <div class="tool-pricing">Setup: $500-2,000 | Potential: $100-10,000/month</div>
+          </div>
+
+          <div class="tool-card">
+            <h5>🎨 Design Templates</h5>
+            <div class="tool-description">
+              Canva templates, website themes, presentation templates
+            </div>
+            <div class="tool-pricing">Setup: $200-1,000 | Potential: $200-5,000/month</div>
+          </div>
+
+          <div class="tool-card">
+            <h5>🛠️ Software Tools</h5>
+            <div class="tool-description">
+              SaaS products, WordPress plugins, or specialized software
+            </div>
+            <div class="tool-pricing">Setup: $10,000+ | Potential: $1,000-500,000/month</div>
+          </div>
+
+          <div class="tool-card">
+            <h5>📊 Stock Media</h5>
+            <div class="tool-description">
+              Stock photos, videos, music, or sound effects
+            </div>
+            <div class="tool-pricing">Setup: $1,000-5,000 | Potential: $100-2,000/month</div>
+          </div>
+        </tool-grid>
+
+        <h3>Digital Product Success Framework</h3>
+        <div class="strategy-cards">
+          <div class="strategy-card">
+            <h4>🎯 Market Research Phase</h4>
+            <p><strong>Validate Demand:</strong> Survey potential customers, analyze competitors</p>
+            <p><strong>Define Audience:</strong> Specific demographics, pain points, willingness to pay</p>
+            <p><strong>Price Research:</strong> What are similar products charging?</p>
+            <p><strong>Distribution Channels:</strong> Where will you sell and market?</p>
+            <p><strong>Timeline:</strong> 2-4 weeks of research before building</p>
+          </div>
+
+          <div class="strategy-card">
+            <h4>🔨 Product Development</h4>
+            <p><strong>MVP First:</strong> Build minimum viable product to test market</p>
+            <p><strong>Quality Standards:</strong> Professional production values matter</p>
+            <p><strong>User Experience:</strong> Easy purchase and consumption process</p>
+            <p><strong>Support Systems:</strong> FAQ, customer service, refund policy</p>
+            <p><strong>Timeline:</strong> 2-6 months for initial version</p>
+          </div>
+
+          <div class="strategy-card">
+            <h4>📢 Launch & Marketing</h4>
+            <p><strong>Pre-Launch Building:</strong> Email list, social media following</p>
+            <p><strong>Content Marketing:</strong> Blog posts, videos demonstrating value</p>
+            <p><strong>Paid Advertising:</strong> Facebook, Google, platform-specific ads</p>
+            <p><strong>Partnerships:</strong> Affiliates, joint ventures, cross-promotion</p>
+            <p><strong>Timeline:</strong> 3-6 months to build sustainable marketing</p>
+          </div>
+
+          <div class="strategy-card">
+            <h4>📈 Optimization & Scaling</h4>
+            <p><strong>Analytics Tracking:</strong> Sales, conversion rates, customer behavior</p>
+            <p><strong>Customer Feedback:</strong> Reviews, surveys, feature requests</p>
+            <p><strong>Product Updates:</strong> Regular improvements and new versions</p>
+            <p><strong>Price Testing:</strong> A/B test pricing and packaging</p>
+            <p><strong>Timeline:</strong> Ongoing optimization and iteration</p>
+          </div>
+        </strategy-cards>
+
+        <div class="callout danger">
+          <h4>🚨 Digital Product Common Failures</h4>
+          <p><strong>No Market Research:</strong> Building products nobody wants<br>
+          <strong>Poor Quality:</strong> Amateur production values hurt sales<br>
+          <strong>Weak Marketing:</strong> Great products fail without promotion<br>
+          <strong>Overestimating Demand:</strong> Niche markets are often too small<br>
+          <strong>Underestimating Competition:</strong> Established players dominate<br>
+          <strong>Expecting Quick Success:</strong> Most products take 6-12 months to gain traction</p>
+        </div>
+      </section>
+
+      <section id="real-estate-income" class="section">
+        <h2>Real Estate Passive Income</h2>
+
+        <div class="callout">
+          <h4>🏠 Real Estate Income Reality</h4>
+          <p>Real estate can provide excellent passive income, but it's rarely completely hands-off. Successful real estate investors treat it as a business, not just an investment. Location, cash flow analysis, and property management are critical success factors.</p>
+        </div>
+
+        <h3>Real Estate Income Strategies</h3>
+        <div class="income-grid">
+          <div class="income-card">
+            <div class="difficulty-badge beginner">Beginner</div>
+            <h4>🏢 REITs (Real Estate Investment Trusts)</h4>
+            <p><strong>Investment:</strong> $100+</p>
+            <p><strong>Income:</strong> 4-8% dividend yields</p>
+            <p><strong>Effort:</strong> Truly passive</p>
+            <p><strong>Pros:</strong> Liquidity, diversification, professional management</p>
+            <p><strong>Cons:</strong> No control, market volatility, tax inefficiency</p>
+          </div>
+
+          <div class="income-card">
+            <div class="difficulty-badge intermediate">Intermediate</div>
+            <h4>🏠 Single-Family Rentals</h4>
+            <p><strong>Investment:</strong> $25,000+ down payment</p>
+            <p><strong>Income:</strong> $200-2,000+ monthly cash flow</p>
+            <p><strong>Effort:</strong> Semi-passive with property management</p>
+            <p><strong>Pros:</strong> Control, appreciation, tax benefits</p>
+            <p><strong>Cons:</strong> Tenant issues, maintenance, illiquidity</p>
+          </div>
+
+          <div class="income-card">
+            <div class="difficulty-badge advanced">Advanced</div>
+            <h4>🏙️ Multi-Family Properties</h4>
+            <p><strong>Investment:</strong> $100,000+</p>
+            <p><strong>Income:</strong> $1,000-10,000+ monthly</p>
+            <p><strong>Effort:</strong> Semi-passive, professional management</p>
+            <p><strong>Pros:</strong> Economies of scale, higher returns</p>
+            <p><strong>Cons:</strong> Complex financing, higher management needs</p>
+          </div>
+
+          <div class="income-card">
+            <div class="difficulty-badge expert">Expert</div>
+            <h4>🏨 Short-Term Rentals (Airbnb)</h4>
+            <p><strong>Investment:</strong> $50,000+</p>
+            <p><strong>Income:</strong> $500-5,000+ monthly</p>
+            <p><strong>Effort:</strong> More active management required</p>
+            <p><strong>Pros:</strong> Higher income potential, flexibility</p>
+            <p><strong>Cons:</strong> Regulation risk, intensive management</p>
+          </div>
+        </income-grid>
+
+        <h3>Real Estate Investment Analysis</h3>
+        <div class="comparison-table">
+          <table>
+            <thead>
+              <tr>
+                <th>Strategy</th>
+                <th>Initial Investment</th>
+                <th>Cash-on-Cash Return</th>
+                <th>Management Required</th>
+                <th>Liquidity</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>REITs</strong></td>
+                <td>$100+</td>
+                <td class="tier-medium">4-8%</td>
+                <td class="tier-high">None</td>
+                <td class="tier-high">High</td>
+              </tr>
+              <tr>
+                <td><strong>Single-Family Rentals</strong></td>
+                <td>$25,000+</td>
+                <td class="tier-high">8-15%</td>
+                <td class="tier-medium">Moderate</td>
+                <td class="tier-low">Low</td>
+              </tr>
+              <tr>
+                <td><strong>Duplex/Triplex</strong></td>
+                <td>$50,000+</td>
+                <td class="tier-high">10-20%</td>
+                <td class="tier-medium">Moderate</td>
+                <td class="tier-low">Low</td>
+              </tr>
+              <tr>
+                <td><strong>Apartment Buildings</strong></td>
+                <td>$100,000+</td>
+                <td class="tier-high">12-25%</td>
+                <td class="tier-low">High</td>
+                <td class="tier-low">Very Low</td>
+              </tr>
+              <tr>
+                <td><strong>Short-Term Rentals</strong></td>
+                <td>$50,000+</td>
+                <td class="tier-high">15-30%</td>
+                <td class="tier-low">High</td>
+                <td class="tier-low">Low</td>
+              </tr>
+              <tr>
+                <td><strong>Real Estate Crowdfunding</strong></td>
+                <td>$1,000+</td>
+                <td class="tier-medium">6-12%</td>
+                <td class="tier-high">None</td>
+                <td class="tier-low">Low</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="callout success">
+          <h4>✅ Real Estate Success Factors</h4>
+          <p><strong>Location Analysis:</strong> Research neighborhood trends, job growth, schools<br>
+          <strong>Cash Flow Focus:</strong> Property should cash flow from day one<br>
+          <strong>Professional Team:</strong> Good realtor, property manager, accountant<br>
+          <strong>Conservative Estimates:</strong> Plan for vacancies, repairs, management<br>
+          <strong>Market Timing:</strong> Buy in buyer's markets when possible<br>
+          <strong>Exit Strategy:</strong> Know how you'll eventually sell or refinance</p>
+        </div>
+      </section>
+
+      <section id="faq" class="faq-section">
+        <h2>Frequently Asked Questions</h2>
+
+        <div class="faq-item">
+          <div class="faq-question">How much passive income do I need to quit my job?</div>
+          <div class="faq-answer">Most financial experts recommend having passive income that covers 100-120% of your monthly expenses before quitting active work. If you spend $4,000/month, aim for $4,500-5,000 in passive income. This provides a safety buffer for taxes, inflation, and income fluctuations. Consider starting part-time while building your passive income streams.</div>
+        </div>
+
+        <div class="faq-item">
+          <div class="faq-question">Which passive income strategy should I start with?</div>
+          <div class="faq-answer">Start with investment income if you have capital ($10,000+) since it's truly passive and diversified. If you have more time than money, begin with digital products in an area where you have expertise. Real estate requires significant capital and isn't completely passive. The key is starting with one strategy and doing it well before diversifying.</div>
+        </div>
+
+        <div class="faq-item">
+          <div class="faq-question">How long does it take to build meaningful passive income?</div>
+          <div class="faq-answer">Expect 2-5 years to build substantial passive income streams. Investment income grows steadily but slowly—plan on 7-10 years to replace full-time income through investing alone. Digital products can generate income faster (6-18 months) but have higher failure rates. Real estate can provide immediate cash flow but requires significant upfront capital.</div>
+        </div>
+
+        <div class="faq-item">
+          <div class="faq-question">Is passive income really passive?</div>
+          <div class="faq-answer">True "set it and forget it" passive income is rare. Most streams require some maintenance: monitoring investments, updating digital products, managing properties, or optimizing marketing. However, the effort-to-income ratio is much better than active work. Plan to spend 5-20% of your time maintaining passive income streams.</div>
+        </div>
+
+        <div class="faq-item">
+          <div class="faq-question">What are the tax implications of passive income?</div>
+          <div class="faq-answer">Passive income tax treatment varies by source. Investment dividends and capital gains often receive preferential tax rates. Rental income is taxed as ordinary income but offers depreciation deductions. Digital product income is typically taxed as business income. Consult a tax professional to optimize your passive income tax strategy and structure.</div>
+        </div>
+
+        <div class="faq-item">
+          <div class="faq-question">How much money do I need to start building passive income?</div>
+          <div class="faq-answer">You can start with as little as $100 for investment income through index funds. Digital products might require $500-5,000 for quality creation and marketing. Real estate typically needs $25,000+ for a down payment. The key is starting with whatever you have and reinvesting profits to compound your income streams over time.</div>
+        </div>
+
+        <div class="faq-item">
+          <div class="faq-question">Should I focus on one passive income stream or diversify?</div>
+          <div class="faq-answer">Start with one stream and master it before diversifying. Once you have one successful stream generating meaningful income, add 2-3 additional streams for diversification. Having too many streams early on means none get adequate attention to succeed. Aim for 3-5 mature passive income streams for optimal risk management and income stability.</div>
+        </div>
+
+        <div class="faq-item">
+          <div class="faq-question">What's the biggest mistake people make with passive income?</div>
+          <div class="faq-answer">The biggest mistake is expecting immediate results without adequate effort or capital. Passive income requires either significant upfront work (digital products), substantial capital (investments), or both (real estate). Many people also spread themselves too thin across multiple strategies instead of focusing on one until it succeeds. Patience and persistence are essential.</div>
+        </div>
+      </section>
+
+      <div class="cta-cards">
+        <div class="cta-card">
+          <h4>🔥 FIRE Movement</h4>
+          <p>Learn how to achieve financial independence and retire early through systematic wealth building and passive income.</p>
+          <a href="/fire-movement" class="cta-button">Financial Independence</a>
+        </div>
+
+        <div class="cta-card">
+          <h4>🏠 Real Estate Investing</h4>
+          <p>Master real estate investment strategies for building wealth through property ownership and rental income.</p>
+          <a href="/real-estate-investing" class="cta-button">Real Estate Investing</a>
+        </div>
+
+        <div class="cta-card">
+          <h4>📊 Personal Finance</h4>
+          <p>Build the financial foundation needed for successful passive income investing and wealth building.</p>
+          <a href="/personal-finance-budgeting" class="cta-button">Financial Planning</a>
+        </div>
+      </div>
+    </main>
+
+    <aside class="sidebar">
+      <h3>Contents</h3>
+      <ul>
+        <li><a href="#passive-income-fundamentals">Income Fundamentals</a></li>
+        <li><a href="#investment-income">Investment Income</a></li>
+        <li><a href="#digital-products">Digital Products</a></li>
+        <li><a href="#real-estate-income">Real Estate Income</a></li>
+        <li><a href="#faq">FAQ</a></li>
+      </ul>
+    </aside>
+  </div>
+</div>
+
+<script>
+function calculatePassiveIncome() {
+  const targetMonthlyIncome = parseFloat(document.getElementById('targetMonthlyIncome').value) || 0;
+  const currentAge = parseFloat(document.getElementById('currentAge').value) || 30;
+  const targetAge = parseFloat(document.getElementById('targetAge').value) || 50;
+  const currentSavings = parseFloat(document.getElementById('currentSavings').value) || 0;
+  const monthlySavings = parseFloat(document.getElementById('monthlySavings').value) || 0;
+  const expectedReturn = parseFloat(document.getElementById('expectedReturn').value) || 7;
+  
+  if (targetMonthlyIncome === 0 || monthlySavings === 0) {
+    alert('Please enter target monthly income and monthly savings');
+    return;
+  }
+  
+  const yearsToTarget = targetAge - currentAge;
+  const targetAnnualIncome = targetMonthlyIncome * 12;
+  
+  // Using 4% rule (25x annual expenses) for FI calculation
+  const capitalRequired = targetAnnualIncome * 25;
+  
+  // Calculate future value with compound interest
+  const monthsToTarget = yearsToTarget * 12;
+  const monthlyReturn = expectedReturn / 100 / 12;
+  
+  // Future value of current savings
+  const futureValueCurrentSavings = currentSavings * Math.pow(1 + monthlyReturn, monthsToTarget);
+  
+  // Future value of monthly contributions
+  const futureValueMonthlySavings = monthlySavings * 
+    ((Math.pow(1 + monthlyReturn, monthsToTarget) - 1) / monthlyReturn);
+  
+  const totalFutureValue = futureValueCurrentSavings + futureValueMonthlySavings;
+  
+  // Calculate if goal is achievable
+  const shortfall = capitalRequired - totalFutureValue;
+  const surplus = totalFutureValue - capitalRequired;
+  
+  // Calculate monthly income achievable with current plan
+  const achievableAnnualIncome = totalFutureValue * 0.04; // 4% withdrawal rate
+  const achievableMonthlyIncome = achievableAnnualIncome / 12;
+  
+  // Calculate required monthly savings if falling short
+  let requiredMonthlySavings = monthlySavings;
+  if (shortfall > 0) {
+    requiredMonthlySavings = (capitalRequired - futureValueCurrentSavings) / 
+      ((Math.pow(1 + monthlyReturn, monthsToTarget) - 1) / monthlyReturn);
+  }
+  
+  // Calculate time to FI at current savings rate
+  let timeToFI = yearsToTarget;
+  if (monthlySavings > 0) {
+    // Solve for time when FV equals capital required
+    const pv = currentSavings;
+    const pmt = monthlySavings;
+    const fv = capitalRequired;
+    
+    // Approximation using logarithms
+    if (pv > 0 && pmt > 0) {
+      const monthsToFI = Math.log((fv * monthlyReturn + pmt) / (pv * monthlyReturn + pmt)) / Math.log(1 + monthlyReturn);
+      timeToFI = monthsToFI / 12;
+    }
+  }
+  
+  // Alternative income levels analysis
+  const conservativeIncome = totalFutureValue * 0.03; // 3% withdrawal
+  const aggressiveIncome = totalFutureValue * 0.05; // 5% withdrawal
+  
+  // Determine status
+  const getStatus = (shortfall) => {
+    if (shortfall <= 0) return { text: 'On Track', color: '#4ade80' };
+    if (shortfall < capitalRequired * 0.2) return { text: 'Minor Adjustment Needed', color: '#fbbf24' };
+    if (shortfall < capitalRequired * 0.5) return { text: 'Significant Increase Required', color: '#f87171' };
+    return { text: 'Major Plan Revision Needed', color: '#ef4444' };
+  };
+  
+  const status = getStatus(shortfall);
+  
+  // Calculate investment milestones
+  const milestone25 = capitalRequired * 0.25;
+  const milestone50 = capitalRequired * 0.50;
+  const milestone75 = capitalRequired * 0.75;
+  
+  // Display results
+  const breakdown = document.getElementById('incomeBreakdown');
+  breakdown.innerHTML = `
+    <div class="breakdown-item">
+      <div class="breakdown-label">Capital Required</div>
+      <div class="breakdown-value">$${capitalRequired.toLocaleString()}</div>
+      <div class="breakdown-status">For $${targetMonthlyIncome.toLocaleString()}/month</div>
+    </div>
+    <div class="breakdown-item">
+      <div class="breakdown-label">Projected Capital</div>
+      <div class="breakdown-value">$${totalFutureValue.toLocaleString()}</div>
+      <div class="breakdown-status">At age ${targetAge}</div>
+    </div>
+    <div class="breakdown-item">
+      <div class="breakdown-label">Achievable Income</div>
+      <div class="breakdown-value">$${achievableMonthlyIncome.toLocaleString()}</div>
+      <div class="breakdown-status">Per month (4% rule)</div>
+    </div>
+    <div class="breakdown-item">
+      <div class="breakdown-label">Time to FI</div>
+      <div class="breakdown-value">${timeToFI.toFixed(1)} years</div>
+      <div class="breakdown-status">At current savings rate</div>
+    </div>
+    <div class="breakdown-item">
+      <div class="breakdown-label">Plan Status</div>
+      <div class="breakdown-value">${status.text}</div>
+      <div class="breakdown-status" style="color: ${status.color}">Overall assessment</div>
+    </div>
+    <div class="breakdown-item">
+      <div class="breakdown-label">Required Savings</div>
+      <div class="breakdown-value">$${requiredMonthlySavings.toLocaleString()}</div>
+      <div class="breakdown-status">Per month to reach goal</div>
+    </div>
+  `;
+  
+  document.getElementById('incomeResults').style.display = 'block';
+}
+</script>

@@ -1,0 +1,488 @@
+<!-- Chart.js Library -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<!-- JSON-LD Schema for FAQs -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "How do oil prices affect gas prices at the pump?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Oil prices directly impact gasoline costs. Crude oil represents about 50-60% of gas pump prices. A $10 increase in oil per barrel typically translates to 24-40 cents more per gallon."
+      }
+    },
+    {
+      "@type": "Question", 
+      "name": "Why is the Strait of Hormuz so important for oil prices?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "The Strait of Hormuz is a critical chokepoint where 30% of global oil shipments pass through. Any disruption here would instantly spike oil prices worldwide, as seen during previous regional conflicts."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "How does the Iran-Israel conflict affect oil markets?",
+      "acceptedAnswer": {
+        "@type": "Answer", 
+        "text": "Escalating tensions between Iran and Israel threaten regional stability and oil supply routes. Iran controls the Strait of Hormuz, while Israel's responses could trigger wider Middle East conflicts affecting oil production."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "What other costs rise when oil prices spike?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Oil price increases affect transportation costs, which impact food prices, heating costs, airline tickets, shipping, and virtually all consumer goods that require transportation."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "How can I protect myself from oil price volatility?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Reduce fuel consumption through efficient vehicles, public transit, working from home, and energy-efficient heating. Build an emergency fund and consider hedging investments."
+      }
+    }
+  ]
+}
+</script>
+
+<!-- Page Header -->
+<div class="text-center mb-12">
+  <h1 class="text-4xl md:text-5xl font-bold text-white mb-4">Oil Price Impact Calculator</h1>
+  <p class="text-xl text-gray-300 max-w-3xl mx-auto mb-6">
+    With the Iran-Israel war threatening global oil supply, understand exactly how price spikes will hit your wallet — from gas to groceries.
+  </p>
+  <div class="bg-red-900/20 border border-red-700/50 rounded-lg p-4 max-w-2xl mx-auto">
+    <p class="text-red-200">
+      ⚠️ <strong>30% of global oil</strong> transits through the Strait of Hormuz — currently under threat
+    </p>
+  </div>
+</div>
+
+<!-- Calculator Section -->
+<div class="grid lg:grid-cols-2 gap-8 mb-12">
+  <!-- Input Form -->
+  <div class="bg-[#111] border border-[#222] rounded-xl p-6">
+    <h2 class="text-2xl font-bold text-white mb-6">Your Current Situation</h2>
+    
+    <div class="space-y-4">
+      <div>
+        <label class="block text-gray-300 mb-2">Current Gas Price (per gallon)</label>
+        <input type="number" id="gasPrice" value="3.50" step="0.01" min="0" 
+               class="w-full bg-gray-800 border border-gray-600 rounded-lg p-3 text-white">
+      </div>
+      
+      <div>
+        <label class="block text-gray-300 mb-2">Daily Commute (round trip miles)</label>
+        <input type="number" id="commuteMiles" value="30" step="1" min="0"
+               class="w-full bg-gray-800 border border-gray-600 rounded-lg p-3 text-white">
+      </div>
+      
+      <div>
+        <label class="block text-gray-300 mb-2">Vehicle MPG</label>
+        <input type="number" id="vehicleMPG" value="28" step="1" min="1"
+               class="w-full bg-gray-800 border border-gray-600 rounded-lg p-3 text-white">
+      </div>
+      
+      <div>
+        <label class="block text-gray-300 mb-2">Monthly Heating/Energy Bill</label>
+        <input type="number" id="heatingBill" value="150" step="1" min="0"
+               class="w-full bg-gray-800 border border-gray-600 rounded-lg p-3 text-white">
+      </div>
+      
+      <div>
+        <label class="block text-gray-300 mb-2">Household Size</label>
+        <input type="number" id="householdSize" value="2" step="1" min="1"
+               class="w-full bg-gray-800 border border-gray-600 rounded-lg p-3 text-white">
+      </div>
+    </div>
+  </div>
+
+  <!-- Results Display -->
+  <div class="bg-[#111] border border-[#222] rounded-xl p-6">
+    <h2 class="text-2xl font-bold text-white mb-6">Impact Analysis</h2>
+    
+    <div class="space-y-6">
+      <!-- Current Costs -->
+      <div class="bg-gray-800/50 rounded-lg p-4">
+        <h3 class="text-lg font-semibold text-blue-400 mb-2">Current Monthly Costs</h3>
+        <div class="text-2xl font-bold text-white" id="currentCost">$0</div>
+        <div class="text-sm text-gray-400">Fuel + Energy</div>
+      </div>
+
+      <!-- Oil Price Scenarios -->
+      <div class="space-y-3">
+        <div class="bg-yellow-900/20 border border-yellow-700/50 rounded-lg p-4" id="scenario100">
+          <div class="flex justify-between items-center">
+            <span class="text-yellow-400 font-semibold">$100/barrel</span>
+            <span class="text-white font-bold" id="cost100">$0</span>
+          </div>
+          <div class="text-sm text-gray-400">
+            Monthly increase: <span id="increase100" class="text-yellow-300">$0</span>
+          </div>
+        </div>
+
+        <div class="bg-orange-900/20 border border-orange-700/50 rounded-lg p-4" id="scenario120">
+          <div class="flex justify-between items-center">
+            <span class="text-orange-400 font-semibold">$120/barrel</span>
+            <span class="text-white font-bold" id="cost120">$0</span>
+          </div>
+          <div class="text-sm text-gray-400">
+            Monthly increase: <span id="increase120" class="text-orange-300">$0</span>
+          </div>
+        </div>
+
+        <div class="bg-red-900/20 border border-red-700/50 rounded-lg p-4" id="scenario150">
+          <div class="flex justify-between items-center">
+            <span class="text-red-400 font-semibold">$150/barrel</span>
+            <span class="text-white font-bold" id="cost150">$0</span>
+          </div>
+          <div class="text-sm text-gray-400">
+            Monthly increase: <span id="increase150" class="text-red-300">$0</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Annual Impact -->
+      <div class="bg-gray-800/50 rounded-lg p-4">
+        <h3 class="text-lg font-semibold text-blue-400 mb-2">Worst Case Annual Impact</h3>
+        <div class="text-2xl font-bold text-red-400" id="annualImpact">$0</div>
+        <div class="text-sm text-gray-400">Extra cost per year at $150/barrel</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Chart Section -->
+<div class="bg-[#111] border border-[#222] rounded-xl p-6 mb-12">
+  <h2 class="text-2xl font-bold text-white mb-6">Cost Comparison Chart</h2>
+  <div class="h-96">
+    <canvas id="impactChart"></canvas>
+  </div>
+</div>
+
+<!-- Strait of Hormuz Explainer -->
+<div class="bg-[#111] border border-[#222] rounded-xl p-6 mb-12">
+  <h2 class="text-2xl font-bold text-white mb-6">🚢 The Strait of Hormuz: A Global Chokepoint</h2>
+  
+  <div class="grid md:grid-cols-2 gap-6">
+    <div>
+      <h3 class="text-xl font-semibold text-blue-400 mb-3">Why It Matters</h3>
+      <ul class="space-y-2 text-gray-300">
+        <li>• <strong>30% of global oil</strong> shipments pass through this 21-mile strait</li>
+        <li>• <strong>Iran controls</strong> the northern coastline and shipping lanes</li>
+        <li>• <strong>No alternative routes</strong> for Gulf oil exports to reach global markets</li>
+        <li>• Previous disruptions caused <strong>oil to spike 50%+</strong> overnight</li>
+      </ul>
+    </div>
+    
+    <div>
+      <h3 class="text-xl font-semibold text-red-400 mb-3">Current Risks</h3>
+      <ul class="space-y-2 text-gray-300">
+        <li>• Iran threatens closure in response to Israeli actions</li>
+        <li>• Military buildup on both sides escalating tensions</li>
+        <li>• Insurance rates for tankers already rising</li>
+        <li>• Alternative suppliers (US, Norway) cannot fill a 30% gap quickly</li>
+      </ul>
+    </div>
+  </div>
+  
+  <div class="mt-6 p-4 bg-blue-900/20 border border-blue-700/50 rounded-lg">
+    <p class="text-blue-200">
+      <strong>Historical Context:</strong> During the 1980s "Tanker War," attacks on shipping in the Gulf 
+      sent oil prices soaring. A modern closure would have far greater impact on the global economy.
+    </p>
+  </div>
+</div>
+
+<!-- Tips Section -->
+<div class="bg-[#111] border border-[#222] rounded-xl p-6 mb-12">
+  <h2 class="text-2xl font-bold text-white mb-6">💡 Protect Yourself From Rising Costs</h2>
+  
+  <div class="grid md:grid-cols-3 gap-6">
+    <div>
+      <h3 class="text-lg font-semibold text-green-400 mb-3">🚗 Transportation</h3>
+      <ul class="space-y-1 text-gray-300 text-sm">
+        <li>• Work from home when possible</li>
+        <li>• Combine errands into single trips</li>
+        <li>• Use public transit or carpooling</li>
+        <li>• Consider a more fuel-efficient vehicle</li>
+        <li>• Maintain proper tire pressure (3% fuel savings)</li>
+      </ul>
+    </div>
+    
+    <div>
+      <h3 class="text-lg font-semibold text-green-400 mb-3">🏠 Energy</h3>
+      <ul class="space-y-1 text-gray-300 text-sm">
+        <li>• Lower thermostat by 2°F (6% heating savings)</li>
+        <li>• Seal windows and doors for drafts</li>
+        <li>• Use LED bulbs and efficient appliances</li>
+        <li>• Consider heat pumps vs oil/gas heating</li>
+        <li>• Invest in home insulation improvements</li>
+      </ul>
+    </div>
+    
+    <div>
+      <h3 class="text-lg font-semibold text-green-400 mb-3">💰 Financial</h3>
+      <ul class="space-y-1 text-gray-300 text-sm">
+        <li>• Build emergency fund for price spikes</li>
+        <li>• Budget extra for food cost increases</li>
+        <li>• Consider energy sector investments as hedge</li>
+        <li>• Lock in fixed heating rates if available</li>
+        <li>• Plan major purchases before price spikes</li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<!-- FAQ Section -->
+<div class="bg-[#111] border border-[#222] rounded-xl p-6 mb-12">
+  <h2 class="text-2xl font-bold text-white mb-6">❓ Frequently Asked Questions</h2>
+  
+  <div class="space-y-4">
+    <details class="group">
+      <summary class="flex cursor-pointer items-center justify-between rounded-lg bg-gray-800/50 p-4 text-white font-medium hover:bg-gray-700/50">
+        <span>How do oil prices affect gas prices at the pump?</span>
+        <span class="transition-transform group-open:rotate-180">▼</span>
+      </summary>
+      <div class="mt-2 p-4 text-gray-300">
+        Oil prices directly impact gasoline costs. Crude oil represents about 50-60% of gas pump prices. 
+        A $10 increase in oil per barrel typically translates to 24-40 cents more per gallon.
+      </div>
+    </details>
+
+    <details class="group">
+      <summary class="flex cursor-pointer items-center justify-between rounded-lg bg-gray-800/50 p-4 text-white font-medium hover:bg-gray-700/50">
+        <span>Why is the Strait of Hormuz so important for oil prices?</span>
+        <span class="transition-transform group-open:rotate-180">▼</span>
+      </summary>
+      <div class="mt-2 p-4 text-gray-300">
+        The Strait of Hormuz is a critical chokepoint where 30% of global oil shipments pass through. 
+        Any disruption here would instantly spike oil prices worldwide, as seen during previous regional conflicts.
+      </div>
+    </details>
+
+    <details class="group">
+      <summary class="flex cursor-pointer items-center justify-between rounded-lg bg-gray-800/50 p-4 text-white font-medium hover:bg-gray-700/50">
+        <span>How does the Iran-Israel conflict affect oil markets?</span>
+        <span class="transition-transform group-open:rotate-180">▼</span>
+      </summary>
+      <div class="mt-2 p-4 text-gray-300">
+        Escalating tensions between Iran and Israel threaten regional stability and oil supply routes. 
+        Iran controls the Strait of Hormuz, while Israel's responses could trigger wider Middle East conflicts affecting oil production.
+      </div>
+    </details>
+
+    <details class="group">
+      <summary class="flex cursor-pointer items-center justify-between rounded-lg bg-gray-800/50 p-4 text-white font-medium hover:bg-gray-700/50">
+        <span>What other costs rise when oil prices spike?</span>
+        <span class="transition-transform group-open:rotate-180">▼</span>
+      </summary>
+      <div class="mt-2 p-4 text-gray-300">
+        Oil price increases affect transportation costs, which impact food prices, heating costs, airline tickets, 
+        shipping, and virtually all consumer goods that require transportation.
+      </div>
+    </details>
+
+    <details class="group">
+      <summary class="flex cursor-pointer items-center justify-between rounded-lg bg-gray-800/50 p-4 text-white font-medium hover:bg-gray-700/50">
+        <span>How can I protect myself from oil price volatility?</span>
+        <span class="transition-transform group-open:rotate-180">▼</span>
+      </summary>
+      <div class="mt-2 p-4 text-gray-300">
+        Reduce fuel consumption through efficient vehicles, public transit, working from home, and energy-efficient heating. 
+        Build an emergency fund and consider hedging investments.
+      </div>
+    </details>
+  </div>
+</div>
+
+<!-- Related Links -->
+<div class="bg-[#111] border border-[#222] rounded-xl p-6">
+  <h2 class="text-2xl font-bold text-white mb-6">📰 Related Resources</h2>
+  
+  <div class="grid md:grid-cols-2 gap-4">
+    <a href="/news/iran-israel-war-day-28-markets-oil-troops" 
+       class="block p-4 bg-gray-800/50 rounded-lg hover:bg-gray-700/50 transition-colors border border-gray-700 hover:border-blue-500">
+      <h3 class="text-blue-400 font-semibold mb-2">📈 Latest Market Analysis</h3>
+      <p class="text-gray-300 text-sm">Read: Iran-Israel War Day 28 →</p>
+    </a>
+    
+    <a href="/emergency-fund-calculator" 
+       class="block p-4 bg-gray-800/50 rounded-lg hover:bg-gray-700/50 transition-colors border border-gray-700 hover:border-green-500">
+      <h3 class="text-green-400 font-semibold mb-2">💰 Financial Planning</h3>
+      <p class="text-gray-300 text-sm">Calculate your emergency fund →</p>
+    </a>
+  </div>
+</div>
+
+<!-- JavaScript for Calculator -->
+<script>
+function waitForChart(cb) { 
+  if (typeof Chart !== 'undefined') return cb(); 
+  setTimeout(() => waitForChart(cb), 50); 
+}
+
+// Calculator logic
+function calculateImpact() {
+  const gasPrice = parseFloat(document.getElementById('gasPrice').value) || 3.50;
+  const commuteMiles = parseFloat(document.getElementById('commuteMiles').value) || 30;
+  const vehicleMPG = parseFloat(document.getElementById('vehicleMPG').value) || 28;
+  const heatingBill = parseFloat(document.getElementById('heatingBill').value) || 150;
+  const householdSize = parseFloat(document.getElementById('householdSize').value) || 2;
+
+  // Current monthly fuel cost
+  const workDaysPerMonth = 22;
+  const monthlyFuelCost = (commuteMiles * workDaysPerMonth * gasPrice) / vehicleMPG;
+  const currentTotalCost = monthlyFuelCost + heatingBill;
+
+  // Oil price scenarios (rough correlation: $10/barrel = $0.30/gallon)
+  const currentOilPrice = 75; // baseline
+  const scenarios = {
+    100: gasPrice + ((100 - currentOilPrice) * 0.03),
+    120: gasPrice + ((120 - currentOilPrice) * 0.03),
+    150: gasPrice + ((150 - currentOilPrice) * 0.03)
+  };
+
+  // Energy price increases (heating correlates with oil)
+  const energyMultipliers = {
+    100: 1.15,
+    120: 1.30,
+    150: 1.60
+  };
+
+  // Grocery inflation (transportation costs)
+  const groceryInflation = {
+    100: householdSize * 25,
+    120: householdSize * 45,
+    150: householdSize * 75
+  };
+
+  const results = {};
+  for (const [barrel, newGasPrice] of Object.entries(scenarios)) {
+    const newFuelCost = (commuteMiles * workDaysPerMonth * newGasPrice) / vehicleMPG;
+    const newHeatingCost = heatingBill * energyMultipliers[barrel];
+    const groceryCost = groceryInflation[barrel];
+    
+    results[barrel] = {
+      totalCost: newFuelCost + newHeatingCost + groceryCost,
+      increase: (newFuelCost + newHeatingCost + groceryCost) - currentTotalCost
+    };
+  }
+
+  // Update display
+  document.getElementById('currentCost').textContent = `$${currentTotalCost.toFixed(0)}`;
+  
+  document.getElementById('cost100').textContent = `$${results[100].totalCost.toFixed(0)}`;
+  document.getElementById('increase100').textContent = `+$${results[100].increase.toFixed(0)}`;
+  
+  document.getElementById('cost120').textContent = `$${results[120].totalCost.toFixed(0)}`;
+  document.getElementById('increase120').textContent = `+$${results[120].increase.toFixed(0)}`;
+  
+  document.getElementById('cost150').textContent = `$${results[150].totalCost.toFixed(0)}`;
+  document.getElementById('increase150').textContent = `+$${results[150].increase.toFixed(0)}`;
+
+  document.getElementById('annualImpact').textContent = `$${(results[150].increase * 12).toFixed(0)}`;
+
+  return {
+    current: currentTotalCost,
+    scenarios: results
+  };
+}
+
+// Chart initialization
+let chart = null;
+
+function updateChart(data) {
+  waitForChart(function() {
+    const ctx = document.getElementById('impactChart').getContext('2d');
+    
+    if (chart) {
+      chart.destroy();
+    }
+
+    chart = new Chart(ctx, {
+      type: 'bar',
+      data: {
+        labels: ['Current', '$100/barrel', '$120/barrel', '$150/barrel'],
+        datasets: [{
+          label: 'Monthly Cost',
+          data: [
+            data.current,
+            data.scenarios[100].totalCost,
+            data.scenarios[120].totalCost,
+            data.scenarios[150].totalCost
+          ],
+          backgroundColor: [
+            'rgba(59, 130, 246, 0.6)',
+            'rgba(234, 179, 8, 0.6)',
+            'rgba(249, 115, 22, 0.6)',
+            'rgba(239, 68, 68, 0.6)'
+          ],
+          borderColor: [
+            'rgba(59, 130, 246, 1)',
+            'rgba(234, 179, 8, 1)',
+            'rgba(249, 115, 22, 1)',
+            'rgba(239, 68, 68, 1)'
+          ],
+          borderWidth: 1
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: {
+            labels: {
+              color: '#d1d5db'
+            }
+          }
+        },
+        scales: {
+          y: {
+            beginAtZero: true,
+            ticks: {
+              color: '#9ca3af',
+              callback: function(value) {
+                return '$' + value;
+              }
+            },
+            grid: {
+              color: '#374151'
+            }
+          },
+          x: {
+            ticks: {
+              color: '#9ca3af'
+            },
+            grid: {
+              color: '#374151'
+            }
+          }
+        }
+      }
+    });
+  });
+}
+
+// Event listeners
+document.addEventListener('DOMContentLoaded', function() {
+  // Calculate initial values
+  const data = calculateImpact();
+  updateChart(data);
+
+  // Add event listeners to all inputs
+  const inputs = ['gasPrice', 'commuteMiles', 'vehicleMPG', 'heatingBill', 'householdSize'];
+  inputs.forEach(inputId => {
+    document.getElementById(inputId).addEventListener('input', function() {
+      const data = calculateImpact();
+      updateChart(data);
+    });
+  });
+});
+</script>

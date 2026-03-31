@@ -1,0 +1,1252 @@
+<style>
+  .ccm-container {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 2rem;
+    color: #e2e8f0;
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    line-height: 1.8;
+  }
+  .ccm-header {
+    text-align: center;
+    margin-bottom: 4rem;
+    padding-top: 3rem;
+  }
+  .gradient-h1 {
+    font-size: clamp(2.2rem, 5vw, 3.5rem);
+    font-weight: 800;
+    background: linear-gradient(135deg, #ffffff 0%, #a5b4fc 50%, #818cf8 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    margin-bottom: 1rem;
+    line-height: 1.15;
+    letter-spacing: -0.02em;
+  }
+  .ccm-subtitle {
+    font-size: 1.2rem;
+    color: #94a3b8;
+    max-width: 750px;
+    margin: 0 auto;
+  }
+  .breadcrumb {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    justify-content: center;
+    margin-bottom: 2rem;
+    font-size: 0.85rem;
+  }
+  .breadcrumb a {
+    color: #818cf8;
+    text-decoration: none;
+  }
+  .breadcrumb a:hover { text-decoration: underline; }
+  .breadcrumb span { color: #475569; }
+  .updated-badge {
+    display: inline-block;
+    background: rgba(129, 140, 248, 0.15);
+    color: #a5b4fc;
+    padding: 0.4rem 1rem;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    margin-bottom: 2rem;
+  }
+  .content-wrapper {
+    display: grid;
+    grid-template-columns: 1fr 280px;
+    gap: 4rem;
+    margin-top: 3rem;
+  }
+  .main-content {
+    min-width: 0;
+  }
+  .sidebar {
+    position: sticky;
+    top: 2rem;
+    height: fit-content;
+    background: #12121a;
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 16px;
+    padding: 1.5rem;
+  }
+  .sidebar h3 {
+    color: #ffffff;
+    font-size: 0.9rem;
+    font-weight: 600;
+    margin: 0 0 1rem 0;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+  .sidebar ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+  .sidebar li {
+    margin: 0;
+  }
+  .sidebar a {
+    display: block;
+    color: #94a3b8;
+    text-decoration: none;
+    padding: 0.5rem 0;
+    border-bottom: 1px solid rgba(255,255,255,0.05);
+    font-size: 0.85rem;
+    transition: color 0.2s;
+  }
+  .sidebar a:hover {
+    color: #a5b4fc;
+  }
+  .section {
+    margin: 4rem 0;
+    scroll-margin-top: 2rem;
+  }
+  .section h2 {
+    color: #ffffff;
+    font-size: 1.8rem;
+    font-weight: 700;
+    margin-bottom: 1.5rem;
+  }
+  .section h3 {
+    color: #e2e8f0;
+    font-size: 1.3rem;
+    font-weight: 600;
+    margin: 2rem 0 1rem 0;
+  }
+  .stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1.5rem;
+    margin: 2rem 0;
+  }
+  .stat-card {
+    background: #12121a;
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 14px;
+    padding: 1.5rem;
+    text-align: center;
+  }
+  .stat-number {
+    font-size: 2.5rem;
+    font-weight: 800;
+    color: #818cf8;
+    display: block;
+    line-height: 1;
+  }
+  .stat-label {
+    color: #94a3b8;
+    font-size: 0.9rem;
+    margin-top: 0.5rem;
+  }
+  .monetization-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 2rem;
+    margin: 2rem 0;
+  }
+  .monetization-card {
+    background: #12121a;
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 16px;
+    padding: 2rem;
+    position: relative;
+    overflow: hidden;
+  }
+  .monetization-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, #818cf8, #a5b4fc);
+  }
+  .monetization-card h4 {
+    color: #ffffff;
+    font-size: 1.2rem;
+    font-weight: 600;
+    margin-bottom: 1rem;
+  }
+  .revenue-potential {
+    background: rgba(129, 140, 248, 0.15);
+    color: #a5b4fc;
+    padding: 0.3rem 0.8rem;
+    border-radius: 8px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    display: inline-block;
+    margin-bottom: 1rem;
+  }
+  .revenue-potential.low { background: rgba(74, 222, 128, 0.15); color: #4ade80; }
+  .revenue-potential.medium { background: rgba(251, 191, 36, 0.15); color: #fbbf24; }
+  .revenue-potential.high { background: rgba(248, 113, 113, 0.15); color: #f87171; }
+  .callout {
+    background: rgba(34, 211, 238, 0.1);
+    border-left: 4px solid #22d3ee;
+    border-radius: 0 8px 8px 0;
+    padding: 1.5rem;
+    margin: 2rem 0;
+  }
+  .callout.warning {
+    background: rgba(251, 191, 36, 0.1);
+    border-left-color: #fbbf24;
+  }
+  .callout.success {
+    background: rgba(74, 222, 128, 0.1);
+    border-left-color: #4ade80;
+  }
+  .callout h4 {
+    color: #ffffff;
+    font-size: 1rem;
+    font-weight: 600;
+    margin: 0 0 0.5rem 0;
+  }
+  .comparison-table {
+    width: 100%;
+    background: #12121a;
+    border-radius: 16px;
+    overflow: hidden;
+    border: 1px solid rgba(255,255,255,0.08);
+    margin: 2rem 0;
+  }
+  .comparison-table th {
+    background: #1e293b;
+    color: #ffffff;
+    padding: 1rem;
+    text-align: left;
+    font-weight: 600;
+  }
+  .comparison-table td {
+    padding: 1rem;
+    border-bottom: 1px solid rgba(255,255,255,0.05);
+    color: #e2e8f0;
+  }
+  .comparison-table tr:last-child td {
+    border-bottom: none;
+  }
+  .tier-high { color: #4ade80; }
+  .tier-medium { color: #fbbf24; }
+  .tier-low { color: #f87171; }
+  .strategy-cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 1.5rem;
+    margin: 2rem 0;
+  }
+  .strategy-card {
+    background: #12121a;
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 14px;
+    padding: 1.5rem;
+  }
+  .strategy-card h4 {
+    color: #ffffff;
+    font-size: 1.1rem;
+    font-weight: 600;
+    margin-bottom: 1rem;
+  }
+  .earnings-calculator {
+    background: #12121a;
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 16px;
+    padding: 2rem;
+    margin: 3rem 0;
+  }
+  .earnings-calculator h3 {
+    color: #ffffff;
+    font-size: 1.3rem;
+    font-weight: 600;
+    margin-bottom: 1.5rem;
+    text-align: center;
+  }
+  .calc-inputs {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1rem;
+    margin-bottom: 2rem;
+  }
+  .calc-input {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+  .calc-input label {
+    color: #94a3b8;
+    font-size: 0.85rem;
+    font-weight: 500;
+  }
+  .calc-input input, .calc-input select {
+    background: #1e293b;
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 8px;
+    padding: 0.75rem;
+    color: #e2e8f0;
+    font-size: 0.9rem;
+  }
+  .calc-input input:focus, .calc-input select:focus {
+    outline: none;
+    border-color: #818cf8;
+  }
+  .calc-button {
+    background: #818cf8;
+    color: #ffffff;
+    border: none;
+    border-radius: 8px;
+    padding: 0.75rem 2rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s;
+    width: 100%;
+  }
+  .calc-button:hover {
+    background: #6366f1;
+  }
+  .calc-results {
+    background: rgba(129, 140, 248, 0.1);
+    border-radius: 12px;
+    padding: 1.5rem;
+    margin-top: 1.5rem;
+    display: none;
+  }
+  .calc-results h4 {
+    color: #a5b4fc;
+    font-size: 1.1rem;
+    margin-bottom: 1rem;
+  }
+  .result-breakdown {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 1rem;
+    margin-top: 1rem;
+  }
+  .breakdown-item {
+    background: rgba(255,255,255,0.02);
+    padding: 1rem;
+    border-radius: 8px;
+    text-align: center;
+  }
+  .breakdown-label {
+    color: #94a3b8;
+    font-size: 0.8rem;
+    margin-bottom: 0.25rem;
+  }
+  .breakdown-value {
+    color: #e2e8f0;
+    font-weight: 600;
+    font-size: 0.9rem;
+  }
+  .breakdown-desc {
+    color: #818cf8;
+    font-size: 0.75rem;
+    margin-top: 0.25rem;
+  }
+  .faq-section {
+    margin: 4rem 0;
+  }
+  .faq-item {
+    background: #12121a;
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 14px;
+    margin-bottom: 1rem;
+    overflow: hidden;
+  }
+  .faq-question {
+    padding: 1.5rem;
+    color: #ffffff;
+    font-weight: 600;
+    cursor: pointer;
+    border-bottom: 1px solid rgba(255,255,255,0.05);
+  }
+  .faq-answer {
+    padding: 1.5rem;
+    color: #94a3b8;
+  }
+  .cta-cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1.5rem;
+    margin: 3rem 0;
+  }
+  .cta-card {
+    background: linear-gradient(135deg, #1e293b, #334155);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 16px;
+    padding: 2rem;
+    text-align: center;
+  }
+  .cta-card h4 {
+    color: #ffffff;
+    font-size: 1.1rem;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+  }
+  .cta-card p {
+    color: #94a3b8;
+    font-size: 0.9rem;
+    margin-bottom: 1.5rem;
+  }
+  .cta-button {
+    display: inline-block;
+    background: #818cf8;
+    color: #ffffff;
+    padding: 0.7rem 1.5rem;
+    border-radius: 8px;
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 0.9rem;
+    transition: background 0.2s;
+  }
+  .cta-button:hover {
+    background: #6366f1;
+  }
+  
+  @media (max-width: 1024px) {
+    .content-wrapper {
+      grid-template-columns: 1fr;
+      gap: 2rem;
+    }
+    .sidebar {
+      position: relative;
+      top: 0;
+      order: -1;
+    }
+  }
+  
+  @media (max-width: 768px) {
+    .ccm-container {
+      padding: 1rem;
+    }
+    .breadcrumb {
+      flex-wrap: wrap;
+    }
+    .stats-grid {
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    }
+    .monetization-grid {
+      grid-template-columns: 1fr;
+    }
+    .strategy-cards {
+      grid-template-columns: 1fr;
+    }
+    .cta-cards {
+      grid-template-columns: 1fr;
+    }
+    .calc-inputs {
+      grid-template-columns: 1fr;
+    }
+    .result-breakdown {
+      grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+    }
+  }
+</style>
+
+<div class="ccm-container">
+  <div class="ccm-header">
+    <div class="breadcrumb">
+      <a href="/apex-guides">Apex Guides</a>
+      <span>›</span>
+      <a href="/digital-media-creator-economy-guide-2026">Digital Media & The Creator Economy</a>
+      <span>›</span>
+      <span style="color: #cbd5e1;">Current</span>
+    </div>
+    
+    <div class="updated-badge">
+      🎬 Updated March 2026
+    </div>
+    
+    <h1 class="gradient-h1">Content Creation Monetization</h1>
+    <p class="ccm-subtitle">Transform your content into multiple revenue streams. Master platform monetization, brand partnerships, digital products, and audience building strategies that generate sustainable creator income.</p>
+  </div>
+
+  <div class="content-wrapper">
+    <main class="main-content">
+      <div class="stats-grid">
+        <div class="stat-card">
+          <span class="stat-number">$104B</span>
+          <div class="stat-label">Creator economy market size (2026)</div>
+        </div>
+        <div class="stat-card">
+          <span class="stat-number">50M</span>
+          <div class="stat-label">Global content creators</div>
+        </div>
+        <div class="stat-card">
+          <span class="stat-number">$51K</span>
+          <div class="stat-label">Average full-time creator income</div>
+        </div>
+        <div class="stat-card">
+          <span class="stat-number">7</span>
+          <div class="stat-label">Average revenue streams per creator</div>
+        </div>
+      </div>
+
+      <section id="creator-economy-overview" class="section">
+        <h2>The Creator Economy Landscape</h2>
+        <p>The creator economy has evolved from hobby sharing to a $104 billion global marketplace. Successful creators no longer rely on single platforms or revenue streams—they build diversified business models across multiple channels. In 2026, the most successful creators combine platform monetization, direct audience relationships, and scalable digital products.</p>
+
+        <div class="callout">
+          <h4>💡 The Creator Business Model Evolution</h4>
+          <p>Traditional model: Create content → Hope for views → Monetize through ads. Modern model: Build audience → Diversify revenue streams → Scale through systems and partnerships. The future belongs to creator-entrepreneurs who treat content as a business, not just a passion.</p>
+        </div>
+
+        <h3>Revenue Stream Categories</h3>
+        <div class="comparison-table">
+          <table>
+            <thead>
+              <tr>
+                <th>Revenue Type</th>
+                <th>Time Investment</th>
+                <th>Scalability</th>
+                <th>Income Potential</th>
+                <th>Control Level</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>Platform Revenue</strong></td>
+                <td class="tier-medium">Medium</td>
+                <td class="tier-medium">Medium</td>
+                <td class="tier-medium">$100-10K+/month</td>
+                <td class="tier-low">Low</td>
+              </tr>
+              <tr>
+                <td><strong>Brand Sponsorships</strong></td>
+                <td class="tier-high">High</td>
+                <td class="tier-low">Low</td>
+                <td class="tier-high">$500-50K+/post</td>
+                <td class="tier-medium">Medium</td>
+              </tr>
+              <tr>
+                <td><strong>Digital Products</strong></td>
+                <td class="tier-high">Very High</td>
+                <td class="tier-high">Very High</td>
+                <td class="tier-high">$1K-100K+/month</td>
+                <td class="tier-high">Very High</td>
+              </tr>
+              <tr>
+                <td><strong>Affiliate Marketing</strong></td>
+                <td class="tier-medium">Medium</td>
+                <td class="tier-high">High</td>
+                <td class="tier-medium">$500-25K+/month</td>
+                <td class="tier-medium">Medium</td>
+              </tr>
+              <tr>
+                <td><strong>Memberships/Subscriptions</strong></td>
+                <td class="tier-high">High</td>
+                <td class="tier-high">Very High</td>
+                <td class="tier-high">$1K-50K+/month</td>
+                <td class="tier-high">Very High</td>
+              </tr>
+              <tr>
+                <td><strong>Services/Consulting</strong></td>
+                <td class="tier-high">Very High</td>
+                <td class="tier-low">Low</td>
+                <td class="tier-high">$2K-20K+/month</td>
+                <td class="tier-high">Very High</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="callout success">
+          <h4>✅ The 3-Phase Creator Journey</h4>
+          <p><strong>Phase 1 (0-1K followers):</strong> Focus on content quality and niche definition<br>
+          <strong>Phase 2 (1K-50K followers):</strong> Add platform monetization and affiliate revenue<br>
+          <strong>Phase 3 (50K+ followers):</strong> Launch digital products and build direct revenue streams</p>
+        </div>
+      </section>
+
+      <section id="monetization-strategies" class="section">
+        <h2>Platform-Specific Monetization</h2>
+
+        <div class="monetization-grid">
+          <div class="monetization-card">
+            <h4>📺 YouTube</h4>
+            <div class="revenue-potential high">High Revenue</div>
+            <p><strong>Primary:</strong> AdSense ($2-5 per 1K views), memberships, Super Chat</p>
+            <p><strong>Requirements:</strong> 1K subscribers, 4K watch hours, or 10M Shorts views</p>
+            <p><strong>Best For:</strong> Long-form educational, entertainment content</p>
+            <p><strong>2026 Features:</strong> YouTube Shopping, Shorts Fund, Creator Music revenue</p>
+            <p><strong>Top Earner Example:</strong> Educational channels earn $5-15K monthly at 100K subs</p>
+          </div>
+
+          <div class="monetization-card">
+            <h4>📱 TikTok</h4>
+            <div class="revenue-potential medium">Medium Revenue</div>
+            <p><strong>Primary:</strong> Creator Fund ($0.02-0.05/view), Live gifts, TikTok Shop</p>
+            <p><strong>Requirements:</strong> 1K followers, consistent posting, community guidelines</p>
+            <p><strong>Best For:</strong> Viral content, entertainment, product showcases</p>
+            <p><strong>2026 Features:</strong> Enhanced TikTok Shop commissions up to 20%</p>
+            <p><strong>Revenue Focus:</strong> Brand partnerships and affiliate marketing over direct monetization</p>
+          </div>
+
+          <div class="monetization-card">
+            <h4>📸 Instagram</h4>
+            <div class="revenue-potential medium">Medium Revenue</div>
+            <p><strong>Primary:</strong> Creator Fund, Reels bonuses, Instagram Shop, badges</p>
+            <p><strong>Requirements:</strong> 1K followers for most features, professional account</p>
+            <p><strong>Best For:</strong> Visual brands, lifestyle, fashion, fitness content</p>
+            <p><strong>2026 Features:</strong> Creator subscriptions, enhanced shopping features</p>
+            <p><strong>Strength:</strong> High-value brand partnerships, especially for lifestyle niches</p>
+          </div>
+
+          <div class="monetization-card">
+            <h4>🐦 X (Twitter)</h4>
+            <div class="revenue-potential low">Low Direct Revenue</div>
+            <p><strong>Primary:</strong> Creator ads revenue sharing, Super Follows, tips</p>
+            <p><strong>Requirements:</strong> X Premium subscription, consistent engagement</p>
+            <p><strong>Best For:</strong> Thought leadership, news, professional services</p>
+            <p><strong>2026 Strategy:</strong> Use for audience building, drive to higher-monetizing platforms</p>
+            <p><strong>Real Value:</strong> Lead generation for consulting, courses, newsletter growth</p>
+          </div>
+
+          <div class="monetization-card">
+            <h4>💼 LinkedIn</h4>
+            <div class="revenue-potential medium">B2B High Value</div>
+            <p><strong>Primary:</strong> Creator accelerator program, newsletter monetization</p>
+            <p><strong>Requirements:</strong> Professional content, consistent B2B value</p>
+            <p><strong>Best For:</strong> Business content, career advice, industry insights</p>
+            <p><strong>2026 Opportunity:</strong> B2B courses, consulting, high-ticket services</p>
+            <p><strong>ROI Focus:</strong> Few followers but high-value business connections</p>
+          </div>
+
+          <div class="monetization-card">
+            <h4>🎙️ Podcast Platforms</h4>
+            <div class="revenue-potential high">High Potential</div>
+            <p><strong>Primary:</strong> Spotify monetization, Apple subscriptions, listener support</p>
+            <p><strong>Requirements:</strong> Consistent episodes, loyal listener base</p>
+            <p><strong>Best For:</strong> Long-form content, niche expertise, storytelling</p>
+            <p><strong>2026 Growth:</strong> Interactive podcasts, live streaming integration</p>
+            <p><strong>Advantage:</strong> High listener engagement, premium advertising rates</p>
+          </div>
+        </div>
+      </section>
+
+      <section id="brand-partnerships" class="section">
+        <h2>Brand Partnerships & Sponsorships</h2>
+
+        <div class="callout">
+          <h4>🎯 Brand Partnership Pricing Formula</h4>
+          <p>General rule: $100 per 10K followers for Instagram posts, $500-2000 per 100K views for YouTube videos. However, engagement rate, niche authority, and audience quality matter more than follower count. Micro-influencers (1K-100K) often earn higher per-follower rates.</p>
+        </div>
+
+        <h3>Partnership Types & Rates</h3>
+        <div class="comparison-table">
+          <table>
+            <thead>
+              <tr>
+                <th>Partnership Type</th>
+                <th>Typical Rate</th>
+                <th>Requirements</th>
+                <th>Time Investment</th>
+                <th>Best Niches</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>Sponsored Post</strong></td>
+                <td class="tier-medium">$10-100 per 1K followers</td>
+                <td>Aligned audience, quality content</td>
+                <td>2-4 hours</td>
+                <td>Fashion, beauty, lifestyle</td>
+              </tr>
+              <tr>
+                <td><strong>Product Seeding</strong></td>
+                <td class="tier-low">Free products + exposure</td>
+                <td>Small following acceptable</td>
+                <td>1-2 hours</td>
+                <td>All categories</td>
+              </tr>
+              <tr>
+                <td><strong>Brand Ambassador</strong></td>
+                <td class="tier-high">$500-5000/month</td>
+                <td>Long-term fit, consistent content</td>
+                <td>5-10 hours/month</td>
+                <td>Fitness, tech, lifestyle</td>
+              </tr>
+              <tr>
+                <td><strong>Campaign Creation</strong></td>
+                <td class="tier-high">$1K-25K per campaign</td>
+                <td>Creative skills, audience insights</td>
+                <td>20-40 hours</td>
+                <td>Marketing, advertising</td>
+              </tr>
+              <tr>
+                <td><strong>Event Partnership</strong></td>
+                <td class="tier-high">$500-10K + expenses</td>
+                <td>Travel availability, content creation</td>
+                <td>2-3 days</td>
+                <td>Travel, events, lifestyle</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <h3>Finding & Negotiating Partnerships</h3>
+        <div class="strategy-cards">
+          <div class="strategy-card">
+            <h4>🔍 Partnership Discovery</h4>
+            <p><strong>Direct Outreach:</strong> Research brands in your niche, find marketing contacts, craft personalized pitches with media kit</p>
+            <p><strong>Platforms:</strong> AspireIQ, Grin, Creator.co, BrandSnob, Klear for brand matching</p>
+            <p><strong>Networking:</strong> Industry events, creator communities, existing brand relationships</p>
+            <p><strong>Inbound:</strong> Optimize bio/contact info, use hashtags, consistent brand-relevant content</p>
+          </div>
+
+          <div class="strategy-card">
+            <h4>💰 Rate Negotiation</h4>
+            <p><strong>Know Your Worth:</strong> Calculate engagement rate, audience demographics, past campaign performance</p>
+            <p><strong>Package Deals:</strong> Offer multi-platform packages (Instagram + TikTok + Stories) for higher rates</p>
+            <p><strong>Usage Rights:</strong> Charge extra for brand's right to reuse your content in their marketing</p>
+            <p><strong>Exclusivity:</strong> Negotiate higher rates for category exclusivity or longer partnerships</p>
+          </div>
+
+          <div class="strategy-card">
+            <h4>📋 Professional Execution</h4>
+            <p><strong>Contracts:</strong> Always use written agreements, specify deliverables, timelines, usage rights</p>
+            <p><strong>Disclosure:</strong> Follow FTC guidelines, use #ad, #sponsored, #partnership clearly</p>
+            <p><strong>Quality Control:</strong> Maintain content standards, get brand approval before posting</p>
+            <p><strong>Performance Tracking:</strong> Share engagement metrics, audience insights, campaign results</p>
+          </div>
+        </div>
+
+        <div class="callout warning">
+          <h4>⚠️ Partnership Pitfalls to Avoid</h4>
+          <p><strong>Underpricing:</strong> Charging too little devalues the entire creator economy<br>
+          <strong>Poor Fit:</strong> Promoting products that don't align with your audience<br>
+          <strong>Over-promotion:</strong> Too many sponsored posts hurt engagement and trust<br>
+          <strong>Bad Contracts:</strong> Agreeing to unlimited revisions or unrealistic deliverables</p>
+        </div>
+      </section>
+
+      <section id="earnings-calculator" class="section">
+        <div class="earnings-calculator">
+          <h3>💰 Creator Earnings Calculator</h3>
+          <p>Estimate your potential monthly earnings across different monetization strategies.</p>
+          
+          <div class="calc-inputs">
+            <div class="calc-input">
+              <label for="followers">Total Followers (All Platforms)</label>
+              <input type="number" id="followers" placeholder="50000">
+            </div>
+            
+            <div class="calc-input">
+              <label for="engagementRate">Average Engagement Rate (%)</label>
+              <input type="number" id="engagementRate" placeholder="4.5" step="0.1">
+            </div>
+            
+            <div class="calc-input">
+              <label for="primaryPlatform">Primary Platform</label>
+              <select id="primaryPlatform">
+                <option value="youtube">YouTube</option>
+                <option value="instagram">Instagram</option>
+                <option value="tiktok">TikTok</option>
+                <option value="twitter">X (Twitter)</option>
+                <option value="linkedin">LinkedIn</option>
+              </select>
+            </div>
+            
+            <div class="calc-input">
+              <label for="contentNiche">Content Niche</label>
+              <select id="contentNiche">
+                <option value="lifestyle">Lifestyle</option>
+                <option value="beauty">Beauty/Fashion</option>
+                <option value="tech">Technology</option>
+                <option value="fitness">Health/Fitness</option>
+                <option value="business">Business/Finance</option>
+                <option value="education">Education</option>
+                <option value="entertainment">Entertainment</option>
+              </select>
+            </div>
+            
+            <div class="calc-input">
+              <label for="monthlyViews">Monthly Views/Impressions</label>
+              <input type="number" id="monthlyViews" placeholder="500000">
+            </div>
+          </div>
+          
+          <button class="calc-button" onclick="calculateCreatorEarnings()">Calculate Earning Potential</button>
+          
+          <div class="calc-results" id="earningsResults">
+            <h4>Your Monthly Earning Potential</h4>
+            <div class="result-breakdown" id="earningsBreakdown">
+              <!-- Results will be populated here -->
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="digital-products" class="section">
+        <h2>Digital Products & Services</h2>
+
+        <div class="callout">
+          <h4>🎯 The Digital Product Advantage</h4>
+          <p>Digital products offer the highest profit margins (80-95%) and unlimited scalability. Unlike sponsorships that require constant negotiation, or platform revenue that depends on algorithms, digital products create passive income that compounds over time.</p>
+        </div>
+
+        <h3>High-Converting Digital Products</h3>
+        <div class="strategy-cards">
+          <div class="strategy-card">
+            <h4>📚 Online Courses</h4>
+            <p><strong>Revenue Potential:</strong> $5K-50K+ monthly</p>
+            <p><strong>Creation Time:</strong> 2-6 months initially</p>
+            <p><strong>Best Platforms:</strong> Teachable, Thinkific, Kajabi, Gumroad</p>
+            <p><strong>Pricing:</strong> $97-997 per course</p>
+            <p><strong>Success Factors:</strong> Solve specific problems, provide transformation, include community access</p>
+          </div>
+
+          <div class="strategy-card">
+            <h4>📖 Digital Books/Guides</h4>
+            <p><strong>Revenue Potential:</strong> $1K-10K+ monthly</p>
+            <p><strong>Creation Time:</strong> 2-8 weeks</p>
+            <p><strong>Best Platforms:</strong> Amazon KDP, Gumroad, direct sales</p>
+            <p><strong>Pricing:</strong> $9.99-49.99 per guide</p>
+            <p><strong>Success Factors:</strong> Actionable content, professional design, SEO optimization</p>
+          </div>
+
+          <div class="strategy-card">
+            <h4>🛠️ Tools & Templates</h4>
+            <p><strong>Revenue Potential:</strong> $2K-20K+ monthly</p>
+            <p><strong>Creation Time:</strong> 1-4 weeks per product</p>
+            <p><strong>Best Platforms:</strong> Etsy, Creative Market, direct sales</p>
+            <p><strong>Pricing:</strong> $19-199 per template pack</p>
+            <p><strong>Success Factors:</strong> Time-saving value, professional quality, niche-specific</p>
+          </div>
+
+          <div class="strategy-card">
+            <h4>💬 Coaching/Consulting</h4>
+            <p><strong>Revenue Potential:</strong> $3K-30K+ monthly</p>
+            <p><strong>Creation Time:</strong> Immediate start</p>
+            <p><strong>Best Platforms:</strong> Calendly booking, Zoom calls</p>
+            <p><strong>Pricing:</strong> $100-500+ per hour</p>
+            <p><strong>Success Factors:</strong> Proven results, testimonials, systematic approach</p>
+          </div>
+
+          <div class="strategy-card">
+            <h4>🎵 Presets & Assets</h4>
+            <p><strong>Revenue Potential:</strong> $1K-15K+ monthly</p>
+            <p><strong>Creation Time:</strong> 1-2 weeks per pack</p>
+            <p><strong>Best Platforms:</strong> Etsy, own website, marketplace</p>
+            <p><strong>Pricing:</strong> $9-99 per asset pack</p>
+            <p><strong>Success Factors:</strong> Trending styles, before/after examples, ease of use</p>
+          </div>
+
+          <div class="strategy-card">
+            <h4>🎪 Memberships/Communities</h4>
+            <p><strong>Revenue Potential:</strong> $2K-100K+ monthly</p>
+            <p><strong>Creation Time:</strong> Ongoing management</p>
+            <p><strong>Best Platforms:</strong> Circle, Discord, Patreon, Mighty Networks</p>
+            <p><strong>Pricing:</strong> $9-97+ monthly</p>
+            <p><strong>Success Factors:</strong> Regular value delivery, community engagement, exclusive content</p>
+          </div>
+        </div>
+
+        <h3>Digital Product Launch Strategy</h3>
+        <div class="monetization-grid">
+          <div class="monetization-card">
+            <h4>🔍 Market Research Phase</h4>
+            <p><strong>Audience Surveys:</strong> Ask followers about their biggest challenges</p>
+            <p><strong>Competition Analysis:</strong> Study successful products in your niche</p>
+            <p><strong>Content Testing:</strong> Create free content on the topic, measure engagement</p>
+            <p><strong>Pre-validation:</strong> Announce product idea, gauge interest before creation</p>
+          </div>
+
+          <div class="monetization-card">
+            <h4>⚡ MVP Creation</h4>
+            <p><strong>Start Small:</strong> Create minimum viable product, not perfect comprehensive course</p>
+            <p><strong>Focus on Outcomes:</strong> What transformation will customers achieve?</p>
+            <p><strong>Batch Content:</strong> Create content in focused sessions for consistency</p>
+            <p><strong>Beta Testing:</strong> Launch to small group first, gather feedback, iterate</p>
+          </div>
+
+          <div class="monetization-card">
+            <h4>🚀 Launch Campaign</h4>
+            <p><strong>Email List Building:</strong> Build anticipation with lead magnets and teasers</p>
+            <p><strong>Social Proof:</strong> Share creation process, behind-scenes, early results</p>
+            <p><strong>Launch Sequence:</strong> 7-14 day email sequence with scarcity and bonuses</p>
+            <p><strong>Multi-Platform:</strong> Coordinate launches across all your platforms</p>
+          </div>
+        </div>
+      </section>
+
+      <section id="audience-building" class="section">
+        <h2>Audience Building & Email Lists</h2>
+
+        <div class="callout success">
+          <h4>✅ The Creator's Most Valuable Asset</h4>
+          <p>Your email list is your most valuable business asset. Social media platforms can change algorithms, ban accounts, or disappear entirely. Your email list is owned media that generates $36-42 for every $1 invested in email marketing.</p>
+        </div>
+
+        <h3>Lead Magnet Strategies by Niche</h3>
+        <div class="comparison-table">
+          <table>
+            <thead>
+              <tr>
+                <th>Niche</th>
+                <th>Top Lead Magnets</th>
+                <th>Typical Conversion Rate</th>
+                <th>Email Value</th>
+                <th>Monetization Timeline</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>Business/Marketing</strong></td>
+                <td class="tier-high">Templates, checklists, mini-courses</td>
+                <td>5-15%</td>
+                <td>$5-25 per subscriber</td>
+                <td>2-4 weeks</td>
+              </tr>
+              <tr>
+                <td><strong>Health/Fitness</strong></td>
+                <td class="tier-high">Workout plans, meal guides, trackers</td>
+                <td>3-8%</td>
+                <td>$3-15 per subscriber</td>
+                <td>4-8 weeks</td>
+              </tr>
+              <tr>
+                <td><strong>Lifestyle/Fashion</strong></td>
+                <td class="tier-medium">Style guides, discount codes, lookbooks</td>
+                <td>2-6%</td>
+                <td>$2-8 per subscriber</td>
+                <td>6-12 weeks</td>
+              </tr>
+              <tr>
+                <td><strong>Technology</strong></td>
+                <td class="tier-high">Software trials, tech guides, reviews</td>
+                <td>4-10%</td>
+                <td>$10-30 per subscriber</td>
+                <td>2-6 weeks</td>
+              </tr>
+              <tr>
+                <td><strong>Creative/Design</strong></td>
+                <td class="tier-medium">Templates, presets, tutorials</td>
+                <td>3-7%</td>
+                <td>$4-12 per subscriber</td>
+                <td>3-6 weeks</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <h3>Email Marketing Automation</h3>
+        <div class="strategy-cards">
+          <div class="strategy-card">
+            <h4>📧 Welcome Series (5-7 emails)</h4>
+            <p><strong>Email 1:</strong> Deliver lead magnet, set expectations</p>
+            <p><strong>Email 2:</strong> Your story, build connection</p>
+            <p><strong>Email 3:</strong> Best free content, demonstrate value</p>
+            <p><strong>Email 4:</strong> Social proof, testimonials</p>
+            <p><strong>Email 5:</strong> Soft pitch for main offer</p>
+            <p><strong>Email 6-7:</strong> Additional value, community invitation</p>
+          </div>
+
+          <div class="strategy-card">
+            <h4>💰 Product Launch Sequence</h4>
+            <p><strong>Pre-Launch:</strong> Build anticipation with behind-scenes content</p>
+            <p><strong>Launch Day:</strong> Announcement with early bird pricing</p>
+            <p><strong>Social Proof:</strong> Share customer successes and testimonials</p>
+            <p><strong>Objection Handling:</strong> Address common concerns</p>
+            <p><strong>Scarcity:</strong> Limited time offers and bonuses</p>
+            <p><strong>Final Call:</strong> Last chance messaging</p>
+          </div>
+
+          <div class="strategy-card">
+            <h4>🔄 Evergreen Revenue</h4>
+            <p><strong>Weekly Newsletter:</strong> Consistent value with subtle promotions</p>
+            <p><strong>Abandoned Cart:</strong> Recover lost sales with automated follow-up</p>
+            <p><strong>Reactivation:</strong> Win back inactive subscribers</p>
+            <p><strong>Upsell Sequences:</strong> Promote complementary products to customers</p>
+          </div>
+        </div>
+      </section>
+
+      <section id="scaling-systems" class="section">
+        <h2>Scaling & Systems</h2>
+
+        <div class="callout">
+          <h4>🎯 From Creator to CEO</h4>
+          <p>Successful creators eventually transition from doing everything themselves to building systems and teams. The goal is to create scalable processes that generate revenue without trading time for money directly.</p>
+        </div>
+
+        <h3>Creator Business Evolution</h3>
+        <div class="monetization-grid">
+          <div class="monetization-card">
+            <h4>🎬 Stage 1: Solo Creator</h4>
+            <p><strong>Focus:</strong> Content creation, audience building</p>
+            <p><strong>Revenue:</strong> $0-5K/month</p>
+            <p><strong>Time:</strong> 40-60 hours/week</p>
+            <p><strong>Systems:</strong> Basic scheduling tools, simple analytics</p>
+            <p><strong>Goal:</strong> Establish niche authority and consistent content</p>
+          </div>
+
+          <div class="monetization-card">
+            <h4>🤝 Stage 2: Monetization</h4>
+            <p><strong>Focus:</strong> Multiple revenue streams, partnerships</p>
+            <p><strong>Revenue:</strong> $5K-25K/month</p>
+            <p><strong>Time:</strong> 50-70 hours/week</p>
+            <p><strong>Systems:</strong> Email automation, content planning</p>
+            <p><strong>Goal:</strong> Diversify income beyond platform dependency</p>
+          </div>
+
+          <div class="monetization-card">
+            <h4>👥 Stage 3: Team Building</h4>
+            <p><strong>Focus:</strong> Delegation, process documentation</p>
+            <p><strong>Revenue:</strong> $25K-100K/month</p>
+            <p><strong>Time:</strong> 40-50 hours/week (more strategic)</p>
+            <p><strong>Systems:</strong> Team management, advanced automation</p>
+            <p><strong>Goal:</strong> Scale content production and business operations</p>
+          </div>
+
+          <div class="monetization-card">
+            <h4>🏢 Stage 4: Media Company</h4>
+            <p><strong>Focus:</strong> Business strategy, new ventures</p>
+            <p><strong>Revenue:</strong> $100K+ monthly</p>
+            <p><strong>Time:</strong> 30-40 hours/week (leadership)</p>
+            <p><strong>Systems:</strong> Full business operations, multiple revenue channels</p>
+            <p><strong>Goal:</strong> Build sustainable business beyond personal brand</p>
+          </div>
+        </div>
+
+        <h3>Essential Team Roles & Hiring Order</h3>
+        <div class="strategy-cards">
+          <div class="strategy-card">
+            <h4>📝 Content Creation Team</h4>
+            <p><strong>1. Video Editor:</strong> $15-25/hour, handle post-production</p>
+            <p><strong>2. Graphic Designer:</strong> $20-35/hour, thumbnails and social graphics</p>
+            <p><strong>3. Writer/Copywriter:</strong> $25-50/hour, scripts and email sequences</p>
+            <p><strong>4. Social Media Manager:</strong> $15-30/hour, multi-platform posting</p>
+          </div>
+
+          <div class="strategy-card">
+            <h4>💼 Business Operations</h4>
+            <p><strong>1. Virtual Assistant:</strong> $8-15/hour, admin tasks and scheduling</p>
+            <p><strong>2. Customer Service:</strong> $12-20/hour, email and community management</p>
+            <p><strong>3. Project Manager:</strong> $25-40/hour, coordinate team and deadlines</p>
+            <p><strong>4. Business Manager:</strong> $40-80/hour, strategy and partnerships</p>
+          </div>
+
+          <div class="strategy-card">
+            <h4>🎯 Revenue Optimization</h4>
+            <p><strong>1. Email Marketing Specialist:</strong> $20-40/hour, automation and campaigns</p>
+            <p><strong>2. Affiliate Manager:</strong> $25-45/hour, partnership development</p>
+            <p><strong>3. Course Creator:</strong> $30-60/hour, educational product development</p>
+            <p><strong>4. Brand Partnership Manager:</strong> $35-60/hour, sponsorship negotiations</p>
+          </div>
+        </div>
+
+        <h3>Revenue Diversification Matrix</h3>
+        <div class="comparison-table">
+          <table>
+            <thead>
+              <tr>
+                <th>Revenue Stream</th>
+                <th>Year 1 Focus</th>
+                <th>Year 2 Growth</th>
+                <th>Year 3+ Scale</th>
+                <th>% of Total Revenue</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>Platform Revenue</strong></td>
+                <td class="tier-high">Primary focus</td>
+                <td class="tier-medium">Optimize</td>
+                <td class="tier-low">Maintain</td>
+                <td>15-25%</td>
+              </tr>
+              <tr>
+                <td><strong>Brand Partnerships</strong></td>
+                <td class="tier-medium">Begin building</td>
+                <td class="tier-high">Scale up</td>
+                <td class="tier-medium">Selective premium</td>
+                <td>20-35%</td>
+              </tr>
+              <tr>
+                <td><strong>Digital Products</strong></td>
+                <td class="tier-low">Plan and create</td>
+                <td class="tier-medium">Launch and iterate</td>
+                <td class="tier-high">Primary revenue</td>
+                <td>30-50%</td>
+              </tr>
+              <tr>
+                <td><strong>Affiliate Marketing</strong></td>
+                <td class="tier-medium">Test and optimize</td>
+                <td class="tier-high">Scale winners</td>
+                <td class="tier-medium">Maintain top performers</td>
+                <td>10-20%</td>
+              </tr>
+              <tr>
+                <td><strong>Memberships</strong></td>
+                <td class="tier-low">Research and plan</td>
+                <td class="tier-low">Pilot program</td>
+                <td class="tier-high">Full community</td>
+                <td>15-30%</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <section id="faq" class="faq-section">
+        <h2>Frequently Asked Questions</h2>
+
+        <div class="faq-item">
+          <div class="faq-question">How many followers do I need to start monetizing?</div>
+          <div class="faq-answer">You can start monetizing immediately with any audience size. Nano-influencers (1K-10K followers) often have higher engagement rates and can earn through affiliate marketing, small sponsorships, and digital products. Platform monetization typically requires 1K followers, but direct monetization (products, services) has no follower requirements.</div>
+        </div>
+
+        <div class="faq-item">
+          <div class="faq-question">What's the best platform for new creators in 2026?</div>
+          <div class="faq-answer">It depends on your content type and audience. YouTube offers the highest long-term revenue potential, TikTok provides fastest growth for viral content, Instagram is excellent for visual brands, and LinkedIn dominates B2B content. Start with one platform, master it, then expand to complementary platforms.</div>
+        </div>
+
+        <div class="faq-item">
+          <div class="faq-question">How long does it take to make money as a content creator?</div>
+          <div class="faq-answer">Timeline varies significantly. Some creators see their first $100 within 30 days through affiliate marketing or small sponsorships. Platform monetization typically takes 3-6 months to meet requirements. Sustainable full-time income ($3K+/month) usually takes 12-24 months of consistent content creation and business building.</div>
+        </div>
+
+        <div class="faq-item">
+          <div class="faq-question">Should I focus on follower count or engagement?</div>
+          <div class="faq-answer">Engagement is far more valuable than follower count. A 10K account with 10% engagement (1K active engaged followers) is more valuable than a 100K account with 1% engagement. Brands pay for influence and action, not vanity metrics. Focus on building genuine connections with your audience.</div>
+        </div>
+
+        <div class="faq-item">
+          <div class="faq-question">How do I price my digital products?</div>
+          <div class="faq-answer">Price based on transformation value, not time invested. Research competitors, survey your audience about spending habits, and test different price points. Start with premium pricing and decrease if needed. Digital products can range from $9 guides to $2000+ comprehensive courses depending on the problem solved and audience.</div>
+        </div>
+
+        <div class="faq-item">
+          <div class="faq-question">What's the biggest mistake new content creators make?</div>
+          <div class="faq-answer">Trying to be everywhere at once instead of mastering one platform and revenue stream first. Successful creators focus intensely on their primary platform until they reach 10K+ engaged followers, then strategically expand. Also common: underpricing their work and not treating content creation as a business from day one.</div>
+        </div>
+
+        <div class="faq-item">
+          <div class="faq-question">How important is having an email list?</div>
+          <div class="faq-answer">Critical. Your email list is the only audience you truly own—platforms can change algorithms, ban accounts, or shut down entirely. Email marketing generates $36-42 for every $1 invested. Start building your list from day one with lead magnets, even if you only have 100 followers on social media.</div>
+        </div>
+
+        <div class="faq-item">
+          <div class="faq-question">When should I quit my day job to become a full-time creator?</div>
+          <div class="faq-answer">When your creator income consistently exceeds your living expenses for 6+ months and you have 6-12 months of expenses saved. Many successful creators transition gradually: part-time creation while working, then freelance/consulting, then full-time creation. Don't quit prematurely—financial stress kills creativity.</div>
+        </div>
+      </section>
+
+      <div class="cta-cards">
+        <div class="cta-card">
+          <h4>📧 Email Marketing</h4>
+          <p>Build automated email sequences to nurture your audience and sell digital products consistently.</p>
+          <a href="/email-marketing-automation" class="cta-button">Email Strategy</a>
+        </div>
+
+        <div class="cta-card">
+          <h4>📱 Social Media Growth</h4>
+          <p>Master platform algorithms and content strategies to grow your audience organically.</p>
+          <a href="/social-media-algorithms-growth" class="cta-button">Social Growth</a>
+        </div>
+
+        <div class="cta-card">
+          <h4>💰 Affiliate Marketing</h4>
+          <p>Generate passive income by promoting products your audience loves and trusts.</p>
+          <a href="/affiliate-marketing-strategies" class="cta-button">Affiliate Guide</a>
+        </div>
+      </div>
+    </main>
+
+    <aside class="sidebar">
+      <h3>Contents</h3>
+      <ul>
+        <li><a href="#creator-economy-overview">Creator Economy Overview</a></li>
+        <li><a href="#monetization-strategies">Platform Monetization</a></li>
+        <li><a href="#brand-partnerships">Brand Partnerships</a></li>
+        <li><a href="#earnings-calculator">Earnings Calculator</a></li>
+        <li><a href="#digital-products">Digital Products</a></li>
+        <li><a href="#audience-building">Audience Building</a></li>
+        <li><a href="#scaling-systems">Scaling & Systems</a></li>
+        <li><a href="#faq">FAQ</a></li>
+      </ul>
+    </aside>
+  </div>
+</div>
+
+<script>
+function calculateCreatorEarnings() {
+  const followers = parseInt(document.getElementById('followers').value) || 0;
+  const engagementRate = parseFloat(document.getElementById('engagementRate').value) || 0;
+  const primaryPlatform = document.getElementById('primaryPlatform').value;
+  const contentNiche = document.getElementById('contentNiche').value;
+  const monthlyViews = parseInt(document.getElementById('monthlyViews').value) || 0;
+  
+  if (followers === 0 || monthlyViews === 0) {
+    alert('Please fill in followers and monthly views');
+    return;
+  }
+  
+  // Platform-specific multipliers
+  const platformMultipliers = {
+    youtube: { ads: 0.004, sponsorship: 0.15, product: 0.8 },
+    instagram: { ads: 0.001, sponsorship: 0.1, product: 0.6 },
+    tiktok: { ads: 0.0003, sponsorship: 0.08, product: 0.4 },
+    twitter: { ads: 0.0001, sponsorship: 0.06, product: 0.5 },
+    linkedin: { ads: 0.0005, sponsorship: 0.2, product: 1.2 }
+  };
+  
+  // Niche-specific multipliers
+  const nicheMultipliers = {
+    business: 1.5,
+    tech: 1.3,
+    beauty: 1.2,
+    fitness: 1.1,
+    lifestyle: 1.0,
+    education: 1.4,
+    entertainment: 0.9
+  };
+  
+  const platformData = platformMultipliers[primaryPlatform];
+  const nicheMultiplier = nicheMultipliers[contentNiche];
+  
+  // Calculate different revenue streams
+  const adRevenue = monthlyViews * platformData.ads * nicheMultiplier;
+  const sponsorshipRevenue = (followers * platformData.sponsorship * nicheMultiplier * (engagementRate / 100)) / 12; // Monthly average
+  const productRevenue = (followers * platformData.product * nicheMultiplier * (engagementRate / 100)) / 12;
+  const affiliateRevenue = monthlyViews * 0.0008 * nicheMultiplier; // Conservative estimate
+  
+  // Calculate total and format results
+  const totalEarnings = adRevenue + sponsorshipRevenue + productRevenue + affiliateRevenue;
+  
+  // Display results
+  const breakdown = document.getElementById('earningsBreakdown');
+  breakdown.innerHTML = `
+    <div class="breakdown-item">
+      <div class="breakdown-label">Platform Revenue</div>
+      <div class="breakdown-value">$${adRevenue.toFixed(0)}</div>
+      <div class="breakdown-desc">Ads, creator fund</div>
+    </div>
+    <div class="breakdown-item">
+      <div class="breakdown-label">Sponsorships</div>
+      <div class="breakdown-value">$${sponsorshipRevenue.toFixed(0)}</div>
+      <div class="breakdown-desc">Brand partnerships</div>
+    </div>
+    <div class="breakdown-item">
+      <div class="breakdown-label">Digital Products</div>
+      <div class="breakdown-value">$${productRevenue.toFixed(0)}</div>
+      <div class="breakdown-desc">Courses, guides, tools</div>
+    </div>
+    <div class="breakdown-item">
+      <div class="breakdown-label">Affiliate Marketing</div>
+      <div class="breakdown-value">$${affiliateRevenue.toFixed(0)}</div>
+      <div class="breakdown-desc">Product commissions</div>
+    </div>
+    <div class="breakdown-item">
+      <div class="breakdown-label">Total Monthly</div>
+      <div class="breakdown-value">$${totalEarnings.toFixed(0)}</div>
+      <div class="breakdown-desc">Estimated potential</div>
+    </div>
+    <div class="breakdown-item">
+      <div class="breakdown-label">Annual Potential</div>
+      <div class="breakdown-value">$${(totalEarnings * 12).toFixed(0)}</div>
+      <div class="breakdown-desc">Yearly projection</div>
+    </div>
+  `;
+  
+  document.getElementById('earningsResults').style.display = 'block';
+}
+</script>

@@ -1,0 +1,1323 @@
+<style>
+  .hwo-container {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 2rem;
+    color: #e2e8f0;
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    line-height: 1.8;
+  }
+  .hwo-header {
+    text-align: center;
+    margin-bottom: 4rem;
+    padding-top: 3rem;
+  }
+  .gradient-h1 {
+    font-size: clamp(2.2rem, 5vw, 3.5rem);
+    font-weight: 800;
+    background: linear-gradient(135deg, #ffffff 0%, #a5b4fc 50%, #818cf8 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    margin-bottom: 1rem;
+    line-height: 1.15;
+    letter-spacing: -0.02em;
+  }
+  .hwo-subtitle {
+    font-size: 1.2rem;
+    color: #94a3b8;
+    max-width: 750px;
+    margin: 0 auto;
+  }
+  .breadcrumb {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    justify-content: center;
+    margin-bottom: 2rem;
+    font-size: 0.85rem;
+  }
+  .breadcrumb a {
+    color: #818cf8;
+    text-decoration: none;
+  }
+  .breadcrumb a:hover { text-decoration: underline; }
+  .breadcrumb span { color: #475569; }
+  .updated-badge {
+    display: inline-block;
+    background: rgba(129, 140, 248, 0.15);
+    color: #a5b4fc;
+    padding: 0.4rem 1rem;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    margin-bottom: 2rem;
+  }
+  .content-wrapper {
+    display: grid;
+    grid-template-columns: 1fr 280px;
+    gap: 4rem;
+    margin-top: 3rem;
+  }
+  .main-content {
+    min-width: 0;
+  }
+  .sidebar {
+    position: sticky;
+    top: 2rem;
+    height: fit-content;
+    background: #12121a;
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 16px;
+    padding: 1.5rem;
+  }
+  .sidebar h3 {
+    color: #ffffff;
+    font-size: 0.9rem;
+    font-weight: 600;
+    margin: 0 0 1rem 0;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+  .sidebar ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+  .sidebar li {
+    margin: 0;
+  }
+  .sidebar a {
+    display: block;
+    color: #94a3b8;
+    text-decoration: none;
+    padding: 0.5rem 0;
+    border-bottom: 1px solid rgba(255,255,255,0.05);
+    font-size: 0.85rem;
+    transition: color 0.2s;
+  }
+  .sidebar a:hover {
+    color: #a5b4fc;
+  }
+  .section {
+    margin: 4rem 0;
+    scroll-margin-top: 2rem;
+  }
+  .section h2 {
+    color: #ffffff;
+    font-size: 1.8rem;
+    font-weight: 700;
+    margin-bottom: 1.5rem;
+  }
+  .section h3 {
+    color: #e2e8f0;
+    font-size: 1.3rem;
+    font-weight: 600;
+    margin: 2rem 0 1rem 0;
+  }
+  .stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1.5rem;
+    margin: 2rem 0;
+  }
+  .stat-card {
+    background: #12121a;
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 14px;
+    padding: 1.5rem;
+    text-align: center;
+  }
+  .stat-number {
+    font-size: 2.5rem;
+    font-weight: 800;
+    color: #818cf8;
+    display: block;
+    line-height: 1;
+  }
+  .stat-label {
+    color: #94a3b8;
+    font-size: 0.9rem;
+    margin-top: 0.5rem;
+  }
+  .health-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 2rem;
+    margin: 2rem 0;
+  }
+  .health-card {
+    background: #12121a;
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 16px;
+    padding: 2rem;
+    position: relative;
+    overflow: hidden;
+  }
+  .health-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, #818cf8, #a5b4fc);
+  }
+  .health-card h4 {
+    color: #ffffff;
+    font-size: 1.2rem;
+    font-weight: 600;
+    margin-bottom: 1rem;
+  }
+  .impact-badge {
+    background: rgba(129, 140, 248, 0.15);
+    color: #a5b4fc;
+    padding: 0.3rem 0.8rem;
+    border-radius: 8px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    display: inline-block;
+    margin-bottom: 1rem;
+  }
+  .impact-badge.foundational { background: rgba(74, 222, 128, 0.15); color: #4ade80; }
+  .impact-badge.high { background: rgba(251, 191, 36, 0.15); color: #fbbf24; }
+  .impact-badge.transformative { background: rgba(248, 113, 113, 0.15); color: #f87171; }
+  .callout {
+    background: rgba(34, 211, 238, 0.1);
+    border-left: 4px solid #22d3ee;
+    border-radius: 0 8px 8px 0;
+    padding: 1.5rem;
+    margin: 2rem 0;
+  }
+  .callout.warning {
+    background: rgba(251, 191, 36, 0.1);
+    border-left-color: #fbbf24;
+  }
+  .callout.success {
+    background: rgba(74, 222, 128, 0.1);
+    border-left-color: #4ade80;
+  }
+  .callout.danger {
+    background: rgba(239, 68, 68, 0.1);
+    border-left-color: #ef4444;
+  }
+  .callout h4 {
+    color: #ffffff;
+    font-size: 1rem;
+    font-weight: 600;
+    margin: 0 0 0.5rem 0;
+  }
+  .comparison-table {
+    width: 100%;
+    background: #12121a;
+    border-radius: 16px;
+    overflow: hidden;
+    border: 1px solid rgba(255,255,255,0.08);
+    margin: 2rem 0;
+  }
+  .comparison-table th {
+    background: #1e293b;
+    color: #ffffff;
+    padding: 1rem;
+    text-align: left;
+    font-weight: 600;
+  }
+  .comparison-table td {
+    padding: 1rem;
+    border-bottom: 1px solid rgba(255,255,255,0.05);
+    color: #e2e8f0;
+  }
+  .comparison-table tr:last-child td {
+    border-bottom: none;
+  }
+  .tier-high { color: #4ade80; }
+  .tier-medium { color: #fbbf24; }
+  .tier-low { color: #f87171; }
+  .health-calculator {
+    background: #12121a;
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 16px;
+    padding: 2rem;
+    margin: 3rem 0;
+  }
+  .health-calculator h3 {
+    color: #ffffff;
+    font-size: 1.3rem;
+    font-weight: 600;
+    margin-bottom: 1.5rem;
+    text-align: center;
+  }
+  .calc-inputs {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1rem;
+    margin-bottom: 2rem;
+  }
+  .calc-input {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+  .calc-input label {
+    color: #94a3b8;
+    font-size: 0.85rem;
+    font-weight: 500;
+  }
+  .calc-input input, .calc-input select {
+    background: #1e293b;
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 8px;
+    padding: 0.75rem;
+    color: #e2e8f0;
+    font-size: 0.9rem;
+  }
+  .calc-input input:focus, .calc-input select:focus {
+    outline: none;
+    border-color: #818cf8;
+  }
+  .calc-button {
+    background: #818cf8;
+    color: #ffffff;
+    border: none;
+    border-radius: 8px;
+    padding: 0.75rem 2rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s;
+    width: 100%;
+  }
+  .calc-button:hover {
+    background: #6366f1;
+  }
+  .calc-results {
+    background: rgba(129, 140, 248, 0.1);
+    border-radius: 12px;
+    padding: 1.5rem;
+    margin-top: 1.5rem;
+    display: none;
+  }
+  .calc-results h4 {
+    color: #a5b4fc;
+    font-size: 1.1rem;
+    margin-bottom: 1rem;
+  }
+  .result-breakdown {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 1rem;
+    margin-top: 1rem;
+  }
+  .breakdown-item {
+    background: rgba(255,255,255,0.02);
+    padding: 1rem;
+    border-radius: 8px;
+    text-align: center;
+  }
+  .breakdown-label {
+    color: #94a3b8;
+    font-size: 0.8rem;
+    margin-bottom: 0.25rem;
+  }
+  .breakdown-value {
+    color: #e2e8f0;
+    font-weight: 600;
+    font-size: 0.9rem;
+  }
+  .breakdown-status {
+    color: #818cf8;
+    font-size: 0.75rem;
+    margin-top: 0.25rem;
+  }
+  .strategy-cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 1.5rem;
+    margin: 2rem 0;
+  }
+  .strategy-card {
+    background: #12121a;
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 14px;
+    padding: 1.5rem;
+  }
+  .strategy-card h4 {
+    color: #ffffff;
+    font-size: 1.1rem;
+    font-weight: 600;
+    margin-bottom: 1rem;
+  }
+  .tool-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1.5rem;
+    margin: 2rem 0;
+  }
+  .tool-card {
+    background: #12121a;
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 12px;
+    padding: 1.5rem;
+    text-align: center;
+  }
+  .tool-card h5 {
+    color: #ffffff;
+    margin-bottom: 0.5rem;
+    font-size: 1rem;
+  }
+  .tool-description {
+    font-size: 0.9rem;
+    color: #94a3b8;
+    margin-bottom: 1rem;
+  }
+  .tool-pricing {
+    font-size: 0.8rem;
+    color: #818cf8;
+    font-weight: 600;
+  }
+  .faq-section {
+    margin: 4rem 0;
+  }
+  .faq-item {
+    background: #12121a;
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 14px;
+    margin-bottom: 1rem;
+    overflow: hidden;
+  }
+  .faq-question {
+    padding: 1.5rem;
+    color: #ffffff;
+    font-weight: 600;
+    cursor: pointer;
+    border-bottom: 1px solid rgba(255,255,255,0.05);
+  }
+  .faq-answer {
+    padding: 1.5rem;
+    color: #94a3b8;
+  }
+  .cta-cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1.5rem;
+    margin: 3rem 0;
+  }
+  .cta-card {
+    background: linear-gradient(135deg, #1e293b, #334155);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 16px;
+    padding: 2rem;
+    text-align: center;
+  }
+  .cta-card h4 {
+    color: #ffffff;
+    font-size: 1.1rem;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+  }
+  .cta-card p {
+    color: #94a3b8;
+    font-size: 0.9rem;
+    margin-bottom: 1.5rem;
+  }
+  .cta-button {
+    display: inline-block;
+    background: #818cf8;
+    color: #ffffff;
+    padding: 0.7rem 1.5rem;
+    border-radius: 8px;
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 0.9rem;
+    transition: background 0.2s;
+  }
+  .cta-button:hover {
+    background: #6366f1;
+  }
+  
+  @media (max-width: 1024px) {
+    .content-wrapper {
+      grid-template-columns: 1fr;
+      gap: 2rem;
+    }
+    .sidebar {
+      position: relative;
+      top: 0;
+      order: -1;
+    }
+  }
+  
+  @media (max-width: 768px) {
+    .hwo-container {
+      padding: 1rem;
+    }
+    .breadcrumb {
+      flex-wrap: wrap;
+    }
+    .stats-grid {
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    }
+    .health-grid {
+      grid-template-columns: 1fr;
+    }
+    .strategy-cards {
+      grid-template-columns: 1fr;
+    }
+    .tool-grid {
+      grid-template-columns: 1fr;
+    }
+    .cta-cards {
+      grid-template-columns: 1fr;
+    }
+    .calc-inputs {
+      grid-template-columns: 1fr;
+    }
+    .result-breakdown {
+      grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+    }
+  }
+</style>
+
+<div class="hwo-container">
+  <div class="hwo-header">
+    <div class="breadcrumb">
+      <a href="/apex-guides">Apex Guides</a>
+      <span>›</span>
+      <a href="/human-optimization-health-guide-2026">Human Optimization, Health & Longevity</a>
+      <span>›</span>
+      <span style="color: #cbd5e1;">Current</span>
+    </div>
+    
+    <div class="updated-badge">
+      🌟 Updated March 2026
+    </div>
+    
+    <h1 class="gradient-h1">Health & Wellness Optimization</h1>
+    <p class="hwo-subtitle">Master evidence-based health optimization, longevity strategies, performance enhancement, and comprehensive wellness systems for peak physical and mental performance.</p>
+  </div>
+
+  <div class="content-wrapper">
+    <main class="main-content">
+      <div class="stats-grid">
+        <div class="stat-card">
+          <span class="stat-number">10+</span>
+          <div class="stat-label">Years added to healthy lifespan with optimization</div>
+        </div>
+        <div class="stat-card">
+          <span class="stat-number">40%</span>
+          <div class="stat-label">Productivity increase from peak health</div>
+        </div>
+        <div class="stat-card">
+          <span class="stat-number">$13K</span>
+          <div class="stat-label">Average annual healthcare savings</div>
+        </div>
+        <div class="stat-card">
+          <span class="stat-number">85%</span>
+          <div class="stat-label">Chronic diseases preventable with lifestyle</div>
+        </div>
+      </div>
+
+      <section id="health-fundamentals" class="section">
+        <h2>Health Optimization Fundamentals</h2>
+        <p>Health optimization goes beyond basic fitness—it's a systematic approach to maximizing human performance, longevity, and quality of life through evidence-based interventions. The most successful optimizers treat health as an investment portfolio: diversified, measurable, and continuously refined based on data.</p>
+
+        <div class="callout">
+          <h4>🧬 The Optimization Mindset</h4>
+          <p>Elite performers invest 20-30% of their time and resources in health optimization because they understand the multiplier effect: peak health amplifies every other area of life. The key is systematic implementation of high-ROI interventions, not chasing every new biohack.</p>
+        </div>
+
+        <h3>The Health Optimization Hierarchy</h3>
+        <div class="health-grid">
+          <div class="health-card">
+            <div class="impact-badge foundational">Foundational</div>
+            <h4>💤 Sleep Quality & Recovery</h4>
+            <p><strong>ROI:</strong> Highest impact, lowest effort</p>
+            <p><strong>Key Metrics:</strong> Sleep duration (7-9h), sleep quality, HRV</p>
+            <p><strong>Interventions:</strong> Sleep hygiene, temperature control, blue light management</p>
+            <p><strong>Cost:</strong> $200-1,000 for optimal sleep environment</p>
+            <p><strong>Timeline:</strong> 2-4 weeks for measurable improvement</p>
+          </div>
+
+          <div class="health-card">
+            <div class="impact-badge foundational">Foundational</div>
+            <h4>🥗 Nutritional Optimization</h4>
+            <p><strong>ROI:</strong> High impact, moderate effort</p>
+            <p><strong>Key Metrics:</strong> Body composition, energy levels, biomarkers</p>
+            <p><strong>Interventions:</strong> Whole foods, nutrient timing, personalized nutrition</p>
+            <p><strong>Cost:</strong> 20-30% premium on food costs</p>
+            <p><strong>Timeline:</strong> 4-8 weeks for metabolic improvements</p>
+          </div>
+
+          <div class="health-card">
+            <div class="impact-badge high">High Impact</div>
+            <h4>🏃‍♂️ Exercise & Movement</h4>
+            <p><strong>ROI:</strong> High impact, moderate-high effort</p>
+            <p><strong>Key Metrics:</strong> VO2 max, strength, flexibility, movement quality</p>
+            <p><strong>Interventions:</strong> Strength training, cardio, mobility work, recovery</p>
+            <p><strong>Cost:</strong> $50-300/month gym + equipment</p>
+            <p><strong>Timeline:</strong> 6-12 weeks for strength/endurance gains</p>
+          </div>
+
+          <div class="health-card">
+            <div class="impact-badge high">High Impact</div>
+            <h4>🧘‍♂️ Stress Management & Mental Health</h4>
+            <p><strong>ROI:</strong> Very high impact, variable effort</p>
+            <p><strong>Key Metrics:</strong> HRV, cortisol patterns, mood tracking</p>
+            <p><strong>Interventions:</strong> Meditation, breathwork, therapy, social connection</p>
+            <p><strong>Cost:</strong> $100-500/month for various interventions</p>
+            <p><strong>Timeline:</strong> 2-6 weeks for stress response improvements</p>
+          </div>
+
+          <div class="health-card">
+            <div class="impact-badge transformative">Advanced</div>
+            <h4>🔬 Biomarker Monitoring</h4>
+            <p><strong>ROI:</strong> High impact, requires expertise</p>
+            <p><strong>Key Metrics:</strong> Comprehensive bloodwork, continuous glucose, HRV</p>
+            <p><strong>Interventions:</strong> Regular testing, data-driven adjustments</p>
+            <p><strong>Cost:</strong> $2,000-5,000/year for comprehensive monitoring</p>
+            <p><strong>Timeline:</strong> 3-6 months to establish baselines and trends</p>
+          </div>
+
+          <div class="health-card">
+            <div class="impact-badge transformative">Advanced</div>
+            <h4>⚡ Performance Enhancement</h4>
+            <p><strong>ROI:</strong> Variable, requires optimization foundation</p>
+            <p><strong>Key Metrics:</strong> Cognitive performance, energy, recovery speed</p>
+            <p><strong>Interventions:</strong> Targeted supplementation, technology, protocols</p>
+            <p><strong>Cost:</strong> $500-3,000/month for advanced interventions</p>
+            <p><strong>Timeline:</strong> 1-3 months per intervention trial</p>
+          </div>
+        </health-grid>
+
+        <div class="callout danger">
+          <h4>🚨 Health Optimization Mistakes</h4>
+          <p><strong>Skipping Fundamentals:</strong> Chasing advanced biohacks without mastering basics<br>
+          <strong>No Measurement:</strong> Optimizing without tracking key health metrics<br>
+          <strong>All-or-Nothing:</strong> Unsustainable extreme approaches vs. consistent moderate gains<br>
+          <strong>Ignoring Individual Response:</strong> Following generic protocols without personalization<br>
+          <strong>Short-Term Thinking:</strong> Focusing on quick fixes instead of long-term health systems<br>
+          <strong>Overcomplicating:</strong> Adding complexity without mastering simple, high-impact interventions</p>
+        </div>
+
+        <div class="callout success">
+          <h4>✅ Health Optimization Success Principles</h4>
+          <p><strong>Foundation First:</strong> Master sleep, nutrition, exercise, and stress management<br>
+          <strong>Measure Everything:</strong> Track key biomarkers and subjective wellness metrics<br>
+          <strong>Progressive Implementation:</strong> Add one intervention at a time, measure results<br>
+          <strong>Personalization:</strong> Adapt protocols based on your unique responses<br>
+          <strong>System Thinking:</strong> Consider how interventions interact and compound<br>
+          <strong>Long-Term View:</strong> Focus on sustainable improvements over short-term gains</p>
+        </div>
+      </section>
+
+      <section id="sleep-recovery" class="section">
+        <h2>Sleep & Recovery Optimization</h2>
+
+        <div class="callout">
+          <h4>💤 Sleep: The Ultimate Performance Enhancer</h4>
+          <p>Quality sleep is the foundation of all health optimization. Poor sleep negates the benefits of perfect nutrition and exercise, while optimized sleep amplifies every other health intervention. Most high performers prioritize sleep above all other health investments.</p>
+        </div>
+
+        <div class="health-calculator">
+          <h3>😴 Sleep Quality Calculator</h3>
+          <p>Assess your sleep quality and get personalized optimization recommendations.</p>
+          
+          <div class="calc-inputs">
+            <div class="calc-input">
+              <label for="sleepDuration">Average Sleep Duration (hours)</label>
+              <input type="number" id="sleepDuration" placeholder="7.5" min="4" max="12" step="0.5">
+            </div>
+            
+            <div class="calc-input">
+              <label for="sleepLatency">Time to Fall Asleep (minutes)</label>
+              <select id="sleepLatency">
+                <option value="5">Under 5 minutes</option>
+                <option value="15">5-15 minutes</option>
+                <option value="30">15-30 minutes</option>
+                <option value="45">30+ minutes</option>
+              </select>
+            </div>
+            
+            <div class="calc-input">
+              <label for="nightWakings">Night Wakings</label>
+              <select id="nightWakings">
+                <option value="0">None</option>
+                <option value="1">1-2 times</option>
+                <option value="3">3-4 times</option>
+                <option value="5">5+ times</option>
+              </select>
+            </div>
+            
+            <div class="calc-input">
+              <label for="morningEnergy">Morning Energy Level</label>
+              <select id="morningEnergy">
+                <option value="5">Very energized</option>
+                <option value="4">Energized</option>
+                <option value="3">Neutral</option>
+                <option value="2">Tired</option>
+                <option value="1">Exhausted</option>
+              </select>
+            </div>
+            
+            <div class="calc-input">
+              <label for="caffeineDependency">Caffeine Dependency</label>
+              <select id="caffeineDependency">
+                <option value="1">No caffeine needed</option>
+                <option value="2">Occasional caffeine</option>
+                <option value="3">Daily coffee</option>
+                <option value="4">Multiple cups needed</option>
+                <option value="5">Can't function without caffeine</option>
+              </select>
+            </div>
+            
+            <div class="calc-input">
+              <label for="sleepEnvironment">Sleep Environment Quality</label>
+              <select id="sleepEnvironment">
+                <option value="5">Optimized (dark, cool, quiet)</option>
+                <option value="4">Good</option>
+                <option value="3">Average</option>
+                <option value="2">Poor</option>
+                <option value="1">Very poor (noise, light, heat)</option>
+              </select>
+            </div>
+          </div>
+          
+          <button class="calc-button" onclick="calculateSleepQuality()">Analyze Sleep Quality</button>
+          
+          <div class="calc-results" id="sleepResults">
+            <h4>Your Sleep Optimization Analysis</h4>
+            <div class="result-breakdown" id="sleepBreakdown">
+              <!-- Results will be populated here -->
+            </div>
+          </div>
+        </div>
+
+        <h3>Sleep Optimization Protocol</h3>
+        <div class="strategy-cards">
+          <div class="strategy-card">
+            <h4>🏠 Sleep Environment</h4>
+            <p><strong>Temperature:</strong> 65-68°F (18-20°C) for optimal deep sleep</p>
+            <p><strong>Darkness:</strong> Blackout curtains, eye mask, eliminate all light</p>
+            <p><strong>Quiet:</strong> Earplugs, white noise machine, sound-dampening</p>
+            <p><strong>Air Quality:</strong> HEPA filter, humidity 30-50%, fresh air circulation</p>
+            <p><strong>Investment:</strong> $500-2,000 for optimal sleep sanctuary</p>
+          </div>
+
+          <div class="strategy-card">
+            <h4>⏰ Sleep Timing & Routine</h4>
+            <p><strong>Consistency:</strong> Same sleep/wake times, including weekends</p>
+            <p><strong>Wind-Down:</strong> 1-2 hour routine before bed</p>
+            <p><strong>Light Exposure:</strong> Bright light in morning, dim evening light</p>
+            <p><strong>Meal Timing:</strong> No large meals 3 hours before bed</p>
+            <p><strong>Caffeine:</strong> None after 2 PM (or 8 hours before bed)</p>
+          </div>
+
+          <div class="strategy-card">
+            <h4>🛏️ Sleep Technology</h4>
+            <p><strong>Mattress:</strong> Quality mattress suited to your sleep position</p>
+            <p><strong>Pillows:</strong> Proper spinal alignment, replace every 1-2 years</p>
+            <p><strong>Tracking:</strong> Oura ring, WHOOP, sleep apps for data</p>
+            <p><strong>Light Therapy:</strong> Blue light blocking glasses, sunrise alarm</p>
+            <p><strong>Temperature:</strong> ChiliPad, cooling mattress, smart thermostat</p>
+          </div>
+
+          <div class="strategy-card">
+            <h4>💊 Sleep Support</h4>
+            <p><strong>Magnesium:</strong> 400-600mg magnesium glycinate before bed</p>
+            <p><strong>Melatonin:</strong> 0.5-3mg melatonin 1 hour before desired sleep</p>
+            <p><strong>L-Theanine:</strong> 100-200mg for relaxation without sedation</p>
+            <p><strong>Glycine:</strong> 3g glycine for deeper sleep and recovery</p>
+            <p><strong>CBD:</strong> 10-25mg CBD for anxiety and sleep quality</p>
+          </div>
+        </strategy-cards>
+
+        <h3>Recovery Optimization</h3>
+        <div class="comparison-table">
+          <table>
+            <thead>
+              <tr>
+                <th>Recovery Method</th>
+                <th>Effectiveness</th>
+                <th>Cost</th>
+                <th>Time Required</th>
+                <th>Best For</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>Quality Sleep</strong></td>
+                <td class="tier-high">Very High</td>
+                <td>Low-Medium</td>
+                <td>7-9 hours daily</td>
+                <td>All recovery needs, baseline health</td>
+              </tr>
+              <tr>
+                <td><strong>Sauna Therapy</strong></td>
+                <td class="tier-high">High</td>
+                <td>Medium-High</td>
+                <td>15-30 min, 3-5x/week</td>
+                <td>Cardiovascular, longevity, stress</td>
+              </tr>
+              <tr>
+                <td><strong>Cold Exposure</strong></td>
+                <td class="tier-high">High</td>
+                <td>Low-Medium</td>
+                <td>2-5 min, 3-5x/week</td>
+                <td>Inflammation, mental resilience</td>
+              </tr>
+              <tr>
+                <td><strong>Massage/Bodywork</strong></td>
+                <td class="tier-medium">Medium</td>
+                <td>High</td>
+                <td>60-90 min weekly</td>
+                <td>Muscle tension, stress relief</td>
+              </tr>
+              <tr>
+                <td><strong>Red Light Therapy</strong></td>
+                <td class="tier-medium">Medium</td>
+                <td>Medium</td>
+                <td>10-20 min daily</td>
+                <td>Tissue repair, mitochondrial health</td>
+              </tr>
+              <tr>
+                <td><strong>Compression Therapy</strong></td>
+                <td class="tier-medium">Medium</td>
+                <td>Medium</td>
+                <td>20-30 min daily</td>
+                <td>Circulation, lymphatic drainage</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <section id="nutrition-optimization" class="section">
+        <h2>Nutritional Optimization</h2>
+
+        <div class="callout warning">
+          <h4>⚠️ Nutrition Complexity & Individuality</h4>
+          <p>Optimal nutrition is highly individual—what works for one person may not work for another. Focus on fundamental principles (whole foods, adequate protein, micronutrient density) before exploring advanced strategies like specific diets or supplements.</p>
+        </div>
+
+        <h3>Evidence-Based Nutrition Framework</h3>
+        <div class="strategy-cards">
+          <div class="strategy-card">
+            <h4>🥩 Protein Optimization</h4>
+            <p><strong>Amount:</strong> 1.6-2.2g per kg bodyweight for active individuals</p>
+            <p><strong>Quality:</strong> Complete amino acid profiles, leucine content</p>
+            <p><strong>Timing:</strong> 25-40g per meal, post-workout within 2 hours</p>
+            <p><strong>Sources:</strong> Lean meats, fish, eggs, dairy, legumes, protein powder</p>
+            <p><strong>Benefits:</strong> Muscle protein synthesis, satiety, metabolic health</p>
+          </div>
+
+          <div class="strategy-card">
+            <h4>🥗 Micronutrient Density</h4>
+            <p><strong>Vegetables:</strong> 5-9 servings daily, variety of colors</p>
+            <p><strong>Fruits:</strong> 2-3 servings, focus on lower-sugar options</p>
+            <p><strong>Nutrient Timing:</strong> Vitamins with meals for absorption</p>
+            <p><strong>Supplementation:</strong> Fill gaps identified by blood testing</p>
+            <p><strong>Key Nutrients:</strong> Vitamin D, B12, magnesium, omega-3s, fiber</p>
+          </div>
+
+          <div class="strategy-card">
+            <h4>⚡ Energy & Metabolism</h4>
+            <p><strong>Meal Timing:</strong> Align with circadian rhythms, avoid late eating</p>
+            <p><strong>Carbohydrate Cycling:</strong> Higher carbs around workouts</p>
+            <p><strong>Healthy Fats:</strong> 25-35% of calories from quality sources</p>
+            <p><strong>Hydration:</strong> Half bodyweight in ounces, electrolyte balance</p>
+            <p><strong>Metabolic Flexibility:</strong> Ability to use both glucose and ketones</p>
+          </div>
+
+          <div class="strategy-card">
+            <h4>🧪 Personalization & Testing</h4>
+            <p><strong>Blood Biomarkers:</strong> Comprehensive metabolic panel quarterly</p>
+            <p><strong>Food Sensitivity:</strong> Elimination diets, IGG testing</p>
+            <p><strong>Genetic Testing:</strong> APOE, MTHFR, other relevant variants</p>
+            <p><strong>Continuous Glucose:</strong> Monitor metabolic response to foods</p>
+            <p><strong>Gut Health:</strong> Microbiome testing, diversity optimization</p>
+          </div>
+        </strategy-cards>
+
+        <h3>Advanced Nutritional Strategies</h3>
+        <div class="tool-grid">
+          <div class="tool-card">
+            <h5>⏰ Intermittent Fasting</h5>
+            <div class="tool-description">
+              16:8, 18:6, or 20:4 eating windows for metabolic benefits
+            </div>
+            <div class="tool-pricing">Benefits: Autophagy, insulin sensitivity</div>
+          </div>
+
+          <div class="tool-card">
+            <h5>🥩 Carnivore/Elimination</h5>
+            <div class="tool-description">
+              Temporary elimination diets to identify food sensitivities
+            </div>
+            <div class="tool-pricing">Duration: 30-90 days diagnostic</div>
+          </div>
+
+          <div class="tool-card">
+            <h5>🥥 Ketogenic Diet</h5>
+            <div class="tool-description">
+              Very low carb for metabolic flexibility and fat adaptation
+            </div>
+            <div class="tool-pricing">Macros: 5% carbs, 75% fat, 20% protein</div>
+          </div>
+
+          <div class="tool-card">
+            <h5>🌊 Electrolyte Optimization</h5>
+            <div class="tool-description">
+              Sodium, potassium, magnesium balance for performance
+            </div>
+            <div class="tool-pricing">Cost: $30-50/month for quality electrolytes</div>
+          </div>
+
+          <div class="tool-card">
+            <h5>🔬 Targeted Supplementation</h5>
+            <div class="tool-description">
+              Data-driven supplements based on biomarker deficiencies
+            </div>
+            <div class="tool-pricing">Cost: $100-500/month depending on needs</div>
+          </div>
+
+          <div class="tool-card">
+            <h5>📊 Nutrient Timing</h5>
+            <div class="tool-description">
+              Optimize meal timing around training and circadian rhythms
+            </div>
+            <div class="tool-pricing">Strategy: Pre/post workout nutrition</div>
+          </div>
+        </tool-grid>
+      </section>
+
+      <section id="fitness-movement" class="section">
+        <h2>Exercise & Movement Optimization</h2>
+
+        <div class="callout">
+          <h4>🏋️‍♂️ Exercise as Medicine</h4>
+          <p>Exercise is the closest thing we have to a miracle drug—it improves virtually every aspect of health and performance. The key is finding the minimum effective dose: enough stimulus to drive adaptation without compromising recovery or life balance.</p>
+        </div>
+
+        <h3>Comprehensive Fitness Framework</h3>
+        <div class="comparison-table">
+          <table>
+            <thead>
+              <tr>
+                <th>Training Type</th>
+                <th>Frequency</th>
+                <th>Duration</th>
+                <th>Primary Benefits</th>
+                <th>Key Metrics</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>Strength Training</strong></td>
+                <td>3-4x per week</td>
+                <td>45-75 minutes</td>
+                <td>Muscle mass, bone density, metabolism</td>
+                <td>1RM, total volume, progressive overload</td>
+              </tr>
+              <tr>
+                <td><strong>Cardiovascular</strong></td>
+                <td>3-5x per week</td>
+                <td>20-60 minutes</td>
+                <td>Heart health, endurance, fat burning</td>
+                <td>VO2 max, resting HR, HRV</td>
+              </tr>
+              <tr>
+                <td><strong>Mobility/Flexibility</strong></td>
+                <td>Daily</td>
+                <td>10-30 minutes</td>
+                <td>Joint health, injury prevention</td>
+                <td>Range of motion, movement quality</td>
+              </tr>
+              <tr>
+                <td><strong>Balance/Stability</strong></td>
+                <td>2-3x per week</td>
+                <td>10-20 minutes</td>
+                <td>Injury prevention, functional movement</td>
+                <td>Single-leg stands, stability tests</td>
+              </tr>
+              <tr>
+                <td><strong>High-Intensity Intervals</strong></td>
+                <td>1-2x per week</td>
+                <td>15-30 minutes</td>
+                <td>Time efficiency, metabolic conditioning</td>
+                <td>Power output, recovery time</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <h3>Training Periodization</h3>
+        <div class="strategy-cards">
+          <div class="strategy-card">
+            <h4>📅 Weekly Structure</h4>
+            <p><strong>Monday:</strong> Upper body strength + mobility</p>
+            <p><strong>Tuesday:</strong> Cardio (Zone 2) + core</p>
+            <p><strong>Wednesday:</strong> Lower body strength + flexibility</p>
+            <p><strong>Thursday:</strong> HIIT or sports + recovery</p>
+            <p><strong>Friday:</strong> Full body or weak points</p>
+            <p><strong>Weekend:</strong> Active recovery, hiking, sports</p>
+          </div>
+
+          <div class="strategy-card">
+            <h4>🎯 Progressive Overload</h4>
+            <p><strong>Volume:</strong> Gradually increase sets and reps</p>
+            <p><strong>Intensity:</strong> Increase weight or difficulty</p>
+            <p><strong>Frequency:</strong> Add training sessions carefully</p>
+            <p><strong>Complexity:</strong> Progress from simple to complex movements</p>
+            <p><strong>Recovery:</strong> Balance stress and adaptation</p>
+          </div>
+
+          <div class="strategy-card">
+            <h4>📊 Performance Metrics</h4>
+            <p><strong>Strength:</strong> Track major compound lift progression</p>
+            <p><strong>Power:</strong> Vertical jump, sprint times</p>
+            <p><strong>Endurance:</strong> VO2 max, lactate threshold</p>
+            <p><strong>Body Composition:</strong> DEXA, InBody scans</p>
+            <p><strong>Movement Quality:</strong> FMS, mobility assessments</p>
+          </div>
+        </strategy-cards>
+      </section>
+
+      <section id="biomarker-tracking" class="section">
+        <h2>Biomarker Monitoring & Health Tech</h2>
+
+        <div class="callout success">
+          <h4>📊 Data-Driven Health Optimization</h4>
+          <p>The most successful health optimizers track key biomarkers consistently, use technology to gather insights, and make data-driven adjustments to their protocols. Without measurement, optimization is just guesswork.</p>
+        </div>
+
+        <h3>Essential Health Biomarkers</h3>
+        <div class="tool-grid">
+          <div class="tool-card">
+            <h5>🩸 Comprehensive Blood Panel</h5>
+            <div class="tool-description">
+              Lipids, glucose, inflammation, hormones, nutrients, liver/kidney function
+            </div>
+            <div class="tool-pricing">Frequency: Quarterly | Cost: $200-800</div>
+          </div>
+
+          <div class="tool-card">
+            <h5>💓 Heart Rate Variability</h5>
+            <div class="tool-description">
+              Daily HRV tracking for stress, recovery, and autonomic balance
+            </div>
+            <div class="tool-pricing">Device: Oura, WHOOP | Cost: $300-400</div>
+          </div>
+
+          <div class="tool-card">
+            <h5>📈 Continuous Glucose</h5>
+            <div class="tool-description">
+              Real-time glucose monitoring for metabolic optimization
+            </div>
+            <div class="tool-pricing">Device: Freestyle Libre | Cost: $70/month</div>
+          </div>
+
+          <div class="tool-card">
+            <h5>🧬 Genetic Testing</h5>
+            <div class="tool-description">
+              APOE, MTHFR, fitness response, and health risk variants
+            </div>
+            <div class="tool-pricing">Tests: 23andMe + analysis | Cost: $200-500</div>
+          </div>
+
+          <div class="tool-card">
+            <h5>🦠 Gut Microbiome</h5>
+            <div class="tool-description">
+              Microbiome diversity and specific bacterial populations
+            </div>
+            <div class="tool-pricing">Tests: Viome, Thorne | Cost: $150-400</div>
+          </div>
+
+          <div class="tool-card">
+            <h5>🧠 Cognitive Assessment</h5>
+            <div class="tool-description">
+              Regular cognitive function testing and brain health metrics
+            </div>
+            <div class="tool-pricing">Tests: CNS Vital Signs | Cost: $100-300</div>
+          </div>
+        </tool-grid>
+
+        <h3>Health Technology Stack</h3>
+        <div class="comparison-table">
+          <table>
+            <thead>
+              <tr>
+                <th>Technology</th>
+                <th>Primary Function</th>
+                <th>Cost</th>
+                <th>ROI</th>
+                <th>Best For</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>Oura Ring</strong></td>
+                <td>Sleep, HRV, recovery tracking</td>
+                <td>$300 + $6/month</td>
+                <td class="tier-high">Very High</td>
+                <td>Sleep optimization, recovery</td>
+              </tr>
+              <tr>
+                <td><strong>WHOOP Strap</strong></td>
+                <td>Training load, strain, recovery</td>
+                <td>$30/month</td>
+                <td class="tier-high">High</td>
+                <td>Athletes, training optimization</td>
+              </tr>
+              <tr>
+                <td><strong>Apple Watch/Garmin</strong></td>
+                <td>Activity, workouts, health metrics</td>
+                <td>$250-800</td>
+                <td class="tier-medium">Medium</td>
+                <td>General fitness tracking</td>
+              </tr>
+              <tr>
+                <td><strong>InBody Scanner</strong></td>
+                <td>Body composition analysis</td>
+                <td>$50-100 per scan</td>
+                <td class="tier-medium">Medium</td>
+                <td>Body composition goals</td>
+              </tr>
+              <tr>
+                <td><strong>Muse Headband</strong></td>
+                <td>Meditation feedback, brainwave</td>
+                <td>$250-400</td>
+                <td class="tier-medium">Medium</td>
+                <td>Meditation, stress management</td>
+              </tr>
+              <tr>
+                <td><strong>Home Sauna</strong></td>
+                <td>Heat therapy, recovery</td>
+                <td>$3,000-15,000</td>
+                <td class="tier-high">High</td>
+                <td>Regular heat therapy</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="callout warning">
+          <h4>⚠️ Technology Integration Guidelines</h4>
+          <p><strong>Start Simple:</strong> Begin with one primary tracking device before adding complexity<br>
+          <strong>Focus on Trends:</strong> Look for patterns over weeks/months, not daily fluctuations<br>
+          <strong>Avoid Analysis Paralysis:</strong> Don't let perfect data prevent good action<br>
+          <strong>Actionable Metrics:</strong> Only track what you can and will act upon<br>
+          <strong>Privacy Considerations:</strong> Understand data sharing and privacy policies</p>
+        </div>
+      </section>
+
+      <section id="faq" class="faq-section">
+        <h2>Frequently Asked Questions</h2>
+
+        <div class="faq-item">
+          <div class="faq-question">How much should I invest in health optimization?</div>
+          <div class="faq-answer">Start with 5-10% of income for basics (quality food, gym membership, sleep environment). Advanced optimizers invest 15-25% including supplements, testing, and technology. The ROI on health is enormous—every dollar spent on prevention saves $3-10 in future healthcare costs while improving quality of life and productivity.</div>
+        </div>
+
+        <div class="faq-item">
+          <div class="faq-question">What's the most important health metric to track?</div>
+          <div class="faq-answer">Sleep quality and Heart Rate Variability (HRV) provide the highest-value health insights for most people. They reflect stress, recovery, and overall autonomic function. Add resting heart rate, subjective energy levels, and basic bloodwork (glucose, lipids, inflammation markers) for comprehensive health monitoring.</div>
+        </div>
+
+        <div class="faq-item">
+          <div class="faq-question">Should I follow a specific diet for optimization?</div>
+          <div class="faq-answer">Focus on principles rather than specific diets: adequate protein, micronutrient density, whole foods, appropriate calories. Experiment with approaches like intermittent fasting or lower carb based on your goals and responses. The best diet is one you can sustain long-term while meeting your nutritional needs.</div>
+        </div>
+
+        <div class="faq-item">
+          <div class="faq-question">How do I know if supplements are working?</div>
+          <div class="faq-answer">Use objective measures: blood biomarkers, sleep quality metrics, HRV, cognitive tests, and subjective wellbeing scores. Take supplements one at a time for 4-8 weeks to assess individual effects. Most people need vitamin D, magnesium, and omega-3s; everything else should be based on testing and specific needs.</div>
+        </div>
+
+        <div class="faq-item">
+          <div class="faq-question">What's the minimum effective dose for exercise?</div>
+          <div class="faq-answer">150 minutes moderate cardio + 2 strength sessions weekly meets basic health requirements. For optimization: 3-4 strength sessions, 2-3 cardio sessions, daily movement. Quality trumps quantity—perfect form and progressive overload in 3-4 hours weekly beats 10 hours of poor training.</div>
+        </div>
+
+        <div class="faq-item">
+          <div class="faq-question">How important is genetic testing for health optimization?</div>
+          <div class="faq-answer">Genetics provide useful context but aren't essential to start. Focus on fundamentals first (sleep, nutrition, exercise, stress). Genetic testing helps personalize approaches—for example, APOE4 carriers may benefit from different cardiovascular strategies. Use genetics to fine-tune, not to determine your entire approach.</div>
+        </div>
+
+        <div class="faq-item">
+          <div class="faq-question">What are the biggest health optimization mistakes people make?</div>
+          <div class="faq-answer">1) Ignoring basics while chasing advanced biohacks, 2) Not tracking progress objectively, 3) Changing too many variables at once, 4) Expecting immediate results from long-term interventions, 5) Following others' protocols without personalization. Master sleep, nutrition, exercise, and stress management before exploring complex protocols.</div>
+        </div>
+
+        <div class="faq-item">
+          <div class="faq-question">How do I maintain health optimization while traveling?</div>
+          <div class="faq-answer">Prioritize portable interventions: sleep hygiene, bodyweight exercises, intermittent fasting, basic supplements, stress management. Pack eye mask, earplugs, resistance bands, core supplements. Focus on maintaining sleep schedule and staying hydrated. Use travel as an opportunity for walking and exploring rather than perfect routine adherence.</div>
+        </div>
+      </section>
+
+      <div class="cta-cards">
+        <div class="cta-card">
+          <h4>🧠 Nootropics Guide</h4>
+          <p>Enhance cognitive performance with evidence-based nootropics and brain optimization strategies.</p>
+          <a href="/nootropics-cognitive-enhancers" class="cta-button">Cognitive Enhancement</a>
+        </div>
+
+        <div class="cta-card">
+          <h4>🏃‍♂️ Productivity Systems</h4>
+          <p>Optimize your personal productivity systems for peak performance and efficient execution.</p>
+          <a href="/personal-productivity-systems" class="cta-button">Productivity Guide</a>
+        </div>
+
+        <div class="cta-card">
+          <h4>🌍 Digital Nomad Health</h4>
+          <p>Maintain optimal health while living the digital nomad lifestyle across different locations.</p>
+          <a href="/digital-nomad-lifestyle" class="cta-button">Nomad Health</a>
+        </div>
+      </div>
+    </main>
+
+    <aside class="sidebar">
+      <h3>Contents</h3>
+      <ul>
+        <li><a href="#health-fundamentals">Health Fundamentals</a></li>
+        <li><a href="#sleep-recovery">Sleep & Recovery</a></li>
+        <li><a href="#nutrition-optimization">Nutrition</a></li>
+        <li><a href="#fitness-movement">Exercise & Movement</a></li>
+        <li><a href="#biomarker-tracking">Biomarker Tracking</a></li>
+        <li><a href="#faq">FAQ</a></li>
+      </ul>
+    </aside>
+  </div>
+</div>
+
+<script>
+function calculateSleepQuality() {
+  const sleepDuration = parseFloat(document.getElementById('sleepDuration').value) || 7.5;
+  const sleepLatency = parseInt(document.getElementById('sleepLatency').value) || 15;
+  const nightWakings = parseInt(document.getElementById('nightWakings').value) || 1;
+  const morningEnergy = parseInt(document.getElementById('morningEnergy').value) || 3;
+  const caffeineDependency = parseInt(document.getElementById('caffeineDependency').value) || 3;
+  const sleepEnvironment = parseInt(document.getElementById('sleepEnvironment').value) || 3;
+  
+  // Calculate sleep quality score (0-100)
+  let score = 0;
+  
+  // Duration scoring (optimal 7-9 hours)
+  if (sleepDuration >= 7 && sleepDuration <= 9) {
+    score += 25;
+  } else if (sleepDuration >= 6 && sleepDuration <= 10) {
+    score += 20;
+  } else if (sleepDuration >= 5 && sleepDuration <= 11) {
+    score += 15;
+  } else {
+    score += 5;
+  }
+  
+  // Latency scoring (optimal under 15 min)
+  if (sleepLatency <= 15) {
+    score += 20;
+  } else if (sleepLatency <= 30) {
+    score += 15;
+  } else if (sleepLatency <= 45) {
+    score += 10;
+  } else {
+    score += 5;
+  }
+  
+  // Night wakings (fewer is better)
+  if (nightWakings === 0) {
+    score += 20;
+  } else if (nightWakings === 1) {
+    score += 15;
+  } else if (nightWakings === 3) {
+    score += 10;
+  } else {
+    score += 5;
+  }
+  
+  // Morning energy (5 is best)
+  score += morningEnergy * 4;
+  
+  // Caffeine dependency (lower is better)
+  score += (6 - caffeineDependency) * 3;
+  
+  // Sleep environment (5 is best)  
+  score += sleepEnvironment * 2;
+  
+  // Determine sleep grade and recommendations
+  let grade, status, recommendations;
+  
+  if (score >= 85) {
+    grade = 'A+';
+    status = { level: 'Excellent', color: '#4ade80' };
+    recommendations = 'Your sleep is optimized! Focus on consistency and fine-tuning.';
+  } else if (score >= 75) {
+    grade = 'A';
+    status = { level: 'Very Good', color: '#4ade80' };
+    recommendations = 'Great sleep quality. Minor optimizations could push you to excellence.';
+  } else if (score >= 65) {
+    grade = 'B+';
+    status = { level: 'Good', color: '#fbbf24' };
+    recommendations = 'Good sleep foundation. Focus on environment and routine consistency.';
+  } else if (score >= 55) {
+    grade = 'B';
+    status = { level: 'Fair', color: '#fbbf24' };
+    recommendations = 'Room for improvement. Address sleep hygiene and environment factors.';
+  } else if (score >= 45) {
+    grade = 'C';
+    status = { level: 'Poor', color: '#f87171' };
+    recommendations = 'Significant sleep issues detected. Consider sleep study and major changes.';
+  } else {
+    grade = 'F';
+    status = { level: 'Critical', color: '#ef4444' };
+    recommendations = 'Severe sleep dysfunction. Consult healthcare provider immediately.';
+  }
+  
+  // Calculate potential improvements
+  const sleepDebtCost = (9 - sleepDuration) * 365 * 25; // Hours * days * hourly value
+  const productivityGain = Math.max(0, (85 - score) * 5); // Potential productivity increase %
+  const energyImprovement = Math.max(0, 5 - morningEnergy);
+  
+  // Priority recommendations based on lowest scores
+  let topPriority = 'Sleep Environment';
+  let secondPriority = 'Sleep Schedule';
+  
+  if (sleepLatency > 30) topPriority = 'Sleep Routine & Relaxation';
+  if (nightWakings >= 3) topPriority = 'Sleep Environment & Stress';
+  if (caffeineDependency >= 4) topPriority = 'Caffeine & Stimulant Management';
+  if (sleepDuration < 6.5 || sleepDuration > 9.5) topPriority = 'Sleep Duration Optimization';
+  
+  // Display results
+  const breakdown = document.getElementById('sleepBreakdown');
+  breakdown.innerHTML = `
+    <div class="breakdown-item">
+      <div class="breakdown-label">Sleep Quality Score</div>
+      <div class="breakdown-value">${score}/100</div>
+      <div class="breakdown-status" style="color: ${status.color}">Grade: ${grade}</div>
+    </div>
+    <div class="breakdown-item">
+      <div class="breakdown-label">Sleep Status</div>
+      <div class="breakdown-value">${status.level}</div>
+      <div class="breakdown-status">Overall assessment</div>
+    </div>
+    <div class="breakdown-item">
+      <div class="breakdown-label">Morning Energy</div>
+      <div class="breakdown-value">${morningEnergy}/5</div>
+      <div class="breakdown-status">${energyImprovement > 0 ? `+${energyImprovement} potential` : 'Optimal'}</div>
+    </div>
+    <div class="breakdown-item">
+      <div class="breakdown-label">Sleep Duration</div>
+      <div class="breakdown-value">${sleepDuration} hours</div>
+      <div class="breakdown-status">${sleepDuration >= 7 && sleepDuration <= 9 ? 'Optimal' : 'Needs adjustment'}</div>
+    </div>
+    <div class="breakdown-item">
+      <div class="breakdown-label">Top Priority</div>
+      <div class="breakdown-value">${topPriority}</div>
+      <div class="breakdown-status">Focus area for improvement</div>
+    </div>
+    <div class="breakdown-item">
+      <div class="breakdown-label">Productivity Impact</div>
+      <div class="breakdown-value">+${productivityGain}%</div>
+      <div class="breakdown-status">Potential improvement</div>
+    </div>
+  `;
+  
+  document.getElementById('sleepResults').style.display = 'block';
+}
+</script>

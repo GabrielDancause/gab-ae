@@ -1,0 +1,1186 @@
+<style>
+  .rental-container {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 2rem;
+    color: #e2e8f0;
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    line-height: 1.8;
+  }
+  .rental-header {
+    text-align: center;
+    margin-bottom: 4rem;
+    padding-top: 3rem;
+  }
+  .gradient-h1 {
+    font-size: clamp(2.2rem, 5vw, 3.5rem);
+    font-weight: 800;
+    background: linear-gradient(135deg, #ffffff 0%, #a5b4fc 50%, #818cf8 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    margin-bottom: 1rem;
+    line-height: 1.15;
+    letter-spacing: -0.02em;
+  }
+  .rental-subtitle {
+    font-size: 1.2rem;
+    color: #94a3b8;
+    max-width: 750px;
+    margin: 0 auto;
+  }
+  .breadcrumb {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    justify-content: center;
+    margin-bottom: 2rem;
+    font-size: 0.85rem;
+  }
+  .breadcrumb a {
+    color: #818cf8;
+    text-decoration: none;
+  }
+  .breadcrumb a:hover { text-decoration: underline; }
+  .breadcrumb span { color: #475569; }
+  .updated-badge {
+    display: inline-block;
+    background: rgba(129, 140, 248, 0.15);
+    color: #a5b4fc;
+    padding: 0.4rem 1rem;
+    border-radius: 20px;
+    font-size: 0.85rem;
+    margin-bottom: 1.5rem;
+    border: 1px solid rgba(129, 140, 248, 0.3);
+  }
+
+  /* Sticky TOC */
+  .rental-layout {
+    display: grid;
+    grid-template-columns: 260px 1fr;
+    gap: 4rem;
+    align-items: start;
+  }
+  .sticky-toc {
+    position: sticky;
+    top: 2rem;
+    background: #12121a;
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 14px;
+    padding: 1.5rem;
+  }
+  .sticky-toc h3 {
+    margin: 0 0 1rem;
+    color: #fff;
+    font-size: 0.9rem;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    padding-bottom: 0.8rem;
+    border-bottom: 1px solid rgba(255,255,255,0.08);
+  }
+  .sticky-toc ul { list-style: none; padding: 0; margin: 0; }
+  .sticky-toc li { margin-bottom: 0.7rem; }
+  .sticky-toc a {
+    color: #94a3b8;
+    text-decoration: none;
+    font-size: 0.88rem;
+    transition: all 0.2s;
+    display: block;
+  }
+  .sticky-toc a:hover { color: #818cf8; transform: translateX(3px); }
+
+  /* Content sections */
+  .section { margin-bottom: 5rem; scroll-margin-top: 2rem; }
+  .section h2 {
+    font-size: 2rem;
+    color: #fff;
+    margin-bottom: 1.2rem;
+    padding-bottom: 0.8rem;
+    border-bottom: 1px solid rgba(255,255,255,0.08);
+    letter-spacing: -0.02em;
+  }
+  .section h3 {
+    font-size: 1.35rem;
+    color: #e2e8f0;
+    margin-top: 2.5rem;
+    margin-bottom: 0.8rem;
+  }
+  .section p {
+    margin-bottom: 1.3rem;
+    font-size: 1.05rem;
+    color: #cbd5e1;
+  }
+  .section ul, .section ol {
+    margin-bottom: 1.5rem;
+    padding-left: 1.5rem;
+    color: #cbd5e1;
+    font-size: 1.05rem;
+  }
+  .section li { margin-bottom: 0.5rem; }
+
+  /* Callout boxes */
+  .callout {
+    border-left: 4px solid #818cf8;
+    background: linear-gradient(90deg, rgba(129, 140, 248, 0.1) 0%, rgba(129, 140, 248, 0.02) 100%);
+    padding: 1.3rem 1.8rem;
+    border-radius: 0 12px 12px 0;
+    margin: 2rem 0;
+    font-size: 1.05rem;
+    color: #e2e8f0;
+  }
+  .callout.warning {
+    border-left-color: #f59e0b;
+    background: linear-gradient(90deg, rgba(245, 158, 11, 0.1) 0%, rgba(245, 158, 11, 0.02) 100%);
+  }
+  .callout.success {
+    border-left-color: #10b981;
+    background: linear-gradient(90deg, rgba(16, 185, 129, 0.1) 0%, rgba(16, 185, 129, 0.02) 100%);
+  }
+  .callout strong { color: #fff; }
+
+  /* Data tables */
+  .data-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 2rem 0;
+    font-size: 0.95rem;
+  }
+  .data-table thead {
+    background: rgba(129, 140, 248, 0.1);
+  }
+  .data-table th {
+    padding: 0.8rem 1rem;
+    text-align: left;
+    color: #a5b4fc;
+    font-weight: 600;
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    border-bottom: 1px solid rgba(255,255,255,0.1);
+  }
+  .data-table td {
+    padding: 0.8rem 1rem;
+    color: #cbd5e1;
+    border-bottom: 1px solid rgba(255,255,255,0.04);
+  }
+  .data-table tbody tr:hover {
+    background: rgba(255,255,255,0.02);
+  }
+  .val-good { color: #4ade80; font-weight: 600; }
+  .val-great { color: #22d3ee; font-weight: 700; }
+  .val-meh { color: #fbbf24; }
+  .val-bad { color: #f87171; }
+
+  /* Interactive ROI calculator */
+  .calc-box {
+    background: #12121a;
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 16px;
+    padding: 2.5rem;
+    margin: 2.5rem 0;
+  }
+  .calc-box h3 {
+    color: #fff;
+    margin: 0 0 1.5rem;
+    font-size: 1.4rem;
+  }
+  .calc-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.5rem;
+    margin-bottom: 1.5rem;
+  }
+  .calc-field label {
+    display: block;
+    font-size: 0.8rem;
+    color: #94a3b8;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    margin-bottom: 0.4rem;
+  }
+  .calc-field input, .calc-field select {
+    width: 100%;
+    padding: 0.7rem 1rem;
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 8px;
+    color: #fff;
+    font-size: 1rem;
+    font-family: inherit;
+    box-sizing: border-box;
+  }
+  .calc-field input:focus, .calc-field select:focus {
+    outline: none;
+    border-color: #818cf8;
+  }
+  .calc-field select option { background: #12121a; color: #fff; }
+  .calc-btn {
+    display: inline-block;
+    background: #818cf8;
+    color: #fff;
+    border: none;
+    padding: 0.8rem 2rem;
+    border-radius: 10px;
+    font-weight: 600;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: all 0.2s;
+    font-family: inherit;
+  }
+  .calc-btn:hover { background: #6366f1; transform: translateY(-2px); }
+  .calc-result {
+    margin-top: 1.5rem;
+    padding: 1.5rem;
+    background: rgba(129, 140, 248, 0.08);
+    border-radius: 12px;
+    display: none;
+  }
+  .calc-result .big-number {
+    font-size: 2.5rem;
+    font-weight: 800;
+    color: #4ade80;
+    line-height: 1;
+  }
+  .calc-result .big-label {
+    font-size: 0.85rem;
+    color: #94a3b8;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    margin-top: 0.3rem;
+  }
+  .calc-result .breakdown {
+    margin-top: 1rem;
+    font-size: 0.95rem;
+    color: #cbd5e1;
+  }
+
+  /* Automation tool cards */
+  .tool-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 1.2rem;
+    margin: 2rem 0;
+  }
+  .tool-card {
+    background: #12121a;
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 14px;
+    padding: 1.8rem;
+    transition: border-color 0.2s;
+  }
+  .tool-card:hover { border-color: rgba(129, 140, 248, 0.4); }
+  .tool-card h4 {
+    color: #fff;
+    font-size: 1.15rem;
+    margin: 0 0 0.5rem;
+  }
+  .tool-card .tool-type {
+    font-size: 0.75rem;
+    color: #818cf8;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    font-weight: 600;
+    margin-bottom: 0.6rem;
+  }
+  .tool-card p {
+    color: #94a3b8;
+    font-size: 0.95rem;
+    margin: 0 0 0.8rem;
+    line-height: 1.5;
+  }
+  .tool-card .tool-price {
+    font-size: 0.85rem;
+    color: #64748b;
+  }
+
+  /* Property type comparison */
+  .property-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+    gap: 1.5rem;
+    margin: 2rem 0;
+  }
+  .property-card {
+    background: #12121a;
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 14px;
+    padding: 2rem;
+    transition: border-color 0.2s;
+  }
+  .property-card:hover { border-color: rgba(255,255,255,0.2); }
+  .property-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+  }
+  .property-name {
+    font-size: 1.3rem;
+    font-weight: 700;
+    color: #fff;
+    margin: 0;
+  }
+  .property-roi {
+    background: #4ade80;
+    color: #0d1117;
+    padding: 0.3rem 0.8rem;
+    border-radius: 20px;
+    font-size: 0.85rem;
+    font-weight: 700;
+  }
+  .property-roi.medium { background: #fbbf24; }
+  .property-roi.low { background: #f87171; }
+  .property-stat {
+    display: flex;
+    justify-content: space-between;
+    padding: 0.5rem 0;
+    border-top: 1px solid rgba(255,255,255,0.04);
+    font-size: 0.9rem;
+  }
+  .property-stat-label { color: #94a3b8; }
+  .property-stat-value { color: #e2e8f0; font-weight: 600; }
+
+  /* Strategy cards */
+  .strategy-card {
+    background: #12121a;
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 14px;
+    padding: 2rem;
+    margin: 1.5rem 0;
+    position: relative;
+    overflow: hidden;
+  }
+  .strategy-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0;
+    width: 4px; height: 100%;
+    background: #818cf8;
+  }
+  .strategy-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+  .strategy-title { color: #fff; font-size: 1.25rem; font-weight: 700; margin: 0; }
+  .strategy-tags { display: flex; gap: 0.5rem; flex-wrap: wrap; }
+  .strategy-tag {
+    font-size: 0.7rem;
+    padding: 0.2rem 0.5rem;
+    border-radius: 4px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+  .tag-automation { background: rgba(74, 222, 128, 0.15); color: #4ade80; }
+  .tag-revenue { background: rgba(168, 85, 247, 0.15); color: #a855f7; }
+  .tag-difficulty { background: rgba(251, 191, 36, 0.15); color: #fbbf24; }
+  .strategy-body { color: #cbd5e1; font-size: 1rem; }
+  .strategy-body p { margin-bottom: 0.8rem; }
+
+  /* CTA */
+  .cta-card {
+    display: block;
+    background: #12121a;
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 16px;
+    padding: 2rem;
+    text-decoration: none;
+    transition: all 0.3s;
+    position: relative;
+    overflow: hidden;
+    margin: 2.5rem 0;
+  }
+  .cta-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0;
+    width: 4px; height: 100%;
+    background: #818cf8;
+  }
+  .cta-card:hover { transform: translateY(-4px); border-color: #818cf8; }
+  .cta-card h4 { color: #fff; font-size: 1.3rem; margin: 0 0 0.5rem; }
+  .cta-card p { color: #94a3b8; margin: 0; font-size: 1rem; }
+
+  /* FAQ */
+  .faq-section {
+    margin-top: 5rem;
+    border-top: 1px solid rgba(255,255,255,0.08);
+    padding-top: 4rem;
+  }
+  .faq-section h2 {
+    font-size: 2rem;
+    color: #fff;
+    margin-bottom: 2rem;
+    text-align: center;
+  }
+  .faq-item {
+    background: #12121a;
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 14px;
+    padding: 1.5rem;
+    margin-bottom: 1rem;
+  }
+  .faq-item:hover { border-color: rgba(129, 140, 248, 0.3); }
+  .faq-item h3 { margin: 0 0 0.7rem; color: #fff; font-size: 1.1rem; }
+  .faq-item p { margin: 0; color: #94a3b8; font-size: 1rem; }
+
+  @media (max-width: 1024px) {
+    .rental-layout { grid-template-columns: 1fr; gap: 2rem; }
+    .sticky-toc { position: relative; top: 0; }
+    .property-grid { grid-template-columns: 1fr; }
+  }
+  @media (max-width: 768px) {
+    .gradient-h1 { font-size: 2rem; }
+    .rental-container { padding: 1rem; }
+    .calc-row { grid-template-columns: 1fr; }
+    .tool-grid { grid-template-columns: 1fr; }
+  }
+</style>
+
+<div class="rental-container">
+  <div class="rental-header">
+    <div class="breadcrumb">
+      <a href="/apex-guides">Apex Guides</a>
+      <span>›</span>
+      <a href="/real-estate-hospitality-guide-2026">Real Estate, Hospitality & Physical Assets</a>
+      <span>›</span>
+      <span style="color: #cbd5e1;">Current</span>
+    </div>
+    <span class="updated-badge">🏠 Updated March 2026</span>
+    <h1 class="gradient-h1">Short-Term Rental Automation — The Complete Playbook</h1>
+    <p class="rental-subtitle">Build and automate a profitable Airbnb business. From property selection to guest management — complete systems for running short-term rentals passively while maximizing revenue.</p>
+  </div>
+
+  <div class="rental-layout">
+    <aside>
+      <nav class="sticky-toc">
+        <h3>Contents</h3>
+        <ul>
+          <li><a href="#foundation">1. STR Business Foundation</a></li>
+          <li><a href="#property-selection">2. Property Selection</a></li>
+          <li><a href="#calculator">3. ROI Calculator</a></li>
+          <li><a href="#automation">4. Automation Systems</a></li>
+          <li><a href="#optimization">5. Revenue Optimization</a></li>
+          <li><a href="#guest-management">6. Guest Experience</a></li>
+          <li><a href="#scaling">7. Portfolio Scaling</a></li>
+          <li><a href="#tools">8. Management Tools</a></li>
+          <li><a href="#faq">9. FAQ</a></li>
+        </ul>
+      </nav>
+    </aside>
+
+    <main>
+
+      <!-- SECTION 1: FOUNDATION -->
+      <section id="foundation" class="section">
+        <h2>1. Short-Term Rental Business Foundation</h2>
+        <p>Short-term rentals (STR) can generate 2-5x the income of traditional long-term rentals when properly managed. However, success requires treating STR as a hospitality business, not just real estate investment. Automation and systems are essential for profitability and scalability.</p>
+        
+        <p>The STR market has matured significantly since Airbnb's early days. Success now requires professional operations, excellent guest experience, and strategic positioning in increasingly competitive markets. The most profitable STR businesses operate like boutique hotels with systematized processes.</p>
+
+        <div class="callout">
+          <strong>The key insight:</strong> STR profitability comes from maximizing occupancy rates AND average daily rates through superior guest experience and operational efficiency. Properties that compete solely on price struggle with thin margins and high maintenance costs. Focus on value, not volume.
+        </div>
+
+        <p>Modern STR operations leverage technology for pricing optimization, guest communication, maintenance scheduling, and financial tracking. Manual management becomes unsustainable beyond 2-3 properties. Automation enables passive income while maintaining service quality that drives repeat bookings and five-star reviews.</p>
+
+        <h3>The Five Pillars of STR Success</h3>
+        <ul>
+          <li><strong>Location optimization:</strong> Properties in high-demand areas with limited supply, strong local attractions, and favorable regulations</li>
+          <li><strong>Guest experience excellence:</strong> Professional hosting with seamless check-in, pristine cleanliness, and thoughtful amenities</li>
+          <li><strong>Revenue management:</strong> Dynamic pricing, occupancy optimization, and seasonal strategy to maximize income</li>
+          <li><strong>Operational automation:</strong> Systems for bookings, communications, maintenance, and financial management</li>
+          <li><strong>Compliance management:</strong> Understanding and adhering to local regulations, taxes, and licensing requirements</li>
+        </ul>
+
+        <h3>STR vs Traditional Rental Comparison</h3>
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>Factor</th>
+              <th>Short-Term Rental</th>
+              <th>Long-Term Rental</th>
+              <th>STR Advantage</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>Income Potential</strong></td>
+              <td class="val-great">$150-400/night</td>
+              <td class="val-meh">$1,500-3,000/month</td>
+              <td class="val-great">2-5x higher revenue</td>
+            </tr>
+            <tr>
+              <td><strong>Management Time</strong></td>
+              <td class="val-bad">High (with automation)</td>
+              <td class="val-great">Low (stable tenants)</td>
+              <td class="val-bad">More intensive</td>
+            </tr>
+            <tr>
+              <td><strong>Maintenance Costs</strong></td>
+              <td class="val-meh">Higher turnover wear</td>
+              <td class="val-good">Predictable maintenance</td>
+              <td class="val-bad">Higher costs</td>
+            </tr>
+            <tr>
+              <td><strong>Cash Flow Stability</strong></td>
+              <td class="val-meh">Seasonal variations</td>
+              <td class="val-great">Consistent monthly</td>
+              <td class="val-meh">Less predictable</td>
+            </tr>
+            <tr>
+              <td><strong>Tax Benefits</strong></td>
+              <td class="val-great">Business deductions</td>
+              <td class="val-good">Depreciation, repairs</td>
+              <td class="val-good">More deduction categories</td>
+            </tr>
+            <tr>
+              <td><strong>Exit Flexibility</strong></td>
+              <td class="val-great">Can convert anytime</td>
+              <td class="val-meh">Lease obligations</td>
+              <td class="val-great">Higher flexibility</td>
+            </tr>
+          </tbody>
+        </table>
+      </section>
+
+      <!-- SECTION 2: PROPERTY SELECTION -->
+      <section id="property-selection" class="section">
+        <h2>2. Strategic Property Selection</h2>
+        <p>Property selection determines 80% of STR success. The best furnishings and automation can't overcome poor location, unfavorable local regulations, or inadequate parking. Analyze demand, supply, and regulatory environment before considering any property.</p>
+
+        <div class="property-grid">
+          <div class="property-card">
+            <div class="property-header">
+              <h3 class="property-name">🏙️ Urban Condos</h3>
+              <div class="property-roi">High ROI</div>
+            </div>
+            <div class="property-stat"><span class="property-stat-label">Target guest</span><span class="property-stat-value">Business travelers</span></div>
+            <div class="property-stat"><span class="property-stat-label">Average stay</span><span class="property-stat-value">2-4 nights</span></div>
+            <div class="property-stat"><span class="property-stat-label">Peak season</span><span class="property-stat-value">Business events</span></div>
+            <div class="property-stat"><span class="property-stat-label">Advantages</span><span class="property-stat-value">High ADR, year-round demand</span></div>
+            <div class="property-stat"><span class="property-stat-label">Challenges</span><span class="property-stat-value">HOA restrictions, competition</span></div>
+            <div class="property-stat"><span class="property-stat-label">Automation level</span><span class="property-stat-value">Very high</span></div>
+          </div>
+
+          <div class="property-card">
+            <div class="property-header">
+              <h3 class="property-name">🏖️ Vacation Destinations</h3>
+              <div class="property-roi">High ROI</div>
+            </div>
+            <div class="property-stat"><span class="property-stat-label">Target guest</span><span class="property-stat-value">Leisure travelers</span></div>
+            <div class="property-stat"><span class="property-stat-label">Average stay</span><span class="property-stat-value">4-7 nights</span></div>
+            <div class="property-stat"><span class="property-stat-label">Peak season</span><span class="property-stat-value">Summer/holidays</span></div>
+            <div class="property-stat"><span class="property-stat-label">Advantages</span><span class="property-stat-value">High rates, loyal guests</span></div>
+            <div class="property-stat"><span class="property-stat-label">Challenges</span><span class="property-stat-value">Seasonality, maintenance</span></div>
+            <div class="property-stat"><span class="property-stat-label">Automation level</span><span class="property-stat-value">High</span></div>
+          </div>
+
+          <div class="property-card">
+            <div class="property-header">
+              <h3 class="property-name">🏘️ Suburban Homes</h3>
+              <div class="property-roi medium">Medium ROI</div>
+            </div>
+            <div class="property-stat"><span class="property-stat-label">Target guest</span><span class="property-stat-value">Family groups</span></div>
+            <div class="property-stat"><span class="property-stat-label">Average stay</span><span class="property-stat-value">3-5 nights</span></div>
+            <div class="property-stat"><span class="property-stat-label">Peak season</span><span class="property-stat-value">School holidays</span></div>
+            <div class="property-stat"><span class="property-stat-label">Advantages</span><span class="property-stat-value">Space, parking, families</span></div>
+            <div class="property-stat"><span class="property-stat-label">Challenges</span><span class="property-stat-value">Zoning laws, neighbors</span></div>
+            <div class="property-stat"><span class="property-stat-label">Automation level</span><span class="property-stat-value">Medium</span></div>
+          </div>
+
+          <div class="property-card">
+            <div class="property-header">
+              <h3 class="property-name">🏔️ Unique Properties</h3>
+              <div class="property-roi">Variable ROI</div>
+            </div>
+            <div class="property-stat"><span class="property-stat-label">Target guest</span><span class="property-stat-value">Experience seekers</span></div>
+            <div class="property-stat"><span class="property-stat-label">Average stay</span><span class="property-stat-value">2-3 nights</span></div>
+            <div class="property-stat"><span class="property-stat-label">Peak season</span><span class="property-stat-value">Instagram trends</span></div>
+            <div class="property-stat"><span class="property-stat-label">Advantages</span><span class="property-stat-value">Premium pricing, viral potential</span></div>
+            <div class="property-stat"><span class="property-stat-label">Challenges</span><span class="property-stat-value">Maintenance, accessibility</span></div>
+            <div class="property-stat"><span class="property-stat-label">Automation level</span><span class="property-stat-value">Low to medium</span></div>
+          </div>
+        </div>
+
+        <h3>Property Evaluation Framework</h3>
+        <p>Use this checklist to evaluate potential STR properties:</p>
+        <ul>
+          <li><strong>Regulatory compliance:</strong> Verify STR legality, licensing requirements, occupancy limits, and tax obligations</li>
+          <li><strong>Market analysis:</strong> Research supply/demand, seasonal patterns, competitor pricing, and local events calendar</li>
+          <li><strong>Location factors:</strong> Proximity to attractions, public transport, restaurants, shopping, and safety ratings</li>
+          <li><strong>Property attributes:</strong> Parking availability, noise levels, WiFi capability, unique features that justify premium pricing</li>
+          <li><strong>Financial feasibility:</strong> Purchase price, renovation costs, ongoing expenses, and realistic revenue projections</li>
+          <li><strong>Management practicality:</strong> Distance from your location, cleaning accessibility, maintenance complexity</li>
+        </ul>
+
+        <div class="callout success">
+          <strong>The 1% rule for STR:</strong> Target properties where monthly gross STR income equals at least 1% of purchase price. In high-demand areas, properties can achieve 2-3% monthly returns. Factor in 30-40% expenses (cleaning, utilities, management, maintenance) when calculating net returns.
+        </div>
+      </section>
+
+      <!-- SECTION 3: CALCULATOR -->
+      <section id="calculator" class="section">
+        <h2>3. STR ROI & Cash Flow Calculator</h2>
+        <p>Calculate the profitability potential of short-term rental properties with realistic expense projections and occupancy scenarios.</p>
+
+        <div class="calc-box">
+          <h3>💰 STR Investment Analysis</h3>
+          <div class="calc-row">
+            <div class="calc-field">
+              <label>Property purchase price ($)</label>
+              <input type="number" id="purchasePrice" placeholder="e.g. 300000" value="300000">
+            </div>
+            <div class="calc-field">
+              <label>Setup/renovation costs ($)</label>
+              <input type="number" id="setupCosts" placeholder="e.g. 25000" value="25000">
+            </div>
+          </div>
+          <div class="calc-row">
+            <div class="calc-field">
+              <label>Average daily rate ($)</label>
+              <input type="number" id="averageDailyRate" placeholder="e.g. 150" value="150">
+            </div>
+            <div class="calc-field">
+              <label>Expected occupancy rate (%)</label>
+              <input type="number" id="occupancyRate" placeholder="e.g. 70" value="70" min="10" max="100">
+            </div>
+          </div>
+          <div class="calc-row">
+            <div class="calc-field">
+              <label>Monthly mortgage payment ($)</label>
+              <input type="number" id="mortgagePayment" placeholder="e.g. 1500" value="1500">
+            </div>
+            <div class="calc-field">
+              <label>Property type</label>
+              <select id="propertyType">
+                <option value="urban">Urban condo</option>
+                <option value="vacation">Vacation rental</option>
+                <option value="suburban">Suburban house</option>
+                <option value="unique">Unique property</option>
+              </select>
+            </div>
+          </div>
+          <button class="calc-btn" onclick="calculateSTR()">Calculate ROI</button>
+
+          <div class="calc-result" id="strResult">
+            <div class="big-number" id="monthlyProfit"></div>
+            <div class="big-label">Monthly Net Cash Flow</div>
+            <div class="breakdown" id="strBreakdown"></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- SECTION 4: AUTOMATION -->
+      <section id="automation" class="section">
+        <h2>4. Automation Systems & Technology</h2>
+        <p>Automation transforms STR from active management to passive income. The right technology stack handles pricing, bookings, communications, and maintenance while maintaining excellent guest experience.</p>
+
+        <div class="strategy-card">
+          <div class="strategy-header">
+            <h3 class="strategy-title">Guest Communication Automation</h3>
+            <div class="strategy-tags">
+              <span class="strategy-tag tag-automation">High impact</span>
+              <span class="strategy-tag tag-difficulty">Easy setup</span>
+            </div>
+          </div>
+          <div class="strategy-body">
+            <p>Automated messaging handles 90% of guest communications without human intervention, from booking confirmation to checkout instructions.</p>
+            <p><strong>Pre-arrival:</strong> Booking confirmation with local recommendations, check-in instructions sent 24 hours prior, arrival day reminders with door codes.</p>
+            <p><strong>During stay:</strong> Welcome message with house rules and local tips, mid-stay check-in for longer bookings, early checkout procedures.</p>
+            <p><strong>Post-checkout:</strong> Thank you message with review request, feedback survey, return guest discount offers.</p>
+          </div>
+        </div>
+
+        <div class="strategy-card">
+          <div class="strategy-header">
+            <h3 class="strategy-title">Dynamic Pricing Optimization</h3>
+            <div class="strategy-tags">
+              <span class="strategy-tag tag-revenue">Revenue boost</span>
+              <span class="strategy-tag tag-automation">AI-powered</span>
+            </div>
+          </div>
+          <div class="strategy-body">
+            <p>AI-powered pricing tools analyze local demand, competitor rates, seasonality, and events to maximize revenue per available night.</p>
+            <p><strong>Demand factors:</strong> Local events, holidays, weather patterns, search volume trends, competitor availability.</p>
+            <p><strong>Optimization goals:</strong> Maximize revenue during high-demand periods, maintain occupancy during low-demand periods, optimize booking lead times.</p>
+            <p><strong>Results:</strong> 10-40% revenue increase compared to static pricing, higher occupancy rates, competitive positioning.</p>
+          </div>
+        </div>
+
+        <div class="strategy-card">
+          <div class="strategy-header">
+            <h3 class="strategy-title">Smart Home Integration</h3>
+            <div class="strategy-tags">
+              <span class="strategy-tag tag-automation">Tech-enabled</span>
+              <span class="strategy-tag tag-difficulty">Medium setup</span>
+            </div>
+          </div>
+          <div class="strategy-body">
+            <p>Smart home technology provides keyless entry, remote monitoring, and automated utilities management for seamless operations.</p>
+            <p><strong>Access control:</strong> Smart locks with unique codes per guest, automated code generation and scheduling, remote door monitoring.</p>
+            <p><strong>Environmental control:</strong> Smart thermostats with presence detection, automated lighting schedules, energy usage optimization.</p>
+            <p><strong>Security monitoring:</strong> Motion sensors, sound detection, property monitoring cameras (exterior only), automated alerts.</p>
+          </div>
+        </div>
+
+        <h3>Essential Automation Tools</h3>
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>Category</th>
+              <th>Tool</th>
+              <th>Monthly Cost</th>
+              <th>ROI Impact</th>
+              <th>Setup Difficulty</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>Channel Management</strong></td>
+              <td class="val-great">Hostfully / Guesty</td>
+              <td class="val-meh">$20-100/property</td>
+              <td class="val-great">Very High</td>
+              <td class="val-good">Medium</td>
+            </tr>
+            <tr>
+              <td><strong>Dynamic Pricing</strong></td>
+              <td class="val-great">PriceLabs / Wheelhouse</td>
+              <td class="val-good">$20-40/property</td>
+              <td class="val-great">Very High</td>
+              <td class="val-great">Easy</td>
+            </tr>
+            <tr>
+              <td><strong>Guest Communication</strong></td>
+              <td class="val-good">Smartbnb / HostGPT</td>
+              <td class="val-good">$15-30/property</td>
+              <td class="val-good">High</td>
+              <td class="val-great">Easy</td>
+            </tr>
+            <tr>
+              <td><strong>Smart Locks</strong></td>
+              <td class="val-good">August / Schlage Encode</td>
+              <td class="val-great">$5-15/property</td>
+              <td class="val-good">High</td>
+              <td class="val-meh">Hard</td>
+            </tr>
+            <tr>
+              <td><strong>Cleaning Management</strong></td>
+              <td class="val-good">TurnoverBnB / Properly</td>
+              <td class="val-good">$10-25/property</td>
+              <td class="val-good">Medium</td>
+              <td class="val-good">Medium</td>
+            </tr>
+            <tr>
+              <td><strong>Financial Tracking</strong></td>
+              <td class="val-good">HostBooks / Stessa</td>
+              <td class="val-good">$10-30/property</td>
+              <td class="val-good">Medium</td>
+              <td class="val-good">Medium</td>
+            </tr>
+          </tbody>
+        </table>
+      </section>
+
+      <!-- SECTION 5: OPTIMIZATION -->
+      <section id="optimization" class="section">
+        <h2>5. Revenue Optimization Strategies</h2>
+        <p>Beyond basic automation, advanced revenue optimization involves strategic positioning, ancillary income streams, and guest experience improvements that command premium pricing.</p>
+
+        <h3>Listing Optimization</h3>
+        <ul>
+          <li><strong>Photography excellence:</strong> Professional photos increase bookings by 40%. Include lifestyle shots, unique features, and local attractions.</li>
+          <li><strong>Strategic keywords:</strong> Research and use terms guests search for in your market. Include location, property type, and key amenities.</li>
+          <li><strong>Compelling descriptions:</strong> Focus on guest benefits, not just features. Describe the experience, not just the space.</li>
+          <li><strong>Amenity highlighting:</strong> List high-value amenities first: WiFi, parking, kitchen, washer/dryer, unique features.</li>
+          <li><strong>Instant book optimization:</strong> Enable instant book for higher search ranking, but set clear house rules and requirements.</li>
+        </ul>
+
+        <h3>Pricing Psychology & Strategy</h3>
+        <ul>
+          <li><strong>Psychological pricing:</strong> $149 performs better than $150. Use pricing that feels like a deal while maximizing revenue.</li>
+          <li><strong>Length-of-stay discounts:</strong> Offer weekly (10-15%) and monthly (20-25%) discounts to attract longer stays with higher lifetime value.</li>
+          <li><strong>Seasonal premium positioning:</strong> Charge premium rates during high season, but maintain occupancy during low season with competitive pricing.</li>
+          <li><strong>Last-minute pricing:</strong> Reduce prices for last-minute bookings rather than leave nights empty, especially during low-demand periods.</li>
+          <li><strong>Value-based pricing:</strong> Price based on guest value (location, amenities, experience) rather than just cost plus markup.</li>
+        </ul>
+
+        <h3>Ancillary Revenue Streams</h3>
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>Revenue Stream</th>
+              <th>Average Monthly Revenue</th>
+              <th>Setup Effort</th>
+              <th>Guest Appeal</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>Early Check-in/Late Check-out</strong></td>
+              <td class="val-good">$200-500</td>
+              <td class="val-great">Low</td>
+              <td class="val-great">High</td>
+            </tr>
+            <tr>
+              <td><strong>Pet Fees</strong></td>
+              <td class="val-good">$300-800</td>
+              <td class="val-great">Low</td>
+              <td class="val-good">Medium</td>
+            </tr>
+            <tr>
+              <td><strong>Experience Packages</strong></td>
+              <td class="val-meh">$100-400</td>
+              <td class="val-meh">Medium</td>
+              <td class="val-good">High</td>
+            </tr>
+            <tr>
+              <td><strong>Grocery Stocking Service</strong></td>
+              <td class="val-meh">$150-350</td>
+              <td class="val-meh">Medium</td>
+              <td class="val-good">Medium</td>
+            </tr>
+            <tr>
+              <td><strong>Airport Transportation</strong></td>
+              <td class="val-good">$200-600</td>
+              <td class="val-good">High</td>
+              <td class="val-great">High</td>
+            </tr>
+            <tr>
+              <td><strong>Event Hosting Premium</strong></td>
+              <td class="val-great">$500-2000</td>
+              <td class="val-meh">Medium</td>
+              <td class="val-meh">Variable</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <div class="callout">
+          <strong>Revenue optimization principle:</strong> Focus on improvements that increase both average daily rate AND occupancy rate. Many hosts optimize for one metric while sacrificing the other. The most profitable properties command premium pricing while maintaining high occupancy through exceptional value delivery.
+        </div>
+      </section>
+
+      <!-- SECTION 6: GUEST MANAGEMENT -->
+      <section id="guest-management" class="section">
+        <h2>6. Guest Experience & Management</h2>
+        <p>Exceptional guest experience drives five-star reviews, repeat bookings, and word-of-mouth referrals. Systematizing guest interactions ensures consistency while scaling operations.</p>
+
+        <h3>The Guest Journey Framework</h3>
+        <p><strong>Pre-Arrival (Days before arrival)</strong></p>
+        <ul>
+          <li>Booking confirmation with property details and local recommendations</li>
+          <li>Pre-arrival survey to understand guest preferences and purpose of visit</li>
+          <li>Local guide PDF with restaurant recommendations, attractions, and tips</li>
+          <li>Check-in instructions with door codes, parking, and emergency contacts</li>
+        </ul>
+
+        <p><strong>Arrival Day</strong></p>
+        <ul>
+          <li>Welcome message with immediate needs (WiFi, climate control, house rules)</li>
+          <li>Property walkthrough video or digital guide for key amenities</li>
+          <li>Local concierge recommendations based on weather and events</li>
+          <li>24/7 emergency contact information clearly posted</li>
+        </ul>
+
+        <p><strong>During Stay</strong></p>
+        <ul>
+          <li>Mid-stay check-in (day 2 for 3+ night stays) to address any issues</li>
+          <li>Proactive weather alerts and local event notifications</li>
+          <li>Quick response to questions and maintenance requests</li>
+          <li>Additional amenity information (streaming accounts, local delivery apps)</li>
+        </ul>
+
+        <p><strong>Check-out & Follow-up</strong></p>
+        <ul>
+          <li>Simple check-out instructions (don't overcomplicate departure)</li>
+          <li>Thank you message with review request within 24 hours</li>
+          <li>Feedback survey to identify improvement opportunities</li>
+          <li>Future booking discount for return guests</li>
+        </ul>
+
+        <h3>Review Management Strategy</h3>
+        <ul>
+          <li><strong>Review request timing:</strong> Send within 6-12 hours of checkout while experience is fresh</li>
+          <li><strong>Review response protocol:</strong> Respond to all reviews within 24 hours, professionally and personally</li>
+          <li><strong>Negative review handling:</strong> Address issues publicly, apologize genuinely, explain corrective actions taken</li>
+          <li><strong>Review incentives:</strong> Offer future stay discounts for honest reviews (don't request only positive reviews)</li>
+          <li><strong>Continuous improvement:</strong> Track common complaints and implement systematic solutions</li>
+        </ul>
+
+        <div class="callout success">
+          <strong>Guest experience ROI:</strong> Five-star properties earn 20-40% higher rates than four-star properties in the same market. Investing in guest experience improvements (better amenities, faster response times, thoughtful touches) pays for itself through higher pricing power and increased occupancy.
+        </div>
+      </section>
+
+      <!-- SECTION 7: SCALING -->
+      <section id="scaling" class="section">
+        <h2>7. Portfolio Scaling & Management</h2>
+        <p>Scaling STR operations requires systematizing processes, building reliable teams, and maintaining quality standards across multiple properties. Most failures occur when hosts try to scale without proper systems.</p>
+
+        <h3>Scaling Progression Strategy</h3>
+        <div class="strategy-card">
+          <div class="strategy-header">
+            <h3 class="strategy-title">Phase 1: Single Property Mastery (Properties 1-2)</h3>
+            <div class="strategy-tags">
+              <span class="strategy-tag tag-difficulty">Learning phase</span>
+              <span class="strategy-tag tag-automation">Manual operations</span>
+            </div>
+          </div>
+          <div class="strategy-body">
+            <p>Focus on perfecting operations, guest experience, and profitability with your first property before scaling. Document all processes and measure key performance indicators.</p>
+            <p><strong>Key objectives:</strong> Achieve 4.8+ star rating, 70%+ occupancy rate, positive cash flow, systematic operations documentation.</p>
+            <p><strong>Time investment:</strong> 5-10 hours per week per property, gradually reducing with automation implementation.</p>
+          </div>
+        </div>
+
+        <div class="strategy-card">
+          <div class="strategy-header">
+            <h3 class="strategy-title">Phase 2: System Implementation (Properties 3-5)</h3>
+            <div class="strategy-tags">
+              <span class="strategy-tag tag-automation">Automation focus</span>
+              <span class="strategy-tag tag-revenue">Team building</span>
+            </div>
+          </div>
+          <div class="strategy-body">
+            <p>Implement comprehensive automation, build cleaning and maintenance teams, and establish standard operating procedures for all aspects of the business.</p>
+            <p><strong>Key objectives:</strong> Reduce hands-on time to 2-3 hours per property per week, build reliable service provider network, implement all automation tools.</p>
+            <p><strong>System requirements:</strong> Property management software, cleaning team, maintenance contacts, automated pricing and communication.</p>
+          </div>
+        </div>
+
+        <div class="strategy-card">
+          <div class="strategy-header">
+            <h3 class="strategy-title">Phase 3: Portfolio Growth (Properties 6-15)</h3>
+            <div class="strategy-tags">
+              <span class="strategy-tag tag-revenue">Business operations</span>
+              <span class="strategy-tag tag-automation">Passive management</span>
+            </div>
+          </div>
+          <div class="strategy-body">
+            <p>Focus on acquisition, financing optimization, and business management rather than day-to-day operations. Hire virtual assistants for administrative tasks.</p>
+            <p><strong>Key objectives:</strong> Achieve true passive income, optimize portfolio performance, explore new markets and property types.</p>
+            <p><strong>Management structure:</strong> Virtual assistant for communications, property management company for operations, or full-service STR management firm.</p>
+          </div>
+        </div>
+
+        <h3>Team Building Priorities</h3>
+        <ol>
+          <li><strong>Cleaning team (Priority 1):</strong> Reliable, quality-focused cleaners who understand STR standards and can handle same-day turnovers.</li>
+          <li><strong>Maintenance contacts:</strong> Plumber, electrician, HVAC, handyman, and landscaper with STR experience and quick response times.</li>
+          <li><strong>Virtual assistant:</strong> Handle guest communications, booking management, review responses, and administrative tasks.</li>
+          <li><strong>Property management company:</strong> Full-service management for portfolios of 10+ properties or when pursuing other opportunities.</li>
+        </ol>
+
+        <div class="callout warning">
+          <strong>Scaling warning:</strong> Most STR businesses fail when scaling beyond the owner's capacity to maintain quality. Don't acquire new properties faster than you can build reliable systems and teams. One poorly managed property can damage your entire portfolio's reputation and profitability.
+        </div>
+      </section>
+
+      <!-- SECTION 8: TOOLS -->
+      <section id="tools" class="section">
+        <h2>8. Essential STR Management Tools</h2>
+        <p>The right technology stack can automate 80-90% of STR management tasks while improving guest experience and maximizing revenue. Invest in tools that directly impact occupancy, rates, or operational efficiency.</p>
+
+        <div class="tool-grid">
+          <div class="tool-card">
+            <div class="tool-type">Channel Management</div>
+            <h4>Hostfully</h4>
+            <p>All-in-one property management system with multi-channel listing, automated messaging, and guest communication tools. Excellent for scaling operations.</p>
+            <div class="tool-price">$35-95/property/month</div>
+          </div>
+          <div class="tool-card">
+            <div class="tool-type">Channel Management</div>
+            <h4>Guesty</h4>
+            <p>Enterprise-grade STR management platform with advanced automation, team collaboration, and portfolio analytics. Best for larger operations.</p>
+            <div class="tool-price">$35-75/property/month</div>
+          </div>
+          <div class="tool-card">
+            <div class="tool-type">Dynamic Pricing</div>
+            <h4>PriceLabs</h4>
+            <p>AI-powered pricing optimization with market data analysis, competitor monitoring, and revenue management tools. 10-30% revenue increase typical.</p>
+            <div class="tool-price">$19.95-39.95/property/month</div>
+          </div>
+          <div class="tool-card">
+            <div class="tool-type">Dynamic Pricing</div>
+            <h4>Wheelhouse</h4>
+            <p>Real-time pricing optimization with local event tracking, demand forecasting, and customizable pricing rules. Strong for vacation markets.</p>
+            <div class="tool-price">$19-49/property/month</div>
+          </div>
+          <div class="tool-card">
+            <div class="tool-type">Guest Communication</div>
+            <h4>Smartbnb</h4>
+            <p>Automated guest messaging with AI-powered responses, review management, and multi-language support. Saves 5+ hours per week per property.</p>
+            <div class="tool-price">$19-39/property/month</div>
+          </div>
+          <div class="tool-card">
+            <div class="tool-type">Smart Access</div>
+            <h4>August Smart Lock Pro</h4>
+            <p>Keyless entry with remote access, guest code automation, and activity monitoring. Integrates with most STR management platforms.</p>
+            <div class="tool-price">$279 hardware + $5/month</div>
+          </div>
+          <div class="tool-card">
+            <div class="tool-type">Cleaning Management</div>
+            <h4>TurnoverBnB</h4>
+            <p>Cleaning coordination with photo documentation, inventory tracking, and quality control checklists. Essential for multiple properties.</p>
+            <div class="tool-price">$19-35/property/month</div>
+          </div>
+          <div class="tool-card">
+            <div class="tool-type">Financial Management</div>
+            <h4>HostBooks</h4>
+            <p>STR-specific accounting with automated expense categorization, tax preparation, and performance analytics. Integrates with major platforms.</p>
+            <div class="tool-price">$19-49/property/month</div>
+          </div>
+          <div class="tool-card">
+            <div class="tool-type">Analytics</div>
+            <h4>AirDNA</h4>
+            <p>Market research and competitive analysis with local performance data, demand forecasting, and investment analysis tools.</p>
+            <div class="tool-price">$19.95-99.95/month</div>
+          </div>
+        </div>
+
+        <h3>Tool Investment Priority</h3>
+        <p>Implement tools in this order for maximum ROI:</p>
+        <ol>
+          <li><strong>Dynamic pricing tool:</strong> PriceLabs or Wheelhouse ($20-40/month) - immediate revenue impact</li>
+          <li><strong>Smart lock system:</strong> August or Schlage ($280-350) - operational efficiency and security</li>
+          <li><strong>Automated messaging:</strong> Smartbnb or built-in platform tools ($20-40/month) - time savings</li>
+          <li><strong>Channel management:</strong> Hostfully or Guesty ($35-95/month) - essential for multiple properties</li>
+          <li><strong>Financial tracking:</strong> HostBooks or Stessa ($20-50/month) - tax compliance and analysis</li>
+        </ol>
+      </section>
+
+    </main>
+  </div>
+
+  <!-- FAQ -->
+  <section id="faq" class="faq-section">
+    <h2>Frequently Asked Questions</h2>
+
+    <div class="faq-item">
+      <h3>How much money do I need to start a short-term rental business?</h3>
+      <p>Minimum $50,000-100,000 for property down payment, furnishing, and initial operating capital. This includes 20-25% down payment, $15,000-25,000 in furnishing/setup costs, and 3-6 months of operating expenses. Consider starting with rental arbitrage (renting long-term, subletting short-term) to reduce initial investment to $5,000-15,000.</p>
+    </div>
+
+    <div class="faq-item">
+      <h3>What's a realistic ROI timeline for STR properties?</h3>
+      <p>Well-located properties typically achieve positive cash flow within 2-6 months and 15-25% annual ROI after the first year. Initial setup period (months 1-3) often shows losses due to furnishing costs and occupancy ramp-up. Year 2+ can achieve 20-40% ROI with optimized operations and established guest base.</p>
+    </div>
+
+    <div class="faq-item">
+      <h3>How do I research local STR regulations and compliance?</h3>
+      <p>Check city/county websites for STR ordinances, licensing requirements, and zoning restrictions. Contact local planning departments directly. Review HOA/condo association bylaws. Consult STR-experienced local attorney or property manager. Many cities have specific STR portals with requirements, applications, and fee schedules.</p>
+    </div>
+
+    <div class="faq-item">
+      <h3>What's the biggest mistake new STR hosts make?</h3>
+      <p>Underestimating operational complexity and ongoing expenses. New hosts often focus only on nightly rates without accounting for cleaning, utilities, maintenance, vacancy periods, and time investment. Successful STR requires treating it as a hospitality business, not just real estate investment. Plan for 30-40% expense ratios and significant time investment initially.</p>
+    </div>
+
+    <div class="faq-item">
+      <h3>Should I manage properties myself or hire a management company?</h3>
+      <p>Self-management works well for 1-3 local properties if you enjoy hospitality and have time for guest communications. Management companies (charging 15-30% of revenue) become cost-effective for remote properties, larger portfolios, or when you prefer passive investment. Hybrid approach: use automation tools for most tasks, outsource cleaning and maintenance.</p>
+    </div>
+
+    <div class="faq-item">
+      <h3>How do I handle difficult guests and property damage?</h3>
+      <p>Prevent issues with clear house rules, security deposits, and guest screening. Document everything with photos and messages. Address problems immediately and professionally. Use platform resolution centers for damages. Maintain comprehensive insurance (STR-specific coverage). Remove problematic guests when necessary - don't tolerate abuse or property damage.</p>
+    </div>
+
+    <div class="faq-item">
+      <h3>What are the tax implications of STR income?</h3>
+      <p>STR income is generally taxable business income. You can deduct mortgage interest, property taxes, utilities, furnishing depreciation, cleaning costs, and other business expenses. Consult tax professional for depreciation strategies, business structure optimization, and state-specific rules. Track all expenses meticulously throughout the year.</p>
+    </div>
+
+    <div class="faq-item">
+      <h3>How do I scale beyond my first few properties?</h3>
+      <p>Perfect operations on your first property before scaling. Implement automation tools, build reliable service provider teams, and establish standard operating procedures. Consider different financing strategies (portfolio lenders, partnerships, rental arbitrage). Many successful operators focus on specific markets or property types rather than geographic diversification.</p>
+    </div>
+  </section>
+
+</div>
+
+<script>
+function calculateSTR() {
+  const purchasePrice = parseFloat(document.getElementById('purchasePrice').value) || 0;
+  const setupCosts = parseFloat(document.getElementById('setupCosts').value) || 0;
+  const averageDailyRate = parseFloat(document.getElementById('averageDailyRate').value) || 0;
+  const occupancyRate = parseFloat(document.getElementById('occupancyRate').value) || 0;
+  const mortgagePayment = parseFloat(document.getElementById('mortgagePayment').value) || 0;
+  const propertyType = document.getElementById('propertyType').value;
+
+  if (purchasePrice === 0 || averageDailyRate === 0) return;
+
+  // Calculate monthly revenue
+  const nightsPerMonth = 30;
+  const occupiedNights = nightsPerMonth * (occupancyRate / 100);
+  const monthlyRevenue = occupiedNights * averageDailyRate;
+
+  // Expense multipliers by property type
+  const expenseMultipliers = {
+    'urban': 0.35,
+    'vacation': 0.40,
+    'suburban': 0.38,
+    'unique': 0.42
+  };
+
+  const expenseMultiplier = expenseMultipliers[propertyType] || 0.38;
+  
+  // Calculate monthly expenses
+  const operatingExpenses = monthlyRevenue * expenseMultiplier; // Cleaning, utilities, supplies, etc.
+  const totalMonthlyExpenses = mortgagePayment + operatingExpenses;
+  const monthlyNetIncome = monthlyRevenue - totalMonthlyExpenses;
+  
+  // Calculate annual metrics
+  const annualRevenue = monthlyRevenue * 12;
+  const annualNetIncome = monthlyNetIncome * 12;
+  const totalInvestment = purchasePrice * 0.25 + setupCosts; // Assuming 25% down
+  const annualROI = (annualNetIncome / totalInvestment) * 100;
+  
+  // Cash-on-cash return
+  const cashOnCashROI = (annualNetIncome / totalInvestment) * 100;
+
+  const resultEl = document.getElementById('strResult');
+  const monthlyProfitEl = document.getElementById('monthlyProfit');
+  const breakdownEl = document.getElementById('strBreakdown');
+
+  resultEl.style.display = 'block';
+  monthlyProfitEl.textContent = '$' + Math.round(monthlyNetIncome).toLocaleString();
+  
+  breakdownEl.innerHTML = `
+    <p>💰 <strong>Monthly revenue:</strong> $${Math.round(monthlyRevenue).toLocaleString()} (${Math.round(occupiedNights)} nights @ $${averageDailyRate})</p>
+    <p>💸 <strong>Monthly expenses:</strong> $${Math.round(totalMonthlyExpenses).toLocaleString()} (mortgage: $${mortgagePayment.toLocaleString()}, operating: $${Math.round(operatingExpenses).toLocaleString()})</p>
+    <p>📊 <strong>Annual ROI:</strong> ${Math.round(cashOnCashROI)}% | <strong>Annual net income:</strong> $${Math.round(annualNetIncome).toLocaleString()}</p>
+    <p>🏠 <strong>Total investment:</strong> $${Math.round(totalInvestment).toLocaleString()} | <strong>Property type:</strong> ${propertyType} (${Math.round(expenseMultiplier * 100)}% expense ratio)</p>
+  `;
+
+  // Add performance recommendations
+  if (cashOnCashROI > 20) {
+    breakdownEl.innerHTML += '<p>🏆 <strong>Excellent ROI!</strong> This property shows strong potential for profitable STR operations.</p>';
+  } else if (cashOnCashROI > 12) {
+    breakdownEl.innerHTML += '<p>✅ <strong>Good ROI potential.</strong> Solid investment with proper management and optimization.</p>';
+  } else if (cashOnCashROI > 5) {
+    breakdownEl.innerHTML += '<p>⚠️ <strong>Modest returns.</strong> Consider negotiating purchase price, increasing ADR, or improving occupancy rate.</p>';
+  } else {
+    breakdownEl.innerHTML += '<p>🔴 <strong>Poor ROI projection.</strong> This property may not be suitable for STR. Consider different financing or higher revenue strategies.</p>';
+  }
+
+  // Occupancy recommendations
+  if (occupancyRate < 50) {
+    breakdownEl.innerHTML += '<p>📈 <strong>Occupancy opportunity:</strong> Focus on marketing, pricing optimization, and guest experience to increase bookings.</p>';
+  } else if (occupancyRate > 85) {
+    breakdownEl.innerHTML += '<p>💡 <strong>Rate optimization opportunity:</strong> High occupancy suggests you could increase average daily rate for higher revenue.</p>';
+  }
+}
+
+// Auto-calculate when inputs change
+['purchasePrice', 'setupCosts', 'averageDailyRate', 'occupancyRate', 'mortgagePayment', 'propertyType'].forEach(id => {
+  const element = document.getElementById(id);
+  if (element) {
+    element.addEventListener('input', calculateSTR);
+    element.addEventListener('change', calculateSTR);
+  }
+});
+</script>

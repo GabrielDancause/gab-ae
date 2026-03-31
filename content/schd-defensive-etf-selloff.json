@@ -1,0 +1,66 @@
+[
+  {
+    "slug": "dividend-etfs-record-inflows-schd-market-selloff-2026",
+    "title": "Dividend ETFs See Record Inflows as Investors Flee the Selloff — SCHD Leads the Pack",
+    "description": "With the S&P 500 in correction territory, investors are piling into dividend ETFs like SCHD, VYM, and DVY. Here's where the money is going and why quality dividends are the new safe haven.",
+    "category": "business",
+    "image": "",
+    "imageAlt": "",
+    "lede": "As the S&P 500 extends its losses amid the Hormuz crisis, tariff uncertainty, and tech liability concerns, investors are doing what they always do in turbulent markets: rotating into dividend-paying assets. The Schwab US Dividend Equity ETF (SCHD) — the most popular dividend ETF in America with $60 billion in assets — just went ex-dividend on March 25, paying $0.2569 per share while the broader market fell another 1.7%.",
+    "tags": ["schd", "dividend-etf", "market-selloff", "defensive-investing", "etf-inflows", "VYM", "dividends"],
+    "sources": [
+      {"name": "Stock Analysis", "url": "https://stockanalysis.com/etf/schd/dividend/"},
+      {"name": "Schwab Asset Management", "url": "https://www.schwab.com/etfs"}
+    ],
+    "faqs": [
+      {
+        "q": "What is SCHD and why is it popular during selloffs?",
+        "a": "SCHD (Schwab US Dividend Equity ETF) tracks 100 US stocks with 10+ years of consecutive dividend payments. It charges only 0.06% in fees, yields 3.47%, and holds quality companies like Broadcom, Coca-Cola, and Chevron. During selloffs, investors flock to SCHD because dividend-paying stocks tend to be less volatile and provide income regardless of share price."
+      },
+      {
+        "q": "How much does SCHD pay in dividends?",
+        "a": "SCHD pays approximately $1.06 per share annually in quarterly distributions, yielding about 3.47% at its current price of $30.44. The most recent payment was $0.2569 per share on March 30, 2026."
+      },
+      {
+        "q": "Is SCHD better than the S&P 500 during a bear market?",
+        "a": "Historically, dividend-focused ETFs like SCHD have experienced smaller drawdowns than the S&P 500 during corrections. During the 2022 bear market, SCHD declined roughly 5% while the S&P 500 fell over 19%. However, SCHD typically underperforms in strong bull markets driven by growth stocks."
+      },
+      {
+        "q": "What are the best dividend ETFs to buy during a market correction?",
+        "a": "The most popular dividend ETFs by assets are SCHD ($60B), VYM ($55B), DVY ($20B), HDV ($10B), and DGRO ($28B). SCHD and DGRO emphasize dividend growth quality, while VYM and DVY focus more on current yield. Each has different sector weightings and selection criteria."
+      }
+    ],
+    "sections": [
+      {
+        "heading": "The Rotation Into Quality Dividends",
+        "paragraphs": [
+          "When markets sell off, money doesn't disappear — it moves. And right now, it's moving into dividend ETFs at a pace not seen since the 2022 correction. SCHD, VYM, DVY, and HDV have all seen elevated inflows as investors seek assets that pay them to wait out the volatility.",
+          "The logic is straightforward: if you're holding stocks that are dropping 10-20%, you'd rather hold stocks that are dropping 5% and paying you 3.5% in dividends. SCHD's quality screen — requiring 10 consecutive years of dividend payments before a stock is even eligible — naturally filters out speculative companies that tend to get hit hardest in downturns."
+        ]
+      },
+      {
+        "heading": "Why SCHD at $60 Billion",
+        "paragraphs": [
+          "SCHD has become the default dividend ETF for a reason. At 0.06% expense ratio, you pay $6 per year on a $10,000 investment. The Dow Jones U.S. Dividend 100 Index it tracks doesn't just screen for yield — it ranks eligible stocks by cash flow to debt ratio, return on equity, dividend yield, and 5-year dividend growth rate. The result is a portfolio of companies that can actually afford their dividends.",
+          "Current top holdings include Broadcom, Coca-Cola, Verizon, Cisco, Chevron, PepsiCo, and Home Depot — a diversified mix across sectors with no single stock dominating. Compare that to the S&P 500, where the top 10 stocks account for over 35% of the index.",
+          "Dive into SCHD's complete dividend history, run income projections, and compare it against VYM, DVY, HDV, and DGRO with our <a href=\"https://westmountfundamentals.com/schd-dividend\" style=\"color:#4a8fe7;font-weight:600;\">SCHD Dividend Analysis</a> — updated with every quarterly distribution."
+        ]
+      },
+      {
+        "heading": "The Dividend Growth Story",
+        "paragraphs": [
+          "SCHD's quarterly distribution has grown from about $0.17 per share in 2021 to $0.27 in 2025 — roughly 60% growth in four years. That's the real bull case for quality dividend ETFs: you're not just getting income today, you're getting growing income. If SCHD maintains even a modest 5% annual dividend growth rate, the yield on cost for today's buyers will be above 5% within a decade.",
+          "This is why long-term investors are using the current selloff as a buying opportunity rather than a reason to panic. A 10% drop in SCHD's price means your $10,000 investment buys more shares, which means more dividends, which compounds faster when the market recovers."
+        ]
+      },
+      {
+        "heading": "Where Dividend ETFs Fit in a Crisis Portfolio",
+        "paragraphs": [
+          "Dividend ETFs aren't a substitute for bonds or cash in a true crisis — they're still equities and they still fall. But they fall less, recover faster, and pay you while you wait. In the 2022 correction, SCHD's total return (including dividends) outperformed the S&P 500 by roughly 15 percentage points.",
+          "The smart allocation during uncertainty: keep emergency cash, hold core bonds for stability, and use dividend ETFs like SCHD as the equity anchor. You're essentially getting paid 3.5% annually to own high-quality businesses while waiting for the growth stocks to find their floor.",
+          "Compare SCHD against individual dividend payers using our <a href=\"https://westmountfundamentals.com/list-best-monthly-dividend-stocks\" style=\"color:#4a8fe7;\">monthly dividend stocks list</a>, or model long-term compound growth with the <a href=\"https://westmountfundamentals.com/dividend-reinvestment-calculator\" style=\"color:#4a8fe7;\">DRIP calculator</a>."
+        ]
+      }
+    ]
+  }
+]

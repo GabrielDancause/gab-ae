@@ -1,0 +1,1444 @@
+<style>
+  .pps-container {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 2rem;
+    color: #e2e8f0;
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    line-height: 1.8;
+  }
+  .pps-header {
+    text-align: center;
+    margin-bottom: 4rem;
+    padding-top: 3rem;
+  }
+  .gradient-h1 {
+    font-size: clamp(2.2rem, 5vw, 3.5rem);
+    font-weight: 800;
+    background: linear-gradient(135deg, #ffffff 0%, #a5b4fc 50%, #818cf8 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    margin-bottom: 1rem;
+    line-height: 1.15;
+    letter-spacing: -0.02em;
+  }
+  .pps-subtitle {
+    font-size: 1.2rem;
+    color: #94a3b8;
+    max-width: 750px;
+    margin: 0 auto;
+  }
+  .breadcrumb {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    justify-content: center;
+    margin-bottom: 2rem;
+    font-size: 0.85rem;
+  }
+  .breadcrumb a {
+    color: #818cf8;
+    text-decoration: none;
+  }
+  .breadcrumb a:hover { text-decoration: underline; }
+  .breadcrumb span { color: #475569; }
+  .updated-badge {
+    display: inline-block;
+    background: rgba(129, 140, 248, 0.15);
+    color: #a5b4fc;
+    padding: 0.4rem 1rem;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    margin-bottom: 2rem;
+  }
+  .content-wrapper {
+    display: grid;
+    grid-template-columns: 1fr 280px;
+    gap: 4rem;
+    margin-top: 3rem;
+  }
+  .main-content {
+    min-width: 0;
+  }
+  .sidebar {
+    position: sticky;
+    top: 2rem;
+    height: fit-content;
+    background: #12121a;
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 16px;
+    padding: 1.5rem;
+  }
+  .sidebar h3 {
+    color: #ffffff;
+    font-size: 0.9rem;
+    font-weight: 600;
+    margin: 0 0 1rem 0;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+  .sidebar ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+  .sidebar li {
+    margin: 0;
+  }
+  .sidebar a {
+    display: block;
+    color: #94a3b8;
+    text-decoration: none;
+    padding: 0.5rem 0;
+    border-bottom: 1px solid rgba(255,255,255,0.05);
+    font-size: 0.85rem;
+    transition: color 0.2s;
+  }
+  .sidebar a:hover {
+    color: #a5b4fc;
+  }
+  .section {
+    margin: 4rem 0;
+    scroll-margin-top: 2rem;
+  }
+  .section h2 {
+    color: #ffffff;
+    font-size: 1.8rem;
+    font-weight: 700;
+    margin-bottom: 1.5rem;
+  }
+  .section h3 {
+    color: #e2e8f0;
+    font-size: 1.3rem;
+    font-weight: 600;
+    margin: 2rem 0 1rem 0;
+  }
+  .stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1.5rem;
+    margin: 2rem 0;
+  }
+  .stat-card {
+    background: #12121a;
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 14px;
+    padding: 1.5rem;
+    text-align: center;
+  }
+  .stat-number {
+    font-size: 2.5rem;
+    font-weight: 800;
+    color: #818cf8;
+    display: block;
+    line-height: 1;
+  }
+  .stat-label {
+    color: #94a3b8;
+    font-size: 0.9rem;
+    margin-top: 0.5rem;
+  }
+  .system-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 2rem;
+    margin: 2rem 0;
+  }
+  .system-card {
+    background: #12121a;
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 16px;
+    padding: 2rem;
+    position: relative;
+    overflow: hidden;
+  }
+  .system-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, #818cf8, #a5b4fc);
+  }
+  .system-card h4 {
+    color: #ffffff;
+    font-size: 1.2rem;
+    font-weight: 600;
+    margin-bottom: 1rem;
+  }
+  .system-difficulty {
+    background: rgba(129, 140, 248, 0.15);
+    color: #a5b4fc;
+    padding: 0.3rem 0.8rem;
+    border-radius: 8px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    display: inline-block;
+    margin-bottom: 1rem;
+  }
+  .system-difficulty.easy { background: rgba(74, 222, 128, 0.15); color: #4ade80; }
+  .system-difficulty.medium { background: rgba(251, 191, 36, 0.15); color: #fbbf24; }
+  .system-difficulty.hard { background: rgba(248, 113, 113, 0.15); color: #f87171; }
+  .callout {
+    background: rgba(34, 211, 238, 0.1);
+    border-left: 4px solid #22d3ee;
+    border-radius: 0 8px 8px 0;
+    padding: 1.5rem;
+    margin: 2rem 0;
+  }
+  .callout.warning {
+    background: rgba(251, 191, 36, 0.1);
+    border-left-color: #fbbf24;
+  }
+  .callout.success {
+    background: rgba(74, 222, 128, 0.1);
+    border-left-color: #4ade80;
+  }
+  .callout h4 {
+    color: #ffffff;
+    font-size: 1rem;
+    font-weight: 600;
+    margin: 0 0 0.5rem 0;
+  }
+  .comparison-table {
+    width: 100%;
+    background: #12121a;
+    border-radius: 16px;
+    overflow: hidden;
+    border: 1px solid rgba(255,255,255,0.08);
+    margin: 2rem 0;
+  }
+  .comparison-table th {
+    background: #1e293b;
+    color: #ffffff;
+    padding: 1rem;
+    text-align: left;
+    font-weight: 600;
+  }
+  .comparison-table td {
+    padding: 1rem;
+    border-bottom: 1px solid rgba(255,255,255,0.05);
+    color: #e2e8f0;
+  }
+  .comparison-table tr:last-child td {
+    border-bottom: none;
+  }
+  .tier-high { color: #4ade80; }
+  .tier-medium { color: #fbbf24; }
+  .tier-low { color: #f87171; }
+  .workflow-cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 1.5rem;
+    margin: 2rem 0;
+  }
+  .workflow-card {
+    background: #12121a;
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 14px;
+    padding: 1.5rem;
+  }
+  .workflow-card h4 {
+    color: #ffffff;
+    font-size: 1.1rem;
+    font-weight: 600;
+    margin-bottom: 1rem;
+  }
+  .workflow-steps {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+  .workflow-step {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.5rem;
+    background: rgba(255,255,255,0.02);
+    border-radius: 8px;
+  }
+  .step-number {
+    background: #818cf8;
+    color: #ffffff;
+    width: 1.5rem;
+    height: 1.5rem;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.75rem;
+    font-weight: 600;
+    flex-shrink: 0;
+  }
+  .step-text {
+    color: #e2e8f0;
+    font-size: 0.9rem;
+  }
+  .tool-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1.5rem;
+    margin: 2rem 0;
+  }
+  .tool-card {
+    background: #12121a;
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 14px;
+    padding: 1.5rem;
+    text-align: center;
+  }
+  .tool-card h4 {
+    color: #ffffff;
+    font-size: 1.1rem;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+  }
+  .tool-category {
+    color: #818cf8;
+    font-size: 0.8rem;
+    font-weight: 500;
+    margin-bottom: 1rem;
+  }
+  .tool-features {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+  .tool-features li {
+    color: #94a3b8;
+    font-size: 0.85rem;
+    padding: 0.25rem 0;
+    border-bottom: 1px solid rgba(255,255,255,0.05);
+  }
+  .tool-features li:last-child {
+    border-bottom: none;
+  }
+  .productivity-assessment {
+    background: #12121a;
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 16px;
+    padding: 2rem;
+    margin: 3rem 0;
+  }
+  .productivity-assessment h3 {
+    color: #ffffff;
+    font-size: 1.3rem;
+    font-weight: 600;
+    margin-bottom: 1.5rem;
+    text-align: center;
+  }
+  .assessment-question {
+    margin-bottom: 1.5rem;
+  }
+  .assessment-question h4 {
+    color: #e2e8f0;
+    font-size: 1rem;
+    font-weight: 600;
+    margin-bottom: 0.75rem;
+  }
+  .assessment-options {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+  .assessment-option {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+  .assessment-option input[type="radio"] {
+    accent-color: #818cf8;
+  }
+  .assessment-option label {
+    color: #94a3b8;
+    font-size: 0.9rem;
+    cursor: pointer;
+  }
+  .assessment-button {
+    background: #818cf8;
+    color: #ffffff;
+    border: none;
+    border-radius: 8px;
+    padding: 0.75rem 2rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s;
+    width: 100%;
+    margin-top: 1rem;
+  }
+  .assessment-button:hover {
+    background: #6366f1;
+  }
+  .assessment-results {
+    background: rgba(129, 140, 248, 0.1);
+    border-radius: 12px;
+    padding: 1.5rem;
+    margin-top: 1.5rem;
+    display: none;
+  }
+  .assessment-results h4 {
+    color: #a5b4fc;
+    font-size: 1.1rem;
+    margin-bottom: 1rem;
+  }
+  .faq-section {
+    margin: 4rem 0;
+  }
+  .faq-item {
+    background: #12121a;
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 14px;
+    margin-bottom: 1rem;
+    overflow: hidden;
+  }
+  .faq-question {
+    padding: 1.5rem;
+    color: #ffffff;
+    font-weight: 600;
+    cursor: pointer;
+    border-bottom: 1px solid rgba(255,255,255,0.05);
+  }
+  .faq-answer {
+    padding: 1.5rem;
+    color: #94a3b8;
+  }
+  .cta-cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1.5rem;
+    margin: 3rem 0;
+  }
+  .cta-card {
+    background: linear-gradient(135deg, #1e293b, #334155);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 16px;
+    padding: 2rem;
+    text-align: center;
+  }
+  .cta-card h4 {
+    color: #ffffff;
+    font-size: 1.1rem;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+  }
+  .cta-card p {
+    color: #94a3b8;
+    font-size: 0.9rem;
+    margin-bottom: 1.5rem;
+  }
+  .cta-button {
+    display: inline-block;
+    background: #818cf8;
+    color: #ffffff;
+    padding: 0.7rem 1.5rem;
+    border-radius: 8px;
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 0.9rem;
+    transition: background 0.2s;
+  }
+  .cta-button:hover {
+    background: #6366f1;
+  }
+  
+  @media (max-width: 1024px) {
+    .content-wrapper {
+      grid-template-columns: 1fr;
+      gap: 2rem;
+    }
+    .sidebar {
+      position: relative;
+      top: 0;
+      order: -1;
+    }
+  }
+  
+  @media (max-width: 768px) {
+    .pps-container {
+      padding: 1rem;
+    }
+    .breadcrumb {
+      flex-wrap: wrap;
+    }
+    .stats-grid {
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    }
+    .system-grid {
+      grid-template-columns: 1fr;
+    }
+    .workflow-cards {
+      grid-template-columns: 1fr;
+    }
+    .tool-grid {
+      grid-template-columns: 1fr;
+    }
+    .cta-cards {
+      grid-template-columns: 1fr;
+    }
+    .assessment-options {
+      gap: 0.75rem;
+    }
+  }
+</style>
+
+<div class="pps-container">
+  <div class="pps-header">
+    <div class="breadcrumb">
+      <a href="/apex-guides">Apex Guides</a>
+      <span>›</span>
+      <a href="/software-ai-infrastructure-guide-2026">Software, AI & Digital Infrastructure</a>
+      <span>›</span>
+      <span style="color: #cbd5e1;">Current</span>
+    </div>
+    
+    <div class="updated-badge">
+      ⚡ Updated March 2026
+    </div>
+    
+    <h1 class="gradient-h1">Personal Productivity Systems</h1>
+    <p class="pps-subtitle">Master proven productivity frameworks, build efficient workflows, and optimize your personal operating system. From Getting Things Done to modern AI-powered systems.</p>
+  </div>
+
+  <div class="content-wrapper">
+    <main class="main-content">
+      <div class="stats-grid">
+        <div class="stat-card">
+          <span class="stat-number">23%</span>
+          <div class="stat-label">Average productivity increase with systematic approach</div>
+        </div>
+        <div class="stat-card">
+          <span class="stat-number">2.5h</span>
+          <div class="stat-label">Daily time saved with optimized workflows</div>
+        </div>
+        <div class="stat-card">
+          <span class="stat-number">67%</span>
+          <div class="stat-label">Reduction in decision fatigue with automated systems</div>
+        </div>
+        <div class="stat-card">
+          <span class="stat-number">40%</span>
+          <div class="stat-label">Less stress reported by systematic productivity users</div>
+        </div>
+      </div>
+
+      <section id="productivity-fundamentals" class="section">
+        <h2>Productivity System Fundamentals</h2>
+        <p>Personal productivity isn't about working harder—it's about building systems that reduce friction, eliminate decision fatigue, and create consistent progress toward your goals. The most successful people don't rely on motivation; they build reliable systems that work even when they don't feel like working.</p>
+
+        <div class="callout">
+          <h4>💡 The Productivity Paradox</h4>
+          <p>Spending time building systems feels like slowing down, but systematic approaches create 23% productivity improvements long-term. The best productivity system is the one you actually use consistently.</p>
+        </div>
+
+        <h3>Core Productivity Principles</h3>
+        <p>All effective productivity systems share these foundational elements:</p>
+
+        <div class="workflow-cards">
+          <div class="workflow-card">
+            <h4>Capture Everything</h4>
+            <div class="workflow-steps">
+              <div class="workflow-step">
+                <div class="step-number">1</div>
+                <div class="step-text">External brain for all thoughts and tasks</div>
+              </div>
+              <div class="workflow-step">
+                <div class="step-number">2</div>
+                <div class="step-text">Reduces mental overhead and stress</div>
+              </div>
+              <div class="workflow-step">
+                <div class="step-number">3</div>
+                <div class="step-text">Creates trusted system for retrieval</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="workflow-card">
+            <h4>Clarify & Organize</h4>
+            <div class="workflow-steps">
+              <div class="workflow-step">
+                <div class="step-number">1</div>
+                <div class="step-text">Define actionable next steps</div>
+              </div>
+              <div class="workflow-step">
+                <div class="step-number">2</div>
+                <div class="step-text">Categorize by context and priority</div>
+              </div>
+              <div class="workflow-step">
+                <div class="step-number">3</div>
+                <div class="step-text">Set appropriate timelines</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="workflow-card">
+            <h4>Review & Reflect</h4>
+            <div class="workflow-steps">
+              <div class="workflow-step">
+                <div class="step-number">1</div>
+                <div class="step-text">Regular system maintenance</div>
+              </div>
+              <div class="workflow-step">
+                <div class="step-number">2</div>
+                <div class="step-text">Weekly and monthly reviews</div>
+              </div>
+              <div class="workflow-step">
+                <div class="step-number">3</div>
+                <div class="step-text">Continuous system optimization</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="workflow-card">
+            <h4>Execute with Focus</h4>
+            <div class="workflow-steps">
+              <div class="workflow-step">
+                <div class="step-number">1</div>
+                <div class="step-text">Time blocking for deep work</div>
+              </div>
+              <div class="workflow-step">
+                <div class="step-number">2</div>
+                <div class="step-text">Minimize context switching</div>
+              </div>
+              <div class="workflow-step">
+                <div class="step-number">3</div>
+                <div class="step-text">Protect high-energy time blocks</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="productivity-systems" class="section">
+        <h2>Proven Productivity Systems</h2>
+        
+        <div class="system-grid">
+          <div class="system-card">
+            <h4>📋 Getting Things Done (GTD)</h4>
+            <div class="system-difficulty easy">Beginner Friendly</div>
+            <p><strong>Creator:</strong> David Allen</p>
+            <p><strong>Core Concept:</strong> Capture all commitments in a trusted external system, then organize by context and energy level</p>
+            <p><strong>Best For:</strong> People overwhelmed by tasks and commitments</p>
+            <p><strong>Key Tools:</strong> Inbox, contexts (@calls, @errands), weekly reviews</p>
+            <p><strong>Time Investment:</strong> 2-4 weeks to build habits, 2 hours weekly maintenance</p>
+          </div>
+
+          <div class="system-card">
+            <h4>🎯 PARA Method</h4>
+            <div class="system-difficulty medium">Intermediate</div>
+            <p><strong>Creator:</strong> Tiago Forte</p>
+            <p><strong>Core Concept:</strong> Organize information into Projects, Areas, Resources, Archive based on actionability</p>
+            <p><strong>Best For:</strong> Knowledge workers managing lots of information</p>
+            <p><strong>Key Tools:</strong> Digital note-taking apps, file organization systems</p>
+            <p><strong>Time Investment:</strong> 1-2 weeks setup, 1 hour weekly maintenance</p>
+          </div>
+
+          <div class="system-card">
+            <h4>📝 Building a Second Brain (BASB)</h4>
+            <div class="system-difficulty medium">Intermediate</div>
+            <p><strong>Creator:</strong> Tiago Forte</p>
+            <p><strong>Core Concept:</strong> Systematically capture, organize, distill, and express knowledge</p>
+            <p><strong>Best For:</strong> Creatives, researchers, lifelong learners</p>
+            <p><strong>Key Tools:</strong> Digital note apps with linking (Obsidian, Notion, Roam)</p>
+            <p><strong>Time Investment:</strong> 3-4 weeks to build, 3-5 hours weekly</p>
+          </div>
+
+          <div class="system-card">
+            <h4>🍅 Time Blocking + Pomodoro</h4>
+            <div class="system-difficulty easy">Beginner Friendly</div>
+            <p><strong>Creators:</strong> Cal Newport + Francesco Cirillo</p>
+            <p><strong>Core Concept:</strong> Plan every hour of your day, use 25-minute focused work intervals</p>
+            <p><strong>Best For:</strong> People struggling with focus and time management</p>
+            <p><strong>Key Tools:</strong> Calendar blocking, Pomodoro timer, task batching</p>
+            <p><strong>Time Investment:</strong> 30 minutes daily planning, immediate implementation</p>
+          </div>
+
+          <div class="system-card">
+            <h4>⚡ Zen to Done (ZTD)</h4>
+            <div class="system-difficulty easy">Beginner Friendly</div>
+            <p><strong>Creator:</strong> Leo Babauta</p>
+            <p><strong>Core Concept:</strong> Simplified GTD focused on building habits one at a time</p>
+            <p><strong>Best For:</strong> People who found GTD too complex</p>
+            <p><strong>Key Tools:</strong> Simple task lists, habit tracking, weekly planning</p>
+            <p><strong>Time Investment:</strong> 1 week per habit, 10 habits total</p>
+          </div>
+
+          <div class="system-card">
+            <h4>🎨 RICE Framework</h4>
+            <div class="system-difficulty hard">Advanced</div>
+            <p><strong>Creator:</strong> Intercom team</p>
+            <p><strong>Core Concept:</strong> Prioritize tasks by Reach × Impact × Confidence ÷ Effort</p>
+            <p><strong>Best For:</strong> Product managers, entrepreneurs, strategic thinkers</p>
+            <p><strong>Key Tools:</strong> Spreadsheet scoring, impact estimation</p>
+            <p><strong>Time Investment:</strong> 1-2 hours weekly scoring, 3-4 weeks to master</p>
+          </div>
+        </div>
+
+        <h3>System Selection Guide</h3>
+        <div class="comparison-table">
+          <table>
+            <thead>
+              <tr>
+                <th>If You Struggle With...</th>
+                <th>Recommended System</th>
+                <th>Why It Works</th>
+                <th>Time to See Results</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>Feeling overwhelmed</strong></td>
+                <td class="tier-high">Getting Things Done</td>
+                <td>Captures everything externally</td>
+                <td>2-3 weeks</td>
+              </tr>
+              <tr>
+                <td><strong>Information overload</strong></td>
+                <td class="tier-high">PARA Method</td>
+                <td>Clear organization system</td>
+                <td>1-2 weeks</td>
+              </tr>
+              <tr>
+                <td><strong>Poor focus/distraction</strong></td>
+                <td class="tier-high">Time Blocking + Pomodoro</td>
+                <td>Forces intentional attention</td>
+                <td>3-5 days</td>
+              </tr>
+              <tr>
+                <td><strong>Knowledge management</strong></td>
+                <td class="tier-medium">Building a Second Brain</td>
+                <td>Systematic knowledge capture</td>
+                <td>4-6 weeks</td>
+              </tr>
+              <tr>
+                <td><strong>Complex prioritization</strong></td>
+                <td class="tier-medium">RICE Framework</td>
+                <td>Data-driven decisions</td>
+                <td>2-3 weeks</td>
+              </tr>
+              <tr>
+                <td><strong>Building new habits</strong></td>
+                <td class="tier-low">Zen to Done</td>
+                <td>One habit at a time approach</td>
+                <td>8-10 weeks total</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <section id="digital-tools" class="section">
+        <h2>Digital Productivity Tools</h2>
+
+        <h3>Task Management</h3>
+        <div class="tool-grid">
+          <div class="tool-card">
+            <h4>Todoist</h4>
+            <div class="tool-category">Task Management</div>
+            <ul class="tool-features">
+              <li>Natural language scheduling</li>
+              <li>Project templates</li>
+              <li>Karma system for motivation</li>
+              <li>Cross-platform sync</li>
+              <li>GTD-friendly organization</li>
+            </ul>
+          </div>
+
+          <div class="tool-card">
+            <h4>Things 3</h4>
+            <div class="tool-category">Task Management (Apple)</div>
+            <ul class="tool-features">
+              <li>Beautiful, intuitive design</li>
+              <li>Natural planning approach</li>
+              <li>Area-based organization</li>
+              <li>Apple ecosystem integration</li>
+              <li>No collaboration features</li>
+            </ul>
+          </div>
+
+          <div class="tool-card">
+            <h4>TickTick</h4>
+            <div class="tool-category">Task Management</div>
+            <ul class="tool-features">
+              <li>Built-in Pomodoro timer</li>
+              <li>Calendar integration</li>
+              <li>Habit tracking</li>
+              <li>Team collaboration</li>
+              <li>Multiple reminder types</li>
+            </ul>
+          </div>
+
+          <div class="tool-card">
+            <h4>Asana</h4>
+            <div class="tool-category">Project Management</div>
+            <ul class="tool-features">
+              <li>Multiple project views</li>
+              <li>Team collaboration</li>
+              <li>Custom field tracking</li>
+              <li>Goal tracking</li>
+              <li>Extensive integrations</li>
+            </ul>
+          </div>
+        </div>
+
+        <h3>Note-Taking & Knowledge Management</h3>
+        <div class="tool-grid">
+          <div class="tool-card">
+            <h4>Obsidian</h4>
+            <div class="tool-category">Knowledge Management</div>
+            <ul class="tool-features">
+              <li>Linked note system</li>
+              <li>Graph view visualization</li>
+              <li>Plugin ecosystem</li>
+              <li>Local file storage</li>
+              <li>Markdown support</li>
+            </ul>
+          </div>
+
+          <div class="tool-card">
+            <h4>Notion</h4>
+            <div class="tool-category">All-in-One Workspace</div>
+            <ul class="tool-features">
+              <li>Databases and relations</li>
+              <li>Template system</li>
+              <li>Team collaboration</li>
+              <li>Multiple content types</li>
+              <li>API access</li>
+            </ul>
+          </div>
+
+          <div class="tool-card">
+            <h4>Roam Research</h4>
+            <div class="tool-category">Networked Thought</div>
+            <ul class="tool-features">
+              <li>Bi-directional linking</li>
+              <li>Block-level references</li>
+              <li>Daily notes</li>
+              <li>Query system</li>
+              <li>Research-focused</li>
+            </ul>
+          </div>
+
+          <div class="tool-card">
+            <h4>Logseq</h4>
+            <div class="tool-category">Local-First Notes</div>
+            <ul class="tool-features">
+              <li>Privacy-focused</li>
+              <li>Block-based structure</li>
+              <li>Graph database</li>
+              <li>Plugin support</li>
+              <li>Open source</li>
+            </ul>
+          </div>
+        </div>
+
+        <h3>Time Management & Focus</h3>
+        <div class="tool-grid">
+          <div class="tool-card">
+            <h4>RescueTime</h4>
+            <div class="tool-category">Time Tracking</div>
+            <ul class="tool-features">
+              <li>Automatic time tracking</li>
+              <li>Productivity scoring</li>
+              <li>Website/app blocking</li>
+              <li>Detailed reports</li>
+              <li>Goal setting</li>
+            </ul>
+          </div>
+
+          <div class="tool-card">
+            <h4>Freedom</h4>
+            <div class="tool-category">Distraction Blocking</div>
+            <ul class="tool-features">
+              <li>Cross-device blocking</li>
+              <li>Scheduled sessions</li>
+              <li>Website/app control</li>
+              <li>Focus sounds</li>
+              <li>Usage analytics</li>
+            </ul>
+          </div>
+
+          <div class="tool-card">
+            <h4>Forest</h4>
+            <div class="tool-category">Focus Gamification</div>
+            <ul class="tool-features">
+              <li>Gamified focus sessions</li>
+              <li>Virtual tree planting</li>
+              <li>Real tree donations</li>
+              <li>Study room collaboration</li>
+              <li>Statistics tracking</li>
+            </ul>
+          </div>
+
+          <div class="tool-card">
+            <h4>Clockify</h4>
+            <div class="tool-category">Time Tracking</div>
+            <ul class="tool-features">
+              <li>Free unlimited tracking</li>
+              <li>Project categorization</li>
+              <li>Team time tracking</li>
+              <li>Detailed reporting</li>
+              <li>Integration options</li>
+            </ul>
+          </div>
+        </div>
+      </section>
+
+      <section id="workflow-optimization" class="section">
+        <h2>Workflow Optimization Strategies</h2>
+
+        <h3>The Perfect Morning Routine Framework</h3>
+        <div class="workflow-cards">
+          <div class="workflow-card">
+            <h4>🌅 Wake-Up Protocol (5-15 minutes)</h4>
+            <div class="workflow-steps">
+              <div class="workflow-step">
+                <div class="step-number">1</div>
+                <div class="step-text">Consistent wake time (±15 minutes)</div>
+              </div>
+              <div class="workflow-step">
+                <div class="step-number">2</div>
+                <div class="step-text">Immediate light exposure</div>
+              </div>
+              <div class="workflow-step">
+                <div class="step-number">3</div>
+                <div class="step-text">Hydration (16-24oz water)</div>
+              </div>
+              <div class="workflow-step">
+                <div class="step-number">4</div>
+                <div class="step-text">2-minute energy activation</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="workflow-card">
+            <h4>🧠 Mental Preparation (10-20 minutes)</h4>
+            <div class="workflow-steps">
+              <div class="workflow-step">
+                <div class="step-number">1</div>
+                <div class="step-text">Meditation or breathing exercises</div>
+              </div>
+              <div class="workflow-step">
+                <div class="step-number">2</div>
+                <div class="step-text">Journal 3 priorities for the day</div>
+              </div>
+              <div class="workflow-step">
+                <div class="step-number">3</div>
+                <div class="step-text">Review calendar and commitments</div>
+              </div>
+              <div class="workflow-step">
+                <div class="step-number">4</div>
+                <div class="step-text">Set intention for the day</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="workflow-card">
+            <h4>🏃‍♂️ Physical Activation (10-30 minutes)</h4>
+            <div class="workflow-steps">
+              <div class="workflow-step">
+                <div class="step-number">1</div>
+                <div class="step-text">Movement (stretch, walk, exercise)</div>
+              </div>
+              <div class="workflow-step">
+                <div class="step-number">2</div>
+                <div class="step-text">Shower and preparation</div>
+              </div>
+              <div class="workflow-step">
+                <div class="step-number">3</div>
+                <div class="step-text">Nutritious breakfast</div>
+              </div>
+              <div class="workflow-step">
+                <div class="step-number">4</div>
+                <div class="step-text">Transition to work mode</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="workflow-card">
+            <h4>💼 Work Preparation (5-10 minutes)</h4>
+            <div class="workflow-steps">
+              <div class="workflow-step">
+                <div class="step-number">1</div>
+                <div class="step-text">Workspace organization</div>
+              </div>
+              <div class="workflow-step">
+                <div class="step-number">2</div>
+                <div class="step-text">Technology setup and checks</div>
+              </div>
+              <div class="workflow-step">
+                <div class="step-number">3</div>
+                <div class="step-text">First deep work block planning</div>
+              </div>
+              <div class="workflow-step">
+                <div class="step-number">4</div>
+                <div class="step-text">Begin most important task</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <h3>Energy Management Framework</h3>
+        <div class="callout success">
+          <h4>✅ Energy-Based Scheduling</h4>
+          <p><strong>High Energy (Morning):</strong> Creative work, complex problem-solving, strategic planning<br>
+          <strong>Medium Energy (Early Afternoon):</strong> Communication, meetings, routine tasks<br>
+          <strong>Low Energy (Late Afternoon):</strong> Email processing, administrative tasks, planning tomorrow<br>
+          <strong>Recovery Energy (Evening):</strong> Learning, reflection, personal development</p>
+        </div>
+
+        <h3>Weekly Review Protocol</h3>
+        <div class="workflow-cards">
+          <div class="workflow-card">
+            <h4>📊 Weekly Reflection (20 minutes)</h4>
+            <div class="workflow-steps">
+              <div class="workflow-step">
+                <div class="step-number">1</div>
+                <div class="step-text">Review completed tasks and projects</div>
+              </div>
+              <div class="workflow-step">
+                <div class="step-number">2</div>
+                <div class="step-text">Assess progress on quarterly goals</div>
+              </div>
+              <div class="workflow-step">
+                <div class="step-number">3</div>
+                <div class="step-text">Identify wins and challenges</div>
+              </div>
+              <div class="workflow-step">
+                <div class="step-number">4</div>
+                <div class="step-text">Note system improvements needed</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="workflow-card">
+            <h4>🔄 System Maintenance (15 minutes)</h4>
+            <div class="workflow-steps">
+              <div class="workflow-step">
+                <div class="step-number">1</div>
+                <div class="step-text">Process inbox to zero</div>
+              </div>
+              <div class="workflow-step">
+                <div class="step-number">2</div>
+                <div class="step-text">Update project status and next actions</div>
+              </div>
+              <div class="workflow-step">
+                <div class="step-number">3</div>
+                <div class="step-text">Archive completed items</div>
+              </div>
+              <div class="workflow-step">
+                <div class="step-number">4</div>
+                <div class="step-text">Clean up notes and files</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="workflow-card">
+            <h4>🎯 Next Week Planning (10 minutes)</h4>
+            <div class="workflow-steps">
+              <div class="workflow-step">
+                <div class="step-number">1</div>
+                <div class="step-text">Set 3-5 key objectives</div>
+              </div>
+              <div class="workflow-step">
+                <div class="step-number">2</div>
+                <div class="step-text">Block time for important work</div>
+              </div>
+              <div class="workflow-step">
+                <div class="step-number">3</div>
+                <div class="step-text">Prepare for upcoming meetings</div>
+              </div>
+              <div class="workflow-step">
+                <div class="step-number">4</div>
+                <div class="step-text">Schedule personal commitments</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="productivity-assessment" class="section">
+        <div class="productivity-assessment">
+          <h3>🎯 Productivity System Assessment</h3>
+          <p>Answer these questions to discover which productivity system best fits your working style.</p>
+          
+          <div class="assessment-question">
+            <h4>1. What's your biggest productivity challenge?</h4>
+            <div class="assessment-options">
+              <div class="assessment-option">
+                <input type="radio" name="q1" value="overwhelmed" id="q1a">
+                <label for="q1a">Feeling overwhelmed by too many tasks and commitments</label>
+              </div>
+              <div class="assessment-option">
+                <input type="radio" name="q1" value="focus" id="q1b">
+                <label for="q1b">Struggling to focus and avoid distractions</label>
+              </div>
+              <div class="assessment-option">
+                <input type="radio" name="q1" value="information" id="q1c">
+                <label for="q1c">Managing and organizing large amounts of information</label>
+              </div>
+              <div class="assessment-option">
+                <input type="radio" name="q1" value="priorities" id="q1d">
+                <label for="q1d">Difficulty prioritizing what's truly important</label>
+              </div>
+            </div>
+          </div>
+
+          <div class="assessment-question">
+            <h4>2. How do you prefer to organize your work?</h4>
+            <div class="assessment-options">
+              <div class="assessment-option">
+                <input type="radio" name="q2" value="detailed" id="q2a">
+                <label for="q2a">Detailed categories and comprehensive systems</label>
+              </div>
+              <div class="assessment-option">
+                <input type="radio" name="q2" value="simple" id="q2b">
+                <label for="q2b">Simple, minimal systems that are easy to maintain</label>
+              </div>
+              <div class="assessment-option">
+                <input type="radio" name="q2" value="visual" id="q2c">
+                <label for="q2c">Visual systems with charts, graphs, and diagrams</label>
+              </div>
+              <div class="assessment-option">
+                <input type="radio" name="q2" value="flexible" id="q2d">
+                <label for="q2d">Flexible systems that adapt to changing needs</label>
+              </div>
+            </div>
+          </div>
+
+          <div class="assessment-question">
+            <h4>3. What's your relationship with technology?</h4>
+            <div class="assessment-options">
+              <div class="assessment-option">
+                <input type="radio" name="q3" value="love" id="q3a">
+                <label for="q3a">Love trying new apps and digital tools</label>
+              </div>
+              <div class="assessment-option">
+                <input type="radio" name="q3" value="practical" id="q3b">
+                <label for="q3b">Use technology when it serves a clear purpose</label>
+              </div>
+              <div class="assessment-option">
+                <input type="radio" name="q3" value="minimal" id="q3c">
+                <label for="q3c">Prefer minimal technology, like pen and paper</label>
+              </div>
+              <div class="assessment-option">
+                <input type="radio" name="q3" value="mixed" id="q3d">
+                <label for="q3d">Mix of digital and analog tools</label>
+              </div>
+            </div>
+          </div>
+
+          <div class="assessment-question">
+            <h4>4. How much time can you invest in learning a new system?</h4>
+            <div class="assessment-options">
+              <div class="assessment-option">
+                <input type="radio" name="q4" value="minimal" id="q4a">
+                <label for="q4a">Need something that works immediately</label>
+              </div>
+              <div class="assessment-option">
+                <input type="radio" name="q4" value="moderate" id="q4b">
+                <label for="q4b">Can invest 1-2 weeks to learn properly</label>
+              </div>
+              <div class="assessment-option">
+                <input type="radio" name="q4" value="significant" id="q4c">
+                <label for="q4c">Willing to invest a month or more for long-term benefits</label>
+              </div>
+              <div class="assessment-option">
+                <input type="radio" name="q4" value="gradual" id="q4d">
+                <label for="q4d">Prefer to build habits gradually over time</label>
+              </div>
+            </div>
+          </div>
+
+          <button class="assessment-button" onclick="calculateProductivitySystemRecommendation()">Get My Recommendation</button>
+          
+          <div class="assessment-results" id="productivityResults">
+            <h4>Your Recommended System</h4>
+            <div id="systemRecommendation"></div>
+          </div>
+        </div>
+      </section>
+
+      <section id="advanced-techniques" class="section">
+        <h2>Advanced Productivity Techniques</h2>
+
+        <h3>AI-Powered Productivity</h3>
+        <div class="callout">
+          <h4>🤖 2026 AI Productivity Stack</h4>
+          <p>Modern productivity systems leverage AI for task automation, intelligent scheduling, and content generation. The key is using AI to eliminate routine decisions while maintaining human oversight for strategic choices.</p>
+        </div>
+
+        <div class="workflow-cards">
+          <div class="workflow-card">
+            <h4>Automated Task Management</h4>
+            <div class="workflow-steps">
+              <div class="workflow-step">
+                <div class="step-number">1</div>
+                <div class="step-text">AI email filtering and categorization</div>
+              </div>
+              <div class="workflow-step">
+                <div class="step-number">2</div>
+                <div class="step-text">Smart calendar scheduling and time blocking</div>
+              </div>
+              <div class="workflow-step">
+                <div class="step-number">3</div>
+                <div class="step-text">Intelligent priority scoring based on patterns</div>
+              </div>
+              <div class="workflow-step">
+                <div class="step-number">4</div>
+                <div class="step-text">Automated routine task creation and reminders</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="workflow-card">
+            <h4>Content Generation & Processing</h4>
+            <div class="workflow-steps">
+              <div class="workflow-step">
+                <div class="step-number">1</div>
+                <div class="step-text">AI meeting summaries and action items</div>
+              </div>
+              <div class="workflow-step">
+                <div class="step-number">2</div>
+                <div class="step-text">Document templates and first drafts</div>
+              </div>
+              <div class="workflow-step">
+                <div class="step-number">3</div>
+                <div class="step-text">Research synthesis and information extraction</div>
+              </div>
+              <div class="workflow-step">
+                <div class="step-number">4</div>
+                <div class="step-text">Automated progress reporting and updates</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="workflow-card">
+            <h4>Pattern Recognition & Optimization</h4>
+            <div class="workflow-steps">
+              <div class="workflow-step">
+                <div class="step-number">1</div>
+                <div class="step-text">Personal productivity pattern analysis</div>
+              </div>
+              <div class="workflow-step">
+                <div class="step-number">2</div>
+                <div class="step-text">Energy level tracking and optimization</div>
+              </div>
+              <div class="workflow-step">
+                <div class="step-number">3</div>
+                <div class="step-text">Workflow bottleneck identification</div>
+              </div>
+              <div class="workflow-step">
+                <div class="step-number">4</div>
+                <div class="step-text">Predictive scheduling for optimal performance</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <h3>Stress-Testing Your System</h3>
+        <p>The best productivity systems survive under pressure. Test your system with these scenarios:</p>
+
+        <div class="comparison-table">
+          <table>
+            <thead>
+              <tr>
+                <th>Stress Test Scenario</th>
+                <th>System Should Handle</th>
+                <th>Warning Signs</th>
+                <th>Solution</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>Overwhelming Week</strong></td>
+                <td>3x normal task volume</td>
+                <td>System breakdown, missed items</td>
+                <td>Build buffer capacity, prioritization protocols</td>
+              </tr>
+              <tr>
+                <td><strong>Technology Failure</strong></td>
+                <td>Work without digital tools</td>
+                <td>Complete halt in productivity</td>
+                <td>Analog backup methods, offline sync</td>
+              </tr>
+              <tr>
+                <td><strong>Travel/Disruption</strong></td>
+                <td>Different environment and schedule</td>
+                <td>Lost rhythm, forgotten commitments</td>
+                <td>Mobile-first design, cloud sync</td>
+              </tr>
+              <tr>
+                <td><strong>Team Collaboration</strong></td>
+                <td>Multiple people using the system</td>
+                <td>Conflicts, miscommunication</td>
+                <td>Shared protocols, clear ownership</td>
+              </tr>
+              <tr>
+                <td><strong>Long-term Maintenance</strong></td>
+                <td>6+ months of consistent use</td>
+                <td>System decay, outdated information</td>
+                <td>Regular reviews, automated cleanup</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <section id="faq" class="faq-section">
+        <h2>Frequently Asked Questions</h2>
+
+        <div class="faq-item">
+          <div class="faq-question">Which productivity system should I start with?</div>
+          <div class="faq-answer">Start with Time Blocking + Pomodoro if you struggle with focus, or GTD if you feel overwhelmed by tasks. These systems show results within 1-2 weeks and have the gentlest learning curves. Avoid complex systems like BASB until you've mastered the basics.</div>
+        </div>
+
+        <div class="faq-item">
+          <div class="faq-question">How long does it take to see results from a productivity system?</div>
+          <div class="faq-answer">Most people see initial results within 3-7 days (reduced stress, better focus), but it takes 3-4 weeks for habits to stabilize and 2-3 months for compound benefits to appear. Stick with a system for at least 30 days before making major changes.</div>
+        </div>
+
+        <div class="faq-item">
+          <div class="faq-question">Should I use analog or digital tools for productivity?</div>
+          <div class="faq-answer">Use what you'll actually maintain consistently. Digital tools offer search, backup, and automation, while analog tools reduce distractions and improve memory retention. Many successful systems combine both: digital for storage/processing, analog for thinking/planning.</div>
+        </div>
+
+        <div class="faq-item">
+          <div class="faq-question">What if my productivity system isn't working?</div>
+          <div class="faq-answer">First, ensure you're using the system consistently for 30+ days. If it's still not working, identify the specific failure point: capture, organize, review, or execution. Often the issue is incomplete implementation rather than a bad system. Consider simplifying before switching systems entirely.</div>
+        </div>
+
+        <div class="faq-item">
+          <div class="faq-question">How do I maintain motivation to stick with a productivity system?</div>
+          <div class="faq-answer">Focus on systems, not motivation. Build tiny habits (2-minute rule), track leading indicators (tasks completed, reviews done), and celebrate small wins. Make the system easier to use than not use. Most importantly, regularly review how the system is improving your life quality.</div>
+        </div>
+
+        <div class="faq-item">
+          <div class="faq-question">Can I combine multiple productivity systems?</div>
+          <div class="faq-answer">Yes, but start with one system and master it first. Common combinations: GTD for task management + PARA for information organization, or Time Blocking + Getting Things Done. Avoid combining systems that conflict in philosophy or require duplicate effort.</div>
+        </div>
+
+        <div class="faq-item">
+          <div class="faq-question">How often should I do weekly reviews?</div>
+          <div class="faq-answer">Weekly reviews are non-negotiable for system health—aim for the same time each week (Friday afternoon or Sunday evening). Spend 30-45 minutes reviewing what happened, updating your system, and planning ahead. This prevents system decay and maintains trust in your external brain.</div>
+        </div>
+
+        <div class="faq-item">
+          <div class="faq-question">What's the biggest mistake people make with productivity systems?</div>
+          <div class="faq-answer">Perfectionism and over-engineering. People spend more time tweaking their systems than actually using them. Start simple, use consistently for 30 days, then iterate based on real usage patterns. Your system should serve you, not the other way around.</div>
+        </div>
+      </section>
+
+      <div class="cta-cards">
+        <div class="cta-card">
+          <h4>⚡ AI & Automation</h4>
+          <p>Supercharge your productivity with AI tools and automation workflows for maximum efficiency.</p>
+          <a href="/ai-autonomous-agents" class="cta-button">Explore AI</a>
+        </div>
+
+        <div class="cta-card">
+          <h4>📊 Digital Marketing</h4>
+          <p>Apply productivity systems to marketing workflows and content creation processes.</p>
+          <a href="/digital-marketing-seo" class="cta-button">Marketing Systems</a>
+        </div>
+
+        <div class="cta-card">
+          <h4>🎯 Focus & Deep Work</h4>
+          <p>Master attention management and deep work practices for knowledge workers.</p>
+          <a href="/nootropics-cognitive-enhancers" class="cta-button">Optimize Focus</a>
+        </div>
+      </div>
+    </main>
+
+    <aside class="sidebar">
+      <h3>Contents</h3>
+      <ul>
+        <li><a href="#productivity-fundamentals">Fundamentals</a></li>
+        <li><a href="#productivity-systems">Proven Systems</a></li>
+        <li><a href="#digital-tools">Digital Tools</a></li>
+        <li><a href="#workflow-optimization">Workflow Optimization</a></li>
+        <li><a href="#productivity-assessment">Assessment Tool</a></li>
+        <li><a href="#advanced-techniques">Advanced Techniques</a></li>
+        <li><a href="#faq">FAQ</a></li>
+      </ul>
+    </aside>
+  </div>
+</div>
+
+<script>
+function calculateProductivitySystemRecommendation() {
+  const q1 = document.querySelector('input[name="q1"]:checked');
+  const q2 = document.querySelector('input[name="q2"]:checked');
+  const q3 = document.querySelector('input[name="q3"]:checked');
+  const q4 = document.querySelector('input[name="q4"]:checked');
+  
+  if (!q1 || !q2 || !q3 || !q4) {
+    alert('Please answer all questions to get your recommendation');
+    return;
+  }
+  
+  const answers = {
+    q1: q1.value,
+    q2: q2.value,
+    q3: q3.value,
+    q4: q4.value
+  };
+  
+  let recommendation = '';
+  
+  // Logic for recommendations based on answers
+  if (answers.q1 === 'overwhelmed' && answers.q4 !== 'minimal') {
+    recommendation = `
+      <h5>🎯 Getting Things Done (GTD)</h5>
+      <p>Perfect for managing overwhelming task loads. GTD's "mind like water" philosophy and comprehensive capture system will help you regain control.</p>
+      <p><strong>Start with:</strong> Set up a trusted capture system (digital inbox), learn the 2-minute rule, and begin weekly reviews.</p>
+      <p><strong>Time investment:</strong> 2-4 weeks to build habits, 2 hours weekly maintenance</p>
+    `;
+  } else if (answers.q1 === 'focus' && answers.q4 === 'minimal') {
+    recommendation = `
+      <h5>🍅 Time Blocking + Pomodoro</h5>
+      <p>Immediate improvement in focus and distraction management. Works from day one with minimal learning curve.</p>
+      <p><strong>Start with:</strong> Plan tomorrow tonight, block your calendar, use 25-minute focus sessions with 5-minute breaks.</p>
+      <p><strong>Time investment:</strong> 30 minutes daily planning, see results within 3-5 days</p>
+    `;
+  } else if (answers.q1 === 'information' && answers.q3 === 'love') {
+    recommendation = `
+      <h5>📝 Building a Second Brain (BASB)</h5>
+      <p>Ideal for knowledge workers who need to capture, connect, and create from large amounts of information.</p>
+      <p><strong>Start with:</strong> Choose a note-taking app (Obsidian/Notion), learn the CODE method, begin progressive summarization.</p>
+      <p><strong>Time investment:</strong> 3-4 weeks to build, 3-5 hours weekly maintenance</p>
+    `;
+  } else if (answers.q1 === 'priorities' && answers.q2 === 'detailed') {
+    recommendation = `
+      <h5>🎨 RICE Framework</h5>
+      <p>Data-driven prioritization for complex decisions. Score tasks by Reach × Impact × Confidence ÷ Effort.</p>
+      <p><strong>Start with:</strong> Create a scoring spreadsheet, rate your current projects, focus on highest RICE scores.</p>
+      <p><strong>Time investment:</strong> 1-2 hours weekly scoring, 3-4 weeks to master</p>
+    `;
+  } else if (answers.q2 === 'simple' && answers.q4 === 'gradual') {
+    recommendation = `
+      <h5>⚡ Zen to Done (ZTD)</h5>
+      <p>Simplified productivity focused on building one habit at a time. Perfect for sustainable long-term change.</p>
+      <p><strong>Start with:</strong> Habit 1 (Collect), master it for one week, then add Habit 2 (Process). Continue gradually.</p>
+      <p><strong>Time investment:</strong> 1 week per habit, 10 habits total over 2-3 months</p>
+    `;
+  } else if (answers.q1 === 'information' && (answers.q3 === 'practical' || answers.q3 === 'minimal')) {
+    recommendation = `
+      <h5>📋 PARA Method</h5>
+      <p>Clean, actionable organization system for information management without complex linking or tagging.</p>
+      <p><strong>Start with:</strong> Organize files into Projects, Areas, Resources, Archive. Focus on actionability over perfect categories.</p>
+      <p><strong>Time investment:</strong> 1-2 weeks setup, 1 hour weekly maintenance</p>
+    `;
+  } else {
+    // Default recommendation for mixed answers
+    recommendation = `
+      <h5>🍅 Time Blocking + Basic GTD</h5>
+      <p>A hybrid approach combining time management with task organization. Start simple and evolve based on what works.</p>
+      <p><strong>Start with:</strong> Daily calendar blocking + weekly brain dumps into a simple task list. Review and plan weekly.</p>
+      <p><strong>Time investment:</strong> 45 minutes daily planning, immediate benefits</p>
+    `;
+  }
+  
+  document.getElementById('systemRecommendation').innerHTML = recommendation;
+  document.getElementById('productivityResults').style.display = 'block';
+}
+</script>

@@ -1,0 +1,72 @@
+{
+  "slug": "lloyds-bank-it-glitch-half-million-customers-data-exposed-2026",
+  "title": "Lloyds Bank IT Glitch Exposed 448,000 Customers' Data — Including National Insurance Numbers",
+  "description": "A software defect during a routine overnight IT change let Lloyds, Halifax, and Bank of Scotland customers see each other's transaction data, account details, and national insurance numbers.",
+  "category": "tech",
+  "image": "",
+  "imageAlt": "",
+  "lede": "Almost half a million banking customers woke up on March 12 to find strangers' transactions in their apps — including account details and national insurance numbers. The cause? A single software bug introduced during a routine overnight update.",
+  "sections": [
+    {
+      "heading": "What Happened",
+      "paragraphs": [
+        "On March 12, 2026, Lloyds Banking Group — which operates Lloyds, Halifax, and Bank of Scotland — pushed a routine overnight software update. A defect in the code caused a data-mixing error: customers logging into their banking apps began seeing transactions, account numbers, and national insurance numbers belonging to other people.",
+        "According to a letter from Lloyds to the UK Treasury Select Committee, up to 447,936 customers were affected. Of those, 114,182 customers actively clicked on the erroneous transactions and may have seen detailed personal information including account details, national insurance numbers, and payment references.",
+        "The bank says the issue was fixed 'promptly,' but for affected customers, the experience was anything but routine. One customer, Asha, told the BBC she saw an £8,000 car purchase in her app and believed her account had been compromised. 'I genuinely thought someone had cloned my details,' she said. 'I was almost traumatised.'"
+      ]
+    },
+    {
+      "heading": "Compensation: £38 Per Customer",
+      "paragraphs": [
+        "As of March 23, Lloyds had paid out £139,000 in 'goodwill payments' to 3,625 customers — an average of just £38.34 per person. That's for a breach that exposed national insurance numbers, the UK equivalent of Social Security numbers.",
+        "The disparity between the severity of the exposure and the compensation has drawn criticism. Treasury Select Committee chair Dame Meg Hillier noted that modern banking's convenience comes with a 'trade-off' — consumers 'place our faith in technology which can suffer unpredictable errors.'",
+        "For the vast majority of the 447,936 affected customers who haven't been compensated, the situation raises uncomfortable questions about what happens when your bank exposes your data through no fault of your own."
+      ]
+    },
+    {
+      "heading": "Why a Single Bug Can Do This Much Damage",
+      "paragraphs": [
+        "The Lloyds incident is a textbook case of how fragile even the largest financial institutions' software can be. A single defect introduced during a routine change cascaded into a data exposure affecting nearly half a million people. No hackers were involved. No sophisticated attack was needed. Just bad code in a scheduled update.",
+        "This pattern is increasingly common. According to the UK's Financial Conduct Authority, major UK banks reported 268 IT incidents in 2024 alone. Barclays, TSB, NatWest, and HSBC have all experienced similar — if smaller — outages and data exposure events in recent years.",
+        "For consumers, the lesson is clear: your bank's security is only as strong as their weakest software update. You can't control their IT infrastructure, but you can control your own security posture — strong unique passwords, two-factor authentication, and monitoring tools that alert you to suspicious activity on your accounts."
+      ]
+    },
+    {
+      "heading": "What You Can Actually Do",
+      "paragraphs": [
+        "While you can't prevent your bank from pushing a buggy update, you can minimize the damage when things go wrong. A password manager ensures you're not reusing passwords across financial accounts — if one bank is compromised, the others aren't affected. Two-factor authentication adds a second barrier even if credentials are exposed.",
+        "Credit monitoring services and identity protection tools can alert you to unauthorized activity using your personal details. In the UK, you can place a CIFAS protective registration on your credit file if your NI number has been exposed. In the US, credit freezes serve a similar purpose.",
+        "The uncomfortable truth is that bank IT failures are not rare anomalies — they're a regular feature of modern banking. Treating your financial security as something you actively manage, rather than something your bank handles for you, is the pragmatic response."
+      ]
+    }
+  ],
+  "tags": ["Lloyds Bank", "IT glitch", "data breach", "cybersecurity", "banking", "password managers", "UK banking", "data protection"],
+  "sources": [
+    {
+      "name": "BBC News",
+      "url": "https://www.bbc.com/news/articles/c70dqk2vjv8o"
+    }
+  ],
+  "faqs": [
+    {
+      "q": "How many Lloyds customers were affected by the IT glitch?",
+      "a": "Up to 447,936 customers across Lloyds, Halifax, and Bank of Scotland were affected. Of those, 114,182 customers actively viewed other people's detailed transaction and account information."
+    },
+    {
+      "q": "What data was exposed in the Lloyds bank glitch?",
+      "a": "Affected customers could see other people's transaction details, account numbers, national insurance numbers, and payment references. Some also saw transactions from non-Lloyds customers who had made payments to Lloyds accounts."
+    },
+    {
+      "q": "How much compensation did Lloyds pay affected customers?",
+      "a": "As of March 23, Lloyds paid £139,000 in goodwill payments to 3,625 of the 447,936 affected customers — an average of £38.34 per person. The majority of affected customers received no compensation."
+    },
+    {
+      "q": "How can I protect myself from bank IT failures?",
+      "a": "Use unique passwords for each financial account (via a password manager), enable two-factor authentication, monitor your credit file, and consider a CIFAS protective registration (UK) or credit freeze (US) if your personal details have been exposed."
+    },
+    {
+      "q": "How common are bank IT failures in the UK?",
+      "a": "Major UK banks reported 268 IT incidents to the Financial Conduct Authority in 2024 alone. Outages and data exposure events at Lloyds, Barclays, TSB, NatWest, and HSBC have become a regular occurrence."
+    }
+  ]
+}

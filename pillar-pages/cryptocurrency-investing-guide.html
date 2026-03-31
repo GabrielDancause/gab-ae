@@ -1,0 +1,1340 @@
+<style>
+  .cig-container {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 2rem;
+    color: #e2e8f0;
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    line-height: 1.8;
+  }
+  .cig-header {
+    text-align: center;
+    margin-bottom: 4rem;
+    padding-top: 3rem;
+  }
+  .gradient-h1 {
+    font-size: clamp(2.2rem, 5vw, 3.5rem);
+    font-weight: 800;
+    background: linear-gradient(135deg, #ffffff 0%, #a5b4fc 50%, #818cf8 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    margin-bottom: 1rem;
+    line-height: 1.15;
+    letter-spacing: -0.02em;
+  }
+  .cig-subtitle {
+    font-size: 1.2rem;
+    color: #94a3b8;
+    max-width: 750px;
+    margin: 0 auto;
+  }
+  .breadcrumb {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    justify-content: center;
+    margin-bottom: 2rem;
+    font-size: 0.85rem;
+  }
+  .breadcrumb a {
+    color: #818cf8;
+    text-decoration: none;
+  }
+  .breadcrumb a:hover { text-decoration: underline; }
+  .breadcrumb span { color: #475569; }
+  .updated-badge {
+    display: inline-block;
+    background: rgba(129, 140, 248, 0.15);
+    color: #a5b4fc;
+    padding: 0.4rem 1rem;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    margin-bottom: 2rem;
+  }
+  .content-wrapper {
+    display: grid;
+    grid-template-columns: 1fr 280px;
+    gap: 4rem;
+    margin-top: 3rem;
+  }
+  .main-content {
+    min-width: 0;
+  }
+  .sidebar {
+    position: sticky;
+    top: 2rem;
+    height: fit-content;
+    background: #12121a;
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 16px;
+    padding: 1.5rem;
+  }
+  .sidebar h3 {
+    color: #ffffff;
+    font-size: 0.9rem;
+    font-weight: 600;
+    margin: 0 0 1rem 0;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+  .sidebar ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+  .sidebar li {
+    margin: 0;
+  }
+  .sidebar a {
+    display: block;
+    color: #94a3b8;
+    text-decoration: none;
+    padding: 0.5rem 0;
+    border-bottom: 1px solid rgba(255,255,255,0.05);
+    font-size: 0.85rem;
+    transition: color 0.2s;
+  }
+  .sidebar a:hover {
+    color: #a5b4fc;
+  }
+  .section {
+    margin: 4rem 0;
+    scroll-margin-top: 2rem;
+  }
+  .section h2 {
+    color: #ffffff;
+    font-size: 1.8rem;
+    font-weight: 700;
+    margin-bottom: 1.5rem;
+  }
+  .section h3 {
+    color: #e2e8f0;
+    font-size: 1.3rem;
+    font-weight: 600;
+    margin: 2rem 0 1rem 0;
+  }
+  .stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1.5rem;
+    margin: 2rem 0;
+  }
+  .stat-card {
+    background: #12121a;
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 14px;
+    padding: 1.5rem;
+    text-align: center;
+  }
+  .stat-number {
+    font-size: 2.5rem;
+    font-weight: 800;
+    color: #818cf8;
+    display: block;
+    line-height: 1;
+  }
+  .stat-label {
+    color: #94a3b8;
+    font-size: 0.9rem;
+    margin-top: 0.5rem;
+  }
+  .crypto-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 2rem;
+    margin: 2rem 0;
+  }
+  .crypto-card {
+    background: #12121a;
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 16px;
+    padding: 2rem;
+    position: relative;
+    overflow: hidden;
+  }
+  .crypto-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, #818cf8, #a5b4fc);
+  }
+  .crypto-card h4 {
+    color: #ffffff;
+    font-size: 1.2rem;
+    font-weight: 600;
+    margin-bottom: 1rem;
+  }
+  .risk-level {
+    background: rgba(129, 140, 248, 0.15);
+    color: #a5b4fc;
+    padding: 0.3rem 0.8rem;
+    border-radius: 8px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    display: inline-block;
+    margin-bottom: 1rem;
+  }
+  .risk-level.low { background: rgba(74, 222, 128, 0.15); color: #4ade80; }
+  .risk-level.medium { background: rgba(251, 191, 36, 0.15); color: #fbbf24; }
+  .risk-level.high { background: rgba(248, 113, 113, 0.15); color: #f87171; }
+  .risk-level.extreme { background: rgba(239, 68, 68, 0.15); color: #ef4444; }
+  .callout {
+    background: rgba(34, 211, 238, 0.1);
+    border-left: 4px solid #22d3ee;
+    border-radius: 0 8px 8px 0;
+    padding: 1.5rem;
+    margin: 2rem 0;
+  }
+  .callout.warning {
+    background: rgba(251, 191, 36, 0.1);
+    border-left-color: #fbbf24;
+  }
+  .callout.success {
+    background: rgba(74, 222, 128, 0.1);
+    border-left-color: #4ade80;
+  }
+  .callout.danger {
+    background: rgba(239, 68, 68, 0.1);
+    border-left-color: #ef4444;
+  }
+  .callout h4 {
+    color: #ffffff;
+    font-size: 1rem;
+    font-weight: 600;
+    margin: 0 0 0.5rem 0;
+  }
+  .comparison-table {
+    width: 100%;
+    background: #12121a;
+    border-radius: 16px;
+    overflow: hidden;
+    border: 1px solid rgba(255,255,255,0.08);
+    margin: 2rem 0;
+  }
+  .comparison-table th {
+    background: #1e293b;
+    color: #ffffff;
+    padding: 1rem;
+    text-align: left;
+    font-weight: 600;
+  }
+  .comparison-table td {
+    padding: 1rem;
+    border-bottom: 1px solid rgba(255,255,255,0.05);
+    color: #e2e8f0;
+  }
+  .comparison-table tr:last-child td {
+    border-bottom: none;
+  }
+  .tier-high { color: #4ade80; }
+  .tier-medium { color: #fbbf24; }
+  .tier-low { color: #f87171; }
+  .strategy-cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minMax(280px, 1fr));
+    gap: 1.5rem;
+    margin: 2rem 0;
+  }
+  .strategy-card {
+    background: #12121a;
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 14px;
+    padding: 1.5rem;
+  }
+  .strategy-card h4 {
+    color: #ffffff;
+    font-size: 1.1rem;
+    font-weight: 600;
+    margin-bottom: 1rem;
+  }
+  .strategy-steps {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+  .strategy-step {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.75rem;
+    background: rgba(255,255,255,0.02);
+    border-radius: 8px;
+  }
+  .step-number {
+    background: #818cf8;
+    color: #ffffff;
+    width: 1.5rem;
+    height: 1.5rem;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.75rem;
+    font-weight: 600;
+    flex-shrink: 0;
+  }
+  .step-text {
+    color: #e2e8f0;
+    font-size: 0.9rem;
+  }
+  .portfolio-calculator {
+    background: #12121a;
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 16px;
+    padding: 2rem;
+    margin: 3rem 0;
+  }
+  .portfolio-calculator h3 {
+    color: #ffffff;
+    font-size: 1.3rem;
+    font-weight: 600;
+    margin-bottom: 1.5rem;
+    text-align: center;
+  }
+  .calc-inputs {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minWidth(200px, 1fr));
+    gap: 1rem;
+    margin-bottom: 2rem;
+  }
+  .calc-input {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+  .calc-input label {
+    color: #94a3b8;
+    font-size: 0.85rem;
+    font-weight: 500;
+  }
+  .calc-input input, .calc-input select {
+    background: #1e293b;
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 8px;
+    padding: 0.75rem;
+    color: #e2e8f0;
+    font-size: 0.9rem;
+  }
+  .calc-input input:focus, .calc-input select:focus {
+    outline: none;
+    border-color: #818cf8;
+  }
+  .calc-button {
+    background: #818cf8;
+    color: #ffffff;
+    border: none;
+    border-radius: 8px;
+    padding: 0.75rem 2rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s;
+    width: 100%;
+  }
+  .calc-button:hover {
+    background: #6366f1;
+  }
+  .calc-results {
+    background: rgba(129, 140, 248, 0.1);
+    border-radius: 12px;
+    padding: 1.5rem;
+    margin-top: 1.5rem;
+    display: none;
+  }
+  .calc-results h4 {
+    color: #a5b4fc;
+    font-size: 1.1rem;
+    margin-bottom: 1rem;
+  }
+  .result-breakdown {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minWidth(150px, 1fr));
+    gap: 1rem;
+    margin-top: 1rem;
+  }
+  .breakdown-item {
+    background: rgba(255,255,255,0.02);
+    padding: 1rem;
+    border-radius: 8px;
+    text-align: center;
+  }
+  .breakdown-label {
+    color: #94a3b8;
+    font-size: 0.8rem;
+    margin-bottom: 0.25rem;
+  }
+  .breakdown-value {
+    color: #e2e8f0;
+    font-weight: 600;
+    font-size: 0.9rem;
+  }
+  .breakdown-percent {
+    color: #818cf8;
+    font-size: 0.75rem;
+  }
+  .faq-section {
+    margin: 4rem 0;
+  }
+  .faq-item {
+    background: #12121a;
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 14px;
+    margin-bottom: 1rem;
+    overflow: hidden;
+  }
+  .faq-question {
+    padding: 1.5rem;
+    color: #ffffff;
+    font-weight: 600;
+    cursor: pointer;
+    border-bottom: 1px solid rgba(255,255,255,0.05);
+  }
+  .faq-answer {
+    padding: 1.5rem;
+    color: #94a3b8;
+  }
+  .cta-cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minWidth(250px, 1fr));
+    gap: 1.5rem;
+    margin: 3rem 0;
+  }
+  .cta-card {
+    background: linear-gradient(135deg, #1e293b, #334155);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 16px;
+    padding: 2rem;
+    text-align: center;
+  }
+  .cta-card h4 {
+    color: #ffffff;
+    font-size: 1.1rem;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+  }
+  .cta-card p {
+    color: #94a3b8;
+    font-size: 0.9rem;
+    margin-bottom: 1.5rem;
+  }
+  .cta-button {
+    display: inline-block;
+    background: #818cf8;
+    color: #ffffff;
+    padding: 0.7rem 1.5rem;
+    border-radius: 8px;
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 0.9rem;
+    transition: background 0.2s;
+  }
+  .cta-button:hover {
+    background: #6366f1;
+  }
+  
+  @media (max-width: 1024px) {
+    .content-wrapper {
+      grid-template-columns: 1fr;
+      gap: 2rem;
+    }
+    .sidebar {
+      position: relative;
+      top: 0;
+      order: -1;
+    }
+  }
+  
+  @media (max-width: 768px) {
+    .cig-container {
+      padding: 1rem;
+    }
+    .breadcrumb {
+      flex-wrap: wrap;
+    }
+    .stats-grid {
+      grid-template-columns: repeat(auto-fit, minWidth(200px, 1fr));
+    }
+    .crypto-grid {
+      grid-template-columns: 1fr;
+    }
+    .strategy-cards {
+      grid-template-columns: 1fr;
+    }
+    .cta-cards {
+      grid-template-columns: 1fr;
+    }
+    .calc-inputs {
+      grid-template-columns: 1fr;
+    }
+    .result-breakdown {
+      grid-template-columns: repeat(auto-fit, minWidth(120px, 1fr));
+    }
+  }
+</style>
+
+<div class="cig-container">
+  <div class="cig-header">
+    <div class="breadcrumb">
+      <a href="/apex-guides">Apex Guides</a>
+      <span>›</span>
+      <a href="/capital-markets-wealth-guide-2026">Capital Markets & Wealth Architecture</a>
+      <span>›</span>
+      <span style="color: #cbd5e1;">Current</span>
+    </div>
+    
+    <div class="updated-badge">
+      ₿ Updated March 2026
+    </div>
+    
+    <h1 class="gradient-h1">Cryptocurrency Investing Guide</h1>
+    <p class="cig-subtitle">Navigate the crypto markets with proven investment strategies, risk management frameworks, and portfolio allocation methods. From Bitcoin basics to DeFi opportunities.</p>
+  </div>
+
+  <div class="content-wrapper">
+    <main class="main-content">
+      <div class="stats-grid">
+        <div class="stat-card">
+          <span class="stat-number">$1.7T</span>
+          <div class="stat-label">Global cryptocurrency market cap</div>
+        </div>
+        <div class="stat-card">
+          <span class="stat-number">160%</span>
+          <div class="stat-label">Bitcoin's average annual return (2013-2023)</div>
+        </div>
+        <div class="stat-card">
+          <span class="stat-number">80%</span>
+          <div class="stat-label">Maximum crypto allocation recommended</div>
+        </div>
+        <div class="stat-card">
+          <span class="stat-number">26K+</span>
+          <div class="stat-label">Different cryptocurrencies in existence</div>
+        </div>
+      </div>
+
+      <section id="crypto-fundamentals" class="section">
+        <h2>Cryptocurrency Investment Fundamentals</h2>
+        <p>Cryptocurrency represents the biggest wealth creation opportunity of our generation, but also one of the highest-risk asset classes. While Bitcoin has returned an average 160% annually over the past decade, it has also experienced drawdowns exceeding 80%. Success requires understanding both the revolutionary potential and extreme volatility.</p>
+
+        <div class="callout danger">
+          <h4>⚠️ Critical Disclaimer</h4>
+          <p>Cryptocurrency investing is extremely high risk. Only invest what you can afford to lose completely. Past performance does not guarantee future results. This is educational content, not financial advice. Do your own research and consider consulting with qualified financial advisors.</p>
+        </div>
+
+        <h3>Why Invest in Cryptocurrency?</h3>
+        <div class="strategy-cards">
+          <div class="strategy-card">
+            <h4>🚀 Exponential Growth Potential</h4>
+            <div class="strategy-steps">
+              <div class="strategy-step">
+                <div class="step-number">1</div>
+                <div class="step-text">Early adopter advantage in emerging technology</div>
+              </div>
+              <div class="strategy-step">
+                <div class="step-number">2</div>
+                <div class="step-text">Massive addressable market still developing</div>
+              </div>
+              <div class="strategy-step">
+                <div class="step-number">3</div>
+                <div class="step-text">Limited supply of many cryptocurrencies</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="strategy-card">
+            <h4>🌍 Portfolio Diversification</h4>
+            <div class="strategy-steps">
+              <div class="strategy-step">
+                <div class="step-number">1</div>
+                <div class="step-text">Uncorrelated with traditional assets (historically)</div>
+              </div>
+              <div class="strategy-step">
+                <div class="step-number">2</div>
+                <div class="step-text">Hedge against currency devaluation</div>
+              </div>
+              <div class="strategy-step">
+                <div class="step-number">3</div>
+                <div class="step-text">24/7 global market access</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="strategy-card">
+            <h4>🛡️ Inflation Protection</h4>
+            <div class="strategy-steps">
+              <div class="strategy-step">
+                <div class="step-number">1</div>
+                <div class="step-text">Bitcoin's fixed 21 million supply cap</div>
+              </div>
+              <div class="strategy-step">
+                <div class="step-number">2</div>
+                <div class="step-text">Decentralized, government-independent</div>
+              </div>
+              <div class="strategy-step">
+                <div class="step-number">3</div>
+                <div class="step-text">Digital gold narrative gaining institutional adoption</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="strategy-card">
+            <h4>💡 Innovation Exposure</h4>
+            <div class="strategy-steps">
+              <div class="strategy-step">
+                <div class="step-number">1</div>
+                <div class="step-text">Blockchain technology disrupting industries</div>
+              </div>
+              <div class="strategy-step">
+                <div class="step-number">2</div>
+                <div class="step-text">DeFi creating new financial primitives</div>
+              </div>
+              <div class="strategy-step">
+                <div class="step-number">3</div>
+                <div class="step-text">Web3 and metaverse infrastructure plays</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="callout warning">
+          <h4>💡 The 5% Rule for Crypto</h4>
+          <p>Most financial advisors recommend allocating 5-10% of investment portfolios to cryptocurrency, with some aggressive investors going up to 20-30%. Never allocate money you need for living expenses or short-term goals. Crypto should be considered speculative, high-growth allocation.</p>
+        </div>
+      </section>
+
+      <section id="crypto-categories" class="section">
+        <h2>Cryptocurrency Categories</h2>
+        
+        <div class="crypto-grid">
+          <div class="crypto-card">
+            <h4>₿ Bitcoin (BTC)</h4>
+            <div class="risk-level medium">Medium Risk</div>
+            <p><strong>Purpose:</strong> Digital gold, store of value, decentralized currency</p>
+            <p><strong>Market Cap:</strong> $800B+ (50%+ of crypto market)</p>
+            <p><strong>Investment Thesis:</strong> Institutional adoption, inflation hedge, limited supply</p>
+            <p><strong>Allocation:</strong> 40-60% of crypto portfolio for most investors</p>
+            <p><strong>Risk Factors:</strong> Volatility, regulatory uncertainty, energy concerns</p>
+          </div>
+
+          <div class="crypto-card">
+            <h4>Ξ Ethereum (ETH)</h4>
+            <div class="risk-level medium">Medium Risk</div>
+            <p><strong>Purpose:</strong> Smart contract platform, DeFi infrastructure, NFT ecosystem</p>
+            <p><strong>Market Cap:</strong> $300B+ (15-20% of crypto market)</p>
+            <p><strong>Investment Thesis:</strong> Web3 infrastructure, staking rewards post-merge</p>
+            <p><strong>Allocation:</strong> 20-30% of crypto portfolio</p>
+            <p><strong>Risk Factors:</strong> Competition from other smart contract platforms</p>
+          </div>
+
+          <div class="crypto-card">
+            <h4>🏆 Large Cap Altcoins</h4>
+            <div class="risk-level high">High Risk</div>
+            <p><strong>Examples:</strong> BNB, Solana, Cardano, Polygon, Avalanche</p>
+            <p><strong>Market Cap:</strong> $5B-50B each</p>
+            <p><strong>Investment Thesis:</strong> Specific use cases, ecosystem growth, innovation</p>
+            <p><strong>Allocation:</strong> 10-20% of crypto portfolio</p>
+            <p><strong>Risk Factors:</strong> Higher volatility, competition, execution risk</p>
+          </div>
+
+          <div class="crypto-card">
+            <h4>💎 Mid/Small Cap Altcoins</h4>
+            <div class="risk-level extreme">Extreme Risk</div>
+            <p><strong>Examples:</strong> Emerging DeFi tokens, gaming coins, Layer 2 solutions</p>
+            <p><strong>Market Cap:</strong> $100M-5B</p>
+            <p><strong>Investment Thesis:</strong> Early-stage growth, niche use cases</p>
+            <p><strong>Allocation:</strong> 5-15% of crypto portfolio (speculation only)</p>
+            <p><strong>Risk Factors:</strong> Extreme volatility, project failure, liquidity risk</p>
+          </div>
+
+          <div class="crypto-card">
+            <h4>🏦 Stablecoins</h4>
+            <div class="risk-level low">Low Risk (Relative)</div>
+            <p><strong>Examples:</strong> USDC, USDT, DAI, BUSD</p>
+            <p><strong>Purpose:</strong> Price stability, trading pairs, yield farming</p>
+            <p><strong>Investment Thesis:</strong> Crypto exposure without volatility</p>
+            <p><strong>Allocation:</strong> 5-10% for trading or DeFi opportunities</p>
+            <p><strong>Risk Factors:</strong> Regulatory risk, depeg events, counterparty risk</p>
+          </div>
+
+          <div class="crypto-card">
+            <h4>🎮 Specialized Categories</h4>
+            <div class="risk-level extreme">Extreme Risk</div>
+            <p><strong>Examples:</strong> NFTs, gaming tokens, meme coins, privacy coins</p>
+            <p><strong>Purpose:</strong> Specific utility or speculative trading</p>
+            <p><strong>Investment Thesis:</strong> Thematic exposure to crypto trends</p>
+            <p><strong>Allocation:</strong> <5% of crypto portfolio (hobby allocation)</p>
+            <p><strong>Risk Factors:</strong> Trend dependency, regulatory scrutiny, high speculation</p>
+          </div>
+        </div>
+      </section>
+
+      <section id="investment-strategies" class="section">
+        <h2>Cryptocurrency Investment Strategies</h2>
+
+        <div class="comparison-table">
+          <table>
+            <thead>
+              <tr>
+                <th>Strategy</th>
+                <th>Time Horizon</th>
+                <th>Risk Level</th>
+                <th>Skill Required</th>
+                <th>Expected Return</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>HODLing (Buy & Hold)</strong></td>
+                <td>1-10+ years</td>
+                <td class="tier-medium">Medium</td>
+                <td>Low</td>
+                <td class="tier-high">High (historically)</td>
+              </tr>
+              <tr>
+                <td><strong>Dollar-Cost Averaging (DCA)</strong></td>
+                <td>6 months-5 years</td>
+                <td class="tier-medium">Medium</td>
+                <td>Low</td>
+                <td class="tier-medium">Moderate</td>
+              </tr>
+              <tr>
+                <td><strong>Crypto Trading</strong></td>
+                <td>Minutes-weeks</td>
+                <td class="tier-low">Extreme</td>
+                <td>High</td>
+                <td class="tier-low">Negative for most</td>
+              </tr>
+              <tr>
+                <td><strong>DeFi Yield Farming</strong></td>
+                <td>Days-months</td>
+                <td class="tier-low">Very High</td>
+                <td>High</td>
+                <td class="tier-medium">Variable</td>
+              </tr>
+              <tr>
+                <td><strong>Staking</strong></td>
+                <td>Months-years</td>
+                <td class="tier-medium">Medium</td>
+                <td>Medium</td>
+                <td class="tier-medium">5-15% APY</td>
+              </tr>
+              <tr>
+                <td><strong>Crypto Index Funds</strong></td>
+                <td>1-5 years</td>
+                <td class="tier-medium">Medium</td>
+                <td>Low</td>
+                <td class="tier-medium">Market average</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <h3>Detailed Strategy Breakdown</h3>
+
+        <div class="strategy-cards">
+          <div class="strategy-card">
+            <h4>🏦 HODLing Strategy</h4>
+            <div class="strategy-steps">
+              <div class="strategy-step">
+                <div class="step-number">1</div>
+                <div class="step-text">Research and select quality projects (BTC, ETH focus)</div>
+              </div>
+              <div class="strategy-step">
+                <div class="step-number">2</div>
+                <div class="step-text">Buy during market downturns or consolidation</div>
+              </div>
+              <div class="strategy-step">
+                <div class="step-number">3</div>
+                <div class="step-text">Store in cold storage (hardware wallet)</div>
+              </div>
+              <div class="strategy-step">
+                <div class="step-number">4</div>
+                <div class="step-text">Ignore short-term price movements</div>
+              </div>
+              <div class="strategy-step">
+                <div class="step-number">5</div>
+                <div class="step-text">Hold for 4+ years minimum</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="strategy-card">
+            <h4>📈 Dollar-Cost Averaging</h4>
+            <div class="strategy-steps">
+              <div class="strategy-step">
+                <div class="step-number">1</div>
+                <div class="step-text">Set fixed weekly/monthly investment amount</div>
+              </div>
+              <div class="strategy-step">
+                <div class="step-number">2</div>
+                <div class="step-text">Choose 1-3 established cryptocurrencies</div>
+              </div>
+              <div class="strategy-step">
+                <div class="step-number">3</div>
+                <div class="step-text">Automate purchases through exchanges</div>
+              </div>
+              <div class="strategy-step">
+                <div class="step-number">4</div>
+                <div class="step-text">Continue regardless of price movements</div>
+              </div>
+              <div class="strategy-step">
+                <div class="step-number">5</div>
+                <div class="step-text">Review and rebalance quarterly</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="strategy-card">
+            <h4>🔄 Rebalancing Strategy</h4>
+            <div class="strategy-steps">
+              <div class="strategy-step">
+                <div class="step-number">1</div>
+                <div class="step-text">Set target allocation percentages</div>
+              </div>
+              <div class="strategy-step">
+                <div class="step-number">2</div>
+                <div class="step-text">Review portfolio monthly/quarterly</div>
+              </div>
+              <div class="strategy-step">
+                <div class="step-number">3</div>
+                <div class="step-text">Sell overperforming assets</div>
+              </div>
+              <div class="strategy-step">
+                <div class="step-number">4</div>
+                <div class="step-text">Buy underperforming assets</div>
+              </div>
+              <div class="strategy-step">
+                <div class="step-number">5</div>
+                <div class="step-text">Maintain risk-adjusted portfolio</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="strategy-card">
+            <h4>💰 Yield Generation</h4>
+            <div class="strategy-steps">
+              <div class="strategy-step">
+                <div class="step-number">1</div>
+                <div class="step-text">Stake Ethereum, Solana, or Cardano</div>
+              </div>
+              <div class="strategy-step">
+                <div class="step-number">2</div>
+                <div class="step-text">Provide liquidity to established DEX pairs</div>
+              </div>
+              <div class="strategy-step">
+                <div class="step-number">3</div>
+                <div class="step-text">Lend stablecoins on reputable platforms</div>
+              </div>
+              <div class="strategy-step">
+                <div class="step-number">4</div>
+                <div class="step-text">Understand smart contract risks</div>
+              </div>
+              <div class="strategy-step">
+                <div class="step-number">5</div>
+                <div class="step-text">Diversify across platforms and protocols</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="callout success">
+          <h4>✅ Recommended Beginner Strategy</h4>
+          <p>Start with 80% BTC/ETH split, DCA $100-500 monthly for 12+ months. Focus on learning before expanding to other assets. Use established exchanges (Coinbase, Kraken) and move to hardware wallet once you have $1000+. Avoid trading until you have 2+ years experience.</p>
+        </div>
+      </section>
+
+      <section id="portfolio-calculator" class="section">
+        <div class="portfolio-calculator">
+          <h3>₿ Crypto Portfolio Calculator</h3>
+          <p>Calculate optimal cryptocurrency allocation based on your risk tolerance and investment timeline.</p>
+          
+          <div class="calc-inputs">
+            <div class="calc-input">
+              <label for="totalInvestment">Total Investment Amount ($)</label>
+              <input type="number" id="totalInvestment" placeholder="10000">
+            </div>
+            
+            <div class="calc-input">
+              <label for="riskTolerance">Risk Tolerance</label>
+              <select id="riskTolerance">
+                <option value="conservative">Conservative (5-10% crypto)</option>
+                <option value="moderate">Moderate (10-20% crypto)</option>
+                <option value="aggressive">Aggressive (20-30% crypto)</option>
+                <option value="speculative">Speculative (30%+ crypto)</option>
+              </select>
+            </div>
+            
+            <div class="calc-input">
+              <label for="timeHorizon">Investment Timeline</label>
+              <select id="timeHorizon">
+                <option value="short">Short-term (6 months - 2 years)</option>
+                <option value="medium">Medium-term (2-5 years)</option>
+                <option value="long">Long-term (5+ years)</option>
+              </select>
+            </div>
+            
+            <div class="calc-input">
+              <label for="experience">Crypto Experience</label>
+              <select id="experience">
+                <option value="beginner">Beginner</option>
+                <option value="intermediate">Intermediate</option>
+                <option value="advanced">Advanced</option>
+              </select>
+            </div>
+          </div>
+          
+          <button class="calc-button" onclick="calculateCryptoPortfolio()">Generate Portfolio Allocation</button>
+          
+          <div class="calc-results" id="cryptoResults">
+            <h4>Your Recommended Crypto Portfolio</h4>
+            <div class="result-breakdown" id="portfolioBreakdown">
+              <!-- Results will be populated here -->
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="risk-management" class="section">
+        <h2>Risk Management & Security</h2>
+
+        <div class="callout danger">
+          <h4>🚨 Critical Security Principles</h4>
+          <p><strong>Never share private keys:</strong> Your keys = your crypto. No legitimate service will ask for them.<br>
+          <strong>Use hardware wallets:</strong> For amounts >$1000, cold storage is essential.<br>
+          <strong>Enable 2FA:</strong> On all exchanges and crypto-related accounts.<br>
+          <strong>Beware of scams:</strong> If it sounds too good to be true, it probably is.</p>
+        </div>
+
+        <h3>Risk Management Framework</h3>
+        <div class="comparison-table">
+          <table>
+            <thead>
+              <tr>
+                <th>Risk Type</th>
+                <th>Likelihood</th>
+                <th>Impact</th>
+                <th>Mitigation Strategy</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>Market Volatility</strong></td>
+                <td class="tier-low">Very High</td>
+                <td class="tier-low">High</td>
+                <td>Position sizing, DCA, long time horizon</td>
+              </tr>
+              <tr>
+                <td><strong>Regulatory Changes</strong></td>
+                <td class="tier-medium">Medium</td>
+                <td class="tier-low">High</td>
+                <td>Geographic diversification, compliance</td>
+              </tr>
+              <tr>
+                <td><strong>Exchange Hacks</strong></td>
+                <td class="tier-medium">Medium</td>
+                <td class="tier-low">Very High</td>
+                <td>Hardware wallets, insurance coverage</td>
+              </tr>
+              <tr>
+                <td><strong>Technology Risks</strong></td>
+                <td class="tier-medium">Medium</td>
+                <td class="tier-medium">Medium</td>
+                <td>Diversification, established projects</td>
+              </tr>
+              <tr>
+                <td><strong>User Error</strong></td>
+                <td class="tier-medium">Medium</td>
+                <td class="tier-low">Very High</td>
+                <td>Education, backup procedures, testing</td>
+              </tr>
+              <tr>
+                <td><strong>Scams/Fraud</strong></td>
+                <td class="tier-medium">Medium</td>
+                <td class="tier-low">High</td>
+                <td>Due diligence, skepticism, research</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <h3>Storage Security Best Practices</h3>
+        <div class="strategy-cards">
+          <div class="strategy-card">
+            <h4>🔒 Hardware Wallets</h4>
+            <div class="strategy-steps">
+              <div class="strategy-step">
+                <div class="step-number">1</div>
+                <div class="step-text">Ledger Nano X or Trezor Model T recommended</div>
+              </div>
+              <div class="strategy-step">
+                <div class="step-number">2</div>
+                <div class="step-text">Buy directly from manufacturer</div>
+              </div>
+              <div class="strategy-step">
+                <div class="step-number">3</div>
+                <div class="step-text">Write down seed phrase securely</div>
+              </div>
+              <div class="strategy-step">
+                <div class="step-number">4</div>
+                <div class="step-text">Store seed phrase in multiple secure locations</div>
+              </div>
+              <div class="strategy-step">
+                <div class="step-number">5</div>
+                <div class="step-text">Never enter seed phrase on computer/phone</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="strategy-card">
+            <h4>🏦 Exchange Security</h4>
+            <div class="strategy-steps">
+              <div class="strategy-step">
+                <div class="step-number">1</div>
+                <div class="step-text">Use reputable exchanges (Coinbase, Kraken, Binance)</div>
+              </div>
+              <div class="strategy-step">
+                <div class="step-number">2</div>
+                <div class="step-text">Enable 2FA with authenticator app</div>
+              </div>
+              <div class="strategy-step">
+                <div class="step-number">3</div>
+                <div class="step-text">Whitelist withdrawal addresses</div>
+              </div>
+              <div class="strategy-step">
+                <div class="step-number">4</div>
+                <div class="step-text">Use unique, strong passwords</div>
+              </div>
+              <div class="strategy-step">
+                <div class="step-number">5</div>
+                <div class="step-text">Monitor account activity regularly</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="strategy-card">
+            <h4>📝 Backup Procedures</h4>
+            <div class="strategy-steps">
+              <div class="strategy-step">
+                <div class="step-number">1</div>
+                <div class="step-text">Multiple physical copies of seed phrases</div>
+              </div>
+              <div class="strategy-step">
+                <div class="step-number">2</div>
+                <div class="step-text">Fireproof/waterproof storage options</div>
+              </div>
+              <div class="strategy-step">
+                <div class="step-number">3</div>
+                <div class="step-text">Geographic distribution of backups</div>
+              </div>
+              <div class="strategy-step">
+                <div class="step-number">4</div>
+                <div class="step-text">Regular testing of recovery procedures</div>
+              </div>
+              <div class="strategy-step">
+                <div class="step-number">5</div>
+                <div class="step-text">Estate planning for crypto inheritance</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="strategy-card">
+            <h4>🎯 Position Management</h4>
+            <div class="strategy-steps">
+              <div class="strategy-step">
+                <div class="step-number">1</div>
+                <div class="step-text">Never invest more than you can afford to lose</div>
+              </div>
+              <div class="strategy-step">
+                <div class="step-number">2</div>
+                <div class="step-text">Maximum 5-20% of total portfolio in crypto</div>
+              </div>
+              <div class="strategy-step">
+                <div class="step-number">3</div>
+                <div class="step-text">Diversify across multiple projects</div>
+              </div>
+              <div class="strategy-step">
+                <div class="step-number">4</div>
+                <div class="step-text">Take profits during major run-ups</div>
+              </div>
+              <div class="strategy-step">
+                <div class="step-number">5</div>
+                <div class="step-text">Have clear exit strategies and targets</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="getting-started" class="section">
+        <h2>Getting Started: 30-Day Plan</h2>
+
+        <div class="strategy-cards">
+          <div class="strategy-card">
+            <h4>📚 Week 1: Education</h4>
+            <div class="strategy-steps">
+              <div class="strategy-step">
+                <div class="step-number">1</div>
+                <div class="step-text">Read Bitcoin whitepaper and basic blockchain concepts</div>
+              </div>
+              <div class="strategy-step">
+                <div class="step-number">2</div>
+                <div class="step-text">Research major cryptocurrencies (BTC, ETH, top 10)</div>
+              </div>
+              <div class="strategy-step">
+                <div class="step-number">3</div>
+                <div class="step-text">Learn about wallet types and security practices</div>
+              </div>
+              <div class="strategy-step">
+                <div class="step-number">4</div>
+                <div class="step-text">Understand market cycles and volatility</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="strategy-card">
+            <h4>💳 Week 2: Setup</h4>
+            <div class="strategy-steps">
+              <div class="strategy-step">
+                <div class="step-number">1</div>
+                <div class="step-text">Choose reputable exchange and create account</div>
+              </div>
+              <div class="strategy-step">
+                <div class="step-number">2</div>
+                <div class="step-text">Complete KYC verification process</div>
+              </div>
+              <div class="strategy-step">
+                <div class="step-number">3</div>
+                <div class="step-text">Enable 2FA and security features</div>
+              </div>
+              <div class="strategy-step">
+                <div class="step-number">4</div>
+                <div class="step-text">Start with small test transaction ($20-50)</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="strategy-card">
+            <h4>📊 Week 3: Strategy</h4>
+            <div class="strategy-steps">
+              <div class="strategy-step">
+                <div class="step-number">1</div>
+                <div class="step-text">Determine your risk tolerance and allocation</div>
+              </div>
+              <div class="strategy-step">
+                <div class="step-number">2</div>
+                <div class="step-text">Set up DCA plan for 80% BTC, 20% ETH</div>
+              </div>
+              <div class="strategy-step">
+                <div class="step-number">3</div>
+                <div class="step-text">Research hardware wallet options</div>
+              </div>
+              <div class="strategy-step">
+                <div class="step-number">4</div>
+                <div class="step-text">Create investment tracking system</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="strategy-card">
+            <h4>🎯 Week 4: Implementation</h4>
+            <div class="strategy-steps">
+              <div class="strategy-step">
+                <div class="step-number">1</div>
+                <div class="step-text">Make your first strategic investment</div>
+              </div>
+              <div class="strategy-step">
+                <div class="step-number">2</div>
+                <div class="step-text">Set up automated DCA purchases</div>
+              </div>
+              <div class="strategy-step">
+                <div class="step-number">3</div>
+                <div class="step-text">Order hardware wallet for long-term storage</div>
+              </div>
+              <div class="strategy-step">
+                <div class="step-number">4</div>
+                <div class="step-text">Plan monthly review and rebalancing schedule</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="callout success">
+          <h4>✅ Success Metrics for First 6 Months</h4>
+          <p><strong>Month 1-3:</strong> Consistent DCA execution, no emotional trading, security setup complete<br>
+          <strong>Month 4-6:</strong> Portfolio tracking, understanding of market cycles, research of additional projects<br>
+          <strong>Key Goals:</strong> Build foundation knowledge, establish secure storage, maintain disciplined approach</p>
+        </div>
+      </section>
+
+      <section id="faq" class="faq-section">
+        <h2>Frequently Asked Questions</h2>
+
+        <div class="faq-item">
+          <div class="faq-question">How much should I invest in cryptocurrency?</div>
+          <div class="faq-answer">Most financial advisors recommend 5-10% of your investment portfolio, with aggressive investors going up to 20-30%. Never invest money you need for living expenses or short-term goals. Start small ($100-500) and increase as you learn and become comfortable with the volatility.</div>
+        </div>
+
+        <div class="faq-item">
+          <div class="faq-question">Should I invest in Bitcoin or Ethereum first?</div>
+          <div class="faq-answer">Bitcoin is often recommended for beginners due to its established track record and simplicity. A common starting allocation is 70-80% Bitcoin, 20-30% Ethereum. Both are considered "safer" crypto investments due to their size, adoption, and institutional support compared to smaller altcoins.</div>
+        </div>
+
+        <div class="faq-item">
+          <div class="faq-question">What's the best crypto exchange for beginners?</div>
+          <div class="faq-answer">Coinbase Pro (now Advanced Trading) is user-friendly for beginners in the US, while Kraken offers good security and features. Binance has the most trading options but higher complexity. Start with a regulated exchange in your country, prioritize security features over low fees initially.</div>
+        </div>
+
+        <div class="faq-item">
+          <div class="faq-question">When should I move my crypto to a hardware wallet?</div>
+          <div class="faq-answer">Move to hardware wallet when you have $1000+ in crypto or when you're comfortable with the technology. For smaller amounts, reputable exchanges with insurance coverage can be acceptable. Remember: "Not your keys, not your crypto" - hardware wallets give you full control but require responsibility.</div>
+        </div>
+
+        <div class="faq-item">
+          <div class="faq-question">Is it too late to invest in cryptocurrency?</div>
+          <div class="faq-answer">While early adopters saw massive gains, crypto is still in early adoption phase globally (estimated <5% global adoption). The market continues maturing with institutional adoption, regulatory clarity, and technological improvements. Focus on long-term potential rather than trying to time markets.</div>
+        </div>
+
+        <div class="faq-item">
+          <div class="faq-question">How do I know if a cryptocurrency is worth investing in?</div>
+          <div class="faq-answer">Research: team background, real-world use case, technology advantages, competition, market size, tokenomics, adoption metrics. Avoid: meme coins, projects promising guaranteed returns, anonymous teams, or complex schemes you don't understand. Start with established projects (top 20 by market cap).</div>
+        </div>
+
+        <div class="faq-item">
+          <div class="faq-question">What are the tax implications of cryptocurrency investing?</div>
+          <div class="faq-answer">Crypto is taxed as property in most countries. Trading between cryptocurrencies, selling for fiat, or using crypto for purchases are taxable events. Keep detailed records of all transactions. Consider tax-loss harvesting and long-term capital gains treatment. Consult tax professionals for complex situations.</div>
+        </div>
+
+        <div class="faq-item">
+          <div class="faq-question">Should I try to time the crypto market?</div>
+          <div class="faq-answer">Market timing is extremely difficult in crypto due to high volatility and 24/7 trading. Dollar-cost averaging (DCA) and buy-and-hold strategies have historically outperformed trading for most investors. Focus on accumulation during bear markets and taking profits during bull markets rather than trying to time exact tops/bottoms.</div>
+        </div>
+      </section>
+
+      <div class="cta-cards">
+        <div class="cta-card">
+          <h4>🏠 Real Estate</h4>
+          <p>Diversify your investment portfolio with real estate assets for stable cash flow and appreciation.</p>
+          <a href="/real-estate-investing" class="cta-button">Real Estate Guide</a>
+        </div>
+
+        <div class="cta-card">
+          <h4>🔥 FIRE Movement</h4>
+          <p>Integrate cryptocurrency investing into your FIRE strategy for accelerated financial independence.</p>
+          <a href="/fire-movement" class="cta-button">FIRE Strategy</a>
+        </div>
+
+        <div class="cta-card">
+          <h4>💼 Portfolio Management</h4>
+          <p>Learn advanced portfolio management techniques for optimizing risk-adjusted returns.</p>
+          <a href="/personal-productivity-systems" class="cta-button">Portfolio Systems</a>
+        </div>
+      </div>
+    </main>
+
+    <aside class="sidebar">
+      <h3>Contents</h3>
+      <ul>
+        <li><a href="#crypto-fundamentals">Fundamentals</a></li>
+        <li><a href="#crypto-categories">Categories</a></li>
+        <li><a href="#investment-strategies">Investment Strategies</a></li>
+        <li><a href="#portfolio-calculator">Portfolio Calculator</a></li>
+        <li><a href="#risk-management">Risk Management</a></li>
+        <li><a href="#getting-started">Getting Started</a></li>
+        <li><a href="#faq">FAQ</a></li>
+      </ul>
+    </aside>
+  </div>
+</div>
+
+<script>
+function calculateCryptoPortfolio() {
+  const totalInvestment = parseFloat(document.getElementById('totalInvestment').value) || 0;
+  const riskTolerance = document.getElementById('riskTolerance').value;
+  const timeHorizon = document.getElementById('timeHorizon').value;
+  const experience = document.getElementById('experience').value;
+  
+  if (totalInvestment === 0) {
+    alert('Please enter your total investment amount');
+    return;
+  }
+  
+  // Determine crypto allocation percentage based on risk tolerance
+  let cryptoPercentage;
+  switch(riskTolerance) {
+    case 'conservative': cryptoPercentage = 0.075; break; // 7.5%
+    case 'moderate': cryptoPercentage = 0.15; break;      // 15%
+    case 'aggressive': cryptoPercentage = 0.25; break;    // 25%
+    case 'speculative': cryptoPercentage = 0.35; break;   // 35%
+    default: cryptoPercentage = 0.10;
+  }
+  
+  // Adjust based on time horizon
+  if (timeHorizon === 'short') {
+    cryptoPercentage *= 0.6; // Reduce for short-term
+  } else if (timeHorizon === 'long') {
+    cryptoPercentage *= 1.3; // Increase for long-term
+  }
+  
+  const cryptoAmount = totalInvestment * cryptoPercentage;
+  
+  // Portfolio allocation within crypto based on experience
+  let btcPercent, ethPercent, altcoinPercent, stablecoinPercent;
+  
+  if (experience === 'beginner') {
+    btcPercent = 60;
+    ethPercent = 30;
+    altcoinPercent = 5;
+    stablecoinPercent = 5;
+  } else if (experience === 'intermediate') {
+    btcPercent = 50;
+    ethPercent = 30;
+    altcoinPercent = 15;
+    stablecoinPercent = 5;
+  } else { // advanced
+    btcPercent = 40;
+    ethPercent = 25;
+    altcoinPercent = 30;
+    stablecoinPercent = 5;
+  }
+  
+  // Calculate amounts
+  const btcAmount = cryptoAmount * (btcPercent / 100);
+  const ethAmount = cryptoAmount * (ethPercent / 100);
+  const altcoinAmount = cryptoAmount * (altcoinPercent / 100);
+  const stablecoinAmount = cryptoAmount * (stablecoinPercent / 100);
+  const traditionalAmount = totalInvestment - cryptoAmount;
+  
+  // Display results
+  const breakdown = document.getElementById('portfolioBreakdown');
+  breakdown.innerHTML = `
+    <div class="breakdown-item">
+      <div class="breakdown-label">Traditional Assets</div>
+      <div class="breakdown-value">$${traditionalAmount.toLocaleString()}</div>
+      <div class="breakdown-percent">${((traditionalAmount/totalInvestment)*100).toFixed(1)}%</div>
+    </div>
+    <div class="breakdown-item">
+      <div class="breakdown-label">Bitcoin (BTC)</div>
+      <div class="breakdown-value">$${btcAmount.toLocaleString()}</div>
+      <div class="breakdown-percent">${btcPercent}%</div>
+    </div>
+    <div class="breakdown-item">
+      <div class="breakdown-label">Ethereum (ETH)</div>
+      <div class="breakdown-value">$${ethAmount.toLocaleString()}</div>
+      <div class="breakdown-percent">${ethPercent}%</div>
+    </div>
+    <div class="breakdown-item">
+      <div class="breakdown-label">Altcoins</div>
+      <div class="breakdown-value">$${altcoinAmount.toLocaleString()}</div>
+      <div class="breakdown-percent">${altcoinPercent}%</div>
+    </div>
+    <div class="breakdown-item">
+      <div class="breakdown-label">Stablecoins</div>
+      <div class="breakdown-value">$${stablecoinAmount.toLocaleString()}</div>
+      <div class="breakdown-percent">${stablecoinPercent}%</div>
+    </div>
+  `;
+  
+  document.getElementById('cryptoResults').style.display = 'block';
+}
+</script>

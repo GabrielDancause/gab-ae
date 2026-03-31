@@ -1,0 +1,589 @@
+<!-- API Cost Calculator Page Body -->
+<script>
+// Wait for Chart.js to load
+function waitForChart(callback) {
+  if (typeof Chart !== 'undefined') {
+    callback();
+  } else {
+    setTimeout(() => waitForChart(callback), 100);
+  }
+}
+</script>
+
+<!-- JSON-LD Schema for FAQ -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "How accurate are these API cost estimates?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Our estimates are based on official pricing from each API provider. However, actual costs may vary due to factors like data transfer fees, premium features, or special pricing agreements. Always check the official pricing page before making budget decisions."
+      }
+    },
+    {
+      "@type": "Question", 
+      "name": "What happens when I exceed free tier limits?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Most APIs automatically upgrade you to paid tiers when you exceed free limits. Some require manual upgrade, while others may throttle your requests. Always set up billing alerts and monitor your usage closely."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "How can I reduce my API costs?",
+      "acceptedAnswer": {
+        "@type": "Answer", 
+        "text": "Key strategies include implementing caching, batching requests, using compression, optimizing request frequency, choosing the right tier for your usage, and implementing request deduplication."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Should I use multiple API providers?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Using multiple providers can provide redundancy and help you stay within free tiers longer. However, it also increases complexity. Consider your reliability needs and development resources."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "How often should I review my API usage?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Review monthly at minimum, weekly for high-usage applications. Set up automated alerts when you reach 80% of free tier limits. Many providers offer usage dashboards and billing alerts."
+      }
+    }
+  ]
+}
+</script>
+
+<!-- Header -->
+<div class="text-center mb-12">
+  <h1 class="text-4xl font-bold text-white mb-4">API Cost Calculator</h1>
+  <p class="text-xl text-gray-400 max-w-3xl mx-auto">
+    Estimate your monthly API costs across multiple providers. Stay within free tiers or budget for growth.
+  </p>
+</div>
+
+<!-- Total Cost Overview -->
+<div class="bg-[#111] border border-[#222] rounded-xl p-8 mb-8">
+  <div class="grid md:grid-cols-3 gap-6">
+    <div class="text-center">
+      <div class="text-3xl font-bold text-blue-500" id="totalCost">$0.00</div>
+      <div class="text-gray-400">Total Monthly Cost</div>
+    </div>
+    <div class="text-center">
+      <div class="text-2xl font-bold text-green-500" id="freeTierSavings">$0.00</div>
+      <div class="text-gray-400">Free Tier Savings</div>
+    </div>
+    <div class="text-center">
+      <div class="text-xl font-bold text-yellow-500" id="nearLimitCount">0</div>
+      <div class="text-gray-400">APIs Near Limits</div>
+    </div>
+  </div>
+</div>
+
+<!-- Cost Breakdown Chart -->
+<div class="bg-[#111] border border-[#222] rounded-xl p-8 mb-8">
+  <h2 class="text-2xl font-bold text-white mb-6">Cost Breakdown</h2>
+  <div class="relative h-64">
+    <canvas id="costChart"></canvas>
+  </div>
+</div>
+
+<!-- API Calculator Cards -->
+<div class="grid gap-6 mb-8" id="apiContainer">
+  <!-- Pre-loaded API cards will be inserted here -->
+</div>
+
+<!-- Add Custom API -->
+<div class="bg-[#111] border border-[#222] rounded-xl p-6 mb-8">
+  <h3 class="text-xl font-bold text-white mb-4">Add Custom API</h3>
+  <div class="grid md:grid-cols-4 gap-4">
+    <input type="text" id="customApiName" placeholder="API Name" class="bg-[#222] border border-[#333] rounded-lg px-4 py-2 text-white">
+    <input type="number" id="customFreeLimit" placeholder="Free Limit" class="bg-[#222] border border-[#333] rounded-lg px-4 py-2 text-white">
+    <input type="number" id="customPricePerUnit" placeholder="Price per Unit" step="0.001" class="bg-[#222] border border-[#333] rounded-lg px-4 py-2 text-white">
+    <button onclick="addCustomApi()" class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg transition-colors">
+      Add API
+    </button>
+  </div>
+  <p class="text-gray-500 text-sm mt-2">Enter your custom API pricing to include it in calculations.</p>
+</div>
+
+<!-- Cost Reduction Tips -->
+<div class="bg-[#111] border border-[#222] rounded-xl p-8 mb-8">
+  <h2 class="text-2xl font-bold text-white mb-6">💡 Cost Reduction Tips</h2>
+  <div class="grid md:grid-cols-2 gap-6">
+    <div>
+      <h3 class="text-lg font-semibold text-blue-500 mb-3">Optimization Strategies</h3>
+      <ul class="space-y-2 text-gray-300">
+        <li class="flex items-start"><span class="text-green-500 mr-2">✓</span>Implement request caching (30-50% reduction)</li>
+        <li class="flex items-start"><span class="text-green-500 mr-2">✓</span>Batch multiple requests together</li>
+        <li class="flex items-start"><span class="text-green-500 mr-2">✓</span>Use compression for data transfer</li>
+        <li class="flex items-start"><span class="text-green-500 mr-2">✓</span>Optimize request frequency</li>
+      </ul>
+    </div>
+    <div>
+      <h3 class="text-lg font-semibold text-blue-500 mb-3">Smart Usage</h3>
+      <ul class="space-y-2 text-gray-300">
+        <li class="flex items-start"><span class="text-green-500 mr-2">✓</span>Set up usage alerts at 80% of limits</li>
+        <li class="flex items-start"><span class="text-green-500 mr-2">✓</span>Use multiple providers for redundancy</li>
+        <li class="flex items-start"><span class="text-green-500 mr-2">✓</span>Implement request deduplication</li>
+        <li class="flex items-start"><span class="text-green-500 mr-2">✓</span>Choose the right pricing tier</li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<!-- FAQ Section -->
+<div class="bg-[#111] border border-[#222] rounded-xl p-8 mb-8">
+  <h2 class="text-2xl font-bold text-white mb-6">❓ Frequently Asked Questions</h2>
+  <div class="space-y-4">
+    <div class="border-l-4 border-blue-500 pl-4">
+      <h3 class="font-semibold text-white mb-2">How accurate are these API cost estimates?</h3>
+      <p class="text-gray-400">Our estimates are based on official pricing from each API provider. However, actual costs may vary due to factors like data transfer fees, premium features, or special pricing agreements. Always check the official pricing page before making budget decisions.</p>
+    </div>
+    <div class="border-l-4 border-blue-500 pl-4">
+      <h3 class="font-semibold text-white mb-2">What happens when I exceed free tier limits?</h3>
+      <p class="text-gray-400">Most APIs automatically upgrade you to paid tiers when you exceed free limits. Some require manual upgrade, while others may throttle your requests. Always set up billing alerts and monitor your usage closely.</p>
+    </div>
+    <div class="border-l-4 border-blue-500 pl-4">
+      <h3 class="font-semibold text-white mb-2">How can I reduce my API costs?</h3>
+      <p class="text-gray-400">Key strategies include implementing caching, batching requests, using compression, optimizing request frequency, choosing the right tier for your usage, and implementing request deduplication.</p>
+    </div>
+    <div class="border-l-4 border-blue-500 pl-4">
+      <h3 class="font-semibold text-white mb-2">Should I use multiple API providers?</h3>
+      <p class="text-gray-400">Using multiple providers can provide redundancy and help you stay within free tiers longer. However, it also increases complexity. Consider your reliability needs and development resources.</p>
+    </div>
+    <div class="border-l-4 border-blue-500 pl-4">
+      <h3 class="font-semibold text-white mb-2">How often should I review my API usage?</h3>
+      <p class="text-gray-400">Review monthly at minimum, weekly for high-usage applications. Set up automated alerts when you reach 80% of free tier limits. Many providers offer usage dashboards and billing alerts.</p>
+    </div>
+  </div>
+</div>
+
+<!-- Related Links -->
+<div class="text-center">
+  <div class="space-x-6">
+    <a href="https://siliconbased.dev/best-free-apis-2026" class="inline-flex items-center text-blue-500 hover:text-blue-400 transition-colors">
+      Browse 40+ Free APIs →
+    </a>
+    <a href="https://siliconbased.dev/api-rate-limit-guide" class="inline-flex items-center text-blue-500 hover:text-blue-400 transition-colors">
+      API Rate Limit Guide →
+    </a>
+  </div>
+</div>
+
+<script>
+// API Data
+const defaultApis = [
+  {
+    id: 'openai',
+    name: 'OpenAI',
+    description: 'GPT & Language Models',
+    freeLimit: 5000000, // 5M tokens worth ~$10 free credits
+    pricePerUnit: 0.002,
+    unit: 'tokens (1k)',
+    unitMultiplier: 1000,
+    usage: 50000
+  },
+  {
+    id: 'googlemaps',
+    name: 'Google Maps',
+    description: 'Maps & Geocoding',
+    freeLimit: 28571, // ~$200 free / $0.007 per request
+    pricePerUnit: 0.007,
+    unit: 'requests',
+    unitMultiplier: 1,
+    usage: 5000
+  },
+  {
+    id: 'twilio',
+    name: 'Twilio',
+    description: 'SMS & Voice',
+    freeLimit: 2000, // $15 trial / $0.0075 per SMS
+    pricePerUnit: 0.0075,
+    unit: 'SMS',
+    unitMultiplier: 1,
+    usage: 800
+  },
+  {
+    id: 'stripe',
+    name: 'Stripe',
+    description: 'Payment Processing',
+    freeLimit: 0, // No free tier, starts immediately
+    pricePerUnit: 0.30,
+    percentageFee: 2.9,
+    unit: 'transactions',
+    unitMultiplier: 1,
+    usage: 0,
+    avgTransactionValue: 25 // Default average transaction
+  },
+  {
+    id: 'sendgrid',
+    name: 'SendGrid',
+    description: 'Email Delivery',
+    freeLimit: 3000, // 100 emails/day * 30 days
+    pricePerUnit: 0.0006,
+    unit: 'emails',
+    unitMultiplier: 1,
+    usage: 1500
+  },
+  {
+    id: 'aws-s3',
+    name: 'AWS S3',
+    description: 'Cloud Storage',
+    freeLimit: 5, // 5GB free
+    pricePerUnit: 0.023,
+    unit: 'GB',
+    unitMultiplier: 1,
+    usage: 2
+  },
+  {
+    id: 'cloudflare-workers',
+    name: 'Cloudflare Workers',
+    description: 'Edge Computing',
+    freeLimit: 3000000, // 100k requests/day * 30 days
+    pricePerUnit: 0.0000005,
+    unit: 'requests',
+    unitMultiplier: 1,
+    usage: 500000
+  },
+  {
+    id: 'vercel',
+    name: 'Vercel',
+    description: 'Hosting & Bandwidth',
+    freeLimit: 100, // 100GB free
+    pricePerUnit: 0.40,
+    unit: 'GB bandwidth',
+    unitMultiplier: 1,
+    usage: 15
+  }
+];
+
+let customApis = [];
+let chart = null;
+
+// Initialize
+document.addEventListener('DOMContentLoaded', function() {
+  renderApis();
+  initializeChart();
+  updateCalculations();
+});
+
+function renderApis() {
+  const container = document.getElementById('apiContainer');
+  container.innerHTML = '';
+  
+  [...defaultApis, ...customApis].forEach(api => {
+    const card = createApiCard(api);
+    container.appendChild(card);
+  });
+}
+
+function createApiCard(api) {
+  const card = document.createElement('div');
+  card.className = 'bg-[#111] border border-[#222] rounded-xl overflow-hidden';
+  
+  const cost = calculateApiCost(api);
+  const isOverLimit = api.usage > api.freeLimit;
+  const percentUsed = api.freeLimit > 0 ? (api.usage / api.freeLimit) * 100 : 100;
+  
+  card.innerHTML = `
+    <div class="p-6 cursor-pointer" onclick="toggleApiDetails('${api.id}')">
+      <div class="flex justify-between items-start mb-4">
+        <div>
+          <h3 class="text-lg font-semibold text-white">${api.name}</h3>
+          <p class="text-gray-400 text-sm">${api.description}</p>
+        </div>
+        <div class="text-right">
+          <div class="text-lg font-bold ${cost > 0 ? 'text-red-400' : 'text-green-500'}">
+            $${cost.toFixed(2)}/mo
+          </div>
+          <div class="text-xs text-gray-500">
+            ${isOverLimit ? 'Over limit' : 'Within free tier'}
+          </div>
+        </div>
+      </div>
+      
+      <!-- Usage Slider -->
+      <div class="mb-4">
+        <div class="flex justify-between text-sm text-gray-400 mb-2">
+          <span>Monthly ${api.unit}</span>
+          <span>${formatNumber(api.usage)} / ${api.freeLimit > 0 ? formatNumber(api.freeLimit) : '∞'}</span>
+        </div>
+        <input 
+          type="range" 
+          min="0" 
+          max="${Math.max(api.freeLimit * 2, 10000)}" 
+          value="${api.usage}" 
+          class="w-full h-2 bg-[#222] rounded-lg appearance-none cursor-pointer slider"
+          onchange="updateApiUsage('${api.id}', this.value)"
+        >
+        <div class="text-xs text-gray-500 mt-1">
+          <input 
+            type="number" 
+            value="${api.usage}" 
+            class="bg-[#222] border border-[#333] rounded px-2 py-1 text-white w-24 text-xs"
+            onchange="updateApiUsage('${api.id}', this.value)"
+          > ${api.unit}
+        </div>
+      </div>
+      
+      <!-- Free Tier Progress -->
+      ${api.freeLimit > 0 ? `
+        <div class="mb-2">
+          <div class="w-full bg-[#222] rounded-full h-2">
+            <div 
+              class="h-2 rounded-full transition-all duration-300 ${
+                percentUsed >= 100 ? 'bg-red-500' : 
+                percentUsed >= 80 ? 'bg-yellow-500' : 'bg-green-500'
+              }" 
+              style="width: ${Math.min(percentUsed, 100)}%"
+            ></div>
+          </div>
+          <div class="text-xs text-gray-500 mt-1">${percentUsed.toFixed(1)}% of free tier used</div>
+        </div>
+      ` : ''}
+      
+      <div class="text-xs text-gray-500 flex justify-between">
+        <span>Click to view pricing details</span>
+        <span>▼</span>
+      </div>
+    </div>
+    
+    <!-- Expandable Details -->
+    <div id="${api.id}-details" class="hidden border-t border-[#222] p-6 bg-[#0a0a0a]">
+      <div class="grid md:grid-cols-2 gap-4 text-sm">
+        <div>
+          <h4 class="font-semibold text-white mb-2">Pricing Details</h4>
+          <ul class="space-y-1 text-gray-400">
+            <li>Free tier: ${api.freeLimit > 0 ? formatNumber(api.freeLimit) + ' ' + api.unit : 'None'}</li>
+            <li>Paid rate: $${api.pricePerUnit}${api.percentageFee ? ' + ' + api.percentageFee + '%' : ''} per ${api.unit.replace(/s$/, '')}</li>
+            ${api.avgTransactionValue ? `<li>Avg transaction: $${api.avgTransactionValue}</li>` : ''}
+          </ul>
+        </div>
+        <div>
+          <h4 class="font-semibold text-white mb-2">Cost Breakdown</h4>
+          <ul class="space-y-1 text-gray-400">
+            <li>Free usage: ${Math.min(api.usage, api.freeLimit).toLocaleString()} ${api.unit}</li>
+            <li>Paid usage: ${Math.max(0, api.usage - api.freeLimit).toLocaleString()} ${api.unit}</li>
+            <li>Monthly cost: $${cost.toFixed(2)}</li>
+          </ul>
+        </div>
+      </div>
+      ${customApis.find(a => a.id === api.id) ? `
+        <button 
+          onclick="removeCustomApi('${api.id}')" 
+          class="mt-4 bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg text-sm transition-colors"
+        >
+          Remove Custom API
+        </button>
+      ` : ''}
+    </div>
+  `;
+  
+  return card;
+}
+
+function toggleApiDetails(apiId) {
+  const details = document.getElementById(`${apiId}-details`);
+  if (details) {
+    details.classList.toggle('hidden');
+  }
+}
+
+function updateApiUsage(apiId, value) {
+  const numValue = parseInt(value) || 0;
+  
+  // Find and update the API
+  let api = defaultApis.find(a => a.id === apiId);
+  if (!api) {
+    api = customApis.find(a => a.id === apiId);
+  }
+  
+  if (api) {
+    api.usage = numValue;
+    renderApis();
+    updateCalculations();
+    updateChart();
+  }
+}
+
+function calculateApiCost(api) {
+  if (api.usage <= api.freeLimit) {
+    return 0;
+  }
+  
+  const paidUsage = api.usage - api.freeLimit;
+  let cost = (paidUsage / api.unitMultiplier) * api.pricePerUnit;
+  
+  // Handle percentage fees (like Stripe)
+  if (api.percentageFee && api.avgTransactionValue) {
+    cost += paidUsage * api.avgTransactionValue * (api.percentageFee / 100);
+  }
+  
+  return cost;
+}
+
+function updateCalculations() {
+  const allApis = [...defaultApis, ...customApis];
+  const totalCost = allApis.reduce((sum, api) => sum + calculateApiCost(api), 0);
+  const freeTierSavings = allApis.reduce((sum, api) => {
+    const wouldCostWithoutFree = (api.usage / api.unitMultiplier) * api.pricePerUnit;
+    if (api.percentageFee && api.avgTransactionValue) {
+      wouldCostWithoutFree += api.usage * api.avgTransactionValue * (api.percentageFee / 100);
+    }
+    return sum + Math.max(0, wouldCostWithoutFree - calculateApiCost(api));
+  }, 0);
+  
+  const nearLimitCount = allApis.filter(api => {
+    if (api.freeLimit === 0) return false;
+    const percentUsed = (api.usage / api.freeLimit) * 100;
+    return percentUsed >= 80;
+  }).length;
+  
+  document.getElementById('totalCost').textContent = `$${totalCost.toFixed(2)}`;
+  document.getElementById('freeTierSavings').textContent = `$${freeTierSavings.toFixed(2)}`;
+  document.getElementById('nearLimitCount').textContent = nearLimitCount.toString();
+}
+
+function initializeChart() {
+  waitForChart(() => {
+    const ctx = document.getElementById('costChart').getContext('2d');
+    chart = new Chart(ctx, {
+      type: 'bar',
+      data: {
+        labels: [],
+        datasets: [{
+          label: 'Monthly Cost ($)',
+          data: [],
+          backgroundColor: '#3b82f6',
+          borderColor: '#60a5fa',
+          borderWidth: 1
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        indexAxis: 'y',
+        plugins: {
+          legend: {
+            display: false
+          }
+        },
+        scales: {
+          x: {
+            beginAtZero: true,
+            grid: {
+              color: '#374151'
+            },
+            ticks: {
+              color: '#9ca3af',
+              callback: function(value) {
+                return '$' + value.toFixed(2);
+              }
+            }
+          },
+          y: {
+            grid: {
+              color: '#374151'
+            },
+            ticks: {
+              color: '#9ca3af'
+            }
+          }
+        }
+      }
+    });
+    updateChart();
+  });
+}
+
+function updateChart() {
+  if (!chart) return;
+  
+  const allApis = [...defaultApis, ...customApis];
+  const costs = allApis.map(api => calculateApiCost(api));
+  const labels = allApis.map(api => api.name);
+  
+  chart.data.labels = labels;
+  chart.data.datasets[0].data = costs;
+  chart.update();
+}
+
+function addCustomApi() {
+  const name = document.getElementById('customApiName').value.trim();
+  const freeLimit = parseInt(document.getElementById('customFreeLimit').value) || 0;
+  const pricePerUnit = parseFloat(document.getElementById('customPricePerUnit').value) || 0;
+  
+  if (!name || pricePerUnit <= 0) {
+    alert('Please provide a valid API name and price per unit.');
+    return;
+  }
+  
+  const api = {
+    id: 'custom-' + Date.now(),
+    name: name,
+    description: 'Custom API',
+    freeLimit: freeLimit,
+    pricePerUnit: pricePerUnit,
+    unit: 'requests',
+    unitMultiplier: 1,
+    usage: 0
+  };
+  
+  customApis.push(api);
+  renderApis();
+  updateCalculations();
+  updateChart();
+  
+  // Clear form
+  document.getElementById('customApiName').value = '';
+  document.getElementById('customFreeLimit').value = '';
+  document.getElementById('customPricePerUnit').value = '';
+}
+
+function removeCustomApi(apiId) {
+  customApis = customApis.filter(api => api.id !== apiId);
+  renderApis();
+  updateCalculations();
+  updateChart();
+}
+
+function formatNumber(num) {
+  if (num >= 1000000) {
+    return (num / 1000000).toFixed(1) + 'M';
+  } else if (num >= 1000) {
+    return (num / 1000).toFixed(1) + 'K';
+  }
+  return num.toLocaleString();
+}
+
+// Add CSS for custom slider
+const style = document.createElement('style');
+style.textContent = `
+  .slider::-webkit-slider-thumb {
+    appearance: none;
+    height: 20px;
+    width: 20px;
+    border-radius: 50%;
+    background: #3b82f6;
+    cursor: pointer;
+    border: 2px solid #1e293b;
+  }
+  
+  .slider::-moz-range-thumb {
+    height: 20px;
+    width: 20px;
+    border-radius: 50%;
+    background: #3b82f6;
+    cursor: pointer;
+    border: 2px solid #1e293b;
+  }
+`;
+document.head.appendChild(style);
+</script>

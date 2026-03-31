@@ -1,0 +1,1263 @@
+<style>
+  .cmp-container {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 2rem;
+    color: #e2e8f0;
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    line-height: 1.8;
+  }
+  .cmp-header {
+    text-align: center;
+    margin-bottom: 4rem;
+    padding-top: 3rem;
+  }
+  .gradient-h1 {
+    font-size: clamp(2.2rem, 5vw, 3.5rem);
+    font-weight: 800;
+    background: linear-gradient(135deg, #ffffff 0%, #a5b4fc 50%, #818cf8 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    margin-bottom: 1rem;
+    line-height: 1.15;
+    letter-spacing: -0.02em;
+  }
+  .cmp-subtitle {
+    font-size: 1.2rem;
+    color: #94a3b8;
+    max-width: 750px;
+    margin: 0 auto;
+  }
+  .breadcrumb {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    justify-content: center;
+    margin-bottom: 2rem;
+    font-size: 0.85rem;
+  }
+  .breadcrumb a {
+    color: #818cf8;
+    text-decoration: none;
+  }
+  .breadcrumb a:hover { text-decoration: underline; }
+  .breadcrumb span { color: #475569; }
+  .updated-badge {
+    display: inline-block;
+    background: rgba(129, 140, 248, 0.15);
+    color: #a5b4fc;
+    padding: 0.4rem 1rem;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    margin-bottom: 2rem;
+  }
+  .content-wrapper {
+    display: grid;
+    grid-template-columns: 1fr 280px;
+    gap: 4rem;
+    margin-top: 3rem;
+  }
+  .main-content {
+    min-width: 0;
+  }
+  .sidebar {
+    position: sticky;
+    top: 2rem;
+    height: fit-content;
+    background: #12121a;
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 16px;
+    padding: 1.5rem;
+  }
+  .sidebar h3 {
+    color: #ffffff;
+    font-size: 0.9rem;
+    font-weight: 600;
+    margin: 0 0 1rem 0;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+  .sidebar ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+  .sidebar li {
+    margin: 0;
+  }
+  .sidebar a {
+    display: block;
+    color: #94a3b8;
+    text-decoration: none;
+    padding: 0.5rem 0;
+    border-bottom: 1px solid rgba(255,255,255,0.05);
+    font-size: 0.85rem;
+    transition: color 0.2s;
+  }
+  .sidebar a:hover {
+    color: #a5b4fc;
+  }
+  .section {
+    margin: 4rem 0;
+    scroll-margin-top: 2rem;
+  }
+  .section h2 {
+    color: #ffffff;
+    font-size: 1.8rem;
+    font-weight: 700;
+    margin-bottom: 1.5rem;
+  }
+  .section h3 {
+    color: #e2e8f0;
+    font-size: 1.3rem;
+    font-weight: 600;
+    margin: 2rem 0 1rem 0;
+  }
+  .stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1.5rem;
+    margin: 2rem 0;
+  }
+  .stat-card {
+    background: #12121a;
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 14px;
+    padding: 1.5rem;
+    text-align: center;
+  }
+  .stat-number {
+    font-size: 2.5rem;
+    font-weight: 800;
+    color: #818cf8;
+    display: block;
+    line-height: 1;
+  }
+  .stat-label {
+    color: #94a3b8;
+    font-size: 0.9rem;
+    margin-top: 0.5rem;
+  }
+  .psychology-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 2rem;
+    margin: 2rem 0;
+  }
+  .psychology-card {
+    background: #12121a;
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 16px;
+    padding: 2rem;
+    position: relative;
+    overflow: hidden;
+  }
+  .psychology-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, #818cf8, #a5b4fc);
+  }
+  .psychology-card h4 {
+    color: #ffffff;
+    font-size: 1.2rem;
+    font-weight: 600;
+    margin-bottom: 1rem;
+  }
+  .principle-badge {
+    background: rgba(129, 140, 248, 0.15);
+    color: #a5b4fc;
+    padding: 0.3rem 0.8rem;
+    border-radius: 8px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    display: inline-block;
+    margin-bottom: 1rem;
+  }
+  .principle-badge.cialdini { background: rgba(74, 222, 128, 0.15); color: #4ade80; }
+  .principle-badge.behavioral { background: rgba(251, 191, 36, 0.15); color: #fbbf24; }
+  .principle-badge.neuro { background: rgba(248, 113, 113, 0.15); color: #f87171; }
+  .principle-badge.cognitive { background: rgba(147, 51, 234, 0.15); color: #9333ea; }
+  .callout {
+    background: rgba(34, 211, 238, 0.1);
+    border-left: 4px solid #22d3ee;
+    border-radius: 0 8px 8px 0;
+    padding: 1.5rem;
+    margin: 2rem 0;
+  }
+  .callout.warning {
+    background: rgba(251, 191, 36, 0.1);
+    border-left-color: #fbbf24;
+  }
+  .callout.success {
+    background: rgba(74, 222, 128, 0.1);
+    border-left-color: #4ade80;
+  }
+  .callout.danger {
+    background: rgba(239, 68, 68, 0.1);
+    border-left-color: #ef4444;
+  }
+  .callout h4 {
+    color: #ffffff;
+    font-size: 1rem;
+    font-weight: 600;
+    margin: 0 0 0.5rem 0;
+  }
+  .comparison-table {
+    width: 100%;
+    background: #12121a;
+    border-radius: 16px;
+    overflow: hidden;
+    border: 1px solid rgba(255,255,255,0.08);
+    margin: 2rem 0;
+  }
+  .comparison-table th {
+    background: #1e293b;
+    color: #ffffff;
+    padding: 1rem;
+    text-align: left;
+    font-weight: 600;
+  }
+  .comparison-table td {
+    padding: 1rem;
+    border-bottom: 1px solid rgba(255,255,255,0.05);
+    color: #e2e8f0;
+  }
+  .comparison-table tr:last-child td {
+    border-bottom: none;
+  }
+  .tier-high { color: #4ade80; }
+  .tier-medium { color: #fbbf24; }
+  .tier-low { color: #f87171; }
+  .copy-analyzer {
+    background: #12121a;
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 16px;
+    padding: 2rem;
+    margin: 3rem 0;
+  }
+  .copy-analyzer h3 {
+    color: #ffffff;
+    font-size: 1.3rem;
+    font-weight: 600;
+    margin-bottom: 1.5rem;
+    text-align: center;
+  }
+  .analyzer-inputs {
+    display: grid;
+    gap: 1rem;
+    margin-bottom: 2rem;
+  }
+  .analyzer-input {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+  .analyzer-input label {
+    color: #94a3b8;
+    font-size: 0.85rem;
+    font-weight: 500;
+  }
+  .analyzer-input input, .analyzer-input select, .analyzer-input textarea {
+    background: #1e293b;
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 8px;
+    padding: 0.75rem;
+    color: #e2e8f0;
+    font-size: 0.9rem;
+    resize: vertical;
+  }
+  .analyzer-input textarea {
+    min-height: 120px;
+  }
+  .analyzer-input input:focus, .analyzer-input select:focus, .analyzer-input textarea:focus {
+    outline: none;
+    border-color: #818cf8;
+  }
+  .analyzer-button {
+    background: #818cf8;
+    color: #ffffff;
+    border: none;
+    border-radius: 8px;
+    padding: 0.75rem 2rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s;
+    width: 100%;
+  }
+  .analyzer-button:hover {
+    background: #6366f1;
+  }
+  .analyzer-results {
+    background: rgba(129, 140, 248, 0.1);
+    border-radius: 12px;
+    padding: 1.5rem;
+    margin-top: 1.5rem;
+    display: none;
+  }
+  .analyzer-results h4 {
+    color: #a5b4fc;
+    font-size: 1.1rem;
+    margin-bottom: 1rem;
+  }
+  .result-breakdown {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 1rem;
+    margin-top: 1rem;
+  }
+  .breakdown-item {
+    background: rgba(255,255,255,0.02);
+    padding: 1rem;
+    border-radius: 8px;
+    text-align: center;
+  }
+  .breakdown-label {
+    color: #94a3b8;
+    font-size: 0.8rem;
+    margin-bottom: 0.25rem;
+  }
+  .breakdown-value {
+    color: #e2e8f0;
+    font-weight: 600;
+    font-size: 0.9rem;
+  }
+  .breakdown-status {
+    color: #818cf8;
+    font-size: 0.75rem;
+    margin-top: 0.25rem;
+  }
+  .framework-cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 1.5rem;
+    margin: 2rem 0;
+  }
+  .framework-card {
+    background: #12121a;
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 14px;
+    padding: 1.5rem;
+  }
+  .framework-card h4 {
+    color: #ffffff;
+    font-size: 1.1rem;
+    font-weight: 600;
+    margin-bottom: 1rem;
+  }
+  .technique-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1.5rem;
+    margin: 2rem 0;
+  }
+  .technique-card {
+    background: #12121a;
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 12px;
+    padding: 1.5rem;
+    text-align: center;
+  }
+  .technique-card h5 {
+    color: #ffffff;
+    margin-bottom: 0.5rem;
+    font-size: 1rem;
+  }
+  .technique-description {
+    font-size: 0.9rem;
+    color: #94a3b8;
+    margin-bottom: 1rem;
+  }
+  .technique-effectiveness {
+    font-size: 0.8rem;
+    color: #818cf8;
+    font-weight: 600;
+  }
+  .example-box {
+    background: rgba(255,255,255,0.02);
+    border-radius: 12px;
+    padding: 1.5rem;
+    margin: 1.5rem 0;
+    border-left: 4px solid #818cf8;
+  }
+  .example-box h5 {
+    color: #a5b4fc;
+    font-size: 1rem;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+  }
+  .example-before-after {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+    margin-top: 1rem;
+  }
+  .example-before, .example-after {
+    padding: 1rem;
+    border-radius: 8px;
+  }
+  .example-before {
+    background: rgba(239, 68, 68, 0.1);
+    border-left: 3px solid #ef4444;
+  }
+  .example-after {
+    background: rgba(74, 222, 128, 0.1);
+    border-left: 3px solid #4ade80;
+  }
+  .example-label {
+    font-size: 0.8rem;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+  .faq-section {
+    margin: 4rem 0;
+  }
+  .faq-item {
+    background: #12121a;
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 14px;
+    margin-bottom: 1rem;
+    overflow: hidden;
+  }
+  .faq-question {
+    padding: 1.5rem;
+    color: #ffffff;
+    font-weight: 600;
+    cursor: pointer;
+    border-bottom: 1px solid rgba(255,255,255,0.05);
+  }
+  .faq-answer {
+    padding: 1.5rem;
+    color: #94a3b8;
+  }
+  .cta-cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1.5rem;
+    margin: 3rem 0;
+  }
+  .cta-card {
+    background: linear-gradient(135deg, #1e293b, #334155);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 16px;
+    padding: 2rem;
+    text-align: center;
+  }
+  .cta-card h4 {
+    color: #ffffff;
+    font-size: 1.1rem;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+  }
+  .cta-card p {
+    color: #94a3b8;
+    font-size: 0.9rem;
+    margin-bottom: 1.5rem;
+  }
+  .cta-button {
+    display: inline-block;
+    background: #818cf8;
+    color: #ffffff;
+    padding: 0.7rem 1.5rem;
+    border-radius: 8px;
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 0.9rem;
+    transition: background 0.2s;
+  }
+  .cta-button:hover {
+    background: #6366f1;
+  }
+  
+  @media (max-width: 1024px) {
+    .content-wrapper {
+      grid-template-columns: 1fr;
+      gap: 2rem;
+    }
+    .sidebar {
+      position: relative;
+      top: 0;
+      order: -1;
+    }
+    .example-before-after {
+      grid-template-columns: 1fr;
+    }
+  }
+  
+  @media (max-width: 768px) {
+    .cmp-container {
+      padding: 1rem;
+    }
+    .breadcrumb {
+      flex-wrap: wrap;
+    }
+    .stats-grid {
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    }
+    .psychology-grid {
+      grid-template-columns: 1fr;
+    }
+    .framework-cards {
+      grid-template-columns: 1fr;
+    }
+    .technique-grid {
+      grid-template-columns: 1fr;
+    }
+    .cta-cards {
+      grid-template-columns: 1fr;
+    }
+    .analyzer-inputs {
+      grid-template-columns: 1fr;
+    }
+    .result-breakdown {
+      grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+    }
+  }
+</style>
+
+<div class="cmp-container">
+  <div class="cmp-header">
+    <div class="breadcrumb">
+      <a href="/apex-guides">Apex Guides</a>
+      <span>›</span>
+      <a href="/digital-media-creator-economy-guide-2026">Digital Media & The Creator Economy</a>
+      <span>›</span>
+      <span style="color: #cbd5e1;">Current</span>
+    </div>
+    
+    <div class="updated-badge">
+      🧠 Updated March 2026
+    </div>
+    
+    <h1 class="gradient-h1">Copywriting & Marketing Psychology</h1>
+    <p class="cmp-subtitle">Master the psychological triggers and proven copywriting frameworks that drive conversions, build trust, and compel action in digital marketing campaigns.</p>
+  </div>
+
+  <div class="content-wrapper">
+    <main class="main-content">
+      <div class="stats-grid">
+        <div class="stat-card">
+          <span class="stat-number">68%</span>
+          <div class="stat-label">Conversion rate improvement from psychology</div>
+        </div>
+        <div class="stat-card">
+          <span class="stat-number">2.3x</span>
+          <div class="stat-label">Revenue increase from better copy</div>
+        </div>
+        <div class="stat-card">
+          <span class="stat-number">7</span>
+          <div class="stat-label">Seconds to grab attention online</div>
+        </div>
+        <div class="stat-card">
+          <span class="stat-number">95%</span>
+          <div class="stat-label">Purchase decisions made subconsciously</div>
+        </div>
+      </div>
+
+      <section id="psychology-fundamentals" class="section">
+        <h2>Marketing Psychology Fundamentals</h2>
+        <p>Marketing psychology is the science of understanding why people make purchasing decisions. By leveraging cognitive biases, emotional triggers, and behavioral patterns, marketers can create compelling messages that resonate with their audience's subconscious decision-making processes.</p>
+
+        <div class="callout">
+          <h4>🧠 The Psychology-First Approach</h4>
+          <p>Great copywriting isn't just about clever words—it's about understanding human psychology. People don't buy products; they buy better versions of themselves, solutions to problems, or feelings of security, status, and satisfaction. Master the psychology, and the words become secondary.</p>
+        </div>
+
+        <h3>Core Psychological Principles in Marketing</h3>
+        <div class="psychology-grid">
+          <div class="psychology-card">
+            <div class="principle-badge cialdini">Cialdini Principle</div>
+            <h4>🤝 Reciprocity</h4>
+            <p><strong>Principle:</strong> People feel obligated to return favors</p>
+            <p><strong>Application:</strong> Free samples, valuable content, helpful resources</p>
+            <p><strong>Example:</strong> "Free 30-day trial" or comprehensive guides</p>
+            <p><strong>Effectiveness:</strong> Increases conversion rates by 15-25%</p>
+            <p><strong>Warning:</strong> Must provide genuine value, not just perceived value</p>
+          </div>
+
+          <div class="psychology-card">
+            <div class="principle-badge cialdini">Cialdini Principle</div>
+            <h4>👥 Social Proof</h4>
+            <p><strong>Principle:</strong> People follow the crowd and trust peer validation</p>
+            <p><strong>Application:</strong> Testimonials, reviews, user counts, case studies</p>
+            <p><strong>Example:</strong> "Join 50,000+ satisfied customers" or star ratings</p>
+            <p><strong>Effectiveness:</strong> Can improve conversions by 30-40%</p>
+            <p><strong>Warning:</strong> Fake social proof backfires when discovered</p>
+          </div>
+
+          <div class="psychology-card">
+            <div class="principle-badge behavioral">Behavioral Economics</div>
+            <h4>⏰ Scarcity & Urgency</h4>
+            <p><strong>Principle:</strong> Limited availability increases perceived value</p>
+            <p><strong>Application:</strong> Limited-time offers, countdown timers, low stock alerts</p>
+            <p><strong>Example:</strong> "Only 3 left in stock" or "Sale ends in 24 hours"</p>
+            <p><strong>Effectiveness:</strong> 20-50% conversion increase when authentic</p>
+            <p><strong>Warning:</strong> Overuse leads to "scarcity fatigue" and skepticism</p>
+          </div>
+
+          <div class="psychology-card">
+            <div class="principle-badge neuro">Neuromarketing</div>
+            <h4>🎯 Loss Aversion</h4>
+            <p><strong>Principle:</strong> People fear losing more than they value gaining</p>
+            <p><strong>Application:</strong> Emphasize what customers lose by not acting</p>
+            <p><strong>Example:</strong> "Don't miss out on..." or "Without this, you'll..."</p>
+            <p><strong>Effectiveness:</strong> 2x more powerful than gain-focused messaging</p>
+            <p><strong>Warning:</strong> Can create anxiety if overused</p>
+          </div>
+
+          <div class="psychology-card">
+            <div class="principle-badge cognitive">Cognitive Bias</div>
+            <h4>⚓ Anchoring Effect</h4>
+            <p><strong>Principle:</strong> First number influences all subsequent judgments</p>
+            <p><strong>Application:</strong> Pricing presentation, package comparisons</p>
+            <p><strong>Example:</strong> Show premium price first, then standard option</p>
+            <p><strong>Effectiveness:</strong> Can shift price perception by 20-40%</p>
+            <p><strong>Warning:</strong> Anchor must be realistic and defensible</p>
+          </div>
+
+          <div class="psychology-card">
+            <div class="principle-badge cialdini">Cialdini Principle</div>
+            <h4>🎭 Authority</h4>
+            <p><strong>Principle:</strong> People defer to perceived experts and authority</p>
+            <p><strong>Application:</strong> Expert endorsements, credentials, certifications</p>
+            <p><strong>Example:</strong> "As seen on CNN" or "Recommended by doctors"</p>
+            <p><strong>Effectiveness:</strong> Increases trust and conversions by 25-35%</p>
+            <p><strong>Warning:</strong> Authority must be relevant to the product/service</p>
+          </div>
+        </psychology-grid>
+
+        <div class="callout warning">
+          <h4>⚠️ Ethical Considerations in Marketing Psychology</h4>
+          <p><strong>Manipulation vs. Persuasion:</strong> Use psychology to help customers make better decisions, not to deceive them<br>
+          <strong>Authentic Implementation:</strong> Don't fake scarcity, social proof, or authority—it will backfire<br>
+          <strong>Customer Benefit:</strong> Ensure your product/service genuinely helps the customer<br>
+          <strong>Long-term Thinking:</strong> Unethical psychology creates short-term gains but destroys long-term trust<br>
+          <strong>Transparency:</strong> Be honest about limitations and potential downsides</p>
+        </div>
+
+        <div class="callout success">
+          <h4>✅ Ethical Psychology Implementation</h4>
+          <p><strong>Solve Real Problems:</strong> Use psychology to connect solutions with genuine needs<br>
+          <strong>Provide Real Value:</strong> Ensure your product delivers on psychological promises<br>
+          <strong>Build Trust:</strong> Use authority and social proof only when authentic<br>
+          <strong>Respect Autonomy:</strong> Help customers make informed decisions, don't coerce<br>
+          <strong>Test and Optimize:</strong> Continuously improve based on customer feedback</p>
+        </div>
+      </section>
+
+      <section id="copywriting-frameworks" class="section">
+        <h2>Proven Copywriting Frameworks</h2>
+
+        <div class="callout">
+          <h4>📋 Framework Fundamentals</h4>
+          <p>Copywriting frameworks provide structure for persuasive writing. They're not rigid formulas but flexible templates that help organize psychological triggers into coherent, compelling messages. The best copywriters adapt frameworks to their audience and context.</p>
+        </div>
+
+        <div class="copy-analyzer">
+          <h3>🔍 Copy Effectiveness Analyzer</h3>
+          <p>Analyze your copy against proven psychological principles and copywriting best practices.</p>
+          
+          <div class="analyzer-inputs">
+            <div class="analyzer-input">
+              <label for="copyText">Your Copy Text</label>
+              <textarea id="copyText" placeholder="Enter your headline, email, or sales copy here..."></textarea>
+            </div>
+            
+            <div class="analyzer-input">
+              <label for="copyType">Copy Type</label>
+              <select id="copyType">
+                <option value="headline">Headline</option>
+                <option value="email-subject">Email Subject Line</option>
+                <option value="sales-letter">Sales Letter</option>
+                <option value="product-description">Product Description</option>
+                <option value="ad-copy">Advertisement</option>
+                <option value="landing-page">Landing Page</option>
+              </select>
+            </div>
+            
+            <div class="analyzer-input">
+              <label for="targetAudience">Target Audience</label>
+              <select id="targetAudience">
+                <option value="business-owners">Business Owners</option>
+                <option value="consumers">General Consumers</option>
+                <option value="professionals">Professionals</option>
+                <option value="students">Students</option>
+                <option value="seniors">Seniors</option>
+                <option value="parents">Parents</option>
+              </select>
+            </div>
+            
+            <div class="analyzer-input">
+              <label for="primaryGoal">Primary Goal</label>
+              <select id="primaryGoal">
+                <option value="generate-leads">Generate Leads</option>
+                <option value="drive-sales">Drive Sales</option>
+                <option value="increase-clicks">Increase Clicks</option>
+                <option value="build-awareness">Build Awareness</option>
+                <option value="educate-audience">Educate Audience</option>
+                <option value="build-trust">Build Trust</option>
+              </select>
+            </div>
+          </div>
+          
+          <button class="analyzer-button" onclick="analyzeCopy()">Analyze Copy Effectiveness</button>
+          
+          <div class="analyzer-results" id="copyResults">
+            <h4>Your Copy Analysis Results</h4>
+            <div class="result-breakdown" id="copyBreakdown">
+              <!-- Results will be populated here -->
+            </div>
+          </div>
+        </div>
+
+        <h3>Essential Copywriting Frameworks</h3>
+        <div class="framework-cards">
+          <div class="framework-card">
+            <h4>📢 AIDA Framework</h4>
+            <p><strong>A</strong>ttention - Grab their focus with compelling headline</p>
+            <p><strong>I</strong>nterest - Build interest with relevant benefits</p>
+            <p><strong>D</strong>esire - Create desire through emotion and logic</p>
+            <p><strong>A</strong>ction - Clear call-to-action with urgency</p>
+            <p><strong>Best For:</strong> Sales letters, ads, landing pages</p>
+          </div>
+
+          <div class="framework-card">
+            <h4>🎯 PAS Framework</h4>
+            <p><strong>P</strong>roblem - Identify and agitate the pain point</p>
+            <p><strong>A</strong>gitation - Intensify the problem's consequences</p>
+            <p><strong>S</strong>olution - Present your product as the answer</p>
+            <p><strong>Best For:</strong> Problem-aware audiences, B2B sales</p>
+            <p><strong>Psychology:</strong> Leverages loss aversion and relief</p>
+          </div>
+
+          <div class="framework-card">
+            <h4>🔥 Before & After Bridge</h4>
+            <p><strong>Before:</strong> Current frustrating situation</p>
+            <p><strong>After:</strong> Desired outcome or transformation</p>
+            <p><strong>Bridge:</strong> Your product as the path between them</p>
+            <p><strong>Best For:</strong> Transformation products, coaching, software</p>
+            <p><strong>Psychology:</strong> Taps into aspirational desires</p>
+          </div>
+
+          <div class="framework-card">
+            <h4>⭐ STAR Framework</h4>
+            <p><strong>S</strong>ituation - Set the context and scenario</p>
+            <p><strong>T</strong>ask - Define what needed to be accomplished</p>
+            <p><strong>A</strong>ction - Explain the steps taken</p>
+            <p><strong>R</strong>esult - Share the successful outcome</p>
+            <p><strong>Best For:</strong> Case studies, testimonials, success stories</p>
+          </div>
+
+          <div class="framework-card">
+            <h4>🎪 FOMO Framework</h4>
+            <p><strong>F</strong>ear of Missing Out - Limited availability/time</p>
+            <p><strong>O</strong>pportunity - Exclusive chance for improvement</p>
+            <p><strong>M</strong>omentum - Others are already taking action</p>
+            <p><strong>O</strong>ffer - Clear, compelling call-to-action</p>
+            <p><strong>Best For:</strong> Limited-time offers, exclusive launches</p>
+          </div>
+
+          <div class="framework-card">
+            <h4>🧩 4 U's Framework</h4>
+            <p><strong>U</strong>nique - What makes this different?</p>
+            <p><strong>U</strong>rgent - Why act now, not later?</p>
+            <p><strong>U</strong>seful - What specific benefit do they get?</p>
+            <p><strong>U</strong>ltra-specific - Precise details and numbers</p>
+            <p><strong>Best For:</strong> Headlines, subject lines, value propositions</p>
+          </div>
+        </framework-cards>
+
+        <h3>Framework Application Examples</h3>
+        <div class="example-box">
+          <h5>AIDA Framework in Action</h5>
+          <div class="example-before-after">
+            <div class="example-before">
+              <div class="example-label">❌ Weak Copy</div>
+              <p>"Our software is great. It has many features and is affordable. Try it today."</p>
+            </div>
+            <div class="example-after">
+              <div class="example-label">✅ AIDA Framework</div>
+              <p><strong>Attention:</strong> "Stop Wasting 3 Hours Daily on Manual Tasks"<br>
+              <strong>Interest:</strong> "Automate repetitive work and reclaim your time for strategy"<br>
+              <strong>Desire:</strong> "Join 10,000+ managers who've eliminated busywork forever"<br>
+              <strong>Action:</strong> "Start your free 14-day trial—no credit card required"</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="example-box">
+          <h5>PAS Framework in Action</h5>
+          <div class="example-before-after">
+            <div class="example-before">
+              <div class="example-label">❌ Generic Copy</div>
+              <p>"Learn email marketing with our course. It covers all the basics and advanced strategies."</p>
+            </div>
+            <div class="example-after">
+              <div class="example-label">✅ PAS Framework</div>
+              <p><strong>Problem:</strong> "Your emails are going to spam and getting ignored"<br>
+              <strong>Agitation:</strong> "Every unread email represents lost revenue and missed opportunities"<br>
+              <strong>Solution:</strong> "Master the psychology-driven email systems that generate $10+ per subscriber"</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="conversion-psychology" class="section">
+        <h2>Conversion Psychology Techniques</h2>
+
+        <div class="callout success">
+          <h4>🎯 Conversion Psychology Foundation</h4>
+          <p>Conversion optimization isn't just about testing button colors—it's about understanding the psychological barriers preventing action and systematically removing them. Great conversion psychology addresses fears, builds confidence, and makes taking action feel inevitable.</p>
+        </div>
+
+        <h3>High-Impact Conversion Techniques</h3>
+        <div class="technique-grid">
+          <div class="technique-card">
+            <h5>🔒 Risk Reversal</h5>
+            <div class="technique-description">
+              Eliminate perceived risk through guarantees, trials, and warranties
+            </div>
+            <div class="technique-effectiveness">Conversion lift: 25-40%</div>
+          </div>
+
+          <div class="technique-card">
+            <h5>👑 Decoy Effect</h5>
+            <div class="technique-description">
+              Use inferior option to make target option appear more attractive
+            </div>
+            <div class="technique-effectiveness">Revenue increase: 15-30%</div>
+          </div>
+
+          <div class="technique-card">
+            <h5>🎁 Endowment Effect</h5>
+            <div class="technique-description">
+              Let customers experience ownership before purchase
+            </div>
+            <div class="technique-effectiveness">Conversion lift: 20-35%</div>
+          </div>
+
+          <div class="technique-card">
+            <h5>⚡ Instant Gratification</h5>
+            <div class="technique-description">
+              Emphasize immediate benefits and quick delivery
+            </div>
+            <div class="technique-effectiveness">Click-through increase: 18-25%</div>
+          </div>
+
+          <div class="technique-card">
+            <h5>🎯 Specificity Bias</h5>
+            <div class="technique-description">
+              Use precise numbers instead of round figures
+            </div>
+            <div class="technique-effectiveness">Credibility boost: 22-28%</div>
+          </div>
+
+          <div class="technique-card">
+            <h5>🚀 Progress Indicators</h5>
+            <div class="technique-description">
+              Show completion progress to encourage finishing
+            </div>
+            <div class="technique-effectiveness">Completion rate: +35%</div>
+          </div>
+        </technique-grid>
+
+        <h3>Psychological Barriers to Conversion</h3>
+        <div class="comparison-table">
+          <table>
+            <thead>
+              <tr>
+                <th>Psychological Barrier</th>
+                <th>Customer Thinking</th>
+                <th>Solution Technique</th>
+                <th>Implementation Example</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>Financial Risk</strong></td>
+                <td>"What if it's not worth the money?"</td>
+                <td class="tier-high">Money-back guarantee</td>
+                <td>"100% satisfaction guaranteed or full refund"</td>
+              </tr>
+              <tr>
+                <td><strong>Time Risk</strong></td>
+                <td>"What if it takes too long to see results?"</td>
+                <td class="tier-high">Quick-win promises</td>
+                <td>"See results in first 7 days or we'll..."</td>
+              </tr>
+              <tr>
+                <td><strong>Social Risk</strong></td>
+                <td>"What will others think?"</td>
+                <td class="tier-medium">Social proof</td>
+                <td>"Join thousands of successful professionals"</td>
+              </tr>
+              <tr>
+                <td><strong>Performance Risk</strong></td>
+                <td>"What if it doesn't work as promised?"</td>
+                <td class="tier-high">Detailed testimonials</td>
+                <td>Specific case studies with measurable results</td>
+              </tr>
+              <tr>
+                <td><strong>Complexity Fear</strong></td>
+                <td>"What if it's too complicated?"</td>
+                <td class="tier-medium">Simplicity emphasis</td>
+                <td>"3 simple steps to..." or "Done-for-you"</td>
+              </tr>
+              <tr>
+                <td><strong>Decision Paralysis</strong></td>
+                <td>"Too many options to choose from"</td>
+                <td class="tier-high">Recommended option</td>
+                <td>"Most popular" or "Our recommendation"</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="callout danger">
+          <h4>🚨 Conversion Psychology Pitfalls</h4>
+          <p><strong>Dark Patterns:</strong> Using psychology to trick users harms long-term trust<br>
+          <strong>Over-Optimization:</strong> Too many psychological triggers can appear manipulative<br>
+          <strong>Mismatched Audience:</strong> Different demographics respond to different triggers<br>
+          <strong>Context Ignorance:</strong> High-pressure tactics backfire in certain situations<br>
+          <strong>False Promises:</strong> Psychology can't fix a fundamentally flawed product<br>
+          <strong>Testing Neglect:</strong> What works for others may not work for your audience</p>
+        </div>
+      </section>
+
+      <section id="emotional-triggers" class="section">
+        <h2>Emotional Triggers & Storytelling</h2>
+
+        <div class="callout">
+          <h4>❤️ Emotion-First Marketing</h4>
+          <p>Neuroscience shows that emotions drive purchase decisions, while logic justifies them afterward. The most effective marketing combines emotional triggers with logical benefits, creating both desire and rational justification for taking action.</p>
+        </div>
+
+        <h3>Primary Emotional Triggers</h3>
+        <div class="psychology-grid">
+          <div class="psychology-card">
+            <div class="principle-badge neuro">Primary Emotion</div>
+            <h4>😨 Fear</h4>
+            <p><strong>Trigger:</strong> Loss, danger, missing out, failure</p>
+            <p><strong>Application:</strong> Security products, insurance, urgency</p>
+            <p><strong>Example:</strong> "Don't let hackers steal your identity"</p>
+            <p><strong>Effectiveness:</strong> High, but can create negative brand association</p>
+            <p><strong>Balance:</strong> Pair with reassurance and solution</p>
+          </div>
+
+          <div class="psychology-card">
+            <div class="principle-badge neuro">Primary Emotion</div>
+            <h4>😍 Desire</h4>
+            <p><strong>Trigger:</strong> Aspiration, improvement, transformation</p>
+            <p><strong>Application:</strong> Lifestyle products, courses, coaching</p>
+            <p><strong>Example:</strong> "Become the person you've always wanted to be"</p>
+            <p><strong>Effectiveness:</strong> Very high for aspirational products</p>
+            <p><strong>Balance:</strong> Make aspirations feel achievable</p>
+          </div>
+
+          <div class="psychology-card">
+            <div class="principle-badge behavioral">Social Emotion</div>
+            <h4>😤 Anger/Frustration</h4>
+            <p><strong>Trigger:</strong> Injustice, inefficiency, wasted effort</p>
+            <p><strong>Application:</strong> Productivity tools, reform movements</p>
+            <p><strong>Example:</strong> "Sick of wasting time on boring tasks?"</p>
+            <p><strong>Effectiveness:</strong> Powerful for problem-agitation</p>
+            <p><strong>Balance:</strong> Channel anger toward positive solution</p>
+          </div>
+
+          <div class="psychology-card">
+            <div class="principle-badge cognitive">Social Emotion</div>
+            <h4>😊 Joy/Excitement</h4>
+            <p><strong>Trigger:</strong> Achievement, celebration, fun</p>
+            <p><strong>Application:</strong> Entertainment, achievements, rewards</p>
+            <p><strong>Example:</strong> "Celebrate your first $10k month!"</p>
+            <p><strong>Effectiveness:</strong> Great for positive brand association</p>
+            <p><strong>Balance:</strong> Maintain authenticity and relatability</p>
+          </div>
+
+          <div class="psychology-card">
+            <div class="principle-badge neuro">Survival Emotion</div>
+            <h4>😰 Anxiety/Worry</h4>
+            <p><strong>Trigger:</strong> Uncertainty, competition, falling behind</p>
+            <p><strong>Application:</strong> Business tools, competitive advantages</p>
+            <p><strong>Example:</strong> "While you hesitate, competitors are gaining ground"</p>
+            <p><strong>Effectiveness:</strong> High for B2B and professional contexts</p>
+            <p><strong>Balance:</strong> Provide clear path to confidence</p>
+          </div>
+
+          <div class="psychology-card">
+            <div class="principle-badge cognitive">Social Emotion</div>
+            <h4>😎 Pride/Status</h4>
+            <p><strong>Trigger:</strong> Recognition, exclusivity, achievement</p>
+            <p><strong>Application:</strong> Premium products, memberships, awards</p>
+            <p><strong>Example:</strong> "Join the elite 1% who've mastered..."</p>
+            <p><strong>Effectiveness:</strong> Very high for status-conscious audiences</p>
+            <p><strong>Balance:</strong> Avoid elitism that alienates others</p>
+          </div>
+        </psychology-grid>
+
+        <h3>Storytelling in Marketing Copy</h3>
+        <div class="framework-cards">
+          <div class="framework-card">
+            <h4>🎭 Hero's Journey</h4>
+            <p><strong>Ordinary World:</strong> Customer's current situation</p>
+            <p><strong>Call to Adventure:</strong> Problem emerges or opportunity appears</p>
+            <p><strong>Refusal of Call:</strong> Hesitation and objections</p>
+            <p><strong>Meeting Mentor:</strong> Your brand as the guide</p>
+            <p><strong>Crossing Threshold:</strong> Making the purchase decision</p>
+            <p><strong>Transformation:</strong> Success and new identity</p>
+          </div>
+
+          <div class="framework-card">
+            <h4>👤 Customer as Hero</h4>
+            <p><strong>Position:</strong> Customer is the hero, not your brand</p>
+            <p><strong>Brand Role:</strong> Guide who helps hero succeed</p>
+            <p><strong>Conflict:</strong> External problem + internal doubt + philosophical stakes</p>
+            <p><strong>Resolution:</strong> Customer achieves transformation with your help</p>
+            <p><strong>Psychology:</strong> People want to be the hero of their own story</p>
+          </div>
+
+          <div class="framework-card">
+            <h4>📊 Data-Driven Story</h4>
+            <p><strong>Setup:</strong> Establish the stakes with data</p>
+            <p><strong>Challenge:</strong> Show the magnitude of the problem</p>
+            <p><strong>Journey:</strong> Document the solution process</p>
+            <p><strong>Results:</strong> Quantified outcomes and transformation</p>
+            <p><strong>Best For:</strong> B2B audiences and analytical personalities</p>
+          </div>
+
+          <div class="framework-card">
+            <h4>⏰ Transformation Timeline</h4>
+            <p><strong>Before State:</strong> Struggle, frustration, limitation</p>
+            <p><strong>Catalyst Moment:</strong> Discovering your solution</p>
+            <p><strong>Journey Phases:</strong> Implementation and progress milestones</p>
+            <p><strong>After State:</strong> Success, confidence, new capabilities</p>
+            <p><strong>Future Vision:</strong> What's now possible going forward</p>
+          </div>
+        </framework-cards>
+      </section>
+
+      <section id="faq" class="faq-section">
+        <h2>Frequently Asked Questions</h2>
+
+        <div class="faq-item">
+          <div class="faq-question">How do I know which psychological triggers to use for my audience?</div>
+          <div class="faq-answer">Start by researching your audience's primary pain points, motivations, and decision-making patterns. Survey customers, analyze support tickets, and study competitor messaging. Test different psychological approaches through A/B testing to see what resonates. B2B audiences often respond to authority and social proof, while B2C audiences may be more influenced by scarcity and emotional triggers.</div>
+        </div>
+
+        <div class="faq-item">
+          <div class="faq-question">Is using marketing psychology ethical?</div>
+          <div class="faq-answer">Marketing psychology is ethical when used to help customers make better decisions and solve real problems. It becomes unethical when used to manipulate, deceive, or exploit vulnerabilities. Focus on genuine value creation, transparent communication, and long-term customer relationships rather than short-term conversion tricks.</div>
+        </div>
+
+        <div class="faq-item">
+          <div class="faq-question">Which copywriting framework should I start with?</div>
+          <div class="faq-answer">Begin with AIDA for general marketing copy—it's simple, versatile, and effective across most situations. For problem-focused products, try PAS (Problem-Agitation-Solution). For transformation-based offers, use Before-After-Bridge. Master one framework thoroughly before moving to others, and adapt it to your specific audience and context.</div>
+        </div>
+
+        <div class="faq-item">
+          <div class="faq-question">How do I measure the effectiveness of psychological triggers in my copy?</div>
+          <div class="faq-answer">Track conversion rates, click-through rates, engagement metrics, and revenue per visitor. Use A/B testing to compare psychologically-optimized copy against baseline versions. Monitor qualitative feedback through surveys and customer interviews. Pay attention to long-term metrics like customer lifetime value and brand perception, not just immediate conversions.</div>
+        </div>
+
+        <div class="faq-item">
+          <div class="faq-question">Can I use multiple psychological principles in the same piece of copy?</div>
+          <div class="faq-answer">Yes, but use them strategically rather than cramming every trigger into one message. Combine complementary principles—like authority and social proof, or scarcity and loss aversion. Avoid conflicting triggers that create confusion. The key is maintaining a natural flow while systematically addressing psychological barriers to conversion.</div>
+        </div>
+
+        <div class="faq-item">
+          <div class="faq-question">How do I avoid coming across as manipulative when using psychology?</div>
+          <div class="faq-answer">Focus on authenticity and genuine value. Use psychology to highlight real benefits and address legitimate concerns, not to create false urgency or fake scarcity. Be transparent about limitations and potential downsides. Build long-term relationships rather than optimizing for single transactions. When in doubt, ask yourself if you'd be comfortable with competitors using the same tactics on you.</div>
+        </div>
+
+        <div class="faq-item">
+          <div class="faq-question">Do psychological triggers work the same across different cultures?</div>
+          <div class="faq-answer">No, cultural context significantly affects psychological responses. Individualistic cultures may respond better to personal achievement messaging, while collectivistic cultures prefer community and social harmony appeals. Authority triggers work differently across cultures with varying power distance. Always research and test psychological approaches for specific cultural contexts and demographics.</div>
+        </div>
+
+        <div class="faq-item">
+          <div class="faq-question">How often should I test and update my copy based on psychology principles?</div>
+          <div class="faq-answer">Test major copy elements quarterly and minor elements monthly. Continuously monitor performance and customer feedback. Update copy when you notice declining effectiveness, market changes, or audience evolution. However, avoid constant tinkering—give tests time to reach statistical significance and focus on high-impact changes rather than minor tweaks.</div>
+        </div>
+      </section>
+
+      <div class="cta-cards">
+        <div class="cta-card">
+          <h4>📧 Email Marketing</h4>
+          <p>Apply psychological principles to email marketing campaigns for higher open rates, engagement, and conversions.</p>
+          <a href="/email-marketing-automation" class="cta-button">Email Psychology</a>
+        </div>
+
+        <div class="cta-card">
+          <h4>🎯 Digital Marketing</h4>
+          <p>Master comprehensive digital marketing strategies that combine psychology with modern growth tactics.</p>
+          <a href="/digital-marketing-seo" class="cta-button">Digital Marketing</a>
+        </div>
+
+        <div class="cta-card">
+          <h4>📱 Social Media Growth</h4>
+          <p>Use psychological triggers and persuasion techniques to build engaged social media audiences that convert.</p>
+          <a href="/social-media-algorithms-growth" class="cta-button">Social Growth</a>
+        </div>
+      </div>
+    </main>
+
+    <aside class="sidebar">
+      <h3>Contents</h3>
+      <ul>
+        <li><a href="#psychology-fundamentals">Psychology Fundamentals</a></li>
+        <li><a href="#copywriting-frameworks">Copywriting Frameworks</a></li>
+        <li><a href="#conversion-psychology">Conversion Psychology</a></li>
+        <li><a href="#emotional-triggers">Emotional Triggers</a></li>
+        <li><a href="#faq">FAQ</a></li>
+      </ul>
+    </aside>
+  </div>
+</div>
+
+<script>
+function analyzeCopy() {
+  const copyText = document.getElementById('copyText').value;
+  const copyType = document.getElementById('copyType').value;
+  const targetAudience = document.getElementById('targetAudience').value;
+  const primaryGoal = document.getElementById('primaryGoal').value;
+  
+  if (!copyText.trim()) {
+    alert('Please enter some copy text to analyze');
+    return;
+  }
+  
+  const textLength = copyText.length;
+  const wordCount = copyText.split(/\s+/).filter(word => word.length > 0).length;
+  const sentences = copyText.split(/[.!?]+/).filter(s => s.trim().length > 0).length;
+  
+  // Psychological trigger analysis
+  const triggers = {
+    urgency: /\b(now|today|hurry|limited|deadline|expires|act fast|don't wait)\b/gi,
+    scarcity: /\b(only|limited|exclusive|few left|running out|last chance)\b/gi,
+    socialProof: /\b(customers|users|people|everyone|thousands|millions|testimonial|review)\b/gi,
+    authority: /\b(expert|professional|doctor|certified|proven|research|study)\b/gi,
+    benefit: /\b(save|gain|get|achieve|improve|increase|boost|enhance)\b/gi,
+    emotion: /\b(amazing|incredible|fantastic|love|hate|fear|excited|frustrated)\b/gi,
+    numbers: /\d+/g,
+    questions: /\?/g
+  };
+  
+  const triggerCounts = {};
+  let totalTriggers = 0;
+  
+  Object.keys(triggers).forEach(trigger => {
+    const matches = copyText.match(triggers[trigger]) || [];
+    triggerCounts[trigger] = matches.length;
+    totalTriggers += matches.length;
+  });
+  
+  // Readability analysis (simplified)
+  const avgWordsPerSentence = wordCount / Math.max(sentences, 1);
+  const readabilityScore = Math.max(0, Math.min(100, 100 - (avgWordsPerSentence * 2)));
+  
+  // Effectiveness scoring
+  const getEffectivenessScore = () => {
+    let score = 50; // Base score
+    
+    // Length optimization
+    if (copyType === 'headline' && wordCount >= 6 && wordCount <= 12) score += 10;
+    if (copyType === 'email-subject' && wordCount >= 4 && wordCount <= 8) score += 10;
+    
+    // Psychological triggers
+    if (triggerCounts.urgency > 0) score += 8;
+    if (triggerCounts.scarcity > 0) score += 8;
+    if (triggerCounts.socialProof > 0) score += 6;
+    if (triggerCounts.authority > 0) score += 6;
+    if (triggerCounts.benefit > 0) score += 5;
+    if (triggerCounts.emotion > 0) score += 5;
+    if (triggerCounts.numbers > 0) score += 4;
+    if (triggerCounts.questions > 0) score += 3;
+    
+    // Penalties
+    if (avgWordsPerSentence > 20) score -= 10;
+    if (totalTriggers > wordCount * 0.3) score -= 15; // Too many triggers
+    
+    return Math.max(0, Math.min(100, score));
+  };
+  
+  const effectivenessScore = getEffectivenessScore();
+  
+  // Recommendations
+  const getRecommendations = () => {
+    const recs = [];
+    
+    if (triggerCounts.urgency === 0 && primaryGoal === 'drive-sales') {
+      recs.push('Add urgency elements');
+    }
+    if (triggerCounts.socialProof === 0) {
+      recs.push('Include social proof');
+    }
+    if (triggerCounts.numbers === 0) {
+      recs.push('Add specific numbers');
+    }
+    if (avgWordsPerSentence > 15) {
+      recs.push('Shorten sentences');
+    }
+    if (triggerCounts.benefit === 0) {
+      recs.push('Highlight clear benefits');
+    }
+    
+    return recs;
+  };
+  
+  const recommendations = getRecommendations();
+  
+  // Audience fit analysis
+  const getAudienceFit = (audience, triggers) => {
+    if (audience === 'business-owners' && triggers.authority > 0) return 'High';
+    if (audience === 'consumers' && triggers.emotion > 0) return 'High';
+    if (audience === 'professionals' && triggers.numbers > 0) return 'High';
+    if (triggers.socialProof > 0) return 'Medium';
+    return 'Low';
+  };
+  
+  const audienceFit = getAudienceFit(targetAudience, triggerCounts);
+  
+  // Display results
+  const breakdown = document.getElementById('copyBreakdown');
+  breakdown.innerHTML = `
+    <div class="breakdown-item">
+      <div class="breakdown-label">Effectiveness Score</div>
+      <div class="breakdown-value">${effectivenessScore}/100</div>
+      <div class="breakdown-status">${effectivenessScore >= 80 ? 'Excellent' : effectivenessScore >= 60 ? 'Good' : 'Needs Work'}</div>
+    </div>
+    <div class="breakdown-item">
+      <div class="breakdown-label">Psychological Triggers</div>
+      <div class="breakdown-value">${totalTriggers}</div>
+      <div class="breakdown-status">Total trigger words</div>
+    </div>
+    <div class="breakdown-item">
+      <div class="breakdown-label">Readability Score</div>
+      <div class="breakdown-value">${readabilityScore.toFixed(0)}/100</div>
+      <div class="breakdown-status">Ease of reading</div>
+    </div>
+    <div class="breakdown-item">
+      <div class="breakdown-label">Word Count</div>
+      <div class="breakdown-value">${wordCount}</div>
+      <div class="breakdown-status">${copyType === 'headline' && wordCount > 12 ? 'Too long' : 'Good length'}</div>
+    </div>
+    <div class="breakdown-item">
+      <div class="breakdown-label">Audience Fit</div>
+      <div class="breakdown-value">${audienceFit}</div>
+      <div class="breakdown-status">For ${targetAudience.replace('-', ' ')}</div>
+    </div>
+    <div class="breakdown-item">
+      <div class="breakdown-label">Top Triggers</div>
+      <div class="breakdown-value">${Object.entries(triggerCounts).sort((a,b) => b[1] - a[1]).slice(0,2).map(([k,v]) => `${k}: ${v}`).join(', ')}</div>
+      <div class="breakdown-status">Most used</div>
+    </div>
+  `;
+  
+  document.getElementById('copyResults').style.display = 'block';
+}
+</script>

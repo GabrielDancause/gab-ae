@@ -1,0 +1,440 @@
+[
+  {
+    "slug": "time-calculator",
+    "title": "Time Calculator | gab.ae",
+    "description": "Add and subtract hours, minutes, and seconds. Convert between time formats and calculate total elapsed time with precision and ease.",
+    "category": "lifestyle",
+    "config": {
+      "inputs": [
+        {"id": "hours1", "label": "Hours 1", "type": "number", "default": 2},
+        {"id": "min1", "label": "Minutes 1", "type": "number", "default": 30},
+        {"id": "sec1", "label": "Seconds 1", "type": "number", "default": 0},
+        {"id": "hours2", "label": "Hours 2", "type": "number", "default": 1},
+        {"id": "min2", "label": "Minutes 2", "type": "number", "default": 45},
+        {"id": "sec2", "label": "Seconds 2", "type": "number", "default": 0}
+      ],
+      "outputs": [
+        {"id": "totalHours", "label": "Total Hours", "type": "integer"},
+        {"id": "totalMinutes", "label": "Total Minutes", "type": "integer"},
+        {"id": "totalSeconds", "label": "Total Seconds", "type": "integer"},
+        {"id": "decimalHours", "label": "Decimal Hours", "type": "number"}
+      ],
+      "formula": "var totalSec = (hours1*3600+min1*60+sec1)+(hours2*3600+min2*60+sec2); var totalHours = Math.floor(totalSec/3600); var totalMinutes = Math.floor((totalSec%3600)/60); var totalSeconds = totalSec%60; var decimalHours = totalSec/3600;"
+    },
+    "content": [
+      {
+        "title": "How Time Addition Works",
+        "text": "Time calculation involves converting all values to seconds, performing the arithmetic, then converting back to hours, minutes, and seconds format."
+      },
+      {
+        "title": "Common Use Cases",
+        "text": "Perfect for calculating work hours, project durations, travel time, cooking timers, and any scenario requiring precise time arithmetic."
+      }
+    ],
+    "faqs": [
+      {"q": "Can I subtract time instead of adding?", "a": "Use negative values in the second time fields to subtract time from the first time period."},
+      {"q": "What's the maximum time I can calculate?", "a": "The calculator handles very large time periods - up to millions of hours if needed."},
+      {"q": "How accurate are decimal hours?", "a": "Decimal hours are precise to many decimal places, perfect for payroll and billing calculations."},
+      {"q": "Can I use this for time zones?", "a": "This calculator adds/subtracts time durations, not time zones. Use it for elapsed time calculations."}
+    ],
+    "schema": {
+      "@context": "https://schema.org",
+      "@type": "WebApplication",
+      "name": "Time Calculator",
+      "url": "https://gab.ae/time-calculator",
+      "description": "Add and subtract hours, minutes, and seconds. Convert between time formats and calculate total elapsed time with precision and ease."
+    }
+  },
+  {
+    "slug": "va-disability-calculator",
+    "title": "VA Disability Calculator | gab.ae",
+    "description": "Calculate your VA combined disability rating using the official bilateral method. Determine your total rating and remaining efficiency percentage.",
+    "category": "finance",
+    "config": {
+      "inputs": [
+        {"id": "rating1", "label": "Rating 1 (%)", "type": "number", "default": 50},
+        {"id": "rating2", "label": "Rating 2 (%)", "type": "number", "default": 30},
+        {"id": "rating3", "label": "Rating 3 (%)", "type": "number", "default": 20},
+        {"id": "rating4", "label": "Rating 4 (%)", "type": "number", "default": 0}
+      ],
+      "outputs": [
+        {"id": "combinedRating", "label": "Combined Rating (%)", "type": "integer"},
+        {"id": "roundedRating", "label": "Rounded Rating (%)", "type": "integer"},
+        {"id": "remainingEfficiency", "label": "Remaining Efficiency (%)", "type": "number"}
+      ],
+      "formula": "var r1=rating1/100; var r2=rating2/100; var r3=rating3/100; var r4=rating4/100; var combined=1-(1-r1)*(1-r2)*(1-r3)*(r4>0?(1-r4):1); var combinedRating=combined*100; var roundedRating=Math.round(combinedRating/10)*10; var remainingEfficiency=(1-combined)*100;"
+    },
+    "content": [
+      {
+        "title": "VA Bilateral Method Explained",
+        "text": "The VA uses a specific formula to combine multiple disability ratings. It's not simple addition - each additional rating is applied to your remaining efficiency."
+      },
+      {
+        "title": "Understanding Your Results",
+        "text": "The rounded rating determines your compensation level. Ratings are rounded to the nearest 10%, and remaining efficiency shows your functional capacity."
+      }
+    ],
+    "faqs": [
+      {"q": "Why isn't my rating just added together?", "a": "The VA assumes you can't be more than 100% disabled, so each rating reduces your remaining efficiency, not your total capacity."},
+      {"q": "How does rounding work?", "a": "The VA rounds to the nearest 10%. For example, 84% rounds to 80%, while 85% rounds to 90%."},
+      {"q": "Can I have more than 4 ratings?", "a": "This calculator handles up to 4 ratings. For more, apply the same method by combining ratings sequentially."},
+      {"q": "What if I have bilateral conditions?", "a": "Bilateral conditions (affecting both sides) get a special 10% bonus before combining with other ratings."},
+      {"q": "Does this affect my compensation?", "a": "Yes, your final rounded rating determines your monthly compensation amount from the VA."}
+    ],
+    "schema": {
+      "@context": "https://schema.org",
+      "@type": "WebApplication",
+      "name": "VA Disability Calculator",
+      "url": "https://gab.ae/va-disability-calculator",
+      "description": "Calculate your VA combined disability rating using the official bilateral method. Determine your total rating and remaining efficiency percentage."
+    }
+  },
+  {
+    "slug": "pace-calculator",
+    "title": "Pace Calculator | gab.ae",
+    "description": "Calculate running pace per mile and kilometer, plus speed in MPH. Perfect for runners tracking training times and race performance goals.",
+    "category": "health",
+    "config": {
+      "inputs": [
+        {"id": "distanceMiles", "label": "Distance (miles)", "type": "number", "default": 3.1},
+        {"id": "hours", "label": "Hours", "type": "number", "default": 0},
+        {"id": "minutes", "label": "Minutes", "type": "number", "default": 25},
+        {"id": "seconds", "label": "Seconds", "type": "number", "default": 0}
+      ],
+      "outputs": [
+        {"id": "paceMinPerMile", "label": "Pace (min/mile)", "type": "number"},
+        {"id": "speedMph", "label": "Speed (MPH)", "type": "number"},
+        {"id": "paceMinPerKm", "label": "Pace (min/km)", "type": "number"}
+      ],
+      "formula": "var totalMin = hours*60+minutes+seconds/60; var paceMinPerMile = totalMin/distanceMiles; var speedMph = distanceMiles/(totalMin/60); var paceMinPerKm = paceMinPerMile/1.60934;"
+    },
+    "content": [
+      {
+        "title": "Understanding Running Pace",
+        "text": "Pace measures how long it takes to cover a specific distance. It's expressed as minutes per mile or minutes per kilometer, helping runners gauge effort and plan training."
+      },
+      {
+        "title": "Using Pace for Training",
+        "text": "Different training runs require different paces. Easy runs, tempo runs, and intervals each have target pace zones based on your fitness level and race goals."
+      }
+    ],
+    "faqs": [
+      {"q": "What's a good running pace for beginners?", "a": "Beginners often start around 10-12 minutes per mile. Focus on consistency and building endurance rather than speed initially."},
+      {"q": "How do I convert between miles and kilometers?", "a": "The calculator shows both automatically. 1 mile equals approximately 1.609 kilometers."},
+      {"q": "Should I focus on pace or speed?", "a": "Runners typically use pace (min/mile) while cyclists and swimmers often use speed (MPH). Both measure the same performance differently."},
+      {"q": "How accurate should my timing be?", "a": "For training, nearest 15-30 seconds is fine. For races, every second counts for personal records and competitive placement."}
+    ],
+    "schema": {
+      "@context": "https://schema.org",
+      "@type": "WebApplication",
+      "name": "Pace Calculator",
+      "url": "https://gab.ae/pace-calculator",
+      "description": "Calculate running pace per mile and kilometer, plus speed in MPH. Perfect for runners tracking training times and race performance goals."
+    }
+  },
+  {
+    "slug": "percentage-increase-calculator",
+    "title": "Percentage Increase Calculator | gab.ae",
+    "description": "Calculate percentage change, increase, or decrease between two values. Shows absolute change and multiplier for business and academic use.",
+    "category": "education",
+    "config": {
+      "inputs": [
+        {"id": "originalValue", "label": "Original Value", "type": "number", "default": 100},
+        {"id": "newValue", "label": "New Value", "type": "number", "default": 125}
+      ],
+      "outputs": [
+        {"id": "percentChange", "label": "Percent Change (%)", "type": "number"},
+        {"id": "absoluteChange", "label": "Absolute Change", "type": "number"},
+        {"id": "multiplier", "label": "Multiplier", "type": "number"}
+      ],
+      "formula": "var absoluteChange = newValue - originalValue; var percentChange = (absoluteChange/originalValue)*100; var multiplier = newValue/originalValue;"
+    },
+    "content": [
+      {
+        "title": "How Percentage Change Works",
+        "text": "Percentage change measures the relative difference between two values. Positive values indicate increases, negative values show decreases, giving context to raw number changes."
+      },
+      {
+        "title": "Real-World Applications",
+        "text": "Use for analyzing stock prices, sales growth, population changes, test score improvements, or any scenario where relative change matters more than absolute numbers."
+      }
+    ],
+    "faqs": [
+      {"q": "What's the difference between absolute and percentage change?", "a": "Absolute change is the raw difference (new - original). Percentage change shows this as a proportion of the original value."},
+      {"q": "Can I calculate decreases too?", "a": "Yes! When the new value is smaller, you'll get a negative percentage, indicating a decrease."},
+      {"q": "What does the multiplier represent?", "a": "The multiplier shows how many times larger the new value is. 1.25x means 25% increase, 0.8x means 20% decrease."},
+      {"q": "How do I interpret very large percentage changes?", "a": "Changes over 100% mean the new value is more than double the original. 200% increase means the new value is 3x the original."}
+    ],
+    "schema": {
+      "@context": "https://schema.org",
+      "@type": "WebApplication",
+      "name": "Percentage Increase Calculator",
+      "url": "https://gab.ae/percentage-increase-calculator",
+      "description": "Calculate percentage change, increase, or decrease between two values. Shows absolute change and multiplier for business and academic use."
+    }
+  },
+  {
+    "slug": "square-footage-calculator",
+    "title": "Square Footage Calculator | gab.ae",
+    "description": "Calculate area in square feet, meters, yards, and acres. Perfect for flooring, landscaping, construction, and real estate measurements.",
+    "category": "lifestyle",
+    "config": {
+      "inputs": [
+        {"id": "lengthFt", "label": "Length (feet)", "type": "number", "default": 20},
+        {"id": "widthFt", "label": "Width (feet)", "type": "number", "default": 15}
+      ],
+      "outputs": [
+        {"id": "sqFeet", "label": "Square Feet", "type": "number"},
+        {"id": "sqMeters", "label": "Square Meters", "type": "number"},
+        {"id": "sqYards", "label": "Square Yards", "type": "number"},
+        {"id": "acres", "label": "Acres", "type": "number"}
+      ],
+      "formula": "var sqFeet = lengthFt * widthFt; var sqMeters = sqFeet * 0.0929; var sqYards = sqFeet / 9; var acres = sqFeet / 43560;"
+    },
+    "content": [
+      {
+        "title": "Understanding Area Measurements",
+        "text": "Square footage is the standard measurement for indoor spaces, while acres are used for land. Square meters provide metric equivalents for international use."
+      },
+      {
+        "title": "Practical Applications",
+        "text": "Use for estimating flooring materials, paint coverage, landscaping needs, property taxes, and comparing real estate listings across different measurement systems."
+      }
+    ],
+    "faqs": [
+      {"q": "How much flooring do I need?", "a": "Add 10% to your square footage for waste and cuts. For tile, add 15% for complex patterns or inexperienced installers."},
+      {"q": "When should I use square yards vs square feet?", "a": "Carpet is often sold by the square yard, while most other materials use square feet. Always check your supplier's units."},
+      {"q": "How do acres relate to square feet?", "a": "One acre equals 43,560 square feet - roughly the size of a football field without the end zones."},
+      {"q": "Can I calculate irregular shapes?", "a": "This calculator works for rectangles. For irregular shapes, divide into rectangles and calculate each section separately."}
+    ],
+    "schema": {
+      "@context": "https://schema.org",
+      "@type": "WebApplication",
+      "name": "Square Footage Calculator",
+      "url": "https://gab.ae/square-footage-calculator",
+      "description": "Calculate area in square feet, meters, yards, and acres. Perfect for flooring, landscaping, construction, and real estate measurements."
+    }
+  },
+  {
+    "slug": "weighted-grade-calculator",
+    "title": "Weighted Grade Calculator | gab.ae",
+    "description": "Calculate weighted grades across multiple categories like homework, exams, and finals. Determine overall GPA and letter grades accurately.",
+    "category": "education",
+    "config": {
+      "inputs": [
+        {"id": "homework", "label": "Homework Grade", "type": "number", "default": 85},
+        {"id": "homeworkWeight", "label": "Homework Weight (%)", "type": "number", "default": 20},
+        {"id": "exams", "label": "Exams Grade", "type": "number", "default": 78},
+        {"id": "examsWeight", "label": "Exams Weight (%)", "type": "number", "default": 40},
+        {"id": "quizzes", "label": "Quizzes Grade", "type": "number", "default": 90},
+        {"id": "quizzesWeight", "label": "Quizzes Weight (%)", "type": "number", "default": 20},
+        {"id": "final", "label": "Final Exam Grade", "type": "number", "default": 82},
+        {"id": "finalWeight", "label": "Final Exam Weight (%)", "type": "number", "default": 20}
+      ],
+      "outputs": [
+        {"id": "weightedGrade", "label": "Weighted Grade", "type": "number"},
+        {"id": "letterGrade", "label": "Letter Grade (4.0 scale)", "type": "number"}
+      ],
+      "formula": "var weightedGrade = (homework*homeworkWeight + exams*examsWeight + quizzes*quizzesWeight + final*finalWeight)/100; var letterGrade = weightedGrade >= 90 ? 4 : weightedGrade >= 80 ? 3 : weightedGrade >= 70 ? 2 : weightedGrade >= 60 ? 1 : 0;"
+    },
+    "content": [
+      {
+        "title": "How Weighted Grades Work",
+        "text": "Weighted grades give different categories varying importance. A final exam weighted at 40% has twice the impact of homework weighted at 20%, reflecting their relative importance."
+      },
+      {
+        "title": "GPA Scale Conversion",
+        "text": "The calculator converts to a 4-point scale: A(90-100)=4.0, B(80-89)=3.0, C(70-79)=2.0, D(60-69)=1.0, F(below 60)=0.0. Some schools use different thresholds."
+      }
+    ],
+    "faqs": [
+      {"q": "Do the weights need to add up to 100%?", "a": "Ideally yes. If they don't, the calculator assumes the percentages represent the intended proportions of your total grade."},
+      {"q": "What if I have more or fewer categories?", "a": "Adjust the weights accordingly. You can set unused categories to 0 weight, or combine similar assignments into one category."},
+      {"q": "How do I calculate what I need on the final?", "a": "Work backwards: determine your target grade, then solve for the required final exam score given your current weighted average."},
+      {"q": "Can I use this for multiple classes?", "a": "This calculates one class at a time. For overall GPA, you'll need to factor in credit hours and calculate separately."},
+      {"q": "What about plus/minus grades?", "a": "This uses simple letter grades. Many schools use +/- variations (B+, A-) which would require different grade boundaries."}
+    ],
+    "schema": {
+      "@context": "https://schema.org",
+      "@type": "WebApplication",
+      "name": "Weighted Grade Calculator",
+      "url": "https://gab.ae/weighted-grade-calculator",
+      "description": "Calculate weighted grades across multiple categories like homework, exams, and finals. Determine overall GPA and letter grades accurately."
+    }
+  },
+  {
+    "slug": "ira-calculator",
+    "title": "IRA Calculator | gab.ae",
+    "description": "Calculate Traditional IRA growth with compound interest and annual contributions. See pre-tax balance, after-tax value, and tax savings projections.",
+    "category": "finance",
+    "config": {
+      "inputs": [
+        {"id": "currentBalance", "label": "Current Balance ($)", "type": "number", "default": 20000},
+        {"id": "annualContribution", "label": "Annual Contribution ($)", "type": "number", "default": 6500},
+        {"id": "years", "label": "Years", "type": "number", "default": 25},
+        {"id": "returnRate", "label": "Return Rate (%)", "type": "number", "default": 7},
+        {"id": "taxRate", "label": "Tax Rate (%)", "type": "number", "default": 22}
+      ],
+      "outputs": [
+        {"id": "pretaxBalance", "label": "Pre-tax Balance ($)", "type": "number"},
+        {"id": "afterTaxBalance", "label": "After-tax Balance ($)", "type": "number"},
+        {"id": "totalContributions", "label": "Total Contributions ($)", "type": "number"},
+        {"id": "taxSavings", "label": "Tax Savings ($)", "type": "number"}
+      ],
+      "formula": "var r = returnRate/100; var totalContributions = currentBalance + annualContribution * years; var futureValue = currentBalance; for(var i = 0; i < years; i++) { futureValue = futureValue * (1 + r) + annualContribution * (1 + r); } var pretaxBalance = futureValue; var afterTaxBalance = pretaxBalance * (1 - taxRate/100); var taxSavings = totalContributions * taxRate/100;"
+    },
+    "content": [
+      {
+        "title": "Traditional IRA Tax Benefits",
+        "text": "Traditional IRAs offer immediate tax deductions on contributions, with taxes paid upon withdrawal in retirement. This calculator shows growth assuming consistent contributions and returns."
+      },
+      {
+        "title": "Planning Your Retirement",
+        "text": "Consider your expected tax bracket in retirement versus today. If you expect lower taxes later, traditional IRAs maximize savings. Higher future taxes might favor Roth IRAs."
+      }
+    ],
+    "faqs": [
+      {"q": "What's the 2024 IRA contribution limit?", "a": "The limit is $7,000 for those under 50, $8,000 for 50+. Limits typically increase annually with inflation adjustments."},
+      {"q": "When can I withdraw without penalties?", "a": "Generally age 59½ for traditional IRAs. Early withdrawals face 10% penalties plus taxes, with some exceptions for education, homes, or hardships."},
+      {"q": "How accurate are the projections?", "a": "These are estimates based on consistent returns and contributions. Actual market performance varies, and this assumes annual compounding."},
+      {"q": "What about required minimum distributions?", "a": "Starting at age 73, you must withdraw minimum amounts annually. This calculator doesn't factor RMDs into the projections."},
+      {"q": "Traditional vs Roth IRA?", "a": "Traditional offers upfront tax deductions but taxes withdrawals. Roth uses after-tax money but grows tax-free. Choice depends on current vs expected future tax rates."}
+    ],
+    "schema": {
+      "@context": "https://schema.org",
+      "@type": "WebApplication",
+      "name": "IRA Calculator",
+      "url": "https://gab.ae/ira-calculator",
+      "description": "Calculate Traditional IRA growth with compound interest and annual contributions. See pre-tax balance, after-tax value, and tax savings projections."
+    }
+  },
+  {
+    "slug": "pool-volume-calculator",
+    "title": "Pool Volume Calculator | gab.ae",
+    "description": "Calculate swimming pool water volume in cubic feet, gallons, and liters. Essential for chemical dosing, heating costs, and maintenance planning.",
+    "category": "lifestyle",
+    "config": {
+      "inputs": [
+        {"id": "lengthFt", "label": "Length (feet)", "type": "number", "default": 30},
+        {"id": "widthFt", "label": "Width (feet)", "type": "number", "default": 15},
+        {"id": "avgDepthFt", "label": "Average Depth (feet)", "type": "number", "default": 5}
+      ],
+      "outputs": [
+        {"id": "cubicFeet", "label": "Cubic Feet", "type": "number"},
+        {"id": "gallons", "label": "Gallons", "type": "integer"},
+        {"id": "liters", "label": "Liters", "type": "integer"}
+      ],
+      "formula": "var cubicFeet = lengthFt * widthFt * avgDepthFt; var gallons = Math.round(cubicFeet * 7.48052); var liters = Math.round(cubicFeet * 28.3168);"
+    },
+    "content": [
+      {
+        "title": "Why Pool Volume Matters",
+        "text": "Accurate volume calculations are essential for proper chemical treatment, determining pump and filter sizing, calculating heating costs, and estimating fill time."
+      },
+      {
+        "title": "Finding Average Depth",
+        "text": "For pools with sloped bottoms, measure depth at the shallow end, deep end, and middle. Average depth = (shallow + deep + 2×middle) ÷ 4 for most rectangular pools."
+      }
+    ],
+    "faqs": [
+      {"q": "How do I measure irregular pool shapes?", "a": "Break complex shapes into rectangles, circles, or triangles. Calculate each section separately and add the volumes together."},
+      {"q": "What about round pools?", "a": "For circular pools, use the formula: π × radius² × depth. This calculator is designed for rectangular pools."},
+      {"q": "How much do pool chemicals cost per gallon?", "a": "Chemical costs vary by region and type, typically $0.02-0.10 per gallon annually for basic chlorine and pH maintenance."},
+      {"q": "How long does it take to fill a pool?", "a": "Typical garden hoses deliver 5-10 gallons per minute. A 20,000-gallon pool takes roughly 30-65 hours to fill completely."}
+    ],
+    "schema": {
+      "@context": "https://schema.org",
+      "@type": "WebApplication",
+      "name": "Pool Volume Calculator",
+      "url": "https://gab.ae/pool-volume-calculator",
+      "description": "Calculate swimming pool water volume in cubic feet, gallons, and liters. Essential for chemical dosing, heating costs, and maintenance planning."
+    }
+  },
+  {
+    "slug": "concrete-block-calculator",
+    "title": "Concrete Block Calculator | gab.ae",
+    "description": "Estimate concrete blocks needed for walls, including rows, blocks per row, and mortar bags. Perfect for construction and DIY masonry projects.",
+    "category": "lifestyle",
+    "config": {
+      "inputs": [
+        {"id": "wallLengthFt", "label": "Wall Length (feet)", "type": "number", "default": 20},
+        {"id": "wallHeightFt", "label": "Wall Height (feet)", "type": "number", "default": 8},
+        {"id": "blockLengthIn", "label": "Block Length (inches)", "type": "number", "default": 16},
+        {"id": "blockHeightIn", "label": "Block Height (inches)", "type": "number", "default": 8}
+      ],
+      "outputs": [
+        {"id": "blocksNeeded", "label": "Blocks Needed", "type": "integer"},
+        {"id": "rows", "label": "Rows", "type": "integer"},
+        {"id": "blocksPerRow", "label": "Blocks per Row", "type": "integer"},
+        {"id": "mortarBags", "label": "Mortar Bags", "type": "integer"}
+      ],
+      "formula": "var blocksPerRow = Math.ceil(wallLengthFt * 12 / blockLengthIn); var rows = Math.ceil(wallHeightFt * 12 / blockHeightIn); var blocksNeeded = blocksPerRow * rows; var mortarBags = Math.ceil(blocksNeeded / 30);"
+    },
+    "content": [
+      {
+        "title": "Planning Your Block Wall",
+        "text": "Concrete block walls require careful planning for dimensions, reinforcement, and drainage. Standard blocks are 16×8×8 inches, but sizes vary by region and application."
+      },
+      {
+        "title": "Material Considerations",
+        "text": "Add 5-10% extra blocks for breakage and cuts. Mortar coverage varies by joint thickness and block texture - one 80lb bag typically covers 25-35 blocks."
+      }
+    ],
+    "faqs": [
+      {"q": "Do I need permits for block walls?", "a": "Most areas require permits for walls over 3-4 feet high or any retaining walls. Check local building codes before starting."},
+      {"q": "What about rebar and reinforcement?", "a": "Structural walls typically need vertical rebar every 4-6 feet and horizontal reinforcement every few courses. Consult local codes."},
+      {"q": "How much mortar do I actually need?", "a": "This estimates one 80lb bag per 30 blocks. Actual usage depends on joint thickness, block texture, and waste factor."},
+      {"q": "Can I build on existing concrete?", "a": "Yes, but the foundation must be level, clean, and structurally sound. You may need to add a leveling course or surface prep."}
+    ],
+    "schema": {
+      "@context": "https://schema.org",
+      "@type": "WebApplication",
+      "name": "Concrete Block Calculator",
+      "url": "https://gab.ae/concrete-block-calculator",
+      "description": "Estimate concrete blocks needed for walls, including rows, blocks per row, and mortar bags. Perfect for construction and DIY masonry projects."
+    }
+  },
+  {
+    "slug": "electricity-cost-calculator",
+    "title": "Electricity Cost Calculator | gab.ae",
+    "description": "Calculate appliance electricity costs based on wattage, usage hours, and rate per kWh. Estimate monthly and yearly energy expenses accurately.",
+    "category": "finance",
+    "config": {
+      "inputs": [
+        {"id": "watts", "label": "Watts", "type": "number", "default": 1000},
+        {"id": "hoursPerDay", "label": "Hours per Day", "type": "number", "default": 8},
+        {"id": "daysPerMonth", "label": "Days per Month", "type": "number", "default": 30},
+        {"id": "costPerKwh", "label": "Cost per kWh ($)", "type": "number", "default": 0.12}
+      ],
+      "outputs": [
+        {"id": "kwhPerMonth", "label": "kWh per Month", "type": "number"},
+        {"id": "monthlyCost", "label": "Monthly Cost ($)", "type": "number"},
+        {"id": "yearlyCost", "label": "Yearly Cost ($)", "type": "number"}
+      ],
+      "formula": "var kwhPerMonth = (watts * hoursPerDay * daysPerMonth) / 1000; var monthlyCost = kwhPerMonth * costPerKwh; var yearlyCost = monthlyCost * 12;"
+    },
+    "content": [
+      {
+        "title": "Understanding Energy Costs",
+        "text": "Electricity is billed per kilowatt-hour (kWh). One kWh equals 1,000 watts used for one hour. Rates vary by location, time of use, and consumption tiers."
+      },
+      {
+        "title": "Finding Your Rate",
+        "text": "Check your electric bill for the rate per kWh. Some utilities use tiered pricing (higher rates for more usage) or time-of-use rates (different costs by hour)."
+      }
+    ],
+    "faqs": [
+      {"q": "Where do I find my electricity rate?", "a": "Look at your electric bill for the rate per kWh. The national average is around $0.12-0.15, but rates vary significantly by state and utility."},
+      {"q": "What uses the most electricity in homes?", "a": "Heating/cooling (40-50%), water heating (15-20%), lighting (10-15%), and appliances/electronics make up most home usage."},
+      {"q": "How can I reduce my electric bill?", "a": "Use LED bulbs, upgrade to efficient appliances, adjust thermostat settings, unplug devices when not in use, and consider time-of-use rate plans."},
+      {"q": "Are there peak hour rates?", "a": "Many utilities charge more during peak hours (typically 3-8 PM weekdays). Time-of-use plans can save money if you shift usage to off-peak times."}
+    ],
+    "schema": {
+      "@context": "https://schema.org",
+      "@type": "WebApplication",
+      "name": "Electricity Cost Calculator",
+      "url": "https://gab.ae/electricity-cost-calculator",
+      "description": "Calculate appliance electricity costs based on wattage, usage hours, and rate per kWh. Estimate monthly and yearly energy expenses accurately."
+    }
+  }
+]

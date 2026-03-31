@@ -13,7 +13,8 @@
  */
 export function renderCalculator(page) {
   const config = JSON.parse(page.config);
-  const content = page.content ? JSON.parse(page.content) : [];
+  const rawContent = page.content ? JSON.parse(page.content) : [];
+  const content = Array.isArray(rawContent) ? rawContent : (rawContent.sections || []);
   const faqs = page.faqs ? JSON.parse(page.faqs) : [];
   
   const inputsHtml = config.inputs.map(inp => {
@@ -45,7 +46,7 @@ export function renderCalculator(page) {
             <label for="${inp.id}" class="block text-sm font-medium text-gray-300">${esc(inp.label)}</label>
             <div class="relative">
               ${prefix}
-              <input type="number" id="${inp.id}" value="${inp.default || ''}"
+              <input type="${inp.type === 'text' ? 'text' : 'number'}" id="${inp.id}" value="${inp.default || ''}"
                 class="w-full ${padLeft} ${padRight} py-3 bg-surface border border-surface-border rounded-lg text-white text-lg focus:border-accent focus:outline-none transition-colors"
                 placeholder="${esc(inp.label)}"
                 ${inp.min !== undefined ? `min="${inp.min}"` : ''} ${inp.max !== undefined ? `max="${inp.max}"` : ''} ${inp.step ? `step="${inp.step}"` : ''}>
@@ -93,7 +94,7 @@ export function renderCalculator(page) {
   const body = `
     <!-- Tool Card -->
     <div class="bg-surface-card border border-surface-border rounded-xl p-6 md:p-8 mb-12">
-      <h1 class="text-2xl md:text-3xl font-bold text-white mb-2">${esc(page.title)}</h1>
+      <h1 class="text-2xl md:text-3xl font-bold text-white mb-2">${esc(page.title.replace(/\s*\|\s*gab\.ae$/i, ''))}</h1>
       <p class="text-gray-400 mb-8">${esc(page.description)}</p>
       
       <!-- Inputs -->
@@ -125,7 +126,10 @@ export function renderCalculator(page) {
       function getValues() {
         const vals = {};
         inputs.forEach(id => {
-          vals[id] = parseFloat(document.getElementById(id)?.value) || 0;
+          const el = document.getElementById(id);
+          if (!el) return;
+          const v = el.value;
+          vals[id] = el.type === 'text' ? v : (parseFloat(v) || 0);
         });
         return vals;
       }
@@ -133,11 +137,7 @@ export function renderCalculator(page) {
       function calculate() {
         const vals = getValues();
         try {
-          const fn = new Function(...inputs, ${formulaStr});
-          // Actually eval the formula as statements
-          const results = {};
           const code = ${formulaStr};
-          // Build function body that returns all outputs
           const body = code + '; return {' + outputs.map(o => o.id).join(',') + '};';
           const calcFn = new Function(...inputs, body);
           const result = calcFn(...inputs.map(id => vals[id]));
@@ -146,12 +146,15 @@ export function renderCalculator(page) {
             const el = document.getElementById('out-' + o.id);
             if (!el) return;
             const val = result[o.id];
-            if (val === undefined || isNaN(val)) { el.textContent = '—'; return; }
+            if (val === undefined) { el.textContent = '—'; return; }
+            if (typeof val === 'string') { el.textContent = val; return; }
+            if (isNaN(val)) { el.textContent = '—'; return; }
             
+            const dec = o.decimals !== undefined ? o.decimals : 2;
             if (o.format === 'currency') el.textContent = '$' + val.toFixed(2);
             else if (o.format === 'percent') el.textContent = val.toFixed(1) + '%';
             else if (o.format === 'integer') el.textContent = Math.round(val).toLocaleString();
-            else el.textContent = val.toFixed(2);
+            else el.textContent = Number.isInteger(val) ? val.toLocaleString() : val.toFixed(dec);
           });
 
           // Verdict
@@ -169,7 +172,12 @@ export function renderCalculator(page) {
               verdictEl.classList.add(...(colors[matched.color] || colors.blue).split(' '));
             }
           }
-        } catch(e) { console.error('Calc error:', e); }
+        } catch(e) {
+          outputs.forEach(o => {
+            const el = document.getElementById('out-' + o.id);
+            if (el) el.textContent = 'Error';
+          });
+        }
       }
 
       // Bind events

@@ -1,0 +1,463 @@
+<!-- Chart.js CDN -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<!-- JSON-LD Schema -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "Can federal employees collect unemployment during a government shutdown?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Yes, federal employees can typically file for unemployment benefits during a government shutdown, though they may need to pay it back if they receive retroactive pay."
+      }
+    },
+    {
+      "@type": "Question", 
+      "name": "Will I get paid retroactively after the shutdown ends?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Essential employees who work during the shutdown will receive retroactive pay. Furloughed employees typically receive back pay as well, though this requires Congressional authorization."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Should I contact my creditors during a shutdown?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Yes, contact creditors early to explain your situation. Many offer forbearance programs or payment deferrals for federal employees during shutdowns."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Can I take a temporary job during a furlough?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Generally yes, furloughed federal employees can seek temporary employment, but check with your agency's ethics office for any restrictions."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "What expenses should I cut first during a shutdown?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Prioritize essential expenses like housing, utilities, food, and insurance. Cut discretionary spending like dining out, entertainment, and non-essential subscriptions first."
+      }
+    }
+  ]
+}
+</script>
+
+<style>
+  .input-field {
+    background: #1a1a1a;
+    border: 1px solid #333;
+    transition: all 0.3s ease;
+  }
+  .input-field:focus {
+    border-color: #3b82f6;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+  }
+  .chart-container {
+    position: relative;
+    height: 300px;
+    width: 100%;
+  }
+  .emergency-status {
+    animation: pulse 2s infinite;
+  }
+  @keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.7; }
+  }
+  .tip-item {
+    transition: all 0.3s ease;
+  }
+  .tip-item:hover {
+    background: #1a1a1a;
+    transform: translateY(-2px);
+  }
+</style>
+
+<!-- Page Header -->
+<div class="text-center mb-12">
+  <h1 class="text-4xl font-bold text-gray-100 mb-4">🇺🇸 Government Shutdown Pay Calculator</h1>
+  <p class="text-xl text-gray-400 max-w-3xl mx-auto">Calculate your financial runway during the federal government shutdown. Know exactly how long you can survive and when to take action.</p>
+  <div class="mt-4 inline-flex items-center bg-red-900/30 border border-red-500 rounded-lg px-4 py-2">
+    <span class="text-red-400 font-semibold">⚠️ DHS Shutdown Active - March 2026</span>
+  </div>
+  <div class="mt-3">
+    <a href="/news/dhs-shutdown-day-41-trump-orders-tsa-pay" class="text-sm text-blue-400 hover:underline">📰 Read: DHS Shutdown Day 41 — Trump Orders TSA Pay as 500 Officers Quit →</a>
+    <span class="text-gray-600 mx-2">|</span>
+    <a href="/emergency-fund-calculator" class="text-sm text-blue-400 hover:underline">🛡️ Build your emergency fund →</a>
+  </div>
+</div>
+
+<!-- Calculator Section -->
+<div class="grid lg:grid-cols-2 gap-8 mb-12">
+  <!-- Input Form -->
+  <div class="bg-[#111] border border-[#222] rounded-xl p-6">
+    <h2 class="text-2xl font-bold text-gray-200 mb-6">📊 Your Financial Situation</h2>
+    
+    <div class="space-y-6">
+      <div>
+        <label class="block text-gray-300 text-sm font-medium mb-2">Monthly Take-Home Pay</label>
+        <div class="relative">
+          <span class="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400">$</span>
+          <input type="number" id="monthlyPay" value="4500" class="input-field w-full pl-8 pr-4 py-3 rounded-lg text-gray-200 focus:outline-none">
+        </div>
+      </div>
+
+      <div>
+        <label class="block text-gray-300 text-sm font-medium mb-2">Monthly Essential Expenses</label>
+        <div class="relative">
+          <span class="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400">$</span>
+          <input type="number" id="monthlyExpenses" value="3200" class="input-field w-full pl-8 pr-4 py-3 rounded-lg text-gray-200 focus:outline-none">
+        </div>
+        <p class="text-sm text-gray-500 mt-1">Rent, utilities, food, insurance, minimum debt payments</p>
+      </div>
+
+      <div>
+        <label class="block text-gray-300 text-sm font-medium mb-2">Current Savings/Emergency Fund</label>
+        <div class="relative">
+          <span class="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400">$</span>
+          <input type="number" id="currentSavings" value="5000" class="input-field w-full pl-8 pr-4 py-3 rounded-lg text-gray-200 focus:outline-none">
+        </div>
+      </div>
+
+      <div>
+        <label class="block text-gray-300 text-sm font-medium mb-2">Outstanding Credit Card Debt</label>
+        <div class="relative">
+          <span class="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400">$</span>
+          <input type="number" id="creditDebt" value="2000" class="input-field w-full pl-8 pr-4 py-3 rounded-lg text-gray-200 focus:outline-none">
+        </div>
+      </div>
+
+      <div>
+        <label class="block text-gray-300 text-sm font-medium mb-2">Number of Dependents</label>
+        <input type="number" id="dependents" value="0" min="0" class="input-field w-full px-4 py-3 rounded-lg text-gray-200 focus:outline-none">
+      </div>
+    </div>
+  </div>
+
+  <!-- Results -->
+  <div class="space-y-6">
+    <!-- Emergency Status -->
+    <div id="emergencyStatus" class="bg-[#111] border border-[#222] rounded-xl p-6">
+      <h3 class="text-xl font-bold text-gray-200 mb-4">🚨 Emergency Status</h3>
+      <div class="text-center">
+        <div id="runwayDays" class="text-4xl font-bold text-blue-400 mb-2">47</div>
+        <div class="text-gray-400">Days Until Savings Depleted</div>
+        <div id="breakGlassDate" class="text-lg text-yellow-400 mt-3 font-semibold">Break Glass Date: May 14, 2026</div>
+      </div>
+    </div>
+
+    <!-- Financial Metrics -->
+    <div class="bg-[#111] border border-[#222] rounded-xl p-6">
+      <h3 class="text-xl font-bold text-gray-200 mb-4">💰 Financial Metrics</h3>
+      <div class="grid grid-cols-2 gap-4">
+        <div class="text-center">
+          <div id="weeklyBurn" class="text-2xl font-bold text-red-400">$738</div>
+          <div class="text-sm text-gray-500">Weekly Burn Rate</div>
+        </div>
+        <div class="text-center">
+          <div id="monthlyDeficit" class="text-2xl font-bold text-red-400">-$3,200</div>
+          <div class="text-sm text-gray-500">Monthly Deficit</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Emergency Budget -->
+    <div class="bg-[#111] border border-[#222] rounded-xl p-6">
+      <h3 class="text-xl font-bold text-gray-200 mb-4">🎯 Suggested Emergency Budget</h3>
+      <div class="space-y-3">
+        <div class="flex justify-between">
+          <span class="text-gray-400">Reduced Monthly Spending:</span>
+          <span id="emergencyBudget" class="text-green-400 font-semibold">$2,400</span>
+        </div>
+        <div class="flex justify-between">
+          <span class="text-gray-400">Extended Runway:</span>
+          <span id="extendedRunway" class="text-blue-400 font-semibold">62 days</span>
+        </div>
+        <div class="text-sm text-gray-500 mt-2">25% reduction in discretionary spending</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Charts Section -->
+<div class="grid lg:grid-cols-2 gap-8 mb-12">
+  <!-- Savings Depletion Chart -->
+  <div class="bg-[#111] border border-[#222] rounded-xl p-6">
+    <h3 class="text-xl font-bold text-gray-200 mb-4">📉 Savings Timeline</h3>
+    <div class="chart-container">
+      <canvas id="savingsChart"></canvas>
+    </div>
+  </div>
+
+  <!-- Budget Breakdown Chart -->
+  <div class="bg-[#111] border border-[#222] rounded-xl p-6">
+    <h3 class="text-xl font-bold text-gray-200 mb-4">🥧 Emergency Budget Breakdown</h3>
+    <div class="chart-container">
+      <canvas id="budgetChart"></canvas>
+    </div>
+  </div>
+</div>
+
+<!-- Tips Section -->
+<div class="bg-[#111] border border-[#222] rounded-xl p-6 mb-12">
+  <h2 class="text-2xl font-bold text-gray-200 mb-6">💡 Survival Tips for Federal Employees</h2>
+  <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
+    <div class="tip-item bg-[#0a0a0a] border border-[#333] rounded-lg p-4">
+      <div class="text-blue-400 text-2xl mb-2">📋</div>
+      <h4 class="text-gray-200 font-semibold mb-2">File for Unemployment</h4>
+      <p class="text-gray-500 text-sm">Apply immediately - you may qualify even if you expect back pay.</p>
+    </div>
+    
+    <div class="tip-item bg-[#0a0a0a] border border-[#333] rounded-lg p-4">
+      <div class="text-blue-400 text-2xl mb-2">📞</div>
+      <h4 class="text-gray-200 font-semibold mb-2">Contact Creditors</h4>
+      <p class="text-gray-500 text-sm">Call mortgage, credit card, and loan companies about forbearance programs.</p>
+    </div>
+    
+    <div class="tip-item bg-[#0a0a0a] border border-[#333] rounded-lg p-4">
+      <div class="text-blue-400 text-2xl mb-2">🛒</div>
+      <h4 class="text-gray-200 font-semibold mb-2">Cut Discretionary Spending</h4>
+      <p class="text-gray-500 text-sm">Cancel subscriptions, cook at home, postpone non-essential purchases.</p>
+    </div>
+    
+    <div class="tip-item bg-[#0a0a0a] border border-[#333] rounded-lg p-4">
+      <div class="text-blue-400 text-2xl mb-2">💼</div>
+      <h4 class="text-gray-200 font-semibold mb-2">Consider Temp Work</h4>
+      <p class="text-gray-500 text-sm">Furloughed employees can usually take temporary employment.</p>
+    </div>
+    
+    <div class="tip-item bg-[#0a0a0a] border border-[#333] rounded-lg p-4">
+      <div class="text-blue-400 text-2xl mb-2">🏦</div>
+      <h4 class="text-gray-200 font-semibold mb-2">Emergency Assistance</h4>
+      <p class="text-gray-500 text-sm">Look into federal employee emergency funds and local assistance programs.</p>
+    </div>
+    
+    <div class="tip-item bg-[#0a0a0a] border border-[#333] rounded-lg p-4">
+      <div class="text-blue-400 text-2xl mb-2">📊</div>
+      <h4 class="text-gray-200 font-semibold mb-2">Track Everything</h4>
+      <p class="text-gray-500 text-sm">Document all shutdown-related expenses for potential tax deductions.</p>
+    </div>
+  </div>
+</div>
+
+<!-- FAQ Section -->
+<div class="bg-[#111] border border-[#222] rounded-xl p-6">
+  <h2 class="text-2xl font-bold text-gray-200 mb-6">❓ Frequently Asked Questions</h2>
+  <div class="space-y-6">
+    <div class="border-b border-[#333] pb-4">
+      <h4 class="text-lg font-semibold text-gray-200 mb-2">Can federal employees collect unemployment during a government shutdown?</h4>
+      <p class="text-gray-400">Yes, federal employees can typically file for unemployment benefits during a government shutdown, though they may need to pay it back if they receive retroactive pay.</p>
+    </div>
+    
+    <div class="border-b border-[#333] pb-4">
+      <h4 class="text-lg font-semibold text-gray-200 mb-2">Will I get paid retroactively after the shutdown ends?</h4>
+      <p class="text-gray-400">Essential employees who work during the shutdown will receive retroactive pay. Furloughed employees typically receive back pay as well, though this requires Congressional authorization.</p>
+    </div>
+    
+    <div class="border-b border-[#333] pb-4">
+      <h4 class="text-lg font-semibold text-gray-200 mb-2">Should I contact my creditors during a shutdown?</h4>
+      <p class="text-gray-400">Yes, contact creditors early to explain your situation. Many offer forbearance programs or payment deferrals for federal employees during shutdowns.</p>
+    </div>
+    
+    <div class="border-b border-[#333] pb-4">
+      <h4 class="text-lg font-semibold text-gray-200 mb-2">Can I take a temporary job during a furlough?</h4>
+      <p class="text-gray-400">Generally yes, furloughed federal employees can seek temporary employment, but check with your agency's ethics office for any restrictions.</p>
+    </div>
+    
+    <div>
+      <h4 class="text-lg font-semibold text-gray-200 mb-2">What expenses should I cut first during a shutdown?</h4>
+      <p class="text-gray-400">Prioritize essential expenses like housing, utilities, food, and insurance. Cut discretionary spending like dining out, entertainment, and non-essential subscriptions first.</p>
+    </div>
+  </div>
+</div>
+
+<script>
+function waitForChart(cb) {
+  if (typeof Chart !== 'undefined') return cb();
+  setTimeout(() => waitForChart(cb), 50);
+}
+
+waitForChart(function() {
+  let savingsChart, budgetChart;
+  
+  // Initialize charts
+  function initCharts() {
+    const chartOptions = {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: {
+          labels: {
+            color: '#9ca3af'
+          }
+        }
+      },
+      scales: {
+        y: {
+          ticks: { color: '#9ca3af' },
+          grid: { color: '#374151' }
+        },
+        x: {
+          ticks: { color: '#9ca3af' },
+          grid: { color: '#374151' }
+        }
+      }
+    };
+
+    // Savings depletion chart
+    const savingsCtx = document.getElementById('savingsChart').getContext('2d');
+    savingsChart = new Chart(savingsCtx, {
+      type: 'line',
+      data: {
+        labels: [],
+        datasets: [{
+          label: 'Savings Balance',
+          data: [],
+          borderColor: '#3b82f6',
+          backgroundColor: 'rgba(59, 130, 246, 0.1)',
+          fill: true,
+          tension: 0.4
+        }, {
+          label: 'With Emergency Budget',
+          data: [],
+          borderColor: '#10b981',
+          backgroundColor: 'rgba(16, 185, 129, 0.1)',
+          fill: false,
+          borderDash: [5, 5]
+        }]
+      },
+      options: chartOptions
+    });
+
+    // Budget breakdown chart
+    const budgetCtx = document.getElementById('budgetChart').getContext('2d');
+    budgetChart = new Chart(budgetCtx, {
+      type: 'doughnut',
+      data: {
+        labels: ['Housing', 'Food', 'Utilities', 'Insurance', 'Transportation', 'Other'],
+        datasets: [{
+          data: [1200, 600, 300, 400, 200, 100],
+          backgroundColor: [
+            '#3b82f6',
+            '#10b981',
+            '#f59e0b',
+            '#ef4444',
+            '#8b5cf6',
+            '#06b6d4'
+          ]
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: {
+            position: 'bottom',
+            labels: {
+              color: '#9ca3af',
+              padding: 15
+            }
+          }
+        }
+      }
+    });
+  }
+
+  // Calculate and update everything
+  function updateCalculations() {
+    const monthlyPay = parseFloat(document.getElementById('monthlyPay').value) || 0;
+    const monthlyExpenses = parseFloat(document.getElementById('monthlyExpenses').value) || 0;
+    const currentSavings = parseFloat(document.getElementById('currentSavings').value) || 0;
+    const creditDebt = parseFloat(document.getElementById('creditDebt').value) || 0;
+    const dependents = parseInt(document.getElementById('dependents').value) || 0;
+
+    // Calculate metrics
+    const monthlyDeficit = monthlyExpenses; // No income during shutdown
+    const weeklyBurn = monthlyDeficit / 4.33;
+    const runwayDays = currentSavings > 0 ? Math.floor((currentSavings / monthlyDeficit) * 30) : 0;
+    
+    // Emergency budget (25% reduction in discretionary spending)
+    const emergencyBudget = monthlyExpenses * 0.75;
+    const extendedRunwayDays = currentSavings > 0 ? Math.floor((currentSavings / emergencyBudget) * 30) : 0;
+    
+    // Break glass date
+    const today = new Date();
+    const breakGlassDate = new Date(today.getTime() + (runwayDays * 0.8) * 24 * 60 * 60 * 1000);
+    
+    // Update DOM
+    document.getElementById('runwayDays').textContent = runwayDays;
+    document.getElementById('weeklyBurn').textContent = '$' + Math.round(weeklyBurn).toLocaleString();
+    document.getElementById('monthlyDeficit').textContent = '-$' + monthlyDeficit.toLocaleString();
+    document.getElementById('emergencyBudget').textContent = '$' + Math.round(emergencyBudget).toLocaleString();
+    document.getElementById('extendedRunway').textContent = extendedRunwayDays + ' days';
+    document.getElementById('breakGlassDate').textContent = 'Break Glass Date: ' + breakGlassDate.toLocaleDateString();
+
+    // Update emergency status styling
+    const statusElement = document.getElementById('emergencyStatus');
+    if (runwayDays < 30) {
+      statusElement.className = statusElement.className.replace(/border-\[[^\]]+\]/, 'border-red-500');
+      statusElement.classList.add('emergency-status');
+    } else if (runwayDays < 60) {
+      statusElement.className = statusElement.className.replace(/border-\[[^\]]+\]/, 'border-yellow-500');
+      statusElement.classList.remove('emergency-status');
+    } else {
+      statusElement.className = statusElement.className.replace(/border-\[[^\]]+\]/, 'border-green-500');
+      statusElement.classList.remove('emergency-status');
+    }
+
+    // Update savings timeline chart
+    if (savingsChart) {
+      const labels = [];
+      const normalData = [];
+      const emergencyData = [];
+      
+      for (let week = 0; week <= Math.max(runwayDays, extendedRunwayDays) / 7 + 2; week++) {
+        labels.push(`Week ${week}`);
+        
+        const normalBalance = Math.max(0, currentSavings - (week * weeklyBurn));
+        const emergencyBalance = Math.max(0, currentSavings - (week * (emergencyBudget / 4.33)));
+        
+        normalData.push(normalBalance);
+        emergencyData.push(emergencyBalance);
+      }
+      
+      savingsChart.data.labels = labels;
+      savingsChart.data.datasets[0].data = normalData;
+      savingsChart.data.datasets[1].data = emergencyData;
+      savingsChart.update();
+    }
+
+    // Update budget breakdown chart
+    if (budgetChart) {
+      // Estimate breakdown based on typical federal employee expenses
+      const housing = emergencyBudget * 0.4;
+      const food = emergencyBudget * 0.2;
+      const utilities = emergencyBudget * 0.1;
+      const insurance = emergencyBudget * 0.15;
+      const transportation = emergencyBudget * 0.1;
+      const other = emergencyBudget * 0.05;
+      
+      budgetChart.data.datasets[0].data = [housing, food, utilities, insurance, transportation, other];
+      budgetChart.update();
+    }
+  }
+
+  // Add event listeners
+  document.querySelectorAll('input').forEach(input => {
+    input.addEventListener('input', updateCalculations);
+  });
+
+  // Initialize
+  initCharts();
+  updateCalculations();
+});
+</script>

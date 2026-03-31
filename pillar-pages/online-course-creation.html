@@ -1,0 +1,1175 @@
+<style>
+  .occ-container {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 2rem;
+    color: #e2e8f0;
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    line-height: 1.8;
+  }
+  .occ-header {
+    text-align: center;
+    margin-bottom: 4rem;
+    padding-top: 3rem;
+  }
+  .gradient-h1 {
+    font-size: clamp(2.2rem, 5vw, 3.5rem);
+    font-weight: 800;
+    background: linear-gradient(135deg, #ffffff 0%, #a5b4fc 50%, #818cf8 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    margin-bottom: 1rem;
+    line-height: 1.15;
+    letter-spacing: -0.02em;
+  }
+  .occ-subtitle {
+    font-size: 1.2rem;
+    color: #94a3b8;
+    max-width: 750px;
+    margin: 0 auto;
+  }
+  .breadcrumb {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    justify-content: center;
+    margin-bottom: 2rem;
+    font-size: 0.85rem;
+  }
+  .breadcrumb a {
+    color: #818cf8;
+    text-decoration: none;
+  }
+  .breadcrumb a:hover { text-decoration: underline; }
+  .breadcrumb span { color: #475569; }
+  .updated-badge {
+    display: inline-block;
+    background: rgba(129, 140, 248, 0.15);
+    color: #a5b4fc;
+    padding: 0.4rem 1rem;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    margin-bottom: 2rem;
+  }
+  .content-wrapper {
+    display: grid;
+    grid-template-columns: 1fr 280px;
+    gap: 4rem;
+    margin-top: 3rem;
+  }
+  .main-content {
+    min-width: 0;
+  }
+  .sidebar {
+    position: sticky;
+    top: 2rem;
+    height: fit-content;
+    background: #12121a;
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 16px;
+    padding: 1.5rem;
+  }
+  .sidebar h3 {
+    color: #ffffff;
+    font-size: 0.9rem;
+    font-weight: 600;
+    margin: 0 0 1rem 0;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+  .sidebar ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+  .sidebar li {
+    margin: 0;
+  }
+  .sidebar a {
+    display: block;
+    color: #94a3b8;
+    text-decoration: none;
+    padding: 0.5rem 0;
+    border-bottom: 1px solid rgba(255,255,255,0.05);
+    font-size: 0.85rem;
+    transition: color 0.2s;
+  }
+  .sidebar a:hover {
+    color: #a5b4fc;
+  }
+  .section {
+    margin: 4rem 0;
+    scroll-margin-top: 2rem;
+  }
+  .section h2 {
+    color: #ffffff;
+    font-size: 1.8rem;
+    font-weight: 700;
+    margin-bottom: 1.5rem;
+  }
+  .section h3 {
+    color: #e2e8f0;
+    font-size: 1.3rem;
+    font-weight: 600;
+    margin: 2rem 0 1rem 0;
+  }
+  .stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1.5rem;
+    margin: 2rem 0;
+  }
+  .stat-card {
+    background: #12121a;
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 14px;
+    padding: 1.5rem;
+    text-align: center;
+  }
+  .stat-number {
+    font-size: 2.5rem;
+    font-weight: 800;
+    color: #818cf8;
+    display: block;
+    line-height: 1;
+  }
+  .stat-label {
+    color: #94a3b8;
+    font-size: 0.9rem;
+    margin-top: 0.5rem;
+  }
+  .process-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 2rem;
+    margin: 2rem 0;
+  }
+  .process-card {
+    background: #12121a;
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 16px;
+    padding: 2rem;
+    position: relative;
+    overflow: hidden;
+  }
+  .process-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, #818cf8, #a5b4fc);
+  }
+  .process-card h4 {
+    color: #ffffff;
+    font-size: 1.2rem;
+    font-weight: 600;
+    margin-bottom: 1rem;
+  }
+  .phase-badge {
+    background: rgba(129, 140, 248, 0.15);
+    color: #a5b4fc;
+    padding: 0.3rem 0.8rem;
+    border-radius: 8px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    display: inline-block;
+    margin-bottom: 1rem;
+  }
+  .callout {
+    background: rgba(34, 211, 238, 0.1);
+    border-left: 4px solid #22d3ee;
+    border-radius: 0 8px 8px 0;
+    padding: 1.5rem;
+    margin: 2rem 0;
+  }
+  .callout.warning {
+    background: rgba(251, 191, 36, 0.1);
+    border-left-color: #fbbf24;
+  }
+  .callout.success {
+    background: rgba(74, 222, 128, 0.1);
+    border-left-color: #4ade80;
+  }
+  .callout.danger {
+    background: rgba(239, 68, 68, 0.1);
+    border-left-color: #ef4444;
+  }
+  .callout h4 {
+    color: #ffffff;
+    font-size: 1rem;
+    font-weight: 600;
+    margin: 0 0 0.5rem 0;
+  }
+  .comparison-table {
+    width: 100%;
+    background: #12121a;
+    border-radius: 16px;
+    overflow: hidden;
+    border: 1px solid rgba(255,255,255,0.08);
+    margin: 2rem 0;
+  }
+  .comparison-table th {
+    background: #1e293b;
+    color: #ffffff;
+    padding: 1rem;
+    text-align: left;
+    font-weight: 600;
+  }
+  .comparison-table td {
+    padding: 1rem;
+    border-bottom: 1px solid rgba(255,255,255,0.05);
+    color: #e2e8f0;
+  }
+  .comparison-table tr:last-child td {
+    border-bottom: none;
+  }
+  .tier-high { color: #4ade80; }
+  .tier-medium { color: #fbbf24; }
+  .tier-low { color: #f87171; }
+  .revenue-calculator {
+    background: #12121a;
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 16px;
+    padding: 2rem;
+    margin: 3rem 0;
+  }
+  .revenue-calculator h3 {
+    color: #ffffff;
+    font-size: 1.3rem;
+    font-weight: 600;
+    margin-bottom: 1.5rem;
+    text-align: center;
+  }
+  .calc-inputs {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1rem;
+    margin-bottom: 2rem;
+  }
+  .calc-input {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+  .calc-input label {
+    color: #94a3b8;
+    font-size: 0.85rem;
+    font-weight: 500;
+  }
+  .calc-input input, .calc-input select {
+    background: #1e293b;
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 8px;
+    padding: 0.75rem;
+    color: #e2e8f0;
+    font-size: 0.9rem;
+  }
+  .calc-input input:focus, .calc-input select:focus {
+    outline: none;
+    border-color: #818cf8;
+  }
+  .calc-button {
+    background: #818cf8;
+    color: #ffffff;
+    border: none;
+    border-radius: 8px;
+    padding: 0.75rem 2rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s;
+    width: 100%;
+  }
+  .calc-button:hover {
+    background: #6366f1;
+  }
+  .calc-results {
+    background: rgba(129, 140, 248, 0.1);
+    border-radius: 12px;
+    padding: 1.5rem;
+    margin-top: 1.5rem;
+    display: none;
+  }
+  .calc-results h4 {
+    color: #a5b4fc;
+    font-size: 1.1rem;
+    margin-bottom: 1rem;
+  }
+  .result-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.5rem 0;
+    border-bottom: 1px solid rgba(255,255,255,0.05);
+  }
+  .result-row:last-child {
+    border-bottom: none;
+    font-weight: 600;
+    color: #ffffff;
+  }
+  .result-label {
+    color: #94a3b8;
+  }
+  .result-value {
+    color: #e2e8f0;
+    font-weight: 500;
+  }
+  .strategy-cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 1.5rem;
+    margin: 2rem 0;
+  }
+  .strategy-card {
+    background: #12121a;
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 14px;
+    padding: 1.5rem;
+  }
+  .strategy-card h4 {
+    color: #ffffff;
+    font-size: 1.1rem;
+    font-weight: 600;
+    margin-bottom: 1rem;
+  }
+  .pricing-tiers {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1.5rem;
+    margin: 2rem 0;
+  }
+  .pricing-tier {
+    background: #12121a;
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 16px;
+    padding: 2rem;
+    text-align: center;
+    position: relative;
+  }
+  .pricing-tier.featured {
+    border-color: #818cf8;
+    transform: scale(1.02);
+  }
+  .pricing-tier.featured::before {
+    content: 'Most Popular';
+    position: absolute;
+    top: -12px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: #818cf8;
+    color: white;
+    padding: 0.3rem 1rem;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: 600;
+  }
+  .tier-title {
+    color: #ffffff;
+    font-size: 1.2rem;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+  }
+  .tier-price {
+    font-size: 2.5rem;
+    font-weight: 800;
+    color: #818cf8;
+    margin-bottom: 1rem;
+  }
+  .tier-features {
+    list-style: none;
+    padding: 0;
+    margin: 1.5rem 0;
+  }
+  .tier-features li {
+    color: #94a3b8;
+    padding: 0.3rem 0;
+    font-size: 0.9rem;
+  }
+  .tier-features li.highlight {
+    color: #4ade80;
+    font-weight: 600;
+  }
+  .faq-section {
+    margin: 4rem 0;
+  }
+  .faq-item {
+    background: #12121a;
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 14px;
+    margin-bottom: 1rem;
+    overflow: hidden;
+  }
+  .faq-question {
+    padding: 1.5rem;
+    color: #ffffff;
+    font-weight: 600;
+    cursor: pointer;
+    border-bottom: 1px solid rgba(255,255,255,0.05);
+  }
+  .faq-answer {
+    padding: 1.5rem;
+    color: #94a3b8;
+  }
+  .cta-cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1.5rem;
+    margin: 3rem 0;
+  }
+  .cta-card {
+    background: linear-gradient(135deg, #1e293b, #334155);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 16px;
+    padding: 2rem;
+    text-align: center;
+  }
+  .cta-card h4 {
+    color: #ffffff;
+    font-size: 1.1rem;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+  }
+  .cta-card p {
+    color: #94a3b8;
+    font-size: 0.9rem;
+    margin-bottom: 1.5rem;
+  }
+  .cta-button {
+    display: inline-block;
+    background: #818cf8;
+    color: #ffffff;
+    padding: 0.7rem 1.5rem;
+    border-radius: 8px;
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 0.9rem;
+    transition: background 0.2s;
+  }
+  .cta-button:hover {
+    background: #6366f1;
+  }
+  
+  @media (max-width: 1024px) {
+    .content-wrapper {
+      grid-template-columns: 1fr;
+      gap: 2rem;
+    }
+    .sidebar {
+      position: relative;
+      top: 0;
+      order: -1;
+    }
+  }
+  
+  @media (max-width: 768px) {
+    .occ-container {
+      padding: 1rem;
+    }
+    .breadcrumb {
+      flex-wrap: wrap;
+    }
+    .stats-grid {
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    }
+    .process-grid {
+      grid-template-columns: 1fr;
+    }
+    .strategy-cards {
+      grid-template-columns: 1fr;
+    }
+    .pricing-tiers {
+      grid-template-columns: 1fr;
+    }
+    .cta-cards {
+      grid-template-columns: 1fr;
+    }
+    .calc-inputs {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>
+
+<div class="occ-container">
+  <div class="occ-header">
+    <div class="breadcrumb">
+      <a href="/apex-guides">Apex Guides</a>
+      <span>›</span>
+      <a href="/education-knowledge-commerce-guide-2026">Education, Knowledge Commerce & Micro-SaaS</a>
+      <span>›</span>
+      <span style="color: #cbd5e1;">Current</span>
+    </div>
+    
+    <div class="updated-badge">
+      🎓 Updated March 2026
+    </div>
+    
+    <h1 class="gradient-h1">Online Course Creation</h1>
+    <p class="occ-subtitle">Build and launch profitable online courses that scale your knowledge into passive income. From course planning to marketing strategies that generate $10K+ monthly revenue.</p>
+  </div>
+
+  <div class="content-wrapper">
+    <main class="main-content">
+      <div class="stats-grid">
+        <div class="stat-card">
+          <span class="stat-number">$350B</span>
+          <div class="stat-label">Global online learning market (2026)</div>
+        </div>
+        <div class="stat-card">
+          <span class="stat-number">83%</span>
+          <div class="stat-label">Course completion rate with engagement</div>
+        </div>
+        <div class="stat-card">
+          <span class="stat-number">$197</span>
+          <div class="stat-label">Average online course price</div>
+        </div>
+        <div class="stat-card">
+          <span class="stat-number">90%</span>
+          <div class="stat-label">Profit margin on digital courses</div>
+        </div>
+      </div>
+
+      <section id="course-creation-fundamentals" class="section">
+        <h2>Course Creation Fundamentals</h2>
+        <p>Online courses represent one of the highest-leverage ways to monetize expertise. The $350 billion online learning market rewards creators who can transform knowledge into structured, outcome-focused educational experiences. Successful courses solve specific problems and deliver measurable transformations for students.</p>
+
+        <div class="callout">
+          <h4>💡 The Course Success Formula</h4>
+          <p>Profitable courses follow a proven formula: Specific Audience + Clear Transformation + Structured Delivery + Community Support = Sustainable Revenue. Focus on solving one specific problem exceptionally well rather than covering broad topics superficially.</p>
+        </div>
+
+        <h3>Course Creation Journey</h3>
+        <div class="process-grid">
+          <div class="process-card">
+            <div class="phase-badge">Phase 1</div>
+            <h4>🎯 Market Research & Validation</h4>
+            <p>Survey your audience, analyze competitor courses, validate demand through pre-sales or waiting lists. Identify specific pain points and desired outcomes.</p>
+            <p><strong>Duration:</strong> 2-4 weeks</p>
+            <p><strong>Key Deliverable:</strong> Validated course outline with market demand proof</p>
+            <p><strong>Success Metric:</strong> 50+ people express purchase intent</p>
+          </div>
+
+          <div class="process-card">
+            <div class="phase-badge">Phase 2</div>
+            <h4>📋 Course Curriculum Design</h4>
+            <p>Create detailed lesson plans, learning objectives, and assessment strategies. Design the student journey from beginner to desired outcome.</p>
+            <p><strong>Duration:</strong> 3-6 weeks</p>
+            <p><strong>Key Deliverable:</strong> Complete course outline with lesson scripts</p>
+            <p><strong>Success Metric:</strong> Clear path from problem to solution</p>
+          </div>
+
+          <div class="process-card">
+            <div class="phase-badge">Phase 3</div>
+            <h4>🎬 Content Production</h4>
+            <p>Record video lessons, create supplementary materials, design workbooks and templates. Focus on professional quality and clear instruction.</p>
+            <p><strong>Duration:</strong> 6-12 weeks</p>
+            <p><strong>Key Deliverable:</strong> All course content and materials</p>
+            <p><strong>Success Metric:</strong> Engaging, actionable video content</p>
+          </div>
+
+          <div class="process-card">
+            <div class="phase-badge">Phase 4</div>
+            <h4>🏗️ Platform Setup & Beta Testing</h4>
+            <p>Upload content to course platform, create sales pages, test user experience with beta students. Gather feedback and iterate.</p>
+            <p><strong>Duration:</strong> 2-3 weeks</p>
+            <p><strong>Key Deliverable:</strong> Live course platform with tested experience</p>
+            <p><strong>Success Metric:</strong> Smooth user experience and positive beta feedback</p>
+          </div>
+
+          <div class="process-card">
+            <div class="phase-badge">Phase 5</div>
+            <h4>🚀 Marketing & Launch</h4>
+            <p>Execute launch campaign with email sequences, social media promotion, and affiliate partnerships. Drive initial sales momentum.</p>
+            <p><strong>Duration:</strong> 2-4 weeks</p>
+            <p><strong>Key Deliverable:</strong> Successful course launch with initial students</p>
+            <p><strong>Success Metric:</strong> Target number of enrollments achieved</p>
+          </div>
+
+          <div class="process-card">
+            <div class="phase-badge">Phase 6</div>
+            <h4>📈 Optimization & Scaling</h4>
+            <p>Analyze student feedback, improve course content, optimize marketing funnels, create advanced courses or coaching programs.</p>
+            <p><strong>Duration:</strong> Ongoing</p>
+            <p><strong>Key Deliverable:</strong> Optimized course and scaling systems</p>
+            <p><strong>Success Metric:</strong> Increasing revenue and student success rates</p>
+          </div>
+        </div>
+
+        <div class="callout success">
+          <h4>✅ Course Creation Timeline</h4>
+          <p><strong>Months 1-2:</strong> Research, validation, and curriculum design<br>
+          <strong>Months 3-4:</strong> Content creation and production<br>
+          <strong>Month 5:</strong> Platform setup and beta testing<br>
+          <strong>Month 6:</strong> Launch campaign and initial sales<br>
+          <strong>Months 7+:</strong> Optimization, scaling, and advanced offerings</p>
+        </div>
+      </section>
+
+      <section id="course-topics" class="section">
+        <h2>High-Demand Course Topics</h2>
+
+        <div class="comparison-table">
+          <table>
+            <thead>
+              <tr>
+                <th>Topic Category</th>
+                <th>Market Demand</th>
+                <th>Price Range</th>
+                <th>Competition Level</th>
+                <th>Success Factors</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>Business & Marketing</strong></td>
+                <td class="tier-high">Very High</td>
+                <td>$197-$2997</td>
+                <td class="tier-high">High</td>
+                <td>Proven results, case studies</td>
+              </tr>
+              <tr>
+                <td><strong>Technology & Programming</strong></td>
+                <td class="tier-high">Very High</td>
+                <td>$97-$997</td>
+                <td class="tier-medium">Medium</td>
+                <td>Hands-on projects, current skills</td>
+              </tr>
+              <tr>
+                <td><strong>Health & Fitness</strong></td>
+                <td class="tier-high">High</td>
+                <td>$67-$497</td>
+                <td class="tier-high">Very High</td>
+                <td>Transformations, credibility</td>
+              </tr>
+              <tr>
+                <td><strong>Personal Development</strong></td>
+                <td class="tier-medium">Medium-High</td>
+                <td>$97-$797</td>
+                <td class="tier-high">High</td>
+                <td>Authentic story, systems</td>
+              </tr>
+              <tr>
+                <td><strong>Creative Skills</strong></td>
+                <td class="tier-medium">Medium</td>
+                <td>$47-$297</td>
+                <td class="tier-medium">Medium</td>
+                <td>Portfolio quality, style</td>
+              </tr>
+              <tr>
+                <td><strong>Financial Education</strong></td>
+                <td class="tier-high">High</td>
+                <td>$197-$1497</td>
+                <td class="tier-high">High</td>
+                <td>Track record, transparency</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <h3>Trending Course Niches (2026)</h3>
+        <div class="strategy-cards">
+          <div class="strategy-card">
+            <h4>🤖 AI & Automation</h4>
+            <p><strong>Demand:</strong> Exploding market as businesses seek AI implementation</p>
+            <p><strong>Price Range:</strong> $297-$2997</p>
+            <p><strong>Examples:</strong> ChatGPT for business, AI workflow automation, prompt engineering</p>
+            <p><strong>Success Tips:</strong> Focus on practical applications, real business use cases</p>
+          </div>
+
+          <div class="strategy-card">
+            <h4>💰 Creator Economy</h4>
+            <p><strong>Demand:</strong> 50M+ content creators seeking monetization</p>
+            <p><strong>Price Range:</strong> $197-$997</p>
+            <p><strong>Examples:</strong> TikTok marketing, YouTube optimization, brand partnerships</p>
+            <p><strong>Success Tips:</strong> Show your own creator success, provide templates</p>
+          </div>
+
+          <div class="strategy-card">
+            <h4>🏠 Remote Work Skills</h4>
+            <p><strong>Demand:</strong> 40% of workforce now remote</p>
+            <p><strong>Price Range:</strong> $97-$497</p>
+            <p><strong>Examples:</strong> Virtual leadership, remote team management, digital nomad business</p>
+            <p><strong>Success Tips:</strong> Address isolation, productivity, and communication challenges</p>
+          </div>
+
+          <div class="strategy-card">
+            <h4>🌱 Sustainability & ESG</h4>
+            <p><strong>Demand:</strong> Growing corporate and personal interest</p>
+            <p><strong>Price Range:</strong> $197-$1497</p>
+            <p><strong>Examples:</strong> Sustainable business practices, carbon accounting, ESG reporting</p>
+            <p><strong>Success Tips:</strong> Combine environmental knowledge with business outcomes</p>
+          </div>
+
+          <div class="strategy-card">
+            <h4>🧠 Mental Health & Wellness</h4>
+            <p><strong>Demand:</strong> Increased focus on employee and personal wellbeing</p>
+            <p><strong>Price Range:</strong> $67-$397</p>
+            <p><strong>Examples:</strong> Stress management, mindfulness for professionals, work-life balance</p>
+            <p><strong>Success Tips:</strong> Ensure proper credentials, focus on practical strategies</p>
+          </div>
+
+          <div class="strategy-card">
+            <h4>📊 Data Analysis & Visualization</h4>
+            <p><strong>Demand:</strong> Data-driven decision making in all industries</p>
+            <p><strong>Price Range:</strong> $197-$797</p>
+            <p><strong>Examples:</strong> Excel mastery, Tableau for beginners, SQL for business</p>
+            <p><strong>Success Tips:</strong> Use real business scenarios, provide datasets</p>
+          </div>
+        </div>
+      </section>
+
+      <section id="revenue-calculator" class="section">
+        <div class="revenue-calculator">
+          <h3>📊 Course Revenue Calculator</h3>
+          <p>Calculate your potential monthly recurring revenue from online course sales.</p>
+          
+          <div class="calc-inputs">
+            <div class="calc-input">
+              <label for="coursePrice">Course Price ($)</label>
+              <input type="number" id="coursePrice" placeholder="297">
+            </div>
+            
+            <div class="calc-input">
+              <label for="monthlyStudents">Monthly New Students</label>
+              <input type="number" id="monthlyStudents" placeholder="50">
+            </div>
+            
+            <div class="calc-input">
+              <label for="conversionRate">Landing Page Conversion (%)</label>
+              <input type="number" id="conversionRate" placeholder="3" step="0.1">
+            </div>
+            
+            <div class="calc-input">
+              <label for="monthlyTraffic">Monthly Website Traffic</label>
+              <input type="number" id="monthlyTraffic" placeholder="5000">
+            </div>
+            
+            <div class="calc-input">
+              <label for="platformFees">Platform Fees (%)</label>
+              <input type="number" id="platformFees" placeholder="5" step="0.1">
+            </div>
+            
+            <div class="calc-input">
+              <label for="affiliateCommission">Affiliate Commission (%)</label>
+              <input type="number" id="affiliateCommission" placeholder="30" step="0.1">
+            </div>
+          </div>
+          
+          <button class="calc-button" onclick="calculateCourseRevenue()">Calculate Revenue</button>
+          
+          <div class="calc-results" id="revenueResults">
+            <h4>Your Course Revenue Projections</h4>
+            <div class="result-row">
+              <span class="result-label">Gross Monthly Revenue:</span>
+              <span class="result-value" id="grossRevenue">—</span>
+            </div>
+            <div class="result-row">
+              <span class="result-label">Platform Fees:</span>
+              <span class="result-value" id="platformFeesAmount">—</span>
+            </div>
+            <div class="result-row">
+              <span class="result-label">Affiliate Commissions:</span>
+              <span class="result-value" id="affiliateFeesAmount">—</span>
+            </div>
+            <div class="result-row">
+              <span class="result-label">Net Monthly Revenue:</span>
+              <span class="result-value" id="netRevenue">—</span>
+            </div>
+            <div class="result-row">
+              <span class="result-label">Annual Projection:</span>
+              <span class="result-value" id="annualRevenue">—</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="platform-selection" class="section">
+        <h2>Course Platform Selection</h2>
+
+        <div class="callout">
+          <h4>🎯 Platform Selection Criteria</h4>
+          <p>Choose platforms based on your technical skills, marketing strategy, and revenue goals. Hosted platforms offer simplicity but take higher fees. Self-hosted solutions provide control but require more technical expertise.</p>
+        </div>
+
+        <div class="comparison-table">
+          <table>
+            <thead>
+              <tr>
+                <th>Platform</th>
+                <th>Transaction Fees</th>
+                <th>Monthly Cost</th>
+                <th>Best For</th>
+                <th>Key Features</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>Teachable</strong></td>
+                <td class="tier-medium">0-5%</td>
+                <td>$59-$665/month</td>
+                <td>Beginners to advanced</td>
+                <td>Easy setup, affiliate marketing, certificates</td>
+              </tr>
+              <tr>
+                <td><strong>Thinkific</strong></td>
+                <td class="tier-high">0%</td>
+                <td>$0-$999/month</td>
+                <td>Growing creators</td>
+                <td>White-label options, communities, assessments</td>
+              </tr>
+              <tr>
+                <td><strong>Kajabi</strong></td>
+                <td class="tier-high">0%</td>
+                <td>$149-$399/month</td>
+                <td>All-in-one business</td>
+                <td>Marketing automation, funnels, website builder</td>
+              </tr>
+              <tr>
+                <td><strong>Udemy</strong></td>
+                <td class="tier-low">3-50%</td>
+                <td>Free</td>
+                <td>Course discovery</td>
+                <td>Built-in marketplace, global reach, promotional tools</td>
+              </tr>
+              <tr>
+                <td><strong>Gumroad</strong></td>
+                <td class="tier-medium">3.5-8.5%</td>
+                <td>$0-$10/month</td>
+                <td>Digital products</td>
+                <td>Simple setup, international payments, analytics</td>
+              </tr>
+              <tr>
+                <td><strong>WordPress + LearnDash</strong></td>
+                <td class="tier-high">Payment processor fees</td>
+                <td>$159-$329/year</td>
+                <td>Full control</td>
+                <td>Complete customization, unlimited courses, SEO control</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <h3>Platform Recommendations by Business Stage</h3>
+        <div class="strategy-cards">
+          <div class="strategy-card">
+            <h4>🌱 Starting Out (0-1K Students)</h4>
+            <p><strong>Recommended:</strong> Thinkific (free plan) or Gumroad</p>
+            <p><strong>Rationale:</strong> Low cost, quick setup, focus on course creation over technical management</p>
+            <p><strong>Features Needed:</strong> Basic video hosting, payment processing, student management</p>
+            <p><strong>Avoid:</strong> Complex platforms with high monthly fees</p>
+          </div>
+
+          <div class="strategy-card">
+            <h4>📈 Growing (1K-10K Students)</h4>
+            <p><strong>Recommended:</strong> Teachable Pro or Thinkific Grow</p>
+            <p><strong>Rationale:</strong> Advanced features like affiliate programs, better customization, no transaction fees</p>
+            <p><strong>Features Needed:</strong> Affiliate management, advanced analytics, white-labeling</p>
+            <p><strong>Consider:</strong> Platform switching costs vs. feature benefits</p>
+          </div>
+
+          <div class="strategy-card">
+            <h4>🚀 Scaling (10K+ Students)</h4>
+            <p><strong>Recommended:</strong> Kajabi or WordPress + LearnDash</p>
+            <p><strong>Rationale:</strong> All-in-one business management or complete control over customer experience</p>
+            <p><strong>Features Needed:</strong> Marketing automation, advanced segmentation, custom integrations</p>
+            <p><strong>Focus:</strong> Total business ecosystem rather than just course delivery</p>
+          </div>
+        </div>
+      </section>
+
+      <section id="pricing-strategies" class="section">
+        <h2>Course Pricing Strategies</h2>
+
+        <div class="callout warning">
+          <h4>⚠️ Pricing Psychology</h4>
+          <p>Price anchoring significantly impacts perceived value. A $297 course appears affordable when positioned alongside a $997 coaching program. Most successful course creators underprice initially—value your expertise and charge accordingly.</p>
+        </div>
+
+        <h3>Pricing Models & Strategy</h3>
+        <div class="pricing-tiers">
+          <div class="pricing-tier">
+            <div class="tier-title">Introductory Course</div>
+            <div class="tier-price">$47-97</div>
+            <ul class="tier-features">
+              <li>2-4 hours of content</li>
+              <li>Basic worksheets</li>
+              <li>Email support</li>
+              <li class="highlight">Perfect for testing market demand</li>
+              <li>Low barrier to entry</li>
+              <li>Lead generation for premium offers</li>
+            </ul>
+          </div>
+
+          <div class="pricing-tier featured">
+            <div class="tier-title">Comprehensive Course</div>
+            <div class="tier-price">$197-497</div>
+            <ul class="tier-features">
+              <li>8-20 hours of content</li>
+              <li>Templates and tools included</li>
+              <li>Private community access</li>
+              <li class="highlight">Highest conversion rate</li>
+              <li>Complete transformation</li>
+              <li>Bonus materials and resources</li>
+            </ul>
+          </div>
+
+          <div class="pricing-tier">
+            <div class="tier-title">Premium Masterclass</div>
+            <div class="tier-price">$797-1997</div>
+            <ul class="tier-features">
+              <li>20+ hours of content</li>
+              <li>1-on-1 coaching calls</li>
+              <li>Done-for-you templates</li>
+              <li class="highlight">Maximum value delivery</li>
+              <li>Certification included</li>
+              <li>Lifetime access and updates</li>
+            </ul>
+          </div>
+        </div>
+
+        <h3>Dynamic Pricing Strategies</h3>
+        <div class="strategy-cards">
+          <div class="strategy-card">
+            <h4>⏰ Time-Based Pricing</h4>
+            <p><strong>Launch Pricing:</strong> 50% off first 48-72 hours</p>
+            <p><strong>Early Bird:</strong> 30% discount for pre-launch signups</p>
+            <p><strong>Flash Sales:</strong> Limited-time promotions during low-sales periods</p>
+            <p><strong>Benefits:</strong> Creates urgency, drives immediate action, rewards early adopters</p>
+          </div>
+
+          <div class="strategy-card">
+            <h4>🎯 Audience Segmentation</h4>
+            <p><strong>Student Discounts:</strong> 40-50% off with valid ID</p>
+            <p><strong>Geographic Pricing:</strong> Adjust for purchasing power parity</p>
+            <p><strong>Volume Discounts:</strong> Corporate packages for teams</p>
+            <p><strong>Benefits:</strong> Expands market reach, captures price-sensitive segments</p>
+          </div>
+
+          <div class="strategy-card">
+            <h4>📦 Bundle Strategies</h4>
+            <p><strong>Course + Coaching:</strong> Add 1-on-1 sessions for 3x price</p>
+            <p><strong>Multi-Course Packages:</strong> Beginner to advanced progression</p>
+            <p><strong>Resource Bundles:</strong> Course + templates + tools</p>
+            <p><strong>Benefits:</strong> Increases average order value, provides more value options</p>
+          </div>
+        </div>
+      </section>
+
+      <section id="marketing-launch" class="section">
+        <h2>Marketing & Launch Strategy</h2>
+
+        <div class="callout success">
+          <h4>✅ The 90-Day Launch Strategy</h4>
+          <p>Successful course launches require 90 days of systematic marketing. This isn't just promotion—it's relationship building, value delivery, and trust establishment that culminates in your course offer.</p>
+        </div>
+
+        <h3>Pre-Launch Phase (Days 1-60)</h3>
+        <div class="process-grid">
+          <div class="process-card">
+            <h4>📧 Email List Building</h4>
+            <p><strong>Goal:</strong> Build list of 1000+ engaged subscribers</p>
+            <p><strong>Lead Magnets:</strong> Free mini-course, templates, checklists related to your paid course topic</p>
+            <p><strong>Content Strategy:</strong> Weekly value-driven emails, behind-the-scenes content creation updates</p>
+            <p><strong>Platforms:</strong> ConvertKit, Mailchimp, or ActiveCampaign for automation</p>
+          </div>
+
+          <div class="process-card">
+            <h4>📱 Social Media Presence</h4>
+            <p><strong>Goal:</strong> Establish authority and build anticipation</p>
+            <p><strong>Content Types:</strong> Educational posts, student success stories, problem-solution content</p>
+            <p><strong>Engagement:</strong> Respond to comments, join relevant conversations, share valuable insights</p>
+            <p><strong>Hashtag Strategy:</strong> Mix of broad and niche-specific hashtags for discovery</p>
+          </div>
+
+          <div class="process-card">
+            <h4>🎯 Content Marketing</h4>
+            <p><strong>Goal:</strong> Demonstrate expertise and solve smaller problems</p>
+            <p><strong>Blog Posts:</strong> 4-8 articles covering course sub-topics</p>
+            <p><strong>Podcast Appearances:</strong> Guest on 3-5 relevant shows</p>
+            <p><strong>Video Content:</strong> YouTube or LinkedIn videos addressing common questions</p>
+          </div>
+        </div>
+
+        <h3>Launch Phase (Days 61-74)</h3>
+        <div class="process-grid">
+          <div class="process-card">
+            <h4>📅 Launch Sequence</h4>
+            <p><strong>Day 1:</strong> Course announcement with early bird pricing</p>
+            <p><strong>Day 3:</strong> Detailed curriculum overview and learning outcomes</p>
+            <p><strong>Day 5:</strong> Student testimonials and success stories</p>
+            <p><strong>Day 7:</strong> Behind-the-scenes course creation content</p>
+            <p><strong>Day 10:</strong> Address common objections and concerns</p>
+            <p><strong>Day 12:</strong> Limited-time bonuses announcement</p>
+            <p><strong>Day 14:</strong> Final day urgency and cart close</p>
+          </div>
+
+          <div class="process-card">
+            <h4>🤝 Partnership Marketing</h4>
+            <p><strong>Affiliate Recruitment:</strong> 30-50% commission for partners</p>
+            <p><strong>Cross-Promotions:</strong> Joint webinars with complementary experts</p>
+            <p><strong>Media Outreach:</strong> Pitch story angles to relevant publications</p>
+            <p><strong>Influencer Collaborations:</strong> Product demos and reviews</p>
+          </div>
+
+          <div class="process-card">
+            <h4>🎪 Live Events</h4>
+            <p><strong>Launch Webinar:</strong> Free training with soft pitch at the end</p>
+            <p><strong>Q&A Sessions:</strong> Address questions and build trust</p>
+            <p><strong>Social Media Live:</strong> Real-time engagement and course demos</p>
+            <p><strong>Workshop Series:</strong> Tactical sessions that showcase course value</p>
+          </div>
+        </div>
+
+        <h3>Post-Launch Optimization (Days 75+)</h3>
+        <div class="strategy-cards">
+          <div class="strategy-card">
+            <h4>📊 Performance Analysis</h4>
+            <p><strong>Conversion Metrics:</strong> Email open rates, click-through rates, sales conversion</p>
+            <p><strong>Student Feedback:</strong> Course ratings, completion rates, improvement suggestions</p>
+            <p><strong>Revenue Analysis:</strong> Cost per acquisition, lifetime value, profit margins</p>
+            <p><strong>Traffic Sources:</strong> Which marketing channels drove highest-value students</p>
+          </div>
+
+          <div class="strategy-card">
+            <h4>🔄 Evergreen Marketing</h4>
+            <p><strong>Automated Funnels:</strong> Email sequences that sell course year-round</p>
+            <p><strong>SEO Content:</strong> Blog posts that rank for course-related keywords</p>
+            <p><strong>Paid Advertising:</strong> Facebook, Google, or YouTube ads with optimized targeting</p>
+            <p><strong>Referral Programs:</strong> Incentivize existing students to refer others</p>
+          </div>
+
+          <div class="strategy-card">
+            <h4>🚀 Scaling Strategies</h4>
+            <p><strong>Course Sequels:</strong> Advanced or specialized follow-up courses</p>
+            <p><strong>Coaching Programs:</strong> High-ticket done-with-you services</p>
+            <p><strong>Certification Programs:</strong> Train others to teach your methodology</p>
+            <p><strong>Corporate Training:</strong> Adapt course content for business clients</p>
+          </div>
+        </div>
+      </section>
+
+      <section id="faq" class="faq-section">
+        <h2>Frequently Asked Questions</h2>
+
+        <div class="faq-item">
+          <div class="faq-question">How long should my online course be?</div>
+          <div class="faq-answer">Optimal course length depends on topic complexity and student outcomes. Most successful courses are 4-12 hours of video content, delivered in 20-45 minute lessons. Focus on transformation over duration—students prefer concise, actionable content that delivers results over lengthy theoretical discussions.</div>
+        </div>
+
+        <div class="faq-item">
+          <div class="faq-question">What equipment do I need to create professional course videos?</div>
+          <div class="faq-answer">Basic setup: decent laptop/computer, external microphone ($50-100), good lighting (ring light or natural window light), and stable internet. Advanced: DSLR camera ($500-1000), professional microphone ($200-400), lighting kit ($200-500). Audio quality matters more than video quality—invest in good microphone first.</div>
+        </div>
+
+        <div class="faq-item">
+          <div class="faq-question">How do I price my first online course?</div>
+          <div class="faq-answer">Start with $97-297 for comprehensive courses, depending on your audience's budget and the transformation you provide. Test pricing with small audiences first. You can always increase prices later as you gain testimonials and improve course quality. Consider the value of problem solved, not just time invested in creation.</div>
+        </div>
+
+        <div class="faq-item">
+          <div class="faq-question">Should I create the entire course before launching?</div>
+          <div class="faq-answer">No—validate demand first with pre-sales or a pilot program. Create 2-3 sample lessons, get feedback, then complete the course. This prevents spending months creating something people don't want. Many successful creators use "just-in-time" production, staying 1-2 lessons ahead of students.</div>
+        </div>
+
+        <div class="faq-item">
+          <div class="faq-question">How do I handle course refunds and unhappy students?</div>
+          <div class="faq-answer">Offer 30-60 day money-back guarantee to reduce purchase hesitation. Most refund requests come from misaligned expectations—be clear about course outcomes and requirements. Address concerns promptly, offer additional support before processing refunds. Typical refund rates are 5-15% for well-marketed courses.</div>
+        </div>
+
+        <div class="faq-item">
+          <div class="faq-question">Can I create a course without being an expert?</div>
+          <div class="faq-answer">You need knowledge ahead of your students, not world-class expertise. If you're 2-3 steps ahead and can get results, you can teach. Document your learning journey, interview experts, or partner with established authorities. Authenticity and relatability often matter more than credentials.</div>
+        </div>
+
+        <div class="faq-item">
+          <div class="faq-question">How do I increase course completion rates?</div>
+          <div class="faq-answer">Keep lessons focused (15-30 minutes), add accountability through assignments, create community interaction, send progress encouragement emails, and structure content with clear milestones. Gamification elements like progress bars, certificates, and celebration messages significantly improve completion rates.</div>
+        </div>
+
+        <div class="faq-item">
+          <div class="faq-question">What's the best way to market my course on a small budget?</div>
+          <div class="faq-answer">Focus on organic strategies: create valuable free content on social media, guest on podcasts, write guest blog posts, engage in online communities, and build an email list with lead magnets. Partner with other course creators for cross-promotion. Consistency and value-first approach work better than paid ads with limited budgets.</div>
+        </div>
+      </section>
+
+      <div class="cta-cards">
+        <div class="cta-card">
+          <h4>📧 Email Marketing</h4>
+          <p>Build automated email sequences to nurture prospects and increase course sales conversions.</p>
+          <a href="/email-marketing-automation" class="cta-button">Email Strategy</a>
+        </div>
+
+        <div class="cta-card">
+          <h4>🎬 Content Creation</h4>
+          <p>Master content creation and monetization strategies across multiple platforms and formats.</p>
+          <a href="/content-creation-monetization" class="cta-button">Content Guide</a>
+        </div>
+
+        <div class="cta-card">
+          <h4>💰 Affiliate Marketing</h4>
+          <p>Promote complementary courses and tools to generate additional revenue from your audience.</p>
+          <a href="/affiliate-marketing-strategies" class="cta-button">Affiliate Strategy</a>
+        </div>
+      </div>
+    </main>
+
+    <aside class="sidebar">
+      <h3>Contents</h3>
+      <ul>
+        <li><a href="#course-creation-fundamentals">Course Fundamentals</a></li>
+        <li><a href="#course-topics">High-Demand Topics</a></li>
+        <li><a href="#revenue-calculator">Revenue Calculator</a></li>
+        <li><a href="#platform-selection">Platform Selection</a></li>
+        <li><a href="#pricing-strategies">Pricing Strategies</a></li>
+        <li><a href="#marketing-launch">Marketing & Launch</a></li>
+        <li><a href="#faq">FAQ</a></li>
+      </ul>
+    </aside>
+  </div>
+</div>
+
+<script>
+function calculateCourseRevenue() {
+  const coursePrice = parseFloat(document.getElementById('coursePrice').value) || 0;
+  const monthlyStudents = parseInt(document.getElementById('monthlyStudents').value) || 0;
+  const conversionRate = parseFloat(document.getElementById('conversionRate').value) || 0;
+  const monthlyTraffic = parseInt(document.getElementById('monthlyTraffic').value) || 0;
+  const platformFees = parseFloat(document.getElementById('platformFees').value) || 0;
+  const affiliateCommission = parseFloat(document.getElementById('affiliateCommission').value) || 0;
+  
+  if (coursePrice === 0 || monthlyStudents === 0) {
+    alert('Please fill in course price and monthly students');
+    return;
+  }
+  
+  // Calculate revenue
+  const grossRevenue = coursePrice * monthlyStudents;
+  
+  // Calculate fees
+  const platformFeesAmount = grossRevenue * (platformFees / 100);
+  const affiliateFeesAmount = grossRevenue * (affiliateCommission / 100);
+  const totalFees = platformFeesAmount + affiliateFeesAmount;
+  
+  // Net revenue
+  const netRevenue = grossRevenue - totalFees;
+  const annualRevenue = netRevenue * 12;
+  
+  // Validate conversion rate against traffic if provided
+  if (monthlyTraffic > 0) {
+    const calculatedStudents = monthlyTraffic * (conversionRate / 100);
+    if (Math.abs(calculatedStudents - monthlyStudents) > monthlyStudents * 0.2) {
+      // Show warning if numbers don't align
+      console.log('Note: Your conversion rate and traffic suggest different student numbers');
+    }
+  }
+  
+  // Display results
+  document.getElementById('grossRevenue').textContent = `$${grossRevenue.toLocaleString()}`;
+  document.getElementById('platformFeesAmount').textContent = `-$${platformFeesAmount.toLocaleString()}`;
+  document.getElementById('affiliateFeesAmount').textContent = `-$${affiliateFeesAmount.toLocaleString()}`;
+  document.getElementById('netRevenue').textContent = `$${netRevenue.toLocaleString()}`;
+  document.getElementById('annualRevenue').textContent = `$${annualRevenue.toLocaleString()}`;
+  
+  document.getElementById('revenueResults').style.display = 'block';
+}
+</script>
