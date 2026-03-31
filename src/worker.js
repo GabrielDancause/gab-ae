@@ -79,6 +79,21 @@ export default {
     }
 
     // Seed test endpoint
+    if (path === '/api/recent-seeds') {
+      try {
+        const { results } = await env.DB.prepare(
+          `SELECT slug, title, keyword, keyword_volume, page_type, quality, target_site, created_at 
+           FROM pages WHERE quality IN ('template','premium') AND keyword IS NOT NULL 
+           ORDER BY created_at DESC LIMIT 20`
+        ).all();
+        return new Response(JSON.stringify({ pages: results }), {
+          headers: { 'content-type': 'application/json', 'cache-control': 'public, max-age=60' }
+        });
+      } catch(e) {
+        return new Response(JSON.stringify({ error: e.message }), { status: 500 });
+      }
+    }
+
     if (path === '/api/seed-test') {
       try {
         const result = await seedPages(env);
