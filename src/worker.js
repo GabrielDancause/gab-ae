@@ -2,6 +2,7 @@ import { layout, esc } from './templates/layout.js';
 import { renderCalculator } from './engines/calculator.js';
 import { renderNews } from './engines/news.js';
 import { renderChangelog } from './engines/changelog.js';
+import { newsAutopilot } from './news-autopilot.js';
 
 const ENGINES = {
   calculator: renderCalculator,
@@ -24,6 +25,14 @@ function timeAgo(dateStr) {
 }
 
 export default {
+  async scheduled(event, env, ctx) {
+    try {
+      await newsAutopilot(env);
+    } catch (e) {
+      console.log(`❌ News Autopilot cron error: ${e.message}`);
+    }
+  },
+
   async fetch(request, env) {
     const url = new URL(request.url);
     const path = url.pathname.replace(/\/$/, '') || '/';

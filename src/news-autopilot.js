@@ -1,0 +1,593 @@
+/**
+ * News Autopilot — Cloudflare Worker Cron Trigger
+ * Ported from scripts/news-autopilot.py
+ * Fetches RSS, extracts article content, writes structured news, inserts into D1.
+ * Runs every 5 minutes, publishes 1 article per run.
+ */
+
+// ─── RSS Feeds (source, url, target_category) ───
+const FEEDS = [
+  // General / World
+  ['NPR', 'https://feeds.npr.org/1001/rss.xml', null],
+  ['BBC World', 'https://feeds.bbci.co.uk/news/world/rss.xml', null],
+  ['BBC Business', 'https://feeds.bbci.co.uk/news/business/rss.xml', 'business'],
+  ['NYT World', 'https://rss.nytimes.com/services/xml/rss/nyt/World.xml', null],
+  ['NYT Business', 'https://rss.nytimes.com/services/xml/rss/nyt/Business.xml', 'business'],
+  ['CNBC Top', 'https://search.cnbc.com/rs/search/combinedcms/view.xml?partnerId=wrss01&id=100003114', 'business'],
+  ['MarketWatch', 'https://feeds.marketwatch.com/marketwatch/topstories/', 'business'],
+  ['Yahoo Finance', 'https://finance.yahoo.com/news/rssindex', 'business'],
+  ['Bloomberg', 'https://feeds.bloomberg.com/markets/news.rss', 'business'],
+  // Tech / AI
+  ['TechCrunch', 'https://techcrunch.com/feed/', 'tech'],
+  ['Ars Technica', 'https://feeds.arstechnica.com/arstechnica/index', 'tech'],
+  ['The Verge', 'https://www.theverge.com/rss/index.xml', 'tech'],
+  ['Hacker News', 'https://hnrss.org/frontpage?count=20', 'tech'],
+  ['Wired', 'https://www.wired.com/feed/rss', 'tech'],
+  // Science / Climate
+  ['Science Daily', 'https://www.sciencedaily.com/rss/all.xml', 'science'],
+  // Travel
+  ['Skift', 'https://skift.com/feed/', 'travel'],
+  // Gaming
+  ['IGN', 'https://feeds.feedburner.com/ign/all', 'entertainment'],
+  ['Kotaku', 'https://kotaku.com/rss', 'entertainment'],
+  // Health
+  ['NPR Health', 'https://feeds.npr.org/1128/rss.xml', 'health'],
+  ['BBC Health', 'https://feeds.bbci.co.uk/news/health/rss.xml', 'health'],
+  // Sports
+  ['ESPN', 'https://www.espn.com/espn/rss/news', 'sports'],
+  // Entertainment
+  ['BBC Entertainment', 'https://feeds.bbci.co.uk/news/entertainment_and_arts/rss.xml', 'entertainment'],
+];
+
+// ─── Category keywords ───
+const CATEGORY_KEYWORDS = {
+  business: ['stock', 'market', 'economy', 'gdp', 'inflation', 'fed', 'rate', 'trade',
+    'tariff', 'bank', 'invest', 'dollar', 'debt', 'earning', 'revenue', 'profit',
+    'ipo', 'merger', 'acquisition', 'startup', 'crypto', 'bitcoin', 'oil', 'gold'],
+  politics: ['trump', 'biden', 'congress', 'senate', 'election', 'vote', 'democrat',
+    'republican', 'white house', 'legislation', 'bill', 'supreme court', 'doj',
+    'executive order', 'impeach', 'government shutdown', 'policy'],
+  world: ['war', 'conflict', 'nato', 'sanctions', 'nuclear', 'missile', 'china', 'russia',
+    'ukraine', 'iran', 'middle east', 'gaza', 'israel', 'summit', 'un ', 'eu '],
+  tech: ['ai', 'artificial intelligence', 'openai', 'google', 'apple', 'meta', 'microsoft',
+    'nvidia', 'chip', 'semiconductor', 'robot', 'quantum', 'spacex', 'tesla'],
+  health: ['fda', 'vaccine', 'covid', 'drug', 'health', 'hospital', 'medical', 'cancer',
+    'disease', 'mental health', 'diet', 'nutrition', 'exercise'],
+  science: ['nasa', 'space', 'climate', 'earthquake', 'hurricane', 'research', 'study',
+    'discovery', 'species', 'ocean', 'environment'],
+  travel: ['airline', 'flight', 'airport', 'tourism', 'visa', 'cruise', 'hotel'],
+  sports: ['nba', 'nfl', 'mlb', 'fifa', 'olympic', 'championship', 'tournament', 'game'],
+  entertainment: ['movie', 'film', 'oscar', 'grammy', 'music', 'celebrity', 'netflix',
+    'disney', 'streaming', 'box office'],
+};
+
+// Skip UK-domestic news
+const UK_DOMESTIC = ['nhs', 'uk government', 'downing street', 'labour party', 'conservative party',
+  'premier league', 'bbc weather', 'uk housing', 'ofsted', 'channel crossing'];
+
+// ─── Internal linking: keyword → gab.ae slug ───
+const INTERNAL_LINKS = {
+  // Finance
+  'mortgage': '/mortgage-calculator', 'inflation': '/fire-movement',
+  'invest': '/capital-markets-wealth-guide-2026', 'stock': '/capital-markets-wealth-guide-2026',
+  'retirement': '/fire-movement', 'personal finance': '/personal-finance-budgeting',
+  'crypto': '/cryptocurrency-investing-guide', 'bitcoin': '/cryptocurrency-investing-guide',
+  'real estate': '/real-estate-investing', 'housing': '/real-estate-investing',
+  'tariff': '/capital-markets-wealth-guide-2026', 'trade war': '/capital-markets-wealth-guide-2026',
+  'oil price': '/oil-price-impact-calculator', 'dividend': '/dividend-investing-guide',
+  'etf': '/etf-investing-guide', 'interest rate': '/capital-markets-wealth-guide-2026',
+  'startup': '/business-plan-startup-strategy', 'venture capital': '/venture-capital-fundraising',
+  // Tech
+  'artificial intelligence': '/ai-autonomous-agents', 'openai': '/ai-autonomous-agents',
+  'chatgpt': '/ai-autonomous-agents', 'cybersecurity': '/cybersecurity-privacy',
+  'saas': '/micro-saas-bootstrapping', 'privacy': '/cybersecurity-privacy',
+  // Health
+  'vaccine': '/health-wellness-optimization', 'nutrition': '/nutrition-guide',
+  'fitness': '/fitness-training-guide', 'mental health': '/health-wellness-optimization',
+  // Travel
+  'flight': '/flight-hacking-airline-routing', 'visa': '/visas-residency-citizenship',
+  'nomad': '/digital-nomad-lifestyle', 'cost of living': '/cost-of-living-geo-arbitrage',
+  // Lifestyle
+  'freelanc': '/freelancing-consulting-business', 'remote work': '/remote-work-career-strategies',
+  'social media': '/social-media-algorithms-growth', 'youtube': '/video-production-youtube-strategy',
+};
+
+// Category apex fallback for internal links
+const CATEGORY_APEX = {
+  business: { slug: '/capital-markets-wealth-guide-2026', name: 'Capital Markets & Wealth Guide' },
+  tech: { slug: '/software-ai-infrastructure-guide-2026', name: 'Software & AI Guide' },
+  world: { slug: '/global-mobility-geo-arbitrage-guide-2026', name: 'Global Mobility Guide' },
+  politics: { slug: '/capital-markets-wealth-guide-2026', name: 'Capital Markets & Wealth Guide' },
+  health: { slug: '/human-optimization-health-guide-2026', name: 'Health & Optimization Guide' },
+  science: { slug: '/software-ai-infrastructure-guide-2026', name: 'Software & AI Guide' },
+  travel: { slug: '/global-mobility-geo-arbitrage-guide-2026', name: 'Global Mobility Guide' },
+  sports: { slug: '/digital-media-creator-economy-guide-2026', name: 'Digital Media Guide' },
+  entertainment: { slug: '/digital-media-creator-economy-guide-2026', name: 'Digital Media Guide' },
+};
+
+// Tag patterns
+const TAG_PATTERNS = [
+  [/\btrump\b/, 'trump'], [/\bbiden\b/, 'biden'], [/\bchina\b/, 'china'],
+  [/\brussia\b/, 'russia'], [/\bukraine\b/, 'ukraine'], [/\biran\b/, 'iran'],
+  [/\bnato\b/, 'nato'], [/\beu\b/, 'eu'], [/\bfed\b/, 'federal-reserve'],
+  [/\bai\b/, 'artificial-intelligence'], [/\bnvidia\b/, 'nvidia'],
+  [/\btesla\b/, 'tesla'], [/\bapple\b/, 'apple'], [/\bgoogle\b/, 'google'],
+  [/\bbitcoin\b/, 'bitcoin'], [/\bcrypto/, 'cryptocurrency'],
+  [/\btariff/, 'tariffs'], [/\binflation\b/, 'inflation'],
+  [/\brecession\b/, 'recession'], [/\bclimate\b/, 'climate'],
+];
+
+// Junk patterns for stripping from text
+const JUNK_PATTERNS = [
+  /ShareSave\w*/gi,
+  /Add as preferred on Google/gi,
+  /Getty Images\w*/gi,
+  /AFP via Getty Images/gi,
+  /Associated Press/gi,
+  /Reuters\s*\//gi,
+  /AP Photo\/[^\s]+/gi,
+  /\b\w+ reporter\b(?=\w)/gi,
+  /Image source[,:]\s*\w+/gi,
+  /Image caption[,:]\s*/gi,
+  /Copyright \d{4}/gi,
+  /Quick Read\s*/gi,
+  /NVDA\s+META\s+/gi,
+  /\b[A-Z]{2,5}\b(?:\s+\b[A-Z]{2,5}\b){2,}/g,
+  /\b(?:Mon|Tue|Wed|Thu|Fri|Sat|Sun),?\s+\w+\s+\d{1,2},?\s+\d{4}\s+at\s+\d{1,2}:\d{2}\s*(?:AM|PM)\s*(?:GMT[+-]\d+)?/gi,
+];
+
+// Skip phrases for paragraph filtering
+const SKIP_PHRASES = [
+  'cookie', 'subscribe', 'sign up', 'advertisement', 'copyright',
+  'all rights reserved', 'read more', 'click here', 'sign in', 'newsletter',
+  'follow us', 'share this', 'related stories', 'more from', 'here are more',
+  'updates from', 'live updates', 'verify access', 'patience while',
+  'already a subscriber', 'create a free account', 'log in to continue',
+  'paywall', 'members only', 'premium content', 'full access',
+  'to read the full', 'continue reading', 'unlock this article',
+  'support our journalism', 'become a member',
+];
+
+// ─── Helper functions ───
+
+function stripHtml(text) {
+  // Remove HTML tags
+  text = text.replace(/<[^>]+>/g, '');
+  // Decode common HTML entities
+  text = text.replace(/&amp;/g, '&').replace(/&lt;/g, '<').replace(/&gt;/g, '>')
+    .replace(/&quot;/g, '"').replace(/&#39;/g, "'").replace(/&apos;/g, "'")
+    .replace(/&#x27;/g, "'").replace(/&nbsp;/g, ' ')
+    .replace(/&#(\d+);/g, (_, n) => String.fromCharCode(parseInt(n)))
+    .replace(/&#x([0-9a-fA-F]+);/g, (_, n) => String.fromCharCode(parseInt(n, 16)));
+  // Remove junk patterns
+  for (const pat of JUNK_PATTERNS) {
+    text = text.replace(pat, '');
+  }
+  // Clean up multiple spaces
+  text = text.replace(/\s{2,}/g, ' ');
+  return text.trim();
+}
+
+function slugify(text) {
+  let s = text.toLowerCase();
+  s = s.replace(/[^a-z0-9\s-]/g, '');
+  s = s.replace(/[\s-]+/g, '-').replace(/^-|-$/g, '');
+  return s.slice(0, 80);
+}
+
+function categorize(title, description, hint) {
+  const text = (title + ' ' + description).toLowerCase();
+  const scores = {};
+  for (const [cat, keywords] of Object.entries(CATEGORY_KEYWORDS)) {
+    let score = 0;
+    for (const kw of keywords) {
+      if (text.includes(kw)) score++;
+    }
+    if (score > 0) scores[cat] = score;
+  }
+  // Feed hint gets a boost
+  if (hint && CATEGORY_KEYWORDS[hint]) {
+    scores[hint] = (scores[hint] || 0) + 3;
+  }
+  if (Object.keys(scores).length > 0) {
+    return Object.entries(scores).sort((a, b) => b[1] - a[1])[0][0];
+  }
+  return hint || 'world';
+}
+
+function extractTags(title, description) {
+  const text = (title + ' ' + description).toLowerCase();
+  const tags = new Set();
+  for (const [pattern, tag] of TAG_PATTERNS) {
+    if (pattern.test(text)) {
+      tags.add(tag);
+    }
+    // Reset lastIndex for global regexes
+    pattern.lastIndex = 0;
+  }
+  const cat = categorize(title, description, null);
+  tags.add(cat);
+  return [...tags].slice(0, 8);
+}
+
+function findInternalLinks(title, description) {
+  const text = (title + ' ' + description).toLowerCase();
+  const links = [];
+  const seen = new Set();
+  for (const [keyword, slug] of Object.entries(INTERNAL_LINKS)) {
+    const pattern = new RegExp('\\b' + keyword.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + '\\b', 'i');
+    if (pattern.test(text) && !seen.has(slug)) {
+      links.push({ slug, name: slug.replace(/^\//, '').replace(/-/g, ' ').replace(/\b\w/g, c => c.toUpperCase()) });
+      seen.add(slug);
+      if (links.length >= 2) break;
+    }
+  }
+  return links;
+}
+
+// ─── RSS parsing with regex (Workers don't have XML DOMParser) ───
+
+function parseRssItems(xml, feedName, hintCat) {
+  const stories = [];
+
+  // Try RSS <item> elements first
+  const itemRegex = /<item[\s>]([\s\S]*?)<\/item>/gi;
+  let match;
+  let items = [];
+  while ((match = itemRegex.exec(xml)) !== null) {
+    items.push(match[1]);
+  }
+
+  // Try Atom <entry> elements if no RSS items
+  if (items.length === 0) {
+    const entryRegex = /<entry[\s>]([\s\S]*?)<\/entry>/gi;
+    while ((match = entryRegex.exec(xml)) !== null) {
+      items.push(match[1]);
+    }
+  }
+
+  for (const item of items.slice(0, 8)) {
+    // Title
+    const titleMatch = item.match(/<title[^>]*>([\s\S]*?)<\/title>/i);
+    let title = titleMatch ? titleMatch[1].trim() : '';
+    // Handle CDATA
+    title = title.replace(/<!\[CDATA\[([\s\S]*?)\]\]>/g, '$1');
+    title = stripHtml(title);
+
+    // Link - RSS uses <link>url</link>, Atom uses <link href="url"/>
+    let link = '';
+    const linkTextMatch = item.match(/<link[^>]*>([\s\S]*?)<\/link>/i);
+    if (linkTextMatch && linkTextMatch[1].trim()) {
+      link = linkTextMatch[1].trim();
+      link = link.replace(/<!\[CDATA\[([\s\S]*?)\]\]>/g, '$1');
+    }
+    if (!link) {
+      const linkHrefMatch = item.match(/<link[^>]*href="([^"]*)"[^>]*\/?>/i);
+      if (linkHrefMatch) link = linkHrefMatch[1];
+    }
+
+    // Description/summary
+    let desc = '';
+    const descMatch = item.match(/<description[^>]*>([\s\S]*?)<\/description>/i)
+      || item.match(/<summary[^>]*>([\s\S]*?)<\/summary>/i)
+      || item.match(/<content[^>]*>([\s\S]*?)<\/content>/i);
+    if (descMatch) {
+      desc = descMatch[1].replace(/<!\[CDATA\[([\s\S]*?)\]\]>/g, '$1');
+      desc = stripHtml(desc).slice(0, 500);
+    }
+
+    // Image from media:thumbnail or media:content
+    let image = '';
+    const mediaThumbnail = item.match(/<media:thumbnail[^>]*url="([^"]*)"[^>]*\/?>/i);
+    if (mediaThumbnail) image = mediaThumbnail[1];
+    if (!image) {
+      const mediaContent = item.match(/<media:content[^>]*url="([^"]*)"[^>]*\/?>/i);
+      if (mediaContent) image = mediaContent[1];
+    }
+    // Enclosure
+    if (!image) {
+      const enclosure = item.match(/<enclosure[^>]*type="image[^"]*"[^>]*url="([^"]*)"[^>]*\/?>/i)
+        || item.match(/<enclosure[^>]*url="([^"]*)"[^>]*type="image[^"]*"[^>]*\/?>/i);
+      if (enclosure) image = enclosure[1];
+    }
+
+    if (title && link) {
+      stories.push({
+        source: feedName,
+        title,
+        link: link.split('?')[0],
+        description: desc,
+        image,
+        hintCategory: hintCat,
+      });
+    }
+  }
+
+  return stories;
+}
+
+// ─── Fetch article content ───
+
+async function fetchArticleContent(url) {
+  try {
+    const resp = await fetch(url, {
+      headers: {
+        'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36',
+      },
+      signal: AbortSignal.timeout(15000),
+    });
+    if (!resp.ok) return [];
+    const data = await resp.text();
+
+    // Look for article content
+    let content = data;
+    const articleMatch = data.match(/<article[^>]*>([\s\S]*?)<\/article>/i);
+    if (articleMatch) {
+      content = articleMatch[1];
+    } else {
+      // Fallback: common content div classes
+      for (const selector of ['article-body', 'story-body', 'entry-content', 'post-content']) {
+        const divMatch = data.match(new RegExp(`<div[^>]*class="[^"]*${selector}[^"]*"[^>]*>([\\s\\S]*?)</div>`, 'i'));
+        if (divMatch) {
+          content = divMatch[1];
+          break;
+        }
+      }
+    }
+
+    // Strip junk elements
+    for (const tag of ['button', 'figcaption', 'aside', 'nav', 'footer', 'header', 'script', 'style', 'noscript']) {
+      content = content.replace(new RegExp(`<${tag}[^>]*>[\\s\\S]*?<\\/${tag}>`, 'gi'), '');
+    }
+    // Strip spans with junk classes
+    content = content.replace(/<span[^>]*class="[^"]*(?:share|save|social|byline|caption|credit|getty|image|photo|icon|button|toolbar|action)[^"]*"[^>]*>[\s\S]*?<\/span>/gi, '');
+    // Strip junk links
+    content = content.replace(/<a[^>]*class="[^"]*(?:share|save|button|action|social)[^"]*"[^>]*>[\s\S]*?<\/a>/gi, '');
+
+    // Extract <p> tags
+    const paragraphs = [];
+    const pRegex = /<p[^>]*>([\s\S]*?)<\/p>/gi;
+    let pMatch;
+    while ((pMatch = pRegex.exec(content)) !== null) {
+      const text = stripHtml(pMatch[1]);
+
+      // Filters
+      const isLinkList = (text.match(/\|/g) || []).length >= 3;
+      const isShortFrag = text.length < 60 && text.includes(':');
+      const isByline = /^[A-Z][a-z]+ [A-Z][a-z]+\s+(?:Mon|Tue|Wed|Thu|Fri|Sat|Sun)/.test(text);
+      const isTickerDump = /^(?:[A-Z]{2,5}\s+){2,}/.test(text);
+
+      if (text.length > 50
+        && !isLinkList
+        && !isShortFrag
+        && !isByline
+        && !isTickerDump
+        && !SKIP_PHRASES.some(skip => text.toLowerCase().includes(skip))) {
+        paragraphs.push(text);
+      }
+    }
+
+    return paragraphs.slice(0, 15);
+  } catch (e) {
+    console.log(`    ⚠️ Fetch error for ${url}: ${e.message}`);
+    return [];
+  }
+}
+
+// ─── Build structured article ───
+
+function buildArticle(story, paragraphs) {
+  const { title, description } = story;
+  const category = categorize(title, description, story.hintCategory);
+  const tags = extractTags(title, description);
+  let internalLinks = findInternalLinks(title, description);
+
+  // Slug
+  const slugBase = slugify(title);
+  const year = new Date().getFullYear().toString();
+  const slug = slugBase.endsWith(year) ? slugBase : `${slugBase}-${year}`;
+
+  // Build sections
+  const sections = [];
+
+  if (paragraphs.length > 0) {
+    sections.push({
+      heading: 'What Happened',
+      paragraphs: paragraphs.slice(0, Math.min(4, paragraphs.length)),
+    });
+    if (paragraphs.length > 4) {
+      sections.push({
+        heading: 'Why It Matters',
+        paragraphs: paragraphs.slice(4, Math.min(8, paragraphs.length)),
+      });
+    }
+    if (paragraphs.length > 8) {
+      sections.push({
+        heading: 'What Comes Next',
+        paragraphs: paragraphs.slice(8),
+      });
+    }
+  } else {
+    sections.push({
+      heading: 'What Happened',
+      paragraphs: [description || 'Breaking story — details emerging.'],
+    });
+  }
+
+  // Fallback: if no keyword-matched links, use apex guide for category
+  if (internalLinks.length === 0 && CATEGORY_APEX[category]) {
+    internalLinks = [CATEGORY_APEX[category]];
+  }
+
+  // Add internal links as inline text in the last section
+  if (internalLinks.length > 0 && sections.length > 0) {
+    const linkTexts = internalLinks.map(l =>
+      `<a href="https://gab.ae${l.slug}">${l.name}</a>`
+    );
+    sections[sections.length - 1].paragraphs.push('Explore more: ' + linkTexts.join(' · '));
+  }
+
+  // Lede
+  const lede = paragraphs.length > 0 ? paragraphs[0].slice(0, 200) : (description || '').slice(0, 200);
+  const metaDesc = lede.length > 155 ? lede.slice(0, 155) + '...' : lede;
+
+  return {
+    slug,
+    title,
+    description: metaDesc,
+    category,
+    image: story.image || '',
+    imageAlt: title,
+    lede,
+    sections,
+    tags,
+    sources: [{ name: story.source, url: story.link }],
+    faqs: [],
+  };
+}
+
+// ─── Main scheduled handler ───
+
+export async function newsAutopilot(env) {
+  console.log('📰 News Autopilot cron started');
+
+  // 1. Get existing articles for dedup
+  let existingSlugs = new Set();
+  let existingUrls = new Set();
+  let existingWords = new Set();
+  try {
+    const existing = await env.DB.prepare("SELECT slug, source_url, title FROM news").all();
+    for (const row of (existing?.results || [])) {
+      if (row.slug) existingSlugs.add(row.slug);
+      if (row.source_url) existingUrls.add(row.source_url.split('?')[0]);
+      if (row.title) {
+        const words = row.title.toLowerCase().match(/[a-z]{4,}/g);
+        if (words) words.forEach(w => existingWords.add(w));
+      }
+    }
+    console.log(`📊 Existing articles: ${existingSlugs.size}`);
+  } catch (e) {
+    console.log(`⚠️ D1 query error: ${e.message}`);
+  }
+
+  // 2. Fetch RSS feeds
+  const allStories = [];
+  const feedPromises = FEEDS.map(async ([name, url, hintCat]) => {
+    try {
+      const resp = await fetch(url, {
+        headers: { 'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36' },
+        signal: AbortSignal.timeout(10000),
+      });
+      if (!resp.ok) return [];
+      const xml = await resp.text();
+      return parseRssItems(xml, name, hintCat);
+    } catch (e) {
+      console.log(`⚠️ Feed error ${name}: ${e.message}`);
+      return [];
+    }
+  });
+
+  const feedResults = await Promise.allSettled(feedPromises);
+  for (const result of feedResults) {
+    if (result.status === 'fulfilled') {
+      allStories.push(...result.value);
+    }
+  }
+  console.log(`📡 Fetched ${allStories.length} stories from ${FEEDS.length} feeds`);
+
+  if (allStories.length === 0) {
+    console.log('❌ No stories fetched, exiting');
+    return;
+  }
+
+  // 3. Filter candidates
+  const candidates = [];
+  const seen = new Set();
+  for (const s of allStories) {
+    const titleLower = s.title.toLowerCase();
+
+    // Skip UK domestic
+    if (UK_DOMESTIC.some(kw => titleLower.includes(kw))) continue;
+
+    // Skip if source URL already covered
+    if (existingUrls.has(s.link)) continue;
+
+    // Skip if title has >50% word overlap with existing
+    const storyWords = new Set((titleLower.match(/[a-z]{4,}/g) || []));
+    if (storyWords.size > 0 && existingWords.size > 0) {
+      let overlapCount = 0;
+      for (const w of storyWords) {
+        if (existingWords.has(w)) overlapCount++;
+      }
+      if (overlapCount / Math.max(storyWords.size, 1) > 0.5) continue;
+    }
+
+    // Skip duplicates within batch
+    if (seen.has(titleLower)) continue;
+    seen.add(titleLower);
+
+    candidates.push(s);
+  }
+  console.log(`✅ ${candidates.length} new candidates after dedup`);
+
+  if (candidates.length === 0) {
+    console.log('❌ No new stories to publish');
+    return;
+  }
+
+  // 4. Prioritize (finance/world/politics/tech first)
+  candidates.sort((a, b) => {
+    function priority(s) {
+      const t = s.title.toLowerCase();
+      let score = 0;
+      for (const cat of ['business', 'world', 'politics', 'tech']) {
+        const kws = CATEGORY_KEYWORDS[cat].slice(0, 10);
+        for (const kw of kws) {
+          if (t.includes(kw)) { score += 2; break; }
+        }
+      }
+      return score;
+    }
+    return priority(b) - priority(a);
+  });
+
+  // 5. Process top candidate (1 article per cron run)
+  const story = candidates[0];
+  console.log(`📰 Processing: ${story.title.slice(0, 80)}`);
+  console.log(`   Source: ${story.source} | ${story.link.slice(0, 60)}`);
+
+  // Fetch full article content
+  const paragraphs = await fetchArticleContent(story.link);
+  console.log(`   Got ${paragraphs.length} paragraphs`);
+
+  // Build structured article
+  const article = buildArticle(story, paragraphs);
+  console.log(`   Category: ${article.category} | Tags: ${article.tags.slice(0, 5).join(', ')}`);
+  console.log(`   Slug: ${article.slug}`);
+
+  // 6. Insert into D1
+  try {
+    await env.DB.prepare(
+      `INSERT OR IGNORE INTO news (slug, title, description, category, image, image_alt, lede, sections, tags, sources, faqs, source_url, published_at, updated_at, status)
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, datetime('now'), datetime('now'), 'live')`
+    ).bind(
+      article.slug,
+      article.title,
+      article.description,
+      article.category,
+      article.image,
+      article.imageAlt,
+      article.lede,
+      JSON.stringify(article.sections),
+      JSON.stringify(article.tags),
+      JSON.stringify(article.sources),
+      JSON.stringify(article.faqs),
+      story.link
+    ).run();
+    console.log(`   ✅ Published: ${article.slug}`);
+  } catch (e) {
+    console.log(`   ❌ D1 insert error: ${e.message}`);
+  }
+
+  console.log('📰 News Autopilot cron complete');
+}
