@@ -87,7 +87,7 @@ INTERNAL_LINKS = {
     # Finance
     'mortgage': '/mortgage-calculator', 'inflation': '/fire-movement',
     'invest': '/capital-markets-wealth-guide-2026', 'stock': '/capital-markets-wealth-guide-2026',
-    'retirement': '/fire-movement', 'budget': '/personal-finance-budgeting',
+    'retirement': '/fire-movement', 'personal finance': '/personal-finance-budgeting',
     'crypto': '/cryptocurrency-investing-guide', 'bitcoin': '/cryptocurrency-investing-guide',
     'real estate': '/real-estate-investing', 'housing': '/real-estate-investing',
     'tariff': '/capital-markets-wealth-guide-2026', 'trade war': '/capital-markets-wealth-guide-2026',
@@ -95,7 +95,8 @@ INTERNAL_LINKS = {
     'etf': '/etf-investing-guide', 'interest rate': '/capital-markets-wealth-guide-2026',
     'startup': '/business-plan-startup-strategy', 'venture capital': '/venture-capital-fundraising',
     # Tech
-    'ai': '/ai-autonomous-agents', 'cybersecurity': '/cybersecurity-privacy',
+    'artificial intelligence': '/ai-autonomous-agents', 'openai': '/ai-autonomous-agents',
+    'chatgpt': '/ai-autonomous-agents', 'cybersecurity': '/cybersecurity-privacy',
     'saas': '/micro-saas-bootstrapping', 'privacy': '/cybersecurity-privacy',
     # Health
     'vaccine': '/health-wellness-optimization', 'nutrition': '/nutrition-guide',
@@ -259,15 +260,17 @@ def extract_tags(title, description):
 
 
 def find_internal_links(title, description):
-    """Find relevant gab.ae pages to link to."""
+    """Find relevant gab.ae pages to link to using word-boundary matching."""
     text = (title + ' ' + description).lower()
     links = []
     seen = set()
     for keyword, slug in INTERNAL_LINKS.items():
-        if keyword in text and slug not in seen:
-            links.append(slug)
+        # Use word boundary regex to avoid substring matches (e.g. 'ai' in 'said')
+        pattern = r'\b' + re.escape(keyword) + r'\b'
+        if re.search(pattern, text) and slug not in seen:
+            links.append({'slug': slug, 'name': slug.strip('/').replace('-', ' ').title()})
             seen.add(slug)
-            if len(links) >= 3:
+            if len(links) >= 2:
                 break
     return links
 
@@ -372,16 +375,10 @@ def build_article(story, paragraphs):
             'paragraphs': [description] if description else ['Breaking story — details emerging.'],
         })
     
-    # Add internal links section if we have any
-    if internal_links:
-        link_paragraphs = []
-        for link in internal_links:
-            link_name = link.strip('/').replace('-', ' ').title()
-            link_paragraphs.append(f'Related: <a href="https://gab.ae{link}">{link_name}</a>')
-        sections.append({
-            'heading': 'Related Resources',
-            'paragraphs': link_paragraphs,
-        })
+    # Add internal links as inline text in the last section (not a separate section)
+    if internal_links and sections:
+        link_texts = [f'<a href="https://gab.ae{l["slug"]}">{l["name"]}</a>' for l in internal_links]
+        sections[-1]['paragraphs'].append('Explore more: ' + ' · '.join(link_texts))
     
     # Build lede (first paragraph, max 200 chars)
     lede = paragraphs[0][:200] if paragraphs else description[:200]
