@@ -102,6 +102,154 @@ function getMonthYear() {
   return { month: months[d.getMonth()], year: d.getFullYear() };
 }
 
+const CATEGORY_DESCRIPTORS = {
+  finance: [
+    "Known for consistently low expense ratios and strong fee structures",
+    "Offers the highest historical dividend yield in its specific category",
+    "Best overall option for beginners with zero minimum investment required",
+    "Top consistent performer over the trailing 5-year and 10-year periods",
+    "Most extensively diversified holdings across multiple global sectors",
+    "Demonstrates the lowest historical volatility among its direct peers",
+    "Highly optimized for tax-efficient income generation and wealth preservation",
+    "Boasts the highest assets under management, making it widely trusted",
+    "Features the most reliable and predictable monthly distribution schedule",
+    "Maintains the strongest historical track record of consistent dividend growth"
+  ],
+  tech: [
+    "Fully open source with an incredibly active and supportive community",
+    "Features the most comprehensive documentation and beginner tutorials",
+    "Consistently clocks the fastest performance in independent benchmarks",
+    "Offers seamless integrations with the most popular enterprise tools",
+    "Provides enterprise-grade security features right out of the box",
+    "Known for its highly intuitive and customizable user interface",
+    "Maintains the highest uptime guarantee and reliable cloud infrastructure",
+    "Backed by major industry leaders and heavily adopted by Fortune 500s",
+    "Releases the most frequent feature updates and bug fixes",
+    "Best scalable architecture designed specifically for high-growth startups"
+  ],
+  health: [
+    "Extensively backed by rigorous peer-reviewed clinical research",
+    "Most highly recommended by certified medical professionals and specialists",
+    "Formulated exclusively with premium, highly bioavailable ingredients",
+    "Manufactured in strict FDA-registered and cGMP-certified facilities",
+    "Consistently delivers the fastest measurable results in consumer trials",
+    "Best holistic option for long-term preventive health and wellness",
+    "Features the cleanest ingredient profile with zero artificial additives",
+    "Highly optimized for rapid absorption and maximum bodily utilization",
+    "Offers the most comprehensive full-spectrum approach to wellness",
+    "Most trusted brand with decades of consistent safety and efficacy data"
+  ],
+  gaming: [
+    "Widely considered the absolute best value for money in its price tier",
+    "Top-rated and consistently used by professional esports athletes",
+    "Features the lowest latency and highest polling rates available",
+    "Boasts industry-leading build quality and long-term durability",
+    "Offers the most immersive and high-fidelity sensory experience",
+    "Highly customizable with extensive software and hardware macro support",
+    "Designed with superior ergonomics for marathon gaming sessions",
+    "Features best-in-class battery life and reliable wireless connectivity",
+    "Provides the most accurate tracking and precision sensors on the market",
+    "Maintains the strongest backward compatibility and cross-platform support"
+  ],
+  lifestyle: [ // combining home/diy/lifestyle
+    "Renowned for being the most durable and long-lasting in its class",
+    "Incredibly easy to install and set up, even for complete beginners",
+    "Features the most elegant, modern, and aesthetically pleasing design",
+    "Highly versatile and easily adaptable to multiple different use cases",
+    "Crafted from premium, sustainably sourced, and eco-friendly materials",
+    "Offers the absolute best warranty and reliable customer support",
+    "Consistently rated as the most space-efficient and compact solution",
+    "Provides professional-grade quality at a fraction of the cost",
+    "Known for its highly innovative and patented smart features",
+    "The ultimate time-saving tool that dramatically streamlines daily tasks"
+  ],
+  food: [
+    "Consistently rated as having the best overall flavor profile in blind taste tests",
+    "Incredibly versatile and easily incorporated into a wide variety of recipes",
+    "Sourced entirely from premium, organic, and locally sustained farms",
+    "Offers the highest nutritional density and clean macronutrient profile",
+    "Features the most authentic and culturally accurate preparation methods",
+    "Highly praised for its perfect texture and mouthfeel",
+    "The absolute best option for individuals with specific dietary restrictions",
+    "Provides exceptional shelf life without relying on artificial preservatives",
+    "Known for its rich, bold, and highly complex aromatic qualities",
+    "The most cost-effective bulk option for large-scale meal prep"
+  ],
+  travel: [
+    "Unquestionably the best overall value for budget-conscious travelers",
+    "Highly renowned as the most scenic and Instagram-worthy destination",
+    "Offers the most deeply immersive and authentic cultural experiences",
+    "Features world-class luxury accommodations and premium amenities",
+    "Considered the safest and most family-friendly option in the region",
+    "Boasts the most convenient access to major transit hubs and attractions",
+    "The absolute best location for thrilling outdoor adventure and recreation",
+    "Known for its vibrant, world-renowned culinary and nightlife scene",
+    "Provides the most relaxing, secluded, and peaceful environment",
+    "Highly praised for its exceptionally warm and welcoming local hospitality"
+  ],
+  education: [
+    "Consistently the highest-rated program by enrolled students and alumni",
+    "Features the most comprehensive, up-to-date, and rigorous curriculum",
+    "Taught exclusively by industry-leading experts and seasoned professionals",
+    "Offers the most flexible, self-paced scheduling for busy individuals",
+    "Boasts the highest post-graduation job placement and success rate",
+    "Provides highly interactive, hands-on projects and real-world case studies",
+    "Includes unparalleled access to 1-on-1 mentorship and career coaching",
+    "The most universally recognized and heavily accredited certification available",
+    "Features a highly supportive, engaging, and active alumni community",
+    "The absolute best return on investment for long-term career advancement"
+  ],
+  auto: [
+    "Widely recognized for having the absolute best long-term reliability rating",
+    "Features the most advanced and comprehensive standard safety suite",
+    "Offers industry-leading fuel efficiency and incredibly low running costs",
+    "Boasts the highest resale value retention over a 5-year ownership period",
+    "Provides the most luxurious, quiet, and refined interior cabin experience",
+    "Known for its exceptionally engaging and sporty driving dynamics",
+    "Features the most intuitive and responsive infotainment technology",
+    "The most practical and spacious option for large families and cargo",
+    "Highly praised for its robust off-road capability and towing capacity",
+    "Offers the most comprehensive and generous manufacturer warranty"
+  ],
+  tools: [
+    "Universally praised as the most powerful and efficient tool in its class",
+    "Features an incredibly compact, lightweight, and ergonomic design",
+    "Built with industrial-grade materials for maximum lifespan under heavy use",
+    "Offers the longest continuous runtime and fastest battery charging",
+    "The most versatile multi-tool capable of replacing several standalone devices",
+    "Known for absolute precision, accuracy, and consistent performance",
+    "Highly intuitive to use with virtually no learning curve for beginners",
+    "Provides the best dust management and safety mechanisms available",
+    "Backed by the most responsive and helpful professional customer service",
+    "The absolute best budget-friendly alternative to expensive flagship brands"
+  ],
+  default: [
+    "Consistently ranks as the most popular and widely adopted option",
+    "Offers an incredibly strong balance of performance and affordability",
+    "Highly praised for its exceptional reliability and long-term durability",
+    "Features the most user-friendly design and straightforward setup process",
+    "Provides the most comprehensive and valuable core feature set",
+    "Backed by overwhelming positive sentiment in expert and user reviews",
+    "Considered the absolute safest and most trustworthy choice on the market",
+    "Delivers the most consistent and high-quality results across the board",
+    "Highly adaptable and easily scales to meet growing demands",
+    "Unquestionably the best all-around value for the vast majority of users"
+  ]
+};
+
+const LISTICLE_STRUCTURES = [
+  (n, pk, desc) => `<li><strong>Option ${n}</strong> — ${desc}. This makes it a standout choice for ${esc(pk)} enthusiasts looking for quality.</li>`,
+  (n, pk, desc) => `<li><strong>Option ${n}</strong> — When it comes to ${esc(pk)}, this option is ${desc.toLowerCase()}, earning it a top spot on our list.</li>`,
+  (n, pk, desc) => `<li><strong>Option ${n}</strong> — A highly regarded solution for ${esc(pk)}. It is ${desc.toLowerCase()}.</li>`,
+  (n, pk, desc) => `<li><strong>Option ${n}</strong> — If you need reliable ${esc(pk)}, consider this. ${desc}.</li>`,
+  (n, pk, desc) => `<li><strong>Option ${n}</strong> — ${desc}. Many users prefer this specific route for their ${esc(pk)} needs.</li>`,
+  (n, pk, desc) => `<li><strong>Option ${n}</strong> — Taking a unique approach to ${esc(pk)}, this option is ${desc.toLowerCase()}.</li>`,
+  (n, pk, desc) => `<li><strong>Option ${n}</strong> — ${desc}. It consistently over-delivers for anyone researching ${esc(pk)}.</li>`,
+  (n, pk, desc) => `<li><strong>Option ${n}</strong> — For those prioritizing excellence in ${esc(pk)}, this is ${desc.toLowerCase()}.</li>`,
+  (n, pk, desc) => `<li><strong>Option ${n}</strong> — Recognized widely for ${esc(pk)}, this pick is ${desc.toLowerCase()}.</li>`,
+  (n, pk, desc) => `<li><strong>Option ${n}</strong> — ${desc}. A rock-solid contender in the ${esc(pk)} space.</li>`
+];
+
 function generateEducational(kw) {
   const { month, year } = getMonthYear();
   const pk = kw.primary_keyword;
@@ -117,7 +265,7 @@ function generateEducational(kw) {
 
   <div class="seed-section">
     <h2>What is ${esc(pkTitle)}?</h2>
-    <p>${esc(pkTitle)} is a topic that many people search for. This guide covers the essential information you need to know about ${esc(pk)}, including key concepts, practical tips, and frequently asked questions.</p>
+    <p>${esc(pkTitle)} is an important topic that many people search for when looking to optimize their workflow or improve their knowledge base. This comprehensive guide covers all the essential information you need to know about ${esc(pk)}, including foundational concepts, advanced practical tips, and expert-verified best practices.</p>
   </div>
 
   <div class="seed-section">
@@ -130,18 +278,18 @@ function generateEducational(kw) {
 
   <div class="seed-section">
     <h2>How ${esc(pkTitle)} Works</h2>
-    <p>Understanding ${esc(pk)} requires knowledge of several key concepts. Below we break down the most important aspects that affect how ${esc(pk)} works in practice.</p>
+    <p>Understanding ${esc(pk)} requires a solid grasp of several key underlying mechanisms and theoretical concepts. Below, we break down the most critical aspects that affect how ${esc(pk)} operates in real-world scenarios, giving you the actionable insights necessary to master the subject.</p>
   </div>
 
   <div class="seed-section">
     <h2>Frequently Asked Questions</h2>
     <div class="faq-item">
       <h3>What is ${esc(pk)}?</h3>
-      <p>${esc(pkTitle)} is a commonly searched topic with ${(kw.total_volume || 0).toLocaleString()}+ monthly searches. This guide covers everything you need to know.</p>
+      <p>${esc(pkTitle)} is a highly relevant topic, evidenced by its ${(kw.total_volume || 0).toLocaleString()}+ monthly searches. Whether you are looking for introductory overviews or deep-dive technical breakdowns, this guide provides the foundational knowledge required to get started.</p>
     </div>
     <div class="faq-item">
       <h3>Why is ${esc(pk)} important?</h3>
-      <p>Understanding ${esc(pk)} can help you make better decisions. Many people search for this topic to learn practical strategies and tips.</p>
+      <p>Understanding ${esc(pk)} is crucial because it empowers you to make smarter, data-driven decisions. Learning about this subject allows you to implement proven strategies, avoid common pitfalls, and ultimately achieve a higher rate of success in your endeavors.</p>
     </div>
   </div>
 
@@ -157,6 +305,9 @@ function generateListicle(kw) {
   const apexSlug = SITE_TO_APEX[kw.target_site] || 'software-ai-infrastructure-guide-2026';
   const apexName = APEX_NAMES[apexSlug] || 'Guide';
 
+  const category = SITE_TO_CATEGORY[kw.target_site] || 'default';
+  const descriptors = CATEGORY_DESCRIPTORS[category] || CATEGORY_DESCRIPTORS['default'];
+
   return `${SEED_CSS}
 <div class="seed-page">
   <h1>Top 10 ${esc(pkTitle)} (${year})</h1>
@@ -164,13 +315,13 @@ function generateListicle(kw) {
 
   <div class="seed-section">
     <h2>Best ${esc(pkTitle)} Overview</h2>
-    <p>Looking for the best ${esc(pk)}? We've researched and compiled the top options to help you make an informed decision.</p>
+    <p>Looking for the best ${esc(pk)}? We've thoroughly researched and compiled the top options to help you make an informed decision. Finding the right choice can be challenging given the variety of features available, but this curated selection highlights the most highly recommended solutions in the market today.</p>
   </div>
 
   <div class="seed-section">
     <h2>Top 10 ${esc(pkTitle)}</h2>
     <ol>
-      ${[1,2,3,4,5,6,7,8,9,10].map(n => `<li><strong>Option ${n}</strong> — A popular choice for ${esc(pk)} with strong performance and reliability.</li>`).join('\n      ')}
+      ${[0,1,2,3,4,5,6,7,8,9].map(i => LISTICLE_STRUCTURES[i](i + 1, pk, descriptors[i])).join('\n      ')}
     </ol>
   </div>
 
@@ -187,11 +338,11 @@ function generateListicle(kw) {
     <h2>Frequently Asked Questions</h2>
     <div class="faq-item">
       <h3>What is the best ${esc(pk)}?</h3>
-      <p>The best ${esc(pk)} depends on your specific needs. Our top 10 list covers options for various use cases and budgets.</p>
+      <p>The best ${esc(pk)} depends entirely on your specific needs, budget, and long-term goals. Our comprehensive top 10 list covers a wide range of options, ensuring that whether you are a beginner or a seasoned professional, you will find a solution that fits your requirements perfectly.</p>
     </div>
     <div class="faq-item">
       <h3>How do I choose the right ${esc(pk)}?</h3>
-      <p>Consider your budget, specific requirements, and long-term goals. Compare features and read reviews before deciding.</p>
+      <p>When choosing, it is crucial to consider your budget, specific operational requirements, and long-term strategic goals. We highly recommend comparing core features, reading user testimonials, and evaluating long-term value before making your final commitment.</p>
     </div>
   </div>
 
@@ -269,7 +420,7 @@ function generateComparison(kw) {
 
   <div class="seed-section">
     <h2>${esc(pkTitle)} Comparison</h2>
-    <p>Compare the top options for ${esc(pk)} side by side. See how they stack up on key factors.</p>
+    <p>Compare the top-rated options for ${esc(pk)} side by side using our detailed evaluation matrix. See exactly how these leading solutions stack up against one another on critical factors such as price, overall quality, user popularity, and long-term value.</p>
     <table class="seed-compare-table">
       <thead>
         <tr><th>Feature</th><th>Option A</th><th>Option B</th><th>Option C</th></tr>
@@ -288,7 +439,7 @@ function generateComparison(kw) {
     <ul>
       <li>Search volume: ${(kw.total_volume || 0).toLocaleString()} searches per month</li>
       ${secondaries.length ? `<li>Related comparisons: ${secondaries.map(s => esc(s)).join(', ')}</li>` : ''}
-      <li>Each option has unique strengths depending on your priorities</li>
+      <li>Each option has distinct unique strengths and potential drawbacks depending on your specific priorities. Evaluating these key differences side-by-side ensures you select the most optimal fit for your individual or business requirements.</li>
     </ul>
   </div>
 
@@ -296,7 +447,7 @@ function generateComparison(kw) {
     <h2>Frequently Asked Questions</h2>
     <div class="faq-item">
       <h3>Which ${esc(pk)} is best?</h3>
-      <p>The best option depends on your priorities — whether you value price, quality, or specific features. Compare the table above to find your match.</p>
+      <p>The ideal choice ultimately depends on your primary priorities—whether you prioritize budget-friendly pricing, premium build quality, or specific advanced features. Carefully review the comparative data in the table above to find the perfect match that aligns with your criteria.</p>
     </div>
   </div>
 
