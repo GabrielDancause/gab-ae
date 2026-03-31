@@ -22,16 +22,38 @@ from datetime import datetime
 
 BASE = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
-# ─── RSS Feeds ───
+# ─── RSS Feeds (source, url, target_category) ───
 FEEDS = [
-    ('AP News', 'https://rsshub.app/apnews/topics/apf-topnews'),
-    ('NPR', 'https://feeds.npr.org/1001/rss.xml'),
-    ('BBC World', 'https://feeds.bbci.co.uk/news/world/rss.xml'),
-    ('BBC Business', 'https://feeds.bbci.co.uk/news/business/rss.xml'),
-    ('NYT World', 'https://rss.nytimes.com/services/xml/rss/nyt/World.xml'),
-    ('NYT Business', 'https://rss.nytimes.com/services/xml/rss/nyt/Business.xml'),
-    ('CNBC Top', 'https://search.cnbc.com/rs/search/combinedcms/view.xml?partnerId=wrss01&id=100003114'),
-    ('Reuters World', 'https://www.reutersagency.com/feed/?taxonomy=best-sectors&post_type=best'),
+    # General / World
+    ('NPR', 'https://feeds.npr.org/1001/rss.xml', None),
+    ('BBC World', 'https://feeds.bbci.co.uk/news/world/rss.xml', None),
+    ('BBC Business', 'https://feeds.bbci.co.uk/news/business/rss.xml', 'business'),
+    ('NYT World', 'https://rss.nytimes.com/services/xml/rss/nyt/World.xml', None),
+    ('NYT Business', 'https://rss.nytimes.com/services/xml/rss/nyt/Business.xml', 'business'),
+    ('CNBC Top', 'https://search.cnbc.com/rs/search/combinedcms/view.xml?partnerId=wrss01&id=100003114', 'business'),
+    ('MarketWatch', 'https://feeds.marketwatch.com/marketwatch/topstories/', 'business'),
+    ('Yahoo Finance', 'https://finance.yahoo.com/news/rssindex', 'business'),
+    ('Bloomberg', 'https://feeds.bloomberg.com/markets/news.rss', 'business'),
+    # Tech / AI
+    ('TechCrunch', 'https://techcrunch.com/feed/', 'tech'),
+    ('Ars Technica', 'https://feeds.arstechnica.com/arstechnica/index', 'tech'),
+    ('The Verge', 'https://www.theverge.com/rss/index.xml', 'tech'),
+    ('Hacker News', 'https://hnrss.org/frontpage?count=20', 'tech'),
+    ('Wired', 'https://www.wired.com/feed/rss', 'tech'),
+    # Science / Climate
+    ('Science Daily', 'https://www.sciencedaily.com/rss/all.xml', 'science'),
+    # Travel
+    ('Skift', 'https://skift.com/feed/', 'travel'),
+    # Gaming
+    ('IGN', 'https://feeds.feedburner.com/ign/all', 'entertainment'),
+    ('Kotaku', 'https://kotaku.com/rss', 'entertainment'),
+    # Health
+    ('NPR Health', 'https://feeds.npr.org/1128/rss.xml', 'health'),
+    ('BBC Health', 'https://feeds.bbci.co.uk/news/health/rss.xml', 'health'),
+    # Sports
+    ('ESPN', 'https://www.espn.com/espn/rss/news', 'sports'),
+    # Entertainment
+    ('BBC Entertainment', 'https://feeds.bbci.co.uk/news/entertainment_and_arts/rss.xml', 'entertainment'),
 ]
 
 # ─── Category keywords ───
@@ -109,7 +131,9 @@ def get_existing():
 def fetch_rss():
     """Fetch all RSS feeds."""
     stories = []
-    for name, url in FEEDS:
+    for feed_entry in FEEDS:
+        name, url = feed_entry[0], feed_entry[1]
+        hint_cat = feed_entry[2] if len(feed_entry) > 2 else None
         try:
             req = urllib.request.Request(url, headers={
                 'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36'
@@ -117,10 +141,16 @@ def fetch_rss():
             data = urllib.request.urlopen(req, timeout=10).read()
             root = ET.fromstring(data)
             
-            for item in root.findall('.//item')[:8]:
-                title = (item.findtext('title') or '').strip()
+            items = root.findall('.//item') or root.findall('.//{http://www.w3.org/2005/Atom}entry')
+            for item in items[:8]:
+                title = (item.findtext('title') or item.findtext('{http://www.w3.org/2005/Atom}title') or '').strip()
                 link = (item.findtext('link') or '').strip()
-                desc = (item.findtext('description') or '').strip()
+                # Atom feeds use <link href="..."/> 
+                if not link:
+                    link_el = item.find('{http://www.w3.org/2005/Atom}link')
+                    if link_el is not None:
+                        link = link_el.get('href', '')
+                desc = (item.findtext('description') or item.findtext('{http://www.w3.org/2005/Atom}summary') or item.findtext('{http://www.w3.org/2005/Atom}content') or '').strip()
                 
                 # Extract image from media:thumbnail or media:content
                 image = ''
@@ -145,6 +175,7 @@ def fetch_rss():
                         'link': link.split('?')[0],
                         'description': strip_html(desc)[:500],
                         'image': image,
+                        'hint_category': hint_cat,
                     })
         except Exception as e:
             print(f"  ⚠️ Feed error {name}: {e}", file=sys.stderr)
@@ -166,17 +197,20 @@ def slugify(text):
     return s[:80]
 
 
-def categorize(title, description):
-    """Assign category based on keyword matching."""
+def categorize(title, description, hint=None):
+    """Assign category based on keyword matching, with optional feed hint."""
     text = (title + ' ' + description).lower()
     scores = {}
     for cat, keywords in CATEGORY_KEYWORDS.items():
         score = sum(1 for kw in keywords if kw in text)
         if score > 0:
             scores[cat] = score
+    # Feed hint gets a boost
+    if hint and hint in CATEGORY_KEYWORDS:
+        scores[hint] = scores.get(hint, 0) + 3
     if scores:
         return max(scores, key=scores.get)
-    return 'world'
+    return hint or 'world'
 
 
 def extract_tags(title, description):
@@ -264,7 +298,7 @@ def build_article(story, paragraphs):
     """Build structured article JSON from RSS story + fetched content."""
     title = story['title']
     description = story['description']
-    category = categorize(title, description)
+    category = categorize(title, description, story.get('hint_category'))
     tags = extract_tags(title, description)
     internal_links = find_internal_links(title, description)
     
