@@ -1,4 +1,13 @@
 <style>
+  /* Mobile text wrapping fix */
+  * { box-sizing: border-box; }
+  img, table, pre, code { max-width: 100%; }
+  .section p, .section li, .callout, .rei-subtitle, .fh-subtitle,
+  .sma-subtitle, p, li, td, th, span, a, strong, em, div {
+    overflow-wrap: break-word;
+    word-wrap: break-word;
+  }
+
   .ema-container {
     max-width: 1100px;
     margin: 0 auto;

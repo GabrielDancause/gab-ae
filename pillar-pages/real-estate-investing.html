@@ -1,5 +1,7 @@
 <style>
   .rei-container {
+    overflow-x: hidden;
+    max-width: 100vw;
     max-width: 1100px;
     margin: 0 auto;
     padding: 2rem;
@@ -48,185 +50,136 @@
     color: #a5b4fc;
     padding: 0.4rem 1rem;
     border-radius: 20px;
-    font-size: 0.8rem;
-    margin-bottom: 2rem;
+    font-size: 0.85rem;
+    margin-bottom: 1.5rem;
+    border: 1px solid rgba(129, 140, 248, 0.3);
   }
-  .content-wrapper {
+
+  /* Sticky TOC */
+  .rei-layout {
     display: grid;
-    grid-template-columns: 1fr 280px;
+    grid-template-columns: 260px 1fr;
     gap: 4rem;
-    margin-top: 3rem;
+    align-items: start;
   }
-  .main-content {
-    min-width: 0;
-  }
-  .sidebar {
+  .sticky-toc {
     position: sticky;
     top: 2rem;
-    height: fit-content;
-    background: #12121a;
-    border: 1px solid rgba(255,255,255,0.08);
-    border-radius: 16px;
-    padding: 1.5rem;
-  }
-  .sidebar h3 {
-    color: #ffffff;
-    font-size: 0.9rem;
-    font-weight: 600;
-    margin: 0 0 1rem 0;
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
-  }
-  .sidebar ul {
-    list-style: none;
-    margin: 0;
-    padding: 0;
-  }
-  .sidebar li {
-    margin: 0;
-  }
-  .sidebar a {
-    display: block;
-    color: #94a3b8;
-    text-decoration: none;
-    padding: 0.5rem 0;
-    border-bottom: 1px solid rgba(255,255,255,0.05);
-    font-size: 0.85rem;
-    transition: color 0.2s;
-  }
-  .sidebar a:hover {
-    color: #a5b4fc;
-  }
-  .section {
-    margin: 4rem 0;
-    scroll-margin-top: 2rem;
-  }
-  .section h2 {
-    color: #ffffff;
-    font-size: 1.8rem;
-    font-weight: 700;
-    margin-bottom: 1.5rem;
-  }
-  .section h3 {
-    color: #e2e8f0;
-    font-size: 1.3rem;
-    font-weight: 600;
-    margin: 2rem 0 1rem 0;
-  }
-  .stats-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-    gap: 1.5rem;
-    margin: 2rem 0;
-  }
-  .stat-card {
     background: #12121a;
     border: 1px solid rgba(255,255,255,0.08);
     border-radius: 14px;
     padding: 1.5rem;
-    text-align: center;
   }
-  .stat-number {
-    font-size: 2.5rem;
-    font-weight: 800;
-    color: #818cf8;
-    display: block;
-    line-height: 1;
-  }
-  .stat-label {
-    color: #94a3b8;
+  .sticky-toc h3 {
+    margin: 0 0 1rem;
+    color: #fff;
     font-size: 0.9rem;
-    margin-top: 0.5rem;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    padding-bottom: 0.8rem;
+    border-bottom: 1px solid rgba(255,255,255,0.08);
   }
-  .property-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-    gap: 2rem;
-    margin: 2rem 0;
+  .sticky-toc ul { list-style: none; padding: 0; margin: 0; }
+  .sticky-toc li { margin-bottom: 0.7rem; }
+  .sticky-toc a {
+    color: #94a3b8;
+    text-decoration: none;
+    font-size: 0.88rem;
+    transition: all 0.2s;
+    display: block;
   }
-  .property-card {
-    background: #12121a;
-    border: 1px solid rgba(255,255,255,0.08);
-    border-radius: 16px;
-    padding: 2rem;
-    position: relative;
-    overflow: hidden;
+  .sticky-toc a:hover { color: #818cf8; transform: translateX(3px); }
+
+  /* Content sections */
+  .section { margin-bottom: 5rem; scroll-margin-top: 2rem; }
+  .section h2 {
+    font-size: 2rem;
+    color: #fff;
+    margin-bottom: 1.2rem;
+    padding-bottom: 0.8rem;
+    border-bottom: 1px solid rgba(255,255,255,0.08);
+    letter-spacing: -0.02em;
   }
-  .property-card::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    height: 4px;
-    background: linear-gradient(90deg, #818cf8, #a5b4fc);
+  .section h3 {
+    font-size: 1.35rem;
+    color: #e2e8f0;
+    margin-top: 2.5rem;
+    margin-bottom: 0.8rem;
   }
-  .property-card h4 {
-    color: #ffffff;
-    font-size: 1.2rem;
-    font-weight: 600;
-    margin-bottom: 1rem;
+  .section p {
+    margin-bottom: 1.3rem;
+    font-size: 1.05rem;
+    color: #cbd5e1;
   }
-  .property-roi {
-    background: rgba(129, 140, 248, 0.15);
-    color: #a5b4fc;
-    padding: 0.3rem 0.8rem;
-    border-radius: 8px;
-    font-size: 0.85rem;
-    font-weight: 600;
-    display: inline-block;
-    margin-bottom: 1rem;
+  .section ul, .section ol {
+    margin-bottom: 1.5rem;
+    padding-left: 1.5rem;
+    color: #cbd5e1;
+    font-size: 1.05rem;
   }
+  .section li { margin-bottom: 0.5rem; }
+
+  /* Callout boxes */
   .callout {
-    background: rgba(34, 211, 238, 0.1);
-    border-left: 4px solid #22d3ee;
-    border-radius: 0 8px 8px 0;
-    padding: 1.5rem;
+    border-left: 4px solid #818cf8;
+    background: linear-gradient(90deg, rgba(129, 140, 248, 0.1) 0%, rgba(129, 140, 248, 0.02) 100%);
+    padding: 1.3rem 1.8rem;
+    border-radius: 0 12px 12px 0;
     margin: 2rem 0;
-  }
-  .callout.warning {
-    background: rgba(251, 191, 36, 0.1);
-    border-left-color: #fbbf24;
-  }
-  .callout.success {
-    background: rgba(74, 222, 128, 0.1);
-    border-left-color: #4ade80;
-  }
-  .callout h4 {
-    color: #ffffff;
-    font-size: 1rem;
-    font-weight: 600;
-    margin: 0 0 0.5rem 0;
-  }
-  .comparison-table {
-    width: 100%;
-    background: #12121a;
-    border-radius: 16px;
-    overflow: hidden;
-    border: 1px solid rgba(255,255,255,0.08);
-    margin: 2rem 0;
-  }
-  .comparison-table th {
-    background: #1e293b;
-    color: #ffffff;
-    padding: 1rem;
-    text-align: left;
-    font-weight: 600;
-  }
-  .comparison-table td {
-    padding: 1rem;
-    border-bottom: 1px solid rgba(255,255,255,0.05);
+    font-size: 1.05rem;
     color: #e2e8f0;
   }
-  .comparison-table tr:last-child td {
-    border-bottom: none;
+  .callout.warning {
+    border-left-color: #fbbf24;
+    background: linear-gradient(90deg, rgba(251, 191, 36, 0.1) 0%, rgba(251, 191, 36, 0.02) 100%);
   }
-  .tier-high { color: #4ade80; }
-  .tier-medium { color: #fbbf24; }
-  .tier-low { color: #f87171; }
-  .strategy-cards {
+  .callout.success {
+    border-left-color: #4ade80;
+    background: linear-gradient(90deg, rgba(74, 222, 128, 0.1) 0%, rgba(74, 222, 128, 0.02) 100%);
+  }
+  .callout.danger {
+    border-left-color: #f87171;
+    background: linear-gradient(90deg, rgba(248, 113, 113, 0.1) 0%, rgba(248, 113, 113, 0.02) 100%);
+  }
+  .callout strong { color: #fff; }
+
+  /* Data tables */
+  .data-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 2rem 0;
+    font-size: 0.95rem;
+  }
+  .data-table thead {
+    background: rgba(129, 140, 248, 0.1);
+  }
+  .data-table th {
+    padding: 0.8rem 1rem;
+    text-align: left;
+    color: #a5b4fc;
+    font-weight: 600;
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    border-bottom: 1px solid rgba(255,255,255,0.1);
+  }
+  .data-table td {
+    padding: 0.8rem 1rem;
+    color: #cbd5e1;
+    border-bottom: 1px solid rgba(255,255,255,0.04);
+  }
+  .data-table tbody tr:hover {
+    background: rgba(255,255,255,0.02);
+  }
+  .cash-flow-high { color: #4ade80; font-weight: 600; }
+  .cash-flow-balanced { color: #fbbf24; font-weight: 600; }
+  .cash-flow-appreciation { color: #cbd5e1; }
+  .cash-flow-premium { color: #64748b; }
+
+  /* Strategy cards */
+  .strategy-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
     gap: 1.5rem;
     margin: 2rem 0;
   }
@@ -234,240 +187,192 @@
     background: #12121a;
     border: 1px solid rgba(255,255,255,0.08);
     border-radius: 14px;
-    padding: 1.5rem;
+    padding: 2rem;
+    transition: border-color 0.2s;
   }
+  .strategy-card:hover { border-color: rgba(129, 140, 248, 0.4); }
   .strategy-card h4 {
-    color: #ffffff;
-    font-size: 1.1rem;
-    font-weight: 600;
-    margin-bottom: 1rem;
+    color: #fff;
+    font-size: 1.15rem;
+    margin: 0 0 0.5rem;
   }
-  .strategy-tags {
-    display: flex;
-    gap: 0.5rem;
-    margin-bottom: 1rem;
-    flex-wrap: wrap;
-  }
-  .strategy-tag {
-    background: rgba(129, 140, 248, 0.15);
-    color: #a5b4fc;
-    padding: 0.3rem 0.6rem;
-    border-radius: 8px;
+  .strategy-type {
     font-size: 0.75rem;
-    font-weight: 500;
+    color: #818cf8;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    font-weight: 600;
+    margin-bottom: 0.6rem;
   }
-  .strategy-tag.capital-low { background: rgba(74, 222, 128, 0.15); color: #4ade80; }
-  .strategy-tag.capital-medium { background: rgba(251, 191, 36, 0.15); color: #fbbf24; }
-  .strategy-tag.capital-high { background: rgba(248, 113, 113, 0.15); color: #f87171; }
-  .roi-calculator {
+  .strategy-card p {
+    color: #94a3b8;
+    font-size: 0.95rem;
+    margin: 0 0 1rem;
+    line-height: 1.5;
+  }
+  .strategy-stats {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0.5rem;
+    margin-top: 1rem;
+    font-size: 0.85rem;
+  }
+  .strategy-stat { text-align: center; }
+  .strategy-stat-label { color: #64748b; display: block; }
+  .strategy-stat-value { color: #e2e8f0; font-weight: 600; }
+
+  /* Interactive calculator */
+  .calc-box {
     background: #12121a;
     border: 1px solid rgba(255,255,255,0.08);
     border-radius: 16px;
-    padding: 2rem;
-    margin: 3rem 0;
+    padding: 2.5rem;
+    margin: 2.5rem 0;
   }
-  .roi-calculator h3 {
-    color: #ffffff;
-    font-size: 1.3rem;
-    font-weight: 600;
-    margin-bottom: 1.5rem;
-    text-align: center;
+  .calc-box h3 {
+    color: #fff;
+    margin: 0 0 1.5rem;
+    font-size: 1.4rem;
   }
-  .calc-inputs {
+  .calc-row {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-    gap: 1rem;
-    margin-bottom: 2rem;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.5rem;
+    margin-bottom: 1.5rem;
   }
-  .calc-input {
-    display: flex;
-    flex-direction: column;
-    gap: 0.5rem;
-  }
-  .calc-input label {
+  .calc-field label {
+    display: block;
+    font-size: 0.8rem;
     color: #94a3b8;
-    font-size: 0.85rem;
-    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    margin-bottom: 0.4rem;
   }
-  .calc-input input, .calc-input select {
-    background: #1e293b;
-    border: 1px solid rgba(255,255,255,0.08);
+  .calc-field input {
+    width: 100%;
+    padding: 0.7rem 1rem;
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(255,255,255,0.1);
     border-radius: 8px;
-    padding: 0.75rem;
-    color: #e2e8f0;
-    font-size: 0.9rem;
+    color: #fff;
+    font-size: 1rem;
+    font-family: inherit;
+    box-sizing: border-box;
   }
-  .calc-input input:focus, .calc-input select:focus {
+  .calc-field input:focus {
     outline: none;
     border-color: #818cf8;
   }
-  .calc-button {
+  .calc-btn {
+    display: inline-block;
     background: #818cf8;
-    color: #ffffff;
+    color: #fff;
     border: none;
-    border-radius: 8px;
-    padding: 0.75rem 2rem;
+    padding: 0.8rem 2rem;
+    border-radius: 10px;
     font-weight: 600;
+    font-size: 1rem;
     cursor: pointer;
-    transition: background 0.2s;
-    width: 100%;
+    transition: all 0.2s;
+    font-family: inherit;
   }
-  .calc-button:hover {
-    background: #6366f1;
-  }
-  .calc-results {
-    background: rgba(129, 140, 248, 0.1);
-    border-radius: 12px;
-    padding: 1.5rem;
+  .calc-btn:hover { background: #6366f1; transform: translateY(-2px); }
+  .calc-result {
     margin-top: 1.5rem;
+    padding: 1.5rem;
+    background: rgba(129, 140, 248, 0.08);
+    border-radius: 12px;
     display: none;
   }
-  .calc-results h4 {
-    color: #a5b4fc;
-    font-size: 1.1rem;
+  .calc-result .metric-row {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1rem;
     margin-bottom: 1rem;
   }
-  .result-row {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 0.5rem 0;
-    border-bottom: 1px solid rgba(255,255,255,0.05);
+  .calc-result .metric {
+    text-align: center;
   }
-  .result-row:last-child {
-    border-bottom: none;
-    font-weight: 600;
-    color: #ffffff;
+  .calc-result .metric-number {
+    font-size: 1.5rem;
+    font-weight: 800;
+    color: #4ade80;
+    line-height: 1;
   }
-  .result-label {
+  .calc-result .metric-label {
+    font-size: 0.75rem;
     color: #94a3b8;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    margin-top: 0.3rem;
   }
-  .result-value {
-    color: #e2e8f0;
-    font-weight: 500;
+  .calc-result .breakdown {
+    margin-top: 1rem;
+    font-size: 0.95rem;
+    color: #cbd5e1;
   }
-  .market-table {
+
+  /* Comparison table */
+  .comparison-table {
     width: 100%;
-    background: #12121a;
-    border-radius: 16px;
-    overflow: hidden;
-    border: 1px solid rgba(255,255,255,0.08);
+    border-collapse: collapse;
     margin: 2rem 0;
+    background: #12121a;
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 14px;
+    overflow: hidden;
   }
-  .market-table th {
-    background: #1e293b;
-    color: #ffffff;
-    padding: 0.75rem;
-    text-align: left;
+  .comparison-table th {
+    padding: 1rem;
+    background: rgba(129, 140, 248, 0.1);
+    color: #a5b4fc;
     font-weight: 600;
-    font-size: 0.9rem;
-  }
-  .market-table td {
-    padding: 0.75rem;
-    border-bottom: 1px solid rgba(255,255,255,0.05);
-    color: #e2e8f0;
     font-size: 0.85rem;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
   }
-  .market-table tr:last-child td {
-    border-bottom: none;
+  .comparison-table td {
+    padding: 0.8rem 1rem;
+    color: #cbd5e1;
+    border-bottom: 1px solid rgba(255,255,255,0.04);
   }
+  .comparison-table .pros { color: #4ade80; }
+  .comparison-table .cons { color: #f87171; }
+  .comparison-table .neutral { color: #fbbf24; }
+
+  /* FAQ */
   .faq-section {
-    margin: 4rem 0;
+    margin-top: 5rem;
+    border-top: 1px solid rgba(255,255,255,0.08);
+    padding-top: 4rem;
+  }
+  .faq-section h2 {
+    font-size: 2rem;
+    color: #fff;
+    margin-bottom: 2rem;
+    text-align: center;
   }
   .faq-item {
     background: #12121a;
     border: 1px solid rgba(255,255,255,0.08);
     border-radius: 14px;
+    padding: 1.5rem;
     margin-bottom: 1rem;
-    overflow: hidden;
   }
-  .faq-question {
-    padding: 1.5rem;
-    color: #ffffff;
-    font-weight: 600;
-    cursor: pointer;
-    border-bottom: 1px solid rgba(255,255,255,0.05);
-  }
-  .faq-answer {
-    padding: 1.5rem;
-    color: #94a3b8;
-  }
-  .cta-cards {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-    gap: 1.5rem;
-    margin: 3rem 0;
-  }
-  .cta-card {
-    background: linear-gradient(135deg, #1e293b, #334155);
-    border: 1px solid rgba(255,255,255,0.08);
-    border-radius: 16px;
-    padding: 2rem;
-    text-align: center;
-  }
-  .cta-card h4 {
-    color: #ffffff;
-    font-size: 1.1rem;
-    font-weight: 600;
-    margin-bottom: 0.5rem;
-  }
-  .cta-card p {
-    color: #94a3b8;
-    font-size: 0.9rem;
-    margin-bottom: 1.5rem;
-  }
-  .cta-button {
-    display: inline-block;
-    background: #818cf8;
-    color: #ffffff;
-    padding: 0.7rem 1.5rem;
-    border-radius: 8px;
-    text-decoration: none;
-    font-weight: 600;
-    font-size: 0.9rem;
-    transition: background 0.2s;
-  }
-  .cta-button:hover {
-    background: #6366f1;
-  }
-  
+  .faq-item:hover { border-color: rgba(129, 140, 248, 0.3); }
+  .faq-item h3 { margin: 0 0 0.7rem; color: #fff; font-size: 1.1rem; }
+  .faq-item p { margin: 0; color: #94a3b8; font-size: 1rem; }
+
   @media (max-width: 1024px) {
-    .content-wrapper {
-      grid-template-columns: 1fr;
-      gap: 2rem;
-    }
-    .sidebar {
-      position: relative;
-      top: 0;
-      order: -1;
-    }
+    .rei-layout { grid-template-columns: 1fr; gap: 2rem; }
+    .sticky-toc { position: relative; top: 0; }
+    .strategy-grid { grid-template-columns: 1fr; }
   }
-  
   @media (max-width: 768px) {
-    .rei-container {
-      padding: 1rem;
-    }
-    .breadcrumb {
-      flex-wrap: wrap;
-    }
-    .stats-grid {
-      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-    }
-    .property-grid {
-      grid-template-columns: 1fr;
-    }
-    .strategy-cards {
-      grid-template-columns: 1fr;
-    }
-    .cta-cards {
-      grid-template-columns: 1fr;
-    }
-    .calc-inputs {
-      grid-template-columns: 1fr;
-    }
-    .market-table {
-      font-size: 0.8rem;
-    }
+    .gradient-h1 { font-size: 2rem; }
+    .rei-container { padding: 1rem; }
+    .calc-row { grid-template-columns: 1fr; }
+    .calc-result .metric-row { grid-template-columns: repeat(2, 1fr); }
   }
 </style>
 
@@ -480,753 +385,848 @@
       <span>›</span>
       <span style="color: #cbd5e1;">Current</span>
     </div>
-    
-    <div class="updated-badge">
-      🏠 Updated March 2026
-    </div>
-    
-    <h1 class="gradient-h1">Real Estate Investing</h1>
-    <p class="rei-subtitle">Build wealth through property investment with strategies delivering 6-21% annual returns. From rental properties to house flipping, master the fundamentals and advanced tactics.</p>
+    <span class="updated-badge">🏠 Updated March 2026</span>
+    <h1 class="gradient-h1">Real Estate Investing — The Complete Playbook</h1>
+    <p class="rei-subtitle">Cap rates by city, rental yield data, REIT comparison, house flipping math, and a rental property ROI calculator. Real numbers, real strategies.</p>
   </div>
 
-  <div class="content-wrapper">
-    <main class="main-content">
-      <div class="stats-grid">
-        <div class="stat-card">
-          <span class="stat-number">6%</span>
-          <div class="stat-label">Average annual real estate return (1870-2015)</div>
-        </div>
-        <div class="stat-card">
-          <span class="stat-number">309%</span>
-          <div class="stat-label">Residential growth 1995-2025 (S&P Case-Shiller)</div>
-        </div>
-        <div class="stat-card">
-          <span class="stat-number">21.95%</span>
-          <div class="stat-label">Highest rental yields (Detroit, MI)</div>
-        </div>
-        <div class="stat-card">
-          <span class="stat-number">25.1%</span>
-          <div class="stat-label">Average house flipping return 2026</div>
-        </div>
-      </div>
+  <div class="rei-layout">
+    <aside>
+      <nav class="sticky-toc">
+        <h3>Contents</h3>
+        <ul>
+          <li><a href="#money">1. How Real Estate Makes Money</a></li>
+          <li><a href="#market">2. The 2026 Market Landscape</a></li>
+          <li><a href="#cap-rates">3. Cap Rates by City — The Complete Map</a></li>
+          <li><a href="#strategies">4. The Five Investment Strategies</a></li>
+          <li><a href="#leverage">5. The Math of Leverage</a></li>
+          <li><a href="#reit-vs-physical">6. REIT vs Physical Property</a></li>
+          <li><a href="#flipping">7. House Flipping in 2026</a></li>
+          <li><a href="#tax">8. Tax Strategies That Actually Work</a></li>
+          <li><a href="#calculator">9. Rental Property ROI Calculator</a></li>
+          <li><a href="#faq">10. FAQ</a></li>
+        </ul>
+      </nav>
+    </aside>
 
-      <section id="fundamentals" class="section">
-        <h2>Real Estate Investment Fundamentals</h2>
-        <p>Real estate has generated wealth for centuries, delivering an inflation-adjusted 6% annual return from 1870-2015. Unlike stocks, property provides tangible assets, cash flow, tax advantages, and inflation protection. The $132 billion US real estate market is projected to grow 4.1% annually through 2030.</p>
+    <main>
+
+      <!-- SECTION 1: HOW REAL ESTATE MAKES MONEY -->
+      <section id="money" class="section">
+        <h2>1. How Real Estate Actually Makes Money</h2>
+        <p>Real estate isn't just about buying low and selling high. It's a four-dimensional wealth engine that generates returns through cash flow, appreciation, leverage amplification, and tax advantages. Understanding each component is the difference between treating property like a lottery ticket and building systematic wealth.</p>
+
+        <h3>The Four Return Sources</h3>
+        <p><strong>Cash Flow:</strong> The monthly rent minus all expenses (mortgage, taxes, insurance, maintenance, vacancy allowance). A $300K property in Memphis might generate $1,150/month in rent against $900 in total monthly expenses = $250 monthly cash flow or $3,000 annually. That's a 10% cash-on-cash return on a $30K down payment.</p>
+
+        <p><strong>Appreciation:</strong> Property value increases over time. The 2026 forecast shows existing home prices rising 2.2% annually, but this varies wildly by market. Austin has averaged 8% annually over the past decade. Detroit, 3%. The national average since 1968 is 5.4% annually — slightly ahead of inflation.</p>
+
+        <p><strong>Leverage:</strong> Using debt to amplify returns. Put 20% down on a $400K property, and you control $400K of appreciation exposure for $80K. If the property appreciates 5% annually, that's $20K of gains on your $80K investment — a 25% return. This is why real estate can outperform the stock market even with lower underlying returns.</p>
+
+        <p><strong>Tax Advantages:</strong> Depreciation deductions, mortgage interest deductions, property tax deductions, and the ability to defer capital gains through 1031 exchanges. On that same $400K property, you can deduct roughly $14,500 annually in depreciation (building value ÷ 27.5 years) plus mortgage interest and expenses. This often turns a profitable property into a tax loss on paper.</p>
+
+        <div class="callout success">
+          <strong>Real example from 2026 numbers:</strong> A $285K house in Houston renting for $1,650/month. With 20% down ($57K) and a 6.3% mortgage, you're cash flow positive by ~$180/month while deducting $10,364 in annual depreciation. Your actual returns: $2,160 cash flow + $14,250 appreciation (5% annually) + ~$3,100 tax savings (30% bracket) = $19,510 total return on $57K invested = 34% annual return.
+        </div>
+
+        <h3>Why Real Estate Beats Stocks (Sometimes)</h3>
+        <p>The S&P 500 has averaged 10% annually over the past century. But real estate has two advantages: leverage and taxes. You can't easily get a 4:1 margin loan to buy index funds at 6.3% interest. And stocks don't give you depreciation deductions.</p>
+
+        <p>The catch? Real estate is illiquid, requires active management, and concentrates risk in specific geographic markets. A single major employer leaving town can crater your rental market. Stocks diversify across thousands of companies and geographies automatically.</p>
+
+        <p>The optimal strategy for most people: Real estate for leverage and tax advantages, stocks for liquidity and diversification. Both, not either/or.</p>
+      </section>
+
+      <!-- SECTION 2: THE 2026 MARKET LANDSCAPE -->
+      <section id="market" class="section">
+        <h2>2. The 2026 Market Landscape</h2>
+        <p>The real estate market entering 2026 looks fundamentally different from the pandemic-era frenzy. After three years of elevated mortgage rates and suppressed transaction volume, we're seeing the first signs of normalization — and opportunity.</p>
+
+        <h3>The Key Numbers</h3>
+        <ul>
+          <li><strong>Mortgage Rates:</strong> 6.3% average for 2026 — still elevated but stabilizing after the 2022-2024 rate shock</li>
+          <li><strong>Price Appreciation:</strong> +2.2% year-over-year — a healthy deceleration from pandemic peaks</li>
+          <li><strong>Home Sales Volume:</strong> 4.13M (+1.7% YoY) — the first increase since 2021</li>
+          <li><strong>Inventory:</strong> +8.9% year-over-year but still 12% below pre-2020 levels</li>
+          <li><strong>Affordability:</strong> Monthly payments now represent 29.3% of median income — the first time below 30% since 2022</li>
+          <li><strong>Homeownership Rate:</strong> 64.8% — essentially flat, suggesting market stability</li>
+          <li><strong>Rent Growth:</strong> -1.0% — rental prices declining as construction catches up with demand</li>
+        </ul>
 
         <div class="callout">
-          <h4>💡 Real Estate Investment Truth</h4>
-          <p>Real estate isn't just about appreciation—it's about leveraging other people's money (mortgages) to control appreciating assets while generating monthly cash flow. The combination of leverage, cash flow, and appreciation creates compound wealth building.</p>
+          <strong>The inflection point:</strong> The National Association of Realtors forecasts a 14% surge in home sales for 2026. Why? Pent-up demand from three years of frozen transactions, mortgage rates stabilizing rather than rising, and the first meaningful improvement in affordability since pre-pandemic. The spring selling season could be the most active since 2020.
         </div>
 
-        <h3>Why Real Estate Outperforms</h3>
-        <p>Real estate's investment appeal comes from multiple return sources:</p>
-        
-        <div class="strategy-cards">
-          <div class="strategy-card">
-            <h4>Cash Flow</h4>
-            <div class="strategy-tags">
-              <span class="strategy-tag">Monthly income</span>
-              <span class="strategy-tag">Passive returns</span>
-            </div>
-            <p>Rental income provides monthly cash flow. Top rental markets like Detroit yield 21.95% gross rental returns, with positive cash flow from day one.</p>
-          </div>
+        <h3>What This Means for Investors</h3>
+        <p><strong>For Cash Buyers:</strong> Maximum opportunity. Sellers are still motivated, inventory is improving, and you're not competing with as many leveraged buyers. This is the best environment for cash buyers since 2012.</p>
 
-          <div class="strategy-card">
-            <h4>Appreciation</h4>
-            <div class="strategy-tags">
-              <span class="strategy-tag">Long-term wealth</span>
-              <span class="strategy-tag">Inflation hedge</span>
-            </div>
-            <p>Property values increase over time. The S&P Case-Shiller Index shows 309% residential growth from 1995-2025, outpacing inflation and many stocks.</p>
-          </div>
+        <p><strong>For Leveraged Investors:</strong> Selective opportunities. 6.3% mortgages mean your deals need stronger cash flow fundamentals. The "buy anything and let appreciation carry you" strategy is dead. Focus on true rental markets with 7%+ cap rates.</p>
 
-          <div class="strategy-card">
-            <h4>Leverage Benefits</h4>
-            <div class="strategy-tags">
-              <span class="strategy-tag">OPM strategy</span>
-              <span class="strategy-tag">ROI amplification</span>
-            </div>
-            <p>Use mortgages to control $400K properties with $80K down. When property appreciates 5%, your $80K investment gains 25% (before costs).</p>
-          </div>
+        <p><strong>For First-Time Investors:</strong> Consider house hacking (live in a duplex, rent the other side) to qualify for owner-occupied financing at lower rates. FHA loans allow as little as 3.5% down on multi-family properties up to 4 units.</p>
 
-          <div class="strategy-card">
-            <h4>Tax Advantages</h4>
-            <div class="strategy-tags">
-              <span class="strategy-tag">Depreciation</span>
-              <span class="strategy-tag">1031 exchanges</span>
-            </div>
-            <p>Depreciation deductions, mortgage interest deductibility, and 1031 exchanges for tax-deferred property swaps maximize after-tax returns.</p>
-          </div>
-        </div>
+        <p>The 2026 market rewards discipline. Properties need to cash flow from day one. Markets with job growth and population inflows (think Austin, Charlotte, Nashville) are worth premium pricing. Declining Rust Belt cities are value traps unless you're buying at massive discounts.</p>
 
-        <div class="callout success">
-          <h4>✅ 2026 Real Estate Market Status</h4>
-          <p>The US real estate market is worth $132.02 billion with 45.3 million rental households. Average rent: $1,743 (apartments), $2,000 (single-family). Median home price: $410,800. Market stability + income potential = strong investment environment.</p>
-        </div>
+        <h3>Regional Opportunities</h3>
+        <p><strong>Sunbelt Growth:</strong> Texas, Florida, and the Carolinas continue attracting business relocations and population growth. Phoenix and Las Vegas are rebounding after construction caught up with demand.</p>
+
+        <p><strong>Midwest Value:</strong> Cleveland, Kansas City, and Indianapolis offer the best cash flow fundamentals. Less sexy, but the math works at current interest rates.</p>
+
+        <p><strong>Coastal Corrections:</strong> San Francisco and Seattle are seeing the first real declines in years. Still expensive by national standards, but creating opportunities for patient investors with long-term horizons.</p>
       </section>
 
-      <section id="property-types" class="section">
-        <h2>Property Investment Types</h2>
-        
-        <div class="comparison-table">
-          <table>
-            <thead>
-              <tr>
-                <th>Property Type</th>
-                <th>Average 1-Year ROI</th>
-                <th>Capital Required</th>
-                <th>Management Level</th>
-                <th>Best For</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td><strong>Industrial Properties</strong></td>
-                <td class="tier-high">9.50%</td>
-                <td class="tier-high">High ($1M+)</td>
-                <td>Low</td>
-                <td>Experienced investors, REITs</td>
-              </tr>
-              <tr>
-                <td><strong>Low-Rise Apartments</strong></td>
-                <td class="tier-high">9.00%</td>
-                <td class="tier-high">High ($500K+)</td>
-                <td>Medium</td>
-                <td>Scale-focused investors</td>
-              </tr>
-              <tr>
-                <td><strong>Multi-Family Homes</strong></td>
-                <td class="tier-medium">7.60%</td>
-                <td class="tier-medium">Medium ($250K+)</td>
-                <td>Medium</td>
-                <td>Steady cash flow seekers</td>
-              </tr>
-              <tr>
-                <td><strong>Single-Family Rentals</strong></td>
-                <td class="tier-medium">7.50%</td>
-                <td class="tier-medium">Medium ($100K+)</td>
-                <td>High</td>
-                <td>First-time investors</td>
-              </tr>
-              <tr>
-                <td><strong>New Single-Family</strong></td>
-                <td class="tier-low">1.32%</td>
-                <td class="tier-high">High ($300K+)</td>
-                <td>Low</td>
-                <td>Appreciation plays</td>
-              </tr>
-              <tr>
-                <td><strong>High-Rise Apartments</strong></td>
-                <td class="tier-low">-9.00%</td>
-                <td class="tier-high">Very High ($1M+)</td>
-                <td>Low</td>
-                <td>Commercial specialists</td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
+      <!-- SECTION 3: CAP RATES BY CITY -->
+      <section id="cap-rates" class="section">
+        <h2>3. Cap Rates by City — The Complete Map</h2>
+        <p>Cap rates (capitalization rates) are the fundamental metric of real estate returns. It's the property's net operating income divided by its purchase price. A 7% cap rate means the property generates 7% of its value annually in net income before financing.</p>
 
-        <h3>Detailed Property Analysis</h3>
+        <p>Here's the reality: high cap rates usually mean high risk or declining markets. Low cap rates mean expensive markets betting on future appreciation. The sweet spot is 6-8% cap rates in growing markets.</p>
 
-        <div class="property-grid">
-          <div class="property-card">
-            <h4>🏠 Single-Family Rentals</h4>
-            <div class="property-roi">7.50% Average ROI</div>
-            <p><strong>Investment:</strong> $100K-$400K typical<br>
-            <strong>Cash Flow:</strong> $200-$800/month after expenses<br>
-            <strong>Management:</strong> Direct tenant relationships, maintenance responsibility<br>
-            <strong>Pros:</strong> Easier financing, lower entry cost, portfolio scalability<br>
-            <strong>Cons:</strong> Single tenant risk, hands-on management</p>
-          </div>
-
-          <div class="property-card">
-            <h4>🏢 Multi-Family Properties</h4>
-            <div class="property-roi">7.60% Average ROI</div>
-            <p><strong>Investment:</strong> $250K-$1M+ typical<br>
-            <strong>Cash Flow:</strong> $1,000-$5,000/month potential<br>
-            <strong>Management:</strong> Multiple units, economies of scale<br>
-            <strong>Pros:</strong> Diversified income, better per-unit economics<br>
-            <strong>Cons:</strong> Higher capital requirements, commercial lending</p>
-          </div>
-
-          <div class="property-card">
-            <h4>🏭 Commercial Properties</h4>
-            <div class="property-roi">9.03% Historical Average</div>
-            <p><strong>Investment:</strong> $500K-$10M+ range<br>
-            <strong>Cash Flow:</strong> $3,000-$50,000/month potential<br>
-            <strong>Management:</strong> Professional tenant relationships<br>
-            <strong>Pros:</strong> Higher returns, longer leases, professional tenants<br>
-            <strong>Cons:</strong> High capital, complex financing, market expertise needed</p>
-          </div>
-
-          <div class="property-card">
-            <h4>🏖️ Short-Term Rentals</h4>
-            <div class="property-roi">$36,678 Average Revenue</div>
-            <p><strong>Investment:</strong> $150K-$500K typical<br>
-            <strong>Cash Flow:</strong> $2,200-$4,700/month potential<br>
-            <strong>Management:</strong> High-touch guest services<br>
-            <strong>Pros:</strong> Higher nightly rates, flexibility for personal use<br>
-            <strong>Cons:</strong> Regulation risks, seasonal fluctuations, intensive management</p>
-          </div>
-        </div>
-      </section>
-
-      <section id="roi-calculator" class="section">
-        <div class="roi-calculator">
-          <h3>🏠 Real Estate ROI Calculator</h3>
-          <p>Calculate your potential returns across different real estate investment strategies.</p>
-          
-          <div class="calc-inputs">
-            <div class="calc-input">
-              <label for="purchasePrice">Purchase Price</label>
-              <input type="number" id="purchasePrice" placeholder="300000">
-            </div>
-            
-            <div class="calc-input">
-              <label for="downPayment">Down Payment (%)</label>
-              <input type="number" id="downPayment" placeholder="25" step="1">
-            </div>
-            
-            <div class="calc-input">
-              <label for="monthlyRent">Monthly Rent</label>
-              <input type="number" id="monthlyRent" placeholder="2500">
-            </div>
-            
-            <div class="calc-input">
-              <label for="monthlyExpenses">Monthly Expenses</label>
-              <input type="number" id="monthlyExpenses" placeholder="800">
-            </div>
-            
-            <div class="calc-input">
-              <label for="annualAppreciation">Annual Appreciation (%)</label>
-              <input type="number" id="annualAppreciation" placeholder="4" step="0.1">
-            </div>
-            
-            <div class="calc-input">
-              <label for="mortgageRate">Mortgage Rate (%)</label>
-              <input type="number" id="mortgageRate" placeholder="6.5" step="0.1">
-            </div>
-          </div>
-          
-          <button class="calc-button" onclick="calculateRealEstateROI()">Calculate Investment Returns</button>
-          
-          <div class="calc-results" id="reResults">
-            <h4>Your Investment Analysis</h4>
-            <div class="result-row">
-              <span class="result-label">Initial Investment:</span>
-              <span class="result-value" id="initialInvestment">—</span>
-            </div>
-            <div class="result-row">
-              <span class="result-label">Monthly Cash Flow:</span>
-              <span class="result-value" id="monthlyCashFlow">—</span>
-            </div>
-            <div class="result-row">
-              <span class="result-label">Annual Cash Yield:</span>
-              <span class="result-value" id="cashYield">—</span>
-            </div>
-            <div class="result-row">
-              <span class="result-label">Total Annual Return (with appreciation):</span>
-              <span class="result-value" id="totalReturn">—</span>
-            </div>
-            <div class="result-row">
-              <span class="result-label">10-Year Investment Value:</span>
-              <span class="result-value" id="tenYearValue">—</span>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <section id="investment-strategies" class="section">
-        <h2>Proven Investment Strategies</h2>
-
-        <h3>Buy and Hold Strategy</h3>
-        <p>The classic wealth-building approach: purchase properties for long-term rental income and appreciation.</p>
-
-        <div class="strategy-cards">
-          <div class="strategy-card">
-            <h4>Cash Flow Focus</h4>
-            <div class="strategy-tags">
-              <span class="strategy-tag capital-medium">Medium Capital</span>
-              <span class="strategy-tag">Passive income</span>
-            </div>
-            <p><strong>Target:</strong> Properties generating $200+ monthly cash flow<br>
-            <strong>Markets:</strong> Detroit (21.95% yield), Cleveland (9.8% yield)<br>
-            <strong>Strategy:</strong> Focus on rental yield over appreciation potential</p>
-          </div>
-
-          <div class="strategy-card">
-            <h4>Appreciation Play</h4>
-            <div class="strategy-tags">
-              <span class="strategy-tag capital-high">High Capital</span>
-              <span class="strategy-tag">Growth markets</span>
-            </div>
-            <p><strong>Target:</strong> Properties in high-growth metro areas<br>
-            <strong>Markets:</strong> Austin, Miami, Phoenix, Denver<br>
-            <strong>Strategy:</strong> Accept lower initial yields for appreciation upside</p>
-          </div>
-
-          <div class="strategy-card">
-            <h4>House Hacking</h4>
-            <div class="strategy-tags">
-              <span class="strategy-tag capital-low">Low Capital</span>
-              <span class="strategy-tag">Owner-occupied</span>
-            </div>
-            <p><strong>Target:</strong> Multi-family properties you can live in<br>
-            <strong>Benefits:</strong> Owner-occupied financing (3.5% down), reduced living expenses<br>
-            <strong>Strategy:</strong> Live in one unit, rent others to cover mortgage</p>
-          </div>
-        </div>
-
-        <h3>House Flipping Strategy</h3>
-        <p>Buy distressed properties, renovate, and sell for profit. National average ROI: 38.7% in 2026.</p>
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>Market</th>
+              <th>Cap Rate</th>
+              <th>Avg Rent</th>
+              <th>Avg Price</th>
+              <th>Strategy</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr class="cash-flow-high">
+              <td><strong>Memphis, TN</strong></td>
+              <td>9.2%</td>
+              <td>$1,150/mo</td>
+              <td>$145K</td>
+              <td>Cash flow focus</td>
+            </tr>
+            <tr class="cash-flow-high">
+              <td><strong>Cleveland, OH</strong></td>
+              <td>8.5%</td>
+              <td>$1,200/mo</td>
+              <td>$165K</td>
+              <td>Cash flow focus</td>
+            </tr>
+            <tr class="cash-flow-high">
+              <td><strong>Detroit, MI</strong></td>
+              <td>8.3%</td>
+              <td>$1,100/mo</td>
+              <td>$155K</td>
+              <td>Cash flow focus</td>
+            </tr>
+            <tr class="cash-flow-high">
+              <td><strong>Kansas City, MO</strong></td>
+              <td>8.1%</td>
+              <td>$1,250/mo</td>
+              <td>$185K</td>
+              <td>Cash flow focus</td>
+            </tr>
+            <tr class="cash-flow-high">
+              <td><strong>Birmingham, AL</strong></td>
+              <td>8.0%</td>
+              <td>$1,150/mo</td>
+              <td>$175K</td>
+              <td>Cash flow focus</td>
+            </tr>
+            <tr class="cash-flow-balanced">
+              <td><strong>Atlanta, GA</strong></td>
+              <td>7.2%</td>
+              <td>$1,650/mo</td>
+              <td>$385K</td>
+              <td>Balanced growth</td>
+            </tr>
+            <tr class="cash-flow-balanced">
+              <td><strong>Charlotte, NC</strong></td>
+              <td>6.9%</td>
+              <td>$1,550/mo</td>
+              <td>$295K</td>
+              <td>Balanced growth</td>
+            </tr>
+            <tr class="cash-flow-balanced">
+              <td><strong>Houston, TX</strong></td>
+              <td>6.8%</td>
+              <td>$1,650/mo</td>
+              <td>$285K</td>
+              <td>Balanced growth</td>
+            </tr>
+            <tr class="cash-flow-balanced">
+              <td><strong>Indianapolis, IN</strong></td>
+              <td>6.7%</td>
+              <td>$1,350/mo</td>
+              <td>$245K</td>
+              <td>Balanced growth</td>
+            </tr>
+            <tr class="cash-flow-balanced">
+              <td><strong>Chicago, IL</strong></td>
+              <td>6.5%</td>
+              <td>$2,200/mo</td>
+              <td>$325K</td>
+              <td>Balanced growth</td>
+            </tr>
+            <tr class="cash-flow-appreciation">
+              <td><strong>Phoenix, AZ</strong></td>
+              <td>5.9%</td>
+              <td>$1,650/mo</td>
+              <td>$425K</td>
+              <td>Appreciation play</td>
+            </tr>
+            <tr class="cash-flow-appreciation">
+              <td><strong>Austin, TX</strong></td>
+              <td>5.8%</td>
+              <td>$2,100/mo</td>
+              <td>$485K</td>
+              <td>Appreciation play</td>
+            </tr>
+            <tr class="cash-flow-appreciation">
+              <td><strong>Nashville, TN</strong></td>
+              <td>5.5%</td>
+              <td>$1,850/mo</td>
+              <td>$425K</td>
+              <td>Appreciation play</td>
+            </tr>
+            <tr class="cash-flow-appreciation">
+              <td><strong>Denver, CO</strong></td>
+              <td>5.2%</td>
+              <td>$2,250/mo</td>
+              <td>$525K</td>
+              <td>Appreciation play</td>
+            </tr>
+            <tr class="cash-flow-appreciation">
+              <td><strong>Miami, FL</strong></td>
+              <td>4.8%</td>
+              <td>$2,850/mo</td>
+              <td>$685K</td>
+              <td>Appreciation play</td>
+            </tr>
+            <tr class="cash-flow-premium">
+              <td><strong>New York, NY</strong></td>
+              <td>3.8%</td>
+              <td>$3,800/mo</td>
+              <td>$1.25M</td>
+              <td>Wealth preservation</td>
+            </tr>
+            <tr class="cash-flow-premium">
+              <td><strong>Los Angeles, CA</strong></td>
+              <td>3.5%</td>
+              <td>$3,200/mo</td>
+              <td>$985K</td>
+              <td>Wealth preservation</td>
+            </tr>
+            <tr class="cash-flow-premium">
+              <td><strong>San Francisco, CA</strong></td>
+              <td>3.2%</td>
+              <td>$4,500/mo</td>
+              <td>$1.65M</td>
+              <td>Wealth preservation</td>
+            </tr>
+          </tbody>
+        </table>
 
         <div class="callout warning">
-          <h4>⚠️ Flipping Reality Check</h4>
-          <p>House flipping generated 25.1% net returns in Q2 2025, but requires active management, renovation expertise, and market timing. Average flip profit: $65,300. High returns come with high risk and intensive effort.</p>
+          <strong>The Memphis question:</strong> Why is Memphis showing 9.2% cap rates? High crime, population decline, and economic stagnation. You're not buying real estate — you're buying social problems with a real estate wrapper. Cleveland and Kansas City offer better risk-adjusted returns with more stable fundamentals.
         </div>
 
-        <h3>Top House Flipping Markets 2026</h3>
-        <div class="market-table">
-          <table>
-            <thead>
-              <tr>
-                <th>Market</th>
-                <th>Average Profit Margin</th>
-                <th>Typical Purchase Price</th>
-                <th>Average Profit</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td><strong>Pittsburgh, PA</strong></td>
-                <td class="tier-high">106.8%</td>
-                <td>$85,000</td>
-                <td>$90,780</td>
-              </tr>
-              <tr>
-                <td><strong>Shreveport, LA</strong></td>
-                <td class="tier-high">104.2%</td>
-                <td>$75,000</td>
-                <td>$78,150</td>
-              </tr>
-              <tr>
-                <td><strong>Scranton, PA</strong></td>
-                <td class="tier-high">104.1%</td>
-                <td>$80,000</td>
-                <td>$83,280</td>
-              </tr>
-              <tr>
-                <td><strong>Kalamazoo, MI</strong></td>
-                <td class="tier-high">100.0%</td>
-                <td>$90,000</td>
-                <td>$90,000</td>
-              </tr>
-              <tr>
-                <td><strong>Buffalo, NY</strong></td>
-                <td class="tier-high">91.7%</td>
-                <td>$95,000</td>
-                <td>$87,115</td>
-              </tr>
-              <tr>
-                <td><strong>New Orleans, LA</strong></td>
-                <td class="tier-medium">78.1%</td>
-                <td>$125,000</td>
-                <td>$97,625</td>
-              </tr>
-              <tr>
-                <td><strong>National Average</strong></td>
-                <td class="tier-medium">25.1%</td>
-                <td>$259,700</td>
-                <td>$65,300</td>
-              </tr>
-            </tbody>
-          </table>
+        <h3>How to Read This Table</h3>
+        <p><strong>Green (8%+ Cap Rates):</strong> Cash flow machines. Perfect for investors who want monthly income. High maintenance, high management, but immediate returns. Best for experienced investors who can handle tenant issues and property management.</p>
+
+        <p><strong>Yellow (6-8% Cap Rates):</strong> The sweet spot for most investors. Decent cash flow with appreciation potential. Markets like Atlanta, Charlotte, and Houston have growth stories while still producing positive cash flow at current interest rates.</p>
+
+        <p><strong>White (4-6% Cap Rates):</strong> Appreciation bets. You're banking on continued price growth and rent increases. Only works with significant down payments or cash purchases. Austin and Nashville are betting on continued tech and population growth.</p>
+
+        <p><strong>Gray (&lt;4% Cap Rates):</strong> Wealth preservation plays for ultra-high-net-worth investors. You're buying location, scarcity, and global demand. Not cash flow investments.</p>
+      </section>
+
+      <!-- SECTION 4: THE FIVE INVESTMENT STRATEGIES -->
+      <section id="strategies" class="section">
+        <h2>4. The Five Investment Strategies</h2>
+        <p>Real estate investing isn't one-size-fits-all. Your strategy depends on your capital, risk tolerance, time commitment, and return goals. Here are the five main approaches, with brutally honest pros and cons.</p>
+
+        <div class="strategy-grid">
+          <div class="strategy-card">
+            <div class="strategy-type">Buy & Hold Rental</div>
+            <h4>Traditional Rental Property</h4>
+            <p>Buy property, rent it out, hold long-term. The most straightforward strategy but requires significant capital and ongoing management.</p>
+            <div class="strategy-stats">
+              <div class="strategy-stat">
+                <span class="strategy-stat-label">Time</span>
+                <span class="strategy-stat-value">5+ hrs/mo</span>
+              </div>
+              <div class="strategy-stat">
+                <span class="strategy-stat-label">Capital</span>
+                <span class="strategy-stat-value">20-25% down</span>
+              </div>
+              <div class="strategy-stat">
+                <span class="strategy-stat-label">Returns</span>
+                <span class="strategy-stat-value">8-15% annually</span>
+              </div>
+            </div>
+            <p><strong>Pros:</strong> Steady cash flow, appreciation, tax benefits, leverage</p>
+            <p><strong>Cons:</strong> Illiquid, management headaches, concentration risk, repairs</p>
+          </div>
+
+          <div class="strategy-card">
+            <div class="strategy-type">BRRRR Method</div>
+            <h4>Buy, Rehab, Rent, Refinance, Repeat</h4>
+            <p>Buy distressed properties, renovate, rent, refinance to pull capital out, repeat. The fastest way to scale but highest risk and time commitment.</p>
+            <div class="strategy-stats">
+              <div class="strategy-stat">
+                <span class="strategy-stat-label">Time</span>
+                <span class="strategy-stat-value">20+ hrs/wk</span>
+              </div>
+              <div class="strategy-stat">
+                <span class="strategy-stat-label">Capital</span>
+                <span class="strategy-stat-value">$50-100K</span>
+              </div>
+              <div class="strategy-stat">
+                <span class="strategy-stat-label">Returns</span>
+                <span class="strategy-stat-value">15-25% annually</span>
+              </div>
+            </div>
+            <p><strong>Pros:</strong> Infinite returns when executed well, rapid scaling, forced appreciation</p>
+            <p><strong>Cons:</strong> Construction risk, time intensive, requires expertise, financing complexity</p>
+          </div>
+
+          <div class="strategy-card">
+            <div class="strategy-type">House Flipping</div>
+            <h4>Fix and Flip</h4>
+            <p>Buy distressed, renovate, sell quickly. Active income disguised as real estate investing. More like running a construction business.</p>
+            <div class="strategy-stats">
+              <div class="strategy-stat">
+                <span class="strategy-stat-label">Time</span>
+                <span class="strategy-stat-value">40+ hrs/wk</span>
+              </div>
+              <div class="strategy-stat">
+                <span class="strategy-stat-label">Capital</span>
+                <span class="strategy-stat-value">$75-150K</span>
+              </div>
+              <div class="strategy-stat">
+                <span class="strategy-stat-label">Returns</span>
+                <span class="strategy-stat-value">15-30% annually</span>
+              </div>
+            </div>
+            <p><strong>Pros:</strong> Quick profits, no ongoing management, scalable with systems</p>
+            <p><strong>Cons:</strong> Market risk, construction risk, active income, high stress</p>
+          </div>
+
+          <div class="strategy-card">
+            <div class="strategy-type">REIT Investment</div>
+            <h4>Real Estate Investment Trusts</h4>
+            <p>REITs are what you buy when you want real estate exposure without the midnight toilet calls. Liquid, diversified, professional management.</p>
+            <div class="strategy-stats">
+              <div class="strategy-stat">
+                <span class="strategy-stat-label">Time</span>
+                <span class="strategy-stat-value">1 hr/mo</span>
+              </div>
+              <div class="strategy-stat">
+                <span class="strategy-stat-label">Capital</span>
+                <span class="strategy-stat-value">Any amount</span>
+              </div>
+              <div class="strategy-stat">
+                <span class="strategy-stat-label">Returns</span>
+                <span class="strategy-stat-value">6-10% annually</span>
+              </div>
+            </div>
+            <p><strong>Pros:</strong> Liquidity, diversification, professional management, no leverage risk</p>
+            <p><strong>Cons:</strong> No leverage, no tax advantages, market correlation, management fees</p>
+          </div>
+
+          <div class="strategy-card">
+            <div class="strategy-type">Syndications</div>
+            <h4>Real Estate Syndications</h4>
+            <p>Pool money with other investors to buy large commercial properties. Passive investing in apartment complexes, office buildings, shopping centers.</p>
+            <div class="strategy-stats">
+              <div class="strategy-stat">
+                <span class="strategy-stat-label">Time</span>
+                <span class="strategy-stat-value">2 hrs/qtr</span>
+              </div>
+              <div class="strategy-stat">
+                <span class="strategy-stat-label">Capital</span>
+                <span class="strategy-stat-value">$25-100K min</span>
+              </div>
+              <div class="strategy-stat">
+                <span class="strategy-stat-value">Returns</span>
+                <span class="strategy-stat-value">10-18% annually</span>
+              </div>
+            </div>
+            <p><strong>Pros:</strong> Passive, professional management, diversification, potential for higher returns</p>
+            <p><strong>Cons:</strong> Illiquid (5-7 years), minimum investments, sponsor risk, limited control</p>
+          </div>
         </div>
 
-        <h3>REIT Investment Strategy</h3>
-        <p>Real Estate Investment Trusts provide real estate exposure without direct property ownership.</p>
-
-        <div class="property-grid">
-          <div class="property-card">
-            <h4>📊 Equity REITs</h4>
-            <div class="property-roi">Historical 9.03% Return</div>
-            <p><strong>Focus:</strong> Own and operate income-producing real estate<br>
-            <strong>Types:</strong> Residential, office, retail, industrial<br>
-            <strong>Benefits:</strong> Liquidity, diversification, professional management<br>
-            <strong>Requirement:</strong> Must distribute 90% of taxable income to shareholders</p>
-          </div>
-
-          <div class="property-card">
-            <h4>🏗️ Development REITs</h4>
-            <div class="property-roi">Higher Risk/Reward</div>
-            <p><strong>Focus:</strong> Develop and sell properties<br>
-            <strong>Types:</strong> New construction, redevelopment projects<br>
-            <strong>Benefits:</strong> Exposure to development profits<br>
-            <strong>Risks:</strong> Construction delays, market timing, higher volatility</p>
-          </div>
-
-          <div class="property-card">
-            <h4>💰 Mortgage REITs</h4>
-            <div class="property-roi">Interest Rate Sensitive</div>
-            <p><strong>Focus:</strong> Provide financing for income-producing real estate<br>
-            <strong>Income:</strong> Net interest margin on mortgage loans<br>
-            <strong>Benefits:</strong> Higher dividend yields typically<br>
-            <strong>Risks:</strong> Interest rate sensitivity, credit risk</p>
-          </div>
+        <div class="callout">
+          <strong>Strategy recommendation by profile:</strong> First-time investors should start with REITs to learn the market without concentration risk. Experienced investors with $100K+ should consider traditional rentals in 6-8% cap rate markets. Active investors with construction experience can pursue BRRRR or flipping. Busy professionals with significant capital ($100K+) should look at syndications.
         </div>
       </section>
 
-      <section id="market-analysis" class="section">
-        <h2>2026 Market Analysis</h2>
+      <!-- SECTION 5: THE MATH OF LEVERAGE -->
+      <section id="leverage" class="section">
+        <h2>5. The Math of Leverage</h2>
+        <p>Leverage is real estate's secret weapon — and its biggest risk. Let's work through the numbers on a $400K property with 2026 financing conditions to show exactly how leverage amplifies returns (and losses).</p>
 
-        <h3>Top Rental Markets by Yield</h3>
-        <p>These markets offer the highest rental yields based on 2026 data:</p>
+        <h3>The Base Case: $400K Property in Charlotte</h3>
+        <ul>
+          <li><strong>Purchase Price:</strong> $400,000</li>
+          <li><strong>Down Payment:</strong> $80,000 (20%)</li>
+          <li><strong>Mortgage:</strong> $320,000 at 6.3% for 30 years = $1,974/month</li>
+          <li><strong>Monthly Rent:</strong> $2,400 (6% cap rate × $400K ÷ 12)</li>
+          <li><strong>Total Monthly Expenses:</strong> $2,200 (mortgage + taxes + insurance + maintenance + vacancy allowance)</li>
+          <li><strong>Monthly Cash Flow:</strong> $200 ($2,400 - $2,200)</li>
+        </ul>
 
-        <div class="market-table">
-          <table>
-            <thead>
-              <tr>
-                <th>City</th>
-                <th>Gross Rental Yield</th>
-                <th>Median Home Price</th>
-                <th>Average Monthly Rent</th>
-                <th>Investment Appeal</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td><strong>Detroit, MI</strong></td>
-                <td class="tier-high">21.95%</td>
-                <td>$75,000</td>
-                <td>$1,375</td>
-                <td>High cash flow, urban renewal</td>
-              </tr>
-              <tr>
-                <td><strong>Birmingham, AL</strong></td>
-                <td class="tier-high">13.60%</td>
-                <td>$185,000</td>
-                <td>$2,100</td>
-                <td>Stable southern market</td>
-              </tr>
-              <tr>
-                <td><strong>Toledo, OH</strong></td>
-                <td class="tier-high">10.00%</td>
-                <td>$120,000</td>
-                <td>$1,000</td>
-                <td>Affordable midwest option</td>
-              </tr>
-              <tr>
-                <td><strong>Cleveland, OH</strong></td>
-                <td class="tier-medium">9.80%</td>
-                <td>$145,000</td>
-                <td>$1,185</td>
-                <td>Established rental market</td>
-              </tr>
-              <tr>
-                <td><strong>Rochester, NY</strong></td>
-                <td class="tier-medium">9.10%</td>
-                <td>$165,000</td>
-                <td>$1,250</td>
-                <td>University town stability</td>
-              </tr>
-              <tr>
-                <td><strong>Youngstown, OH</strong></td>
-                <td class="tier-medium">8.50%</td>
-                <td>$85,000</td>
-                <td>$600</td>
-                <td>Very low entry cost</td>
-              </tr>
-              <tr>
-                <td><strong>Columbus, OH</strong></td>
-                <td class="tier-medium">7.90%</td>
-                <td>$225,000</td>
-                <td>$1,485</td>
-                <td>Growing tech hub</td>
-              </tr>
-              <tr>
-                <td><strong>Memphis, TN</strong></td>
-                <td class="tier-medium">7.20%</td>
-                <td>$185,000</td>
-                <td>$1,110</td>
-                <td>Strong rental demand</td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-
-        <h3>State-by-State ROI Analysis</h3>
-        <p>Real estate returns vary significantly by state. Here are top performers for 2020-2024 period:</p>
-
-        <div class="property-grid">
-          <div class="property-card">
-            <h4>🏆 Highest ROI States</h4>
-            <div class="property-roi">2020-2024 Returns</div>
-            <p><strong>Florida:</strong> 79.0% ROI<br>
-            <strong>Georgia:</strong> 78.8% ROI<br>
-            <strong>New York:</strong> 77.4% ROI<br>
-            <strong>South Carolina:</strong> 73.3% ROI<br>
-            <strong>North Carolina:</strong> 72.1% ROI</p>
-          </div>
-
-          <div class="property-card">
-            <h4>💰 Best Value States</h4>
-            <div class="property-roi">Price + Growth</div>
-            <p><strong>Alabama:</strong> $231K median, 60.7% ROI<br>
-            <strong>Arkansas:</strong> $216K median, 60.6% ROI<br>
-            <strong>Indiana:</strong> $248K median, 66.5% ROI<br>
-            <strong>Ohio:</strong> $238K median, 57.3% ROI<br>
-            <strong>Tennessee:</strong> $327K median, 71.8% ROI</p>
-          </div>
-
-          <div class="property-card">
-            <h4>⚠️ Market Challenges</h4>
-            <div class="property-roi">Lower Performance</div>
-            <p><strong>North Dakota:</strong> 21.5% ROI (oil volatility)<br>
-            <strong>Louisiana:</strong> 32.4% ROI (hurricane risk)<br>
-            <strong>Wyoming:</strong> 40.3% ROI (economic dependence)<br>
-            <strong>Oregon:</strong> 36.2% ROI (high taxes)<br>
-            <strong>Minnesota:</strong> 36.1% ROI (climate challenges)</p>
-          </div>
-        </div>
+        <h3>Return Breakdown</h3>
+        <p><strong>Cash Flow:</strong> $200/month × 12 = $2,400 annually</p>
+        <p><strong>Principal Paydown:</strong> ~$4,800 annually (Year 1 of the mortgage)</p>
+        <p><strong>Appreciation:</strong> $400K × 4% = $16,000 annually (Charlotte's historical average)</p>
+        <p><strong>Tax Benefits:</strong> Roughly $5,200 in deductions (depreciation + mortgage interest)</p>
+        <p><strong>Total Annual Return:</strong> $28,400 on $80K invested = 35.5% return</p>
 
         <div class="callout success">
-          <h4>✅ 2026 Market Outlook</h4>
-          <p>The US real estate market shows resilience with 95.7% apartment occupancy rates and 1.9% rental household growth. Key opportunities: affordable housing developments, vacant office conversions, and workforce housing in secondary markets.</p>
+          <strong>The leverage multiplier:</strong> Without financing, that same $400K property would generate $24,000 in net income (6% cap rate). With leverage, you're getting 35.5% returns on your actual capital deployed. That's the power of 4:1 leverage at historically low interest rates.
+        </div>
+
+        <h3>Leverage vs Stock Market</h3>
+        <p>The S&P 500 has averaged 10% annually. But you can't easily get 4:1 margin to buy index funds at 6.3% interest. If you could, and stocks returned 10%, your leveraged return would be:</p>
+        <ul>
+          <li><strong>Stock Return:</strong> 10% × $400K = $40,000</li>
+          <li><strong>Interest Cost:</strong> 6.3% × $320K = $20,160</li>
+          <li><strong>Net Return:</strong> $19,840 on $80K invested = 24.8%</li>
+        </ul>
+
+        <p>Real estate at 4% appreciation + cash flow + tax benefits beats leveraged stock returns. And real estate leverage is non-recourse in many states — the bank can't come after your other assets if you walk away.</p>
+
+        <h3>The Risks of Leverage</h3>
+        <p><strong>Cash Flow Risk:</strong> If the property goes vacant for three months, you're out $7,000+ in mortgage payments with no rental income. Highly leveraged properties have no margin for error.</p>
+
+        <p><strong>Market Risk:</strong> If property values drop 20%, you're underwater. Your $80K down payment becomes worthless, and you can't sell without bringing cash to the table.</p>
+
+        <p><strong>Interest Rate Risk:</strong> If you need to refinance and rates have risen, your cash flow disappears. Always stress test your deals at 2-3 percentage points higher rates.</p>
+
+        <div class="callout warning">
+          <strong>Leverage discipline:</strong> Never leverage beyond 80% LTV on rental properties. Keep 6 months of mortgage payments in reserves per property. Don't chase marginal deals hoping leverage will save them — leverage amplifies bad deals just as much as good ones.
         </div>
       </section>
 
-      <section id="financing" class="section">
-        <h2>Real Estate Financing Strategies</h2>
+      <!-- SECTION 6: REIT VS PHYSICAL PROPERTY -->
+      <section id="reit-vs-physical" class="section">
+        <h2>6. REIT vs Physical Property</h2>
+        <p>REITs and physical properties are both real estate, but they're completely different investments. Here's the honest comparison based on 2026 market conditions.</p>
 
-        <h3>Traditional Financing Options</h3>
-        
-        <div class="comparison-table">
-          <table>
-            <thead>
-              <tr>
-                <th>Loan Type</th>
-                <th>Down Payment</th>
-                <th>Interest Rate Range</th>
-                <th>Best For</th>
-                <th>Limitations</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td><strong>Conventional (Owner-Occupied)</strong></td>
-                <td>3-5%</td>
-                <td>6.0-6.5%</td>
-                <td>Primary residence</td>
-                <td>Must live in property</td>
-              </tr>
-              <tr>
-                <td><strong>Investment Property</strong></td>
-                <td>25%</td>
-                <td>6.5-7.5%</td>
-                <td>Rental properties</td>
-                <td>Higher rates, stricter quals</td>
-              </tr>
-              <tr>
-                <td><strong>FHA (House Hacking)</strong></td>
-                <td>3.5%</td>
-                <td>6.0-6.5%</td>
-                <td>Multi-family owner-occupied</td>
-                <td>Owner-occupancy requirement</td>
-              </tr>
-              <tr>
-                <td><strong>Commercial Loans</strong></td>
-                <td>25-30%</td>
-                <td>7.0-9.0%</td>
-                <td>5+ unit properties</td>
-                <td>Shorter terms, personal guarantees</td>
-              </tr>
-              <tr>
-                <td><strong>Hard Money</strong></td>
-                <td>10-20%</td>
-                <td>10-15%</td>
-                <td>Fix and flip</td>
-                <td>Short-term, high cost</td>
-              </tr>
-            </tbody>
-          </table>
+        <table class="comparison-table">
+          <thead>
+            <tr>
+              <th>Factor</th>
+              <th>REITs (VNQ)</th>
+              <th>Physical Property</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>Current Yield</strong></td>
+              <td class="pros">4.01% dividend yield</td>
+              <td class="neutral">6-8% cap rates (varies by market)</td>
+            </tr>
+            <tr>
+              <td><strong>Liquidity</strong></td>
+              <td class="pros">Sell in seconds during market hours</td>
+              <td class="cons">3-6 months to sell, high transaction costs</td>
+            </tr>
+            <tr>
+              <td><strong>Minimum Investment</strong></td>
+              <td class="pros">$1 (fractional shares)</td>
+              <td class="cons">$50,000+ realistically</td>
+            </tr>
+            <tr>
+              <td><strong>Leverage</strong></td>
+              <td class="cons">None (REITs are internally leveraged)</td>
+              <td class="pros">4:1 leverage readily available</td>
+            </tr>
+            <tr>
+              <td><strong>Tax Treatment</strong></td>
+              <td class="cons">Dividends taxed as ordinary income</td>
+              <td class="pros">Depreciation, 1031 exchanges, cost segregation</td>
+            </tr>
+            <tr>
+              <td><strong>Management</strong></td>
+              <td class="pros">Professional, zero effort required</td>
+              <td class="cons">Self-managed or 8-12% property management fees</td>
+            </tr>
+            <tr>
+              <td><strong>Diversification</strong></td>
+              <td class="pros">Hundreds of properties across regions/sectors</td>
+              <td class="cons">Concentrated in specific properties/markets</td>
+            </tr>
+            <tr>
+              <td><strong>Control</strong></td>
+              <td class="cons">Zero control over management decisions</td>
+              <td class="pros">Complete control over property, tenants, improvements</td>
+            </tr>
+            <tr>
+              <td><strong>Transaction Costs</strong></td>
+              <td class="pros">$0-7 per trade</td>
+              <td class="cons">6-10% buying/selling (realtor fees, closing costs)</td>
+            </tr>
+            <tr>
+              <td><strong>Volatility</strong></td>
+              <td class="cons">Daily price swings, correlates with stock market</td>
+              <td class="neutral">Stable values, but illiquid price discovery</td>
+            </tr>
+            <tr>
+              <td><strong>Income Stability</strong></td>
+              <td class="neutral">Quarterly dividends, can be cut</td>
+              <td class="pros">Monthly rent, more predictable</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <h3>VNQ (Vanguard Real Estate ETF) Analysis</h3>
+        <p>VNQ is the largest and most liquid real estate ETF, holding 160+ REITs across all property types. At current pricing:</p>
+        <ul>
+          <li><strong>Dividend Yield:</strong> 4.01% annually ($3.80/share, paid quarterly)</li>
+          <li><strong>Expense Ratio:</strong> 0.12% (very low)</li>
+          <li><strong>Holdings:</strong> Office (13%), apartments (12%), cell towers (11%), retail (10%), storage (8%), industrial (7%)</li>
+          <li><strong>Geographic Diversification:</strong> 600+ properties across 48 states</li>
+          <li><strong>10-Year Returns:</strong> 7.2% annually (including dividends)</li>
+        </ul>
+
+        <div class="callout">
+          <strong>The REIT advantage:</strong> VNQ gives you exposure to $1.2 trillion worth of professional-grade real estate for the cost of a single share (~$95). That apartment complex in Dallas, that cell tower in Montana, that warehouse in New Jersey — you own tiny pieces of all of them. No midnight repair calls, no tenant screening, no property management headaches.
         </div>
 
-        <h3>Advanced Financing Strategies</h3>
+        <h3>When to Choose Each</h3>
+        <p><strong>Choose REITs if you:</strong></p>
+        <ul>
+          <li>Want exposure to real estate without the management burden</li>
+          <li>Have less than $100K to invest in real estate</li>
+          <li>Value liquidity (can sell instantly)</li>
+          <li>Want diversification across property types and geographies</li>
+          <li>Don't want to learn property management, tenant law, or construction</li>
+          <li>Are investing in tax-advantaged accounts (401k, IRA) where leverage doesn't help</li>
+        </ul>
 
-        <div class="strategy-cards">
-          <div class="strategy-card">
-            <h4>BRRRR Method</h4>
-            <div class="strategy-tags">
-              <span class="strategy-tag capital-medium">Recycled Capital</span>
-              <span class="strategy-tag">Wealth building</span>
-            </div>
-            <p><strong>Buy:</strong> Distressed property below market value<br>
-            <strong>Rehab:</strong> Renovate to increase value and rent<br>
-            <strong>Rent:</strong> Place tenants for cash flow<br>
-            <strong>Refinance:</strong> Pull out initial capital<br>
-            <strong>Repeat:</strong> Use recycled funds for next property</p>
-          </div>
+        <p><strong>Choose Physical Property if you:</strong></p>
+        <ul>
+          <li>Want to use leverage to amplify returns</li>
+          <li>Can handle property management or afford to outsource it</li>
+          <li>Want the tax advantages of depreciation and 1031 exchanges</li>
+          <li>Have $100K+ to invest in real estate</li>
+          <li>Don't need liquidity for 5+ years</li>
+          <li>Want control over your investment decisions</li>
+          <li>Enjoy the active aspects of real estate investing</li>
+        </ul>
 
-          <div class="strategy-card">
-            <h4>Seller Financing</h4>
-            <div class="strategy-tags">
-              <span class="strategy-tag capital-low">Low Down Payment</span>
-              <span class="strategy-tag">Creative financing</span>
-            </div>
-            <p><strong>Structure:</strong> Owner acts as bank<br>
-            <strong>Benefits:</strong> Flexible terms, lower down payment<br>
-            <strong>Best For:</strong> Motivated sellers, unique properties<br>
-            <strong>Terms:</strong> Negotiate interest rate, payment schedule</p>
-          </div>
+        <p><strong>The hybrid approach:</strong> Many sophisticated investors do both. REITs in retirement accounts for diversification and liquidity. Physical properties in taxable accounts for leverage and tax advantages. This combination gives you the best of both worlds.</p>
+      </section>
 
-          <div class="strategy-card">
-            <h4>Partnership Structures</h4>
-            <div class="strategy-tags">
-              <span class="strategy-tag">Shared risk</span>
-              <span class="strategy-tag">Scale faster</span>
-            </div>
-            <p><strong>Equity Partners:</strong> Split ownership and profits<br>
-            <strong>Debt Partners:</strong> Private lending arrangements<br>
-            <strong>Sweat Equity:</strong> Labor in exchange for ownership<br>
-            <strong>Benefits:</strong> Access to more capital, shared expertise</p>
-          </div>
+      <!-- SECTION 7: HOUSE FLIPPING -->
+      <section id="flipping" class="section">
+        <h2>7. House Flipping in 2026</h2>
+        <p>Let's kill the HGTV fantasy right up front: house flipping is a construction business, not an investment strategy. It's active income with significant risk, high stress, and completely dependent on your market timing and execution skills.</p>
+
+        <h3>The Real Numbers</h3>
+        <p>Industry estimates suggest successful house flippers aim for a minimum 20% gross margin. Here's what that looks like on a typical flip in 2026:</p>
+
+        <ul>
+          <li><strong>Purchase Price:</strong> $200,000 (distressed property)</li>
+          <li><strong>Renovation Costs:</strong> $50,000 (kitchen, bathrooms, flooring, paint, landscaping)</li>
+          <li><strong>Carrying Costs:</strong> $8,000 (6 months × mortgage, taxes, insurance, utilities)</li>
+          <li><strong>Transaction Costs:</strong> $20,000 (buying/selling fees, realtor commissions)</li>
+          <li><strong>Total Investment:</strong> $278,000</li>
+          <li><strong>Sale Price Target:</strong> $334,000+ (20% gross margin)</li>
+          <li><strong>Net Profit:</strong> $56,000 for 6 months work = $112,000 annual income if you flip twice/year</li>
+        </ul>
+
+        <div class="callout warning">
+          <strong>The reality check:</strong> That $56K profit assumes everything goes perfectly. No construction delays, no cost overruns, no market softening, no buyer financing issues. In reality, first-time flippers break even or lose money. Experienced flippers aim for 15-25% annual returns — good money, but less than skilled contractors make working for someone else.
+        </div>
+
+        <h3>Why Flipping is Harder in 2026</h3>
+        <p><strong>Construction Costs:</strong> Labor and materials are still 30-40% above pre-pandemic levels. That kitchen renovation that cost $25K in 2019 now costs $35K.</p>
+
+        <p><strong>Competition:</strong> Institutional investors and experienced flippers are buying the best deals with cash. First-time flippers are left with the marginal properties that pros passed on.</p>
+
+        <p><strong>Buyer Financing:</strong> With 6.3% mortgage rates, fewer buyers qualify for financing. Your potential buyer pool has shrunk, which extends time on market and pressures sale prices.</p>
+
+        <p><strong>Inventory Shortage:</strong> Despite improving inventory, distressed properties are still scarce. You're competing against owner-occupants who can pay retail prices.</p>
+
+        <h3>The Five Critical Success Factors</h3>
+        <p><strong>1. Buy Right:</strong> The profit is made when you buy, not when you sell. If you can't buy at 65% of after-repair value (ARV) minus renovation costs, walk away.</p>
+
+        <p><strong>2. Accurate Rehab Budgets:</strong> Add 25% to your initial renovation estimate for surprises. Old houses always have more problems than you can see.</p>
+
+        <p><strong>3. Speed of Execution:</strong> Every month you hold the property costs $1,500-2,500 in carrying costs. Speed matters more than perfection.</p>
+
+        <p><strong>4. Local Market Knowledge:</strong> You need to know which neighborhoods are improving, which features buyers want, and what price points sell fastest.</p>
+
+        <p><strong>5. Systems and Teams:</strong> Reliable contractors, inspectors, lenders, and real estate agents. You can't do this alone.</p>
+
+        <h3>Common Flipping Mistakes</h3>
+        <ul>
+          <li><strong>Over-improving:</strong> Putting a $50K kitchen in a $250K neighborhood. Know your target market and match the renovation to the price point.</li>
+          <li><strong>Underestimating holding costs:</strong> Mortgage, taxes, insurance, and utilities add up fast. Budget for 6+ months even if you plan to flip in 3.</li>
+          <li><strong>No emergency fund:</strong> Construction always goes over budget. Keep 25-30% extra for surprises.</li>
+          <li><strong>Emotional decisions:</strong> Falling in love with a property or a design feature. This is a business — treat it like one.</li>
+          <li><strong>Wrong financing:</strong> Hard money loans at 12% annual rates make marginal deals impossible. Have your financing lined up before you start shopping.</li>
+        </ul>
+
+        <div class="callout danger">
+          <strong>Flip or skip?</strong> If you're looking for passive income, skip flipping entirely. If you want to build a construction/development business and don't mind 60-hour weeks with high stress and market risk, flipping can be profitable. Just don't confuse it with investing — it's a job, not an asset.
         </div>
       </section>
 
-      <section id="faq" class="faq-section">
-        <h2>Frequently Asked Questions</h2>
+      <!-- SECTION 8: TAX STRATEGIES -->
+      <section id="tax" class="section">
+        <h2>8. Tax Strategies That Actually Work</h2>
+        <p>Real estate offers the best tax advantages of any asset class — if you know how to use them. These aren't loopholes or gray areas. They're explicit tax policies designed to encourage real estate investment.</p>
 
-        <div class="faq-item">
-          <div class="faq-question">How much money do I need to start investing in real estate?</div>
-          <div class="faq-answer">You can start with as little as $3,500 using FHA house hacking (3.5% down on a $100K duplex). Traditional investment properties require 25% down, so $75K for a $300K property. REITs allow real estate exposure for as little as $100. Start small and scale as you gain experience and capital.</div>
+        <h3>Depreciation — The $14,545 Annual Deduction</h3>
+        <p>The IRS lets you deduct the cost of your rental property (building, not land) over 27.5 years, even though real estate typically appreciates. On a $400K property where $350K is allocated to the building, you deduct $12,727 annually ($350K ÷ 27.5).</p>
+
+        <p>In a 30% tax bracket, that's $3,818 in annual tax savings. Over 10 years, you've deducted $127,270 while the property likely appreciated $160,000+. You're essentially getting paid to own appreciating assets.</p>
+
+        <div class="callout success">
+          <strong>Real example:</strong> Your Charlotte rental property generates $2,400 annual cash flow but shows a $10,000 tax loss on paper (after depreciation and expenses). That $10K loss reduces your other taxable income. If you're in the 32% bracket, that's $3,200 in tax savings — turning your $2,400 cash flow into $5,600 in total benefit.
         </div>
 
-        <div class="faq-item">
-          <div class="faq-question">Should I invest locally or in other markets?</div>
-          <div class="faq-answer">Start locally to learn property management and market dynamics. Once comfortable, consider out-of-state markets with higher yields like Detroit (21.95%) or Birmingham (13.6%). Use property management companies for distant investments. Focus on markets you can research thoroughly and visit periodically.</div>
-        </div>
+        <h3>Cost Segregation — Accelerated Depreciation</h3>
+        <p>Cost segregation studies identify property components that can be depreciated faster than 27.5 years. Carpets, appliances, landscaping, and certain building systems can be depreciated over 5-15 years instead.</p>
 
-        <div class="faq-item">
-          <div class="faq-question">What's better: cash flow or appreciation?</div>
-          <div class="faq-answer">Depends on your goals. Cash flow provides immediate income and market protection—aim for $200+ monthly per property. Appreciation builds long-term wealth but requires patience. Best strategy: target markets with both, like Columbus, OH (7.9% yield + growth potential). Avoid negative cash flow hoping for appreciation.</div>
-        </div>
+        <p>On that same $400K property, a cost segregation study might identify $80K in components eligible for accelerated depreciation. Instead of deducting $2,909 annually ($80K ÷ 27.5), you might deduct $16,000 in year one ($80K ÷ 5 years).</p>
 
-        <div class="faq-item">
-          <div class="faq-question">How do I analyze a potential rental property?</div>
-          <div class="faq-answer">Use the 1% rule as a starting point: monthly rent should be ≥1% of purchase price. Calculate cash-on-cash return: (Annual cash flow ÷ Total cash invested) × 100. Factor in vacancy rates (5-10%), repairs ($500-1,500/year), property management (8-12%), and insurance/taxes. Aim for 8%+ cash-on-cash returns.</div>
-        </div>
+        <p>Cost segregation studies cost $5,000-15,000 but typically pay for themselves in tax savings within 1-2 years on properties over $500K.</p>
 
-        <div class="faq-item">
-          <div class="faq-question">What are the biggest real estate investing mistakes?</div>
-          <div class="faq-answer">1) Negative cash flow hoping for appreciation 2) Underestimating renovation costs (add 20-30% buffer) 3) No market research—buy numbers, not emotions 4) Inadequate reserves—keep 3-6 months expenses 5) DIY property management without experience 6) No exit strategy. Avoid these by conservative analysis and continuous education.</div>
-        </div>
+        <h3>1031 Exchanges — Deferring Capital Gains Forever</h3>
+        <p>Section 1031 allows you to sell a rental property and reinvest the proceeds in another rental property without paying capital gains taxes. You can defer taxes indefinitely by continuing to exchange properties.</p>
 
-        <div class="faq-item">
-          <div class="faq-question">Should I use a property management company?</div>
-          <div class="faq-answer">Yes, if: you live >1 hour from property, own 5+ units, lack time/expertise for management, or want passive income. Property managers charge 8-12% but handle tenant screening, rent collection, maintenance, legal issues. Self-manage to save costs if you're local, have time, and want hands-on experience.</div>
-        </div>
+        <p><strong>Example:</strong> You bought a rental property for $200K, it's now worth $400K. Selling would trigger $200K in capital gains. At 20% federal + state taxes, that's $40K+ in taxes. Instead, you 1031 exchange into a $400K property and defer all taxes.</p>
 
-        <div class="faq-item">
-          <div class="faq-question">How does real estate compare to stock market investing?</div>
-          <div class="faq-answer">Real estate: 6% historical returns, cash flow, tax benefits, leverage, inflation hedge, but requires active management and high capital. Stocks: 10% historical returns, liquidity, low minimums, passive, but no cash flow or tax benefits. Many successful investors use both: stocks for growth/liquidity, real estate for cash flow/tax benefits.</div>
-        </div>
+        <p>The ultimate strategy: Keep exchanging until you die. Your heirs inherit the property at "stepped-up basis" (current market value), erasing all accumulated gains permanently.</p>
 
-        <div class="faq-item">
-          <div class="faq-question">What's the best strategy for beginners?</div>
-          <div class="faq-answer">Start with house hacking: buy a 2-4 unit property with FHA loan (3.5% down), live in one unit, rent others. Benefits: low down payment, learn landlording, reduce living expenses. Alternative: single-family rental in high-yield market like Ohio/Alabama. Avoid flipping until you understand renovation costs and timelines.</div>
+        <h3>Opportunity Zones — Tax-Free Growth</h3>
+        <p>Opportunity Zones offer three tax benefits: deferral of existing capital gains, reduction of those gains if held 5+ years, and tax-free growth on the Opportunity Zone investment if held 10+ years.</p>
+
+        <p><strong>Real scenario:</strong> You have $100K in capital gains from stock sales. Invest that $100K in an Opportunity Zone property. You defer the original $100K gain, reduce it by 15% if held 7+ years, and pay zero taxes on any appreciation in the Opportunity Zone investment if held 10 years.</p>
+
+        <p>Opportunity Zones are in distressed communities — think downtown Detroit, parts of Phoenix, certain areas of Miami. The potential for appreciation is significant if you choose well.</p>
+
+        <h3>Professional Real Estate Status</h3>
+        <p>If you spend 750+ hours annually on real estate activities and it's your primary profession, you can classify as a real estate professional. This unlocks the ability to deduct unlimited rental losses against other income (W-2, business income, etc.).</p>
+
+        <p>Most people hit the "passive activity loss" limits and can only deduct $25K in rental losses annually. Real estate professionals have no limits.</p>
+
+        <p><strong>How to qualify:</strong> Detailed time logs, property management activities, property tours, market research, financing activities. The IRS audits this closely, so documentation is critical.</p>
+
+        <h3>Augusta Rule — Tax-Free Rental Income</h3>
+        <p>Rent your personal residence for 14 days or fewer annually, and the rental income is tax-free. This works especially well if you own property near major events (Super Bowl, Masters Tournament, college football games).</p>
+
+        <p><strong>Business twist:</strong> If you own a business, rent your home to your business for meetings, retreats, or client entertainment. The business deducts the expense, you receive tax-free income. Just keep it to 14 days annually and charge fair market rates.</p>
+
+        <div class="callout">
+          <strong>Tax strategy hierarchy:</strong> 1) Maximize depreciation deductions, 2) Use 1031 exchanges to defer gains, 3) Consider cost segregation for properties over $500K, 4) Explore Opportunity Zones for growth capital, 5) Track hours for potential real estate professional status. Work with a CPA who specializes in real estate — the tax savings pay for the professional fees many times over.
         </div>
       </section>
 
-      <div class="cta-cards">
-        <div class="cta-card">
-          <h4>🔥 FIRE Movement</h4>
-          <p>Combine real estate investing with FIRE strategies for accelerated financial independence.</p>
-          <a href="/fire-movement" class="cta-button">Explore FIRE</a>
+      <!-- SECTION 9: CALCULATOR -->
+      <section id="calculator" class="section">
+        <h2>9. Rental Property ROI Calculator</h2>
+        <p>Use this calculator to analyze rental property deals. Input the property details and financing terms to see cash flow, cap rate, cash-on-cash return, and total annual ROI.</p>
+
+        <div class="calc-box">
+          <h3>🏠 Rental Property ROI Calculator</h3>
+          
+          <div class="calc-row">
+            <div class="calc-field">
+              <label>Purchase Price ($)</label>
+              <input type="number" id="purchasePrice" placeholder="400000" value="400000">
+            </div>
+            <div class="calc-field">
+              <label>Down Payment (%)</label>
+              <input type="number" id="downPaymentPct" placeholder="20" value="20">
+            </div>
+          </div>
+
+          <div class="calc-row">
+            <div class="calc-field">
+              <label>Interest Rate (%)</label>
+              <input type="number" step="0.1" id="interestRate" placeholder="6.3" value="6.3">
+            </div>
+            <div class="calc-field">
+              <label>Monthly Rent ($)</label>
+              <input type="number" id="monthlyRent" placeholder="2400" value="2400">
+            </div>
+          </div>
+
+          <div class="calc-row">
+            <div class="calc-field">
+              <label>Property Taxes (Monthly $)</label>
+              <input type="number" id="propertyTaxes" placeholder="300" value="300">
+            </div>
+            <div class="calc-field">
+              <label>Insurance (Monthly $)</label>
+              <input type="number" id="insurance" placeholder="150" value="150">
+            </div>
+          </div>
+
+          <div class="calc-row">
+            <div class="calc-field">
+              <label>Maintenance & Repairs (Monthly $)</label>
+              <input type="number" id="maintenance" placeholder="200" value="200">
+            </div>
+            <div class="calc-field">
+              <label>Vacancy Allowance (%)</label>
+              <input type="number" id="vacancyRate" placeholder="5" value="5">
+            </div>
+          </div>
+
+          <button class="calc-btn" onclick="calculateRentalROI()">Calculate Returns</button>
+
+          <div class="calc-result" id="rentalResult">
+            <div class="metric-row">
+              <div class="metric">
+                <div class="metric-number" id="monthlyCashFlow">$0</div>
+                <div class="metric-label">Monthly Cash Flow</div>
+              </div>
+              <div class="metric">
+                <div class="metric-number" id="capRate">0%</div>
+                <div class="metric-label">Cap Rate</div>
+              </div>
+              <div class="metric">
+                <div class="metric-number" id="cashOnCash">0%</div>
+                <div class="metric-label">Cash-on-Cash Return</div>
+              </div>
+              <div class="metric">
+                <div class="metric-number" id="totalROI">0%</div>
+                <div class="metric-label">Total Annual ROI</div>
+              </div>
+            </div>
+            <div class="breakdown" id="rentalBreakdown"></div>
+          </div>
         </div>
 
-        <div class="cta-card">
-          <h4>📊 Investment Analysis</h4>
-          <p>Master financial analysis and due diligence for smarter real estate investment decisions.</p>
-          <a href="/cost-of-living-geo-arbitrage" class="cta-button">Analyze Markets</a>
+        <div class="callout">
+          <strong>How to interpret these numbers:</strong> Monthly cash flow should be positive (or at least break-even). Cap rates of 6%+ are good in 2026. Cash-on-cash returns of 8%+ beat most alternatives. Total ROI includes appreciation and tax benefits — 15%+ is excellent. If any number is negative or below 6%, reconsider the deal.
         </div>
+      </section>
 
-        <div class="cta-card">
-          <h4>🚀 Micro SaaS</h4>
-          <p>Diversify your investment portfolio with digital assets and micro SaaS businesses.</p>
-          <a href="/micro-saas-bootstrapping" class="cta-button">Build SaaS</a>
-        </div>
-      </div>
     </main>
-
-    <aside class="sidebar">
-      <h3>Contents</h3>
-      <ul>
-        <li><a href="#fundamentals">Investment Fundamentals</a></li>
-        <li><a href="#property-types">Property Types</a></li>
-        <li><a href="#roi-calculator">ROI Calculator</a></li>
-        <li><a href="#investment-strategies">Investment Strategies</a></li>
-        <li><a href="#market-analysis">Market Analysis</a></li>
-        <li><a href="#financing">Financing Strategies</a></li>
-        <li><a href="#faq">FAQ</a></li>
-      </ul>
-    </aside>
   </div>
+
+  <!-- FAQ -->
+  <section id="faq" class="faq-section">
+    <h2>Frequently Asked Questions</h2>
+
+    <div class="faq-item">
+      <h3>How much money do I need to start real estate investing?</h3>
+      <p>For REITs, you can start with $1. For rental properties, realistically $50,000+ (20% down payment + closing costs + reserves) on a $200K property. House flipping requires $75-150K minimum. Real estate syndications typically have $25-50K minimums. Start with REITs while saving for physical property.</p>
+    </div>
+
+    <div class="faq-item">
+      <h3>Should I pay cash or use financing for rental properties?</h3>
+      <p>Use financing if you can get positive cash flow and the leveraged returns beat your next-best investment alternative. At 6.3% mortgage rates, aim for 7%+ cap rate properties to ensure positive cash flow. Cash buyers should focus on 6-8% cap rate markets for better risk-adjusted returns without leverage concerns.</p>
+    </div>
+
+    <div class="faq-item">
+      <h3>What's a good cap rate in 2026?</h3>
+      <p>Depends on the market and your strategy. 8%+ cap rates offer strong cash flow but often come with higher risk (declining areas, management issues). 6-8% cap rates in growing markets offer the best balance of cash flow and appreciation potential. Below 6% cap rates are appreciation bets that require significant down payments.</p>
+    </div>
+
+    <div class="faq-item">
+      <h3>How do I find good rental properties?</h3>
+      <p>Start with market research using the cap rate data in this guide. Focus on markets with job growth, population growth, and landlord-friendly laws. Use sites like BiggerPockets, LoopNet, and MLS listings. Network with local real estate agents who specialize in investment properties. Consider turnkey rental companies in high cash flow markets like Memphis or Cleveland.</p>
+    </div>
+
+    <div class="faq-item">
+      <h3>What are the biggest mistakes new real estate investors make?</h3>
+      <p>1) Buying in their own expensive market instead of seeking higher-yield areas, 2) Underestimating expenses and vacancy rates, 3) Not keeping adequate cash reserves, 4) Falling for get-rich-quick guru courses, 5) Trying to time the market instead of focusing on cash flow fundamentals, 6) Not understanding local landlord-tenant laws.</p>
+    </div>
+
+    <div class="faq-item">
+      <h3>Are REITs better than physical rental properties?</h3>
+      <p>Different tools for different goals. REITs offer liquidity, diversification, and professional management with no leverage. Physical properties offer tax advantages, leverage, and control. Most sophisticated investors own both: REITs in retirement accounts, physical properties in taxable accounts. Start with REITs if you have less than $100K or want passive exposure.</p>
+    </div>
+
+    <div class="faq-item">
+      <h3>How do I know if a rental property is a good deal?</h3>
+      <p>Use the 1% rule as a starting filter (monthly rent ≥ 1% of purchase price), but focus on actual cash flow analysis. The property should generate positive cash flow after all expenses, including vacancy allowance. Aim for 8%+ cash-on-cash returns and 6%+ cap rates in 2026's rate environment. Always account for maintenance, management, taxes, and vacancy.</p>
+    </div>
+
+    <div class="faq-item">
+      <h3>What tax advantages does real estate investing offer?</h3>
+      <p>Depreciation deductions (typically $10-15K annually on a $400K property), mortgage interest deductions, property tax deductions, maintenance expense deductions, and the ability to defer capital gains through 1031 exchanges. Real estate professional status unlocks unlimited loss deductions. These tax benefits often turn profitable properties into paper losses, reducing your overall tax burden.</p>
+    </div>
+  </section>
+
 </div>
 
 <script>
-function calculateRealEstateROI() {
+function calculateRentalROI() {
   const purchasePrice = parseFloat(document.getElementById('purchasePrice').value) || 0;
-  const downPaymentPct = parseFloat(document.getElementById('downPayment').value) || 25;
+  const downPaymentPct = parseFloat(document.getElementById('downPaymentPct').value) || 0;
+  const interestRate = parseFloat(document.getElementById('interestRate').value) || 0;
   const monthlyRent = parseFloat(document.getElementById('monthlyRent').value) || 0;
-  const monthlyExpenses = parseFloat(document.getElementById('monthlyExpenses').value) || 0;
-  const annualAppreciationPct = parseFloat(document.getElementById('annualAppreciation').value) || 4;
-  const mortgageRate = parseFloat(document.getElementById('mortgageRate').value) || 6.5;
-  
-  if (purchasePrice === 0 || monthlyRent === 0) {
-    alert('Please enter purchase price and monthly rent');
-    return;
-  }
-  
-  // Calculate loan and investment details
+  const propertyTaxes = parseFloat(document.getElementById('propertyTaxes').value) || 0;
+  const insurance = parseFloat(document.getElementById('insurance').value) || 0;
+  const maintenance = parseFloat(document.getElementById('maintenance').value) || 0;
+  const vacancyRate = parseFloat(document.getElementById('vacancyRate').value) || 0;
+
+  if (purchasePrice === 0 || monthlyRent === 0) return;
+
+  // Calculate basic numbers
   const downPayment = purchasePrice * (downPaymentPct / 100);
   const loanAmount = purchasePrice - downPayment;
+  const monthlyRate = interestRate / 100 / 12;
+  const numPayments = 30 * 12;
+  const monthlyPITI = loanAmount * (monthlyRate * Math.pow(1 + monthlyRate, numPayments)) / (Math.pow(1 + monthlyRate, numPayments) - 1);
   
-  // Calculate monthly mortgage payment (principal + interest)
-  const monthlyRate = (mortgageRate / 100) / 12;
-  const numPayments = 30 * 12; // 30 year mortgage
-  const monthlyMortgage = loanAmount * (monthlyRate * Math.pow(1 + monthlyRate, numPayments)) / (Math.pow(1 + monthlyRate, numPayments) - 1);
+  // Calculate monthly expenses
+  const vacancyAllowance = monthlyRent * (vacancyRate / 100);
+  const totalMonthlyExpenses = monthlyPITI + propertyTaxes + insurance + maintenance + vacancyAllowance;
   
-  // Calculate cash flow
-  const totalMonthlyExpenses = monthlyExpenses + monthlyMortgage;
+  // Calculate returns
   const monthlyCashFlow = monthlyRent - totalMonthlyExpenses;
   const annualCashFlow = monthlyCashFlow * 12;
+  const annualRent = monthlyRent * 12;
+  const annualExpenses = (propertyTaxes + insurance + maintenance + vacancyAllowance) * 12;
+  const netOperatingIncome = annualRent - annualExpenses;
   
-  // Calculate yields and returns
-  const cashYield = (annualCashFlow / downPayment) * 100;
-  const appreciationReturn = annualAppreciationPct;
-  const totalReturn = cashYield + appreciationReturn;
+  const capRate = (netOperatingIncome / purchasePrice) * 100;
+  const cashOnCashReturn = (annualCashFlow / downPayment) * 100;
   
-  // Calculate 10-year value
-  const futurePropertyValue = purchasePrice * Math.pow(1 + (annualAppreciationPct / 100), 10);
-  const futureLoanBalance = loanAmount * Math.pow(1 + (mortgageRate / 100) / 12, 120) - (monthlyMortgage * ((Math.pow(1 + (mortgageRate / 100) / 12, 120) - 1) / ((mortgageRate / 100) / 12)));
-  const futureEquity = futurePropertyValue - futureLoanBalance;
-  const totalCashFlow10Years = annualCashFlow * 10;
-  const tenYearValue = futureEquity + totalCashFlow10Years;
-  
-  // Additional investment costs (closing, inspection, etc.)
-  const additionalCosts = purchasePrice * 0.03; // Estimated 3% for closing costs, inspections, etc.
-  const totalInitialInvestment = downPayment + additionalCosts;
-  
+  // Estimate total ROI (including appreciation and tax benefits)
+  const appreciationRate = 3; // Conservative 3% annually
+  const annualAppreciation = purchasePrice * (appreciationRate / 100);
+  const taxBenefits = purchasePrice * 0.025; // Rough estimate of tax benefits (~2.5% of property value)
+  const totalAnnualReturn = annualCashFlow + annualAppreciation + taxBenefits;
+  const totalROI = (totalAnnualReturn / downPayment) * 100;
+
   // Display results
-  document.getElementById('initialInvestment').textContent = `$${totalInitialInvestment.toLocaleString()}`;
-  document.getElementById('monthlyCashFlow').textContent = monthlyCashFlow >= 0 ? 
-    `+$${monthlyCashFlow.toLocaleString()}` : 
-    `-$${Math.abs(monthlyCashFlow).toLocaleString()}`;
-  document.getElementById('cashYield').textContent = `${cashYield.toFixed(1)}%`;
-  document.getElementById('totalReturn').textContent = `${totalReturn.toFixed(1)}%`;
-  document.getElementById('tenYearValue').textContent = `$${tenYearValue.toLocaleString()}`;
+  const resultEl = document.getElementById('rentalResult');
+  resultEl.style.display = 'block';
   
-  document.getElementById('reResults').style.display = 'block';
+  document.getElementById('monthlyCashFlow').textContent = '$' + Math.round(monthlyCashFlow);
+  document.getElementById('capRate').textContent = capRate.toFixed(1) + '%';
+  document.getElementById('cashOnCash').textContent = cashOnCashReturn.toFixed(1) + '%';
+  document.getElementById('totalROI').textContent = totalROI.toFixed(1) + '%';
+  
+  // Color code the cash flow
+  const cashFlowEl = document.getElementById('monthlyCashFlow');
+  if (monthlyCashFlow > 200) {
+    cashFlowEl.style.color = '#4ade80'; // Green for good cash flow
+  } else if (monthlyCashFlow > 0) {
+    cashFlowEl.style.color = '#fbbf24'; // Yellow for break-even
+  } else {
+    cashFlowEl.style.color = '#f87171'; // Red for negative cash flow
+  }
+  
+  const breakdownEl = document.getElementById('rentalBreakdown');
+  breakdownEl.innerHTML = `
+    <p><strong>Investment Analysis:</strong></p>
+    <p>💰 <strong>Total Investment:</strong> $${Math.round(downPayment).toLocaleString()} down payment + closing costs</p>
+    <p>🏠 <strong>Monthly P&I:</strong> $${Math.round(monthlyPITI)} + $${Math.round(propertyTaxes + insurance + maintenance + vacancyAllowance)} expenses = $${Math.round(totalMonthlyExpenses)} total</p>
+    <p>📊 <strong>Annual Returns:</strong> $${Math.round(annualCashFlow).toLocaleString()} cash flow + $${Math.round(annualAppreciation).toLocaleString()} appreciation + $${Math.round(taxBenefits).toLocaleString()} tax benefits = $${Math.round(totalAnnualReturn).toLocaleString()}</p>
+    <p>✅ <strong>Deal Quality:</strong> ${
+      capRate > 7 && cashOnCashReturn > 8 ? '🔥 Excellent deal' : 
+      capRate > 6 && cashOnCashReturn > 6 ? '✅ Good deal' :
+      monthlyCashFlow > 0 ? '⚠️ Marginal deal' : '❌ Poor deal'
+    }</p>
+  `;
 }
 </script>

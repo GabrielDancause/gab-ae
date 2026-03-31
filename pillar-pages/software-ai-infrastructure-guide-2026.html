@@ -1,5 +1,14 @@
 
 <style>
+  /* Mobile text wrapping fix */
+  * { box-sizing: border-box; }
+  img, table, pre, code { max-width: 100%; }
+  .section p, .section li, .callout, .rei-subtitle, .fh-subtitle,
+  .sma-subtitle, p, li, td, th, span, a, strong, em, div {
+    overflow-wrap: break-word;
+    word-wrap: break-word;
+  }
+
 /* Reset and Base Styles */
 
 
@@ -259,6 +268,23 @@
     padding: 4px 12px;
     border-radius: 20px;
 }
+
+  @media (max-width: 1024px) {
+    /* Mobile layout fix */
+    .fh-layout, .rei-layout, .sma-layout { 
+      grid-template-columns: 1fr !important; 
+      gap: 1rem; 
+    }
+    .sticky-toc { 
+      position: static; 
+      margin-bottom: 2rem; 
+    }
+    .section h2 { font-size: 1.5rem; }
+    .section h3 { font-size: 1.15rem; }
+    .data-table { font-size: 0.8rem; display: block; overflow-x: auto; }
+    .tool-grid, .strategy-grid, .comparison-grid { grid-template-columns: 1fr !important; }
+
+  }
 </style>
 
 <div class="pillar-container">
