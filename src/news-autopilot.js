@@ -149,6 +149,10 @@ const SKIP_PHRASES = [
   'to read the full', 'continue reading', 'unlock this article',
   'support our journalism', 'become a member',
   'hide caption', 'show caption',
+  'i am not a futures broker', 'important note:',
+  'commodity futures trading commission', 'hypothetical in nature',
+  'it is my goal to point out', 'not for everyone',
+  'past performance', 'risk of loss',
 ];
 
 // ─── Helper functions ───
@@ -374,6 +378,7 @@ function extractParagraphs(data) {
     const isByline = /^[A-Z][a-z]+ [A-Z][a-z]+\s+(?:Mon|Tue|Wed|Thu|Fri|Sat|Sun)/.test(text);
     const isTickerDump = /^(?:[A-Z]{2,5}\s+){2,}/.test(text);
     const isImageDesc = text.length < 100 && /\b[A-Z][a-z]+ [A-Z]?\.?\s*[A-Z][a-z]+\/(?:AP|Reuters|Getty|AFP)\b/.test(text);
+    const isHeadlineBleed = text.length < 100 && /^[A-Z]/.test(text) && !/[;,]/.test(text) && (text.match(/\b[A-Z][a-z]*/g) || []).length >= 3;
 
     if (text.length > 50
       && !isLinkList
@@ -381,6 +386,7 @@ function extractParagraphs(data) {
       && !isByline
       && !isTickerDump
       && !isImageDesc
+      && !isHeadlineBleed
       && !SKIP_PHRASES.some(skip => text.toLowerCase().includes(skip))) {
       paragraphs.push(text);
     }
