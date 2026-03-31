@@ -20,7 +20,7 @@ import hashlib
 import html
 from datetime import datetime
 
-BASE = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+BASE = '/Users/gab/Desktop/gab-ae'
 
 # ─── RSS Feeds (source, url, target_category) ───
 FEEDS = [
@@ -283,9 +283,15 @@ def fetch_article_content(url):
         # Extract <p> tags
         for p_match in re.finditer(r'<p[^>]*>(.*?)</p>', content, re.DOTALL):
             text = strip_html(p_match.group(1))
-            # Filter: must be actual content (>40 chars, not navigation/ads)
-            if len(text) > 40 and not any(skip in text.lower() for skip in 
-                ['cookie', 'subscribe', 'sign up', 'advertisement', 'copyright', 'all rights reserved']):
+            # Filter: must be actual content, not navigation/ads/link lists
+            skip_phrases = ['cookie', 'subscribe', 'sign up', 'advertisement', 'copyright',
+                'all rights reserved', 'read more', 'click here', 'sign in', 'newsletter',
+                'follow us', 'share this', 'related stories', 'more from', 'here are more',
+                'updates from', 'live updates']
+            is_link_list = text.count('|') >= 3  # "Topic1 | Topic2 | Topic3" = nav
+            is_short_frag = len(text) < 60 and ':' in text  # "Section: subtitle"
+            if len(text) > 50 and not is_link_list and not is_short_frag \
+                and not any(skip in text.lower() for skip in skip_phrases):
                 paragraphs.append(text)
         
         return paragraphs[:15]  # Max 15 paragraphs
@@ -382,7 +388,7 @@ def insert_article(article):
     tf.close()
     
     r = subprocess.run(
-        ['python3', 'scripts/insert-news.py', tf.name],
+        ['python3', '/Users/gab/bin/news-autopilot/insert-news.py', tf.name],
         capture_output=True, text=True, cwd=BASE, timeout=30
     )
     os.unlink(tf.name)
