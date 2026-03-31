@@ -196,10 +196,14 @@ def strip_html(text):
         r'Associated Press',
         r'Reuters\s*/',
         r'AP Photo/[^\s]+',
-        r'\b\w+ reporter\b(?=\w)',  # "Nick EdserBusiness reporter" → byline glued to text
+        r'\b\w+ reporter\b(?=\w)',
         r'Image source[,:]\s*\w+',
         r'Image caption[,:]\s*',
         r'Copyright \d{4}',
+        r'Quick Read\s*',
+        r'NVDA\s+META\s+',  # ticker symbol spam
+        r'\b[A-Z]{2,5}\b(?:\s+\b[A-Z]{2,5}\b){2,}',  # 3+ consecutive ticker symbols
+        r'\b(?:Mon|Tue|Wed|Thu|Fri|Sat|Sun),?\s+\w+\s+\d{1,2},?\s+\d{4}\s+at\s+\d{1,2}:\d{2}\s*(?:AM|PM)\s*(?:GMT[+-]\d+)?',  # full date+time bylines
     ]
     for pat in junk_patterns:
         text = re.sub(pat, '', text, flags=re.IGNORECASE)
@@ -324,7 +328,12 @@ def fetch_article_content(url):
                 'support our journalism', 'become a member']
             is_link_list = text.count('|') >= 3  # "Topic1 | Topic2 | Topic3" = nav
             is_short_frag = len(text) < 60 and ':' in text  # "Section: subtitle"
+            # Detect bylines: "FirstName LastName Mon, March 31, 2026 at 10:21 PM..."
+            is_byline = bool(re.match(r'^[A-Z][a-z]+ [A-Z][a-z]+\s+(?:Mon|Tue|Wed|Thu|Fri|Sat|Sun)', text))
+            # Detect ticker dumps: "NVDA META Quick Read..."
+            is_ticker_dump = bool(re.match(r'^(?:[A-Z]{2,5}\s+){2,}', text))
             if len(text) > 50 and not is_link_list and not is_short_frag \
+                and not is_byline and not is_ticker_dump \
                 and not any(skip in text.lower() for skip in skip_phrases):
                 paragraphs.append(text)
         
