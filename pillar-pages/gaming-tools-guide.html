@@ -1,0 +1,119 @@
+<style>
+  .hub-container { max-width: 1100px; margin: 0 auto; padding: 2rem; color: #e2e8f0; font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; line-height: 1.8; }
+  .hub-header { text-align: center; margin-bottom: 4rem; padding-top: 3rem; }
+  .gradient-h1 { font-size: clamp(2.2rem, 5vw, 3.5rem); font-weight: 800; background: linear-gradient(135deg, #ffffff 0%, #a5b4fc 50%, #818cf8 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 1rem; line-height: 1.15; letter-spacing: -0.02em; }
+  .hub-subtitle { font-size: 1.2rem; color: #94a3b8; max-width: 750px; margin: 0 auto; }
+  .breadcrumb { display: flex; align-items: center; gap: 0.5rem; justify-content: center; margin-bottom: 2rem; font-size: 0.85rem; }
+  .breadcrumb a { color: #818cf8; text-decoration: none; } .breadcrumb a:hover { text-decoration: underline; } .breadcrumb span { color: #475569; }
+  .updated-badge { display: inline-block; background: rgba(129, 140, 248, 0.15); color: #a5b4fc; padding: 0.4rem 1rem; border-radius: 20px; font-size: 0.85rem; margin-bottom: 1.5rem; border: 1px solid rgba(129, 140, 248, 0.3); }
+  .hub-intro { max-width: 800px; margin: 0 auto 3rem; }
+  .hub-intro p { font-size: 1.05rem; color: #cbd5e1; margin-bottom: 1.3rem; } .hub-intro strong { color: #fff; }
+  .hub-section { margin-bottom: 4rem; }
+  .hub-section h2 { font-size: 1.8rem; color: #fff; margin-bottom: 1.5rem; padding-bottom: 0.8rem; border-bottom: 1px solid rgba(255,255,255,0.08); letter-spacing: -0.02em; }
+  .resource-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1.2rem; margin: 2rem 0; }
+  .resource-card { background: #12121a; border: 1px solid rgba(255,255,255,0.08); border-radius: 14px; padding: 1.8rem; transition: all 0.2s; text-decoration: none; display: block; }
+  .resource-card:hover { border-color: rgba(129, 140, 248, 0.4); transform: translateY(-2px); }
+  .resource-card .card-type { font-size: 0.75rem; color: #818cf8; text-transform: uppercase; letter-spacing: 0.08em; font-weight: 600; margin-bottom: 0.6rem; }
+  .resource-card h3 { color: #fff; font-size: 1.15rem; margin: 0 0 0.5rem; }
+  .resource-card p { color: #94a3b8; font-size: 0.95rem; margin: 0; line-height: 1.5; }
+  .callout { border-left: 4px solid #818cf8; background: linear-gradient(90deg, rgba(129, 140, 248, 0.1) 0%, rgba(129, 140, 248, 0.02) 100%); padding: 1.3rem 1.8rem; border-radius: 0 12px 12px 0; margin: 2rem 0; font-size: 1.05rem; color: #e2e8f0; } .callout strong { color: #fff; }
+  .data-table { width: 100%; border-collapse: collapse; margin: 2rem 0; font-size: 0.95rem; }
+  .data-table thead { background: rgba(129, 140, 248, 0.1); }
+  .data-table th { padding: 0.8rem 1rem; text-align: left; color: #a5b4fc; font-weight: 600; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.06em; border-bottom: 1px solid rgba(255,255,255,0.1); }
+  .data-table td { padding: 0.8rem 1rem; color: #cbd5e1; border-bottom: 1px solid rgba(255,255,255,0.04); }
+  .data-table tbody tr:hover { background: rgba(255,255,255,0.02); }
+  .val-good { color: #4ade80; font-weight: 600; } .val-great { color: #22d3ee; font-weight: 700; }
+  .faq-section { margin-bottom: 4rem; }
+  .faq-section h2 { font-size: 1.8rem; color: #fff; margin-bottom: 1.5rem; padding-bottom: 0.8rem; border-bottom: 1px solid rgba(255,255,255,0.08); }
+  .faq-item { margin-bottom: 2rem; } .faq-item h3 { color: #e2e8f0; font-size: 1.15rem; margin-bottom: 0.5rem; } .faq-item p { color: #94a3b8; font-size: 1rem; line-height: 1.7; }
+  .apex-link { display: inline-flex; align-items: center; gap: 0.5rem; background: rgba(129, 140, 248, 0.1); color: #a5b4fc; padding: 0.6rem 1.2rem; border-radius: 10px; text-decoration: none; font-size: 0.95rem; border: 1px solid rgba(129, 140, 248, 0.2); transition: all 0.2s; margin-top: 1rem; }
+  .apex-link:hover { background: rgba(129, 140, 248, 0.2); border-color: rgba(129, 140, 248, 0.4); }
+  @media (max-width: 768px) { .resource-grid { grid-template-columns: 1fr; } .hub-container { padding: 1rem; } }
+</style>
+
+<div class="hub-container">
+  <div class="hub-header">
+    <nav class="breadcrumb">
+      <a href="/">Home</a> <span>›</span>
+      <a href="/digital-media-creator-economy-guide-2026">Digital Media &amp; Creator Economy</a> <span>›</span>
+      <span style="color:#e2e8f0">Gaming Tools</span>
+    </nav>
+    <div class="updated-badge">35 Resources · Updated 2026</div>
+    <h1 class="gradient-h1">Gaming Performance Tools</h1>
+    <p class="hub-subtitle">DPI calculators, FPS benchmarks, reaction time tests, aim trainers, and tier list makers — the tools that serious gamers use to measure and improve.</p>
+  </div>
+
+  <div class="hub-intro">
+    <p>Skill in competitive gaming isn't mysterious — it's measurable. Your reaction time, mouse accuracy, frame rate consistency, and DPI settings are all quantifiable, and <strong>you can't improve what you can't measure.</strong> The best players don't just grind ranked — they isolate weaknesses and train them specifically.</p>
+    <p>Most gamers are playing with suboptimal settings. Wrong DPI for their sensitivity preference. Frame rates that stutter at critical moments. Aim habits they've never analyzed. These tools fix that — <strong>they turn "I feel slow" into "my reaction time is 230ms, here's how to train it to 180ms."</strong></p>
+    <p>This hub covers performance measurement tools (reaction time, FPS analysis), optimization calculators (DPI conversion between games, sensitivity matching), and community tools like tier list makers for content creation. Whether you're prepping for ranked or building content, these are your starting points.</p>
+  </div>
+
+  <div class="hub-section">
+    <h2>Top Resources in This Cluster</h2>
+    <div class="resource-grid">
+      <a href="https://leeroyjenkins.quest/dpi-calculator" class="resource-card">
+        <div class="card-type">Calculator</div>
+        <h3>DPI Calculator</h3>
+        <p>Convert sensitivity between games, calculate eDPI, and find your cm/360. Keep your muscle memory consistent across every title.</p>
+      </a>
+      <a href="https://leeroyjenkins.quest/fps-calculator" class="resource-card">
+        <div class="card-type">Calculator</div>
+        <h3>FPS Calculator</h3>
+        <p>Estimate frame rates for your GPU + resolution + settings combo. Know if your hardware can hit your target before buying.</p>
+      </a>
+      <a href="https://leeroyjenkins.quest/reaction-time-test" class="resource-card">
+        <div class="card-type">Test</div>
+        <h3>Reaction Time Test</h3>
+        <p>Measure your visual reaction time in milliseconds. Average is ~250ms. Pro gamers hit ~170ms. Where do you land?</p>
+      </a>
+      <a href="https://leeroyjenkins.quest/aim-trainer" class="resource-card">
+        <div class="card-type">Tool</div>
+        <h3>Aim Trainer</h3>
+        <p>Browser-based aim training with tracking, flicking, and target-switching drills. 15 minutes daily measurably improves accuracy.</p>
+      </a>
+      <a href="https://leeroyjenkins.quest/tier-list-maker" class="resource-card">
+        <div class="card-type">Tool</div>
+        <h3>Tier List Maker</h3>
+        <p>Create and share tier lists for any game — characters, weapons, maps, strategies. Drag-and-drop with shareable image export.</p>
+      </a>
+    </div>
+  </div>
+
+  <div class="hub-section">
+    <h2>Performance Benchmarks</h2>
+    <table class="data-table">
+      <thead>
+        <tr><th>Metric</th><th>Average Gamer</th><th>Competitive</th><th>Pro Level</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>Reaction time</td><td>~250ms</td><td class="val-good">~200ms</td><td class="val-great">~170ms</td></tr>
+        <tr><td>eDPI (FPS games)</td><td>~1600</td><td class="val-good">~800</td><td class="val-great">400-600</td></tr>
+        <tr><td>Target FPS (competitive)</td><td>60Hz</td><td class="val-good">144Hz</td><td class="val-great">240Hz+</td></tr>
+        <tr><td>Aim accuracy (Kovaaks)</td><td>~40%</td><td class="val-good">~60%</td><td class="val-great">~75%+</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="callout">
+    <strong>The sensitivity myth:</strong> Pro players almost universally use lower sensitivity than casual gamers. Lower DPI = larger arm movements = more precision. If you're above 1200 eDPI in an FPS, you're probably leaving accuracy on the table. Use the DPI calculator to convert your settings and experiment lower.
+  </div>
+
+  <div class="faq-section">
+    <h2>Frequently Asked Questions</h2>
+    <div class="faq-item">
+      <h3>Can you actually improve reaction time?</h3>
+      <p>Modestly. Your baseline is largely genetic (nerve conduction speed), but trained gamers are 15-30ms faster than untrained — that's the anticipation and pattern recognition component. Regular practice with reaction tests and aim trainers mostly improves your decision-making speed, not raw reflexes.</p>
+    </div>
+    <div class="faq-item">
+      <h3>What DPI should I use?</h3>
+      <p>Set your mouse DPI to 800 or 1600 (hardware level), then adjust in-game sensitivity. Most pros use 400-800 eDPI (DPI × in-game sens). The key is consistency across games — use a DPI calculator to match your cm/360 in every title so muscle memory transfers.</p>
+    </div>
+    <div class="faq-item">
+      <h3>Does higher FPS actually help performance?</h3>
+      <p>Yes, measurably. Nvidia and academic studies show that players at 240fps have 3-5% higher accuracy than at 60fps, even on a 60Hz monitor (due to lower input latency from fresher frames). On a 144Hz+ monitor, the advantage is larger. But above 240Hz, returns diminish rapidly.</p>
+    </div>
+  </div>
+
+  <a href="/digital-media-creator-economy-guide-2026" class="apex-link">← Back to Digital Media &amp; Creator Economy Guide</a>
+</div>

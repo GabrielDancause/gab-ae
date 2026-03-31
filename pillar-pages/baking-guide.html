@@ -1,0 +1,124 @@
+<style>
+  .hub-container { max-width: 1100px; margin: 0 auto; padding: 2rem; color: #e2e8f0; font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; line-height: 1.8; }
+  .hub-header { text-align: center; margin-bottom: 4rem; padding-top: 3rem; }
+  .gradient-h1 { font-size: clamp(2.2rem, 5vw, 3.5rem); font-weight: 800; background: linear-gradient(135deg, #ffffff 0%, #a5b4fc 50%, #818cf8 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 1rem; line-height: 1.15; letter-spacing: -0.02em; }
+  .hub-subtitle { font-size: 1.2rem; color: #94a3b8; max-width: 750px; margin: 0 auto; }
+  .breadcrumb { display: flex; align-items: center; gap: 0.5rem; justify-content: center; margin-bottom: 2rem; font-size: 0.85rem; }
+  .breadcrumb a { color: #818cf8; text-decoration: none; } .breadcrumb a:hover { text-decoration: underline; } .breadcrumb span { color: #475569; }
+  .updated-badge { display: inline-block; background: rgba(129, 140, 248, 0.15); color: #a5b4fc; padding: 0.4rem 1rem; border-radius: 20px; font-size: 0.85rem; margin-bottom: 1.5rem; border: 1px solid rgba(129, 140, 248, 0.3); }
+  .hub-intro { max-width: 800px; margin: 0 auto 3rem; }
+  .hub-intro p { font-size: 1.05rem; color: #cbd5e1; margin-bottom: 1.3rem; } .hub-intro strong { color: #fff; }
+  .hub-section { margin-bottom: 4rem; }
+  .hub-section h2 { font-size: 1.8rem; color: #fff; margin-bottom: 1.5rem; padding-bottom: 0.8rem; border-bottom: 1px solid rgba(255,255,255,0.08); letter-spacing: -0.02em; }
+  .resource-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1.2rem; margin: 2rem 0; }
+  .resource-card { background: #12121a; border: 1px solid rgba(255,255,255,0.08); border-radius: 14px; padding: 1.8rem; transition: all 0.2s; text-decoration: none; display: block; }
+  .resource-card:hover { border-color: rgba(129, 140, 248, 0.4); transform: translateY(-2px); }
+  .resource-card .card-type { font-size: 0.75rem; color: #818cf8; text-transform: uppercase; letter-spacing: 0.08em; font-weight: 600; margin-bottom: 0.6rem; }
+  .resource-card h3 { color: #fff; font-size: 1.15rem; margin: 0 0 0.5rem; }
+  .resource-card p { color: #94a3b8; font-size: 0.95rem; margin: 0; line-height: 1.5; }
+  .callout { border-left: 4px solid #818cf8; background: linear-gradient(90deg, rgba(129, 140, 248, 0.1) 0%, rgba(129, 140, 248, 0.02) 100%); padding: 1.3rem 1.8rem; border-radius: 0 12px 12px 0; margin: 2rem 0; font-size: 1.05rem; color: #e2e8f0; } .callout strong { color: #fff; }
+  .data-table { width: 100%; border-collapse: collapse; margin: 2rem 0; font-size: 0.95rem; }
+  .data-table thead { background: rgba(129, 140, 248, 0.1); }
+  .data-table th { padding: 0.8rem 1rem; text-align: left; color: #a5b4fc; font-weight: 600; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.06em; border-bottom: 1px solid rgba(255,255,255,0.1); }
+  .data-table td { padding: 0.8rem 1rem; color: #cbd5e1; border-bottom: 1px solid rgba(255,255,255,0.04); }
+  .data-table tbody tr:hover { background: rgba(255,255,255,0.02); }
+  .val-good { color: #4ade80; font-weight: 600; } .val-great { color: #22d3ee; font-weight: 700; }
+  .faq-section { margin-bottom: 4rem; }
+  .faq-section h2 { font-size: 1.8rem; color: #fff; margin-bottom: 1.5rem; padding-bottom: 0.8rem; border-bottom: 1px solid rgba(255,255,255,0.08); }
+  .faq-item { margin-bottom: 2rem; } .faq-item h3 { color: #e2e8f0; font-size: 1.15rem; margin-bottom: 0.5rem; } .faq-item p { color: #94a3b8; font-size: 1rem; line-height: 1.7; }
+  .apex-link { display: inline-flex; align-items: center; gap: 0.5rem; background: rgba(129, 140, 248, 0.1); color: #a5b4fc; padding: 0.6rem 1.2rem; border-radius: 10px; text-decoration: none; font-size: 0.95rem; border: 1px solid rgba(129, 140, 248, 0.2); transition: all 0.2s; margin-top: 1rem; }
+  .apex-link:hover { background: rgba(129, 140, 248, 0.2); border-color: rgba(129, 140, 248, 0.4); }
+  @media (max-width: 768px) { .resource-grid { grid-template-columns: 1fr; } .hub-container { padding: 1rem; } }
+</style>
+
+<div class="hub-container">
+  <div class="hub-header">
+    <nav class="breadcrumb">
+      <a href="/">Home</a> <span>›</span>
+      <a href="/fine-arts-design-creative-guide-2026">Fine Arts &amp; Creative</a> <span>›</span>
+      <span style="color:#e2e8f0">Baking</span>
+    </nav>
+    <div class="updated-badge">23 Resources · Updated 2026</div>
+    <h1 class="gradient-h1">Baking Guide</h1>
+    <p class="hub-subtitle">Sourdough calculators, hydration science, yeast conversions, and bread-baking fundamentals — because baking is chemistry, not guesswork.</p>
+  </div>
+
+  <div class="hub-intro">
+    <p>Baking is the most unforgiving form of cooking. You can't taste and adjust mid-process. You can't "eyeball" hydration and expect consistent results. <strong>Baking is chemistry with delicious outcomes</strong> — and like chemistry, precision matters.</p>
+    <p>The sourdough renaissance proved something: people are willing to weigh ingredients to the gram, track fermentation times, and obsess over crumb structure. Good. That's how great bread happens. But you need the right tools — <strong>baker's percentages, hydration calculators, and yeast conversion charts</strong> turn recipes from guesswork into repeatable science.</p>
+    <p>This hub connects you to our baking calculators and guides — from beginner bread baking to advanced sourdough technique. Whether you're converting a recipe from instant to active dry yeast or dialing in your sourdough hydration, the math is done for you.</p>
+  </div>
+
+  <div class="hub-section">
+    <h2>Top Resources in This Cluster</h2>
+    <div class="resource-grid">
+      <a href="https://28grams.vip/sourdough-calculator" class="resource-card">
+        <div class="card-type">Calculator</div>
+        <h3>Sourdough Calculator</h3>
+        <p>Input your flour weight and desired hydration — get exact water, starter, and salt amounts. Baker's math made automatic.</p>
+      </a>
+      <a href="https://28grams.vip/bread-hydration" class="resource-card">
+        <div class="card-type">Guide</div>
+        <h3>Bread Hydration Guide</h3>
+        <p>What hydration levels do to crumb, crust, and handling. From 60% (tight sandwich bread) to 85% (open crumb ciabatta).</p>
+      </a>
+      <a href="https://28grams.vip/guide-bread-baking" class="resource-card">
+        <div class="card-type">Guide</div>
+        <h3>Complete Bread Baking Guide</h3>
+        <p>From flour selection to oven spring. Everything a beginner needs to bake their first great loaf — and understand why it worked.</p>
+      </a>
+      <a href="https://28grams.vip/yeast-converter" class="resource-card">
+        <div class="card-type">Calculator</div>
+        <h3>Yeast Converter</h3>
+        <p>Convert between instant, active dry, fresh, and osmotolerant yeast. Stop guessing the substitution ratios.</p>
+      </a>
+      <a href="https://28grams.vip/baking-converter" class="resource-card">
+        <div class="card-type">Calculator</div>
+        <h3>Baking Unit Converter</h3>
+        <p>Cups to grams, Fahrenheit to Celsius, volume to weight for every common baking ingredient. Because cups are chaos.</p>
+      </a>
+    </div>
+  </div>
+
+  <div class="hub-section">
+    <h2>Hydration Quick Reference</h2>
+    <table class="data-table">
+      <thead>
+        <tr><th>Hydration %</th><th>Bread Type</th><th>Crumb Character</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>55-60%</td><td>Bagels, pretzels</td><td>Dense, chewy, tight crumb</td></tr>
+        <tr><td>62-68%</td><td>Sandwich bread, rolls</td><td class="val-good">Soft, even crumb</td></tr>
+        <tr><td>70-75%</td><td>Country loaf, sourdough</td><td class="val-good">Open crumb, good structure</td></tr>
+        <tr><td>78-85%</td><td>Ciabatta, focaccia</td><td class="val-great">Very open, irregular holes</td></tr>
+        <tr><td>85%+</td><td>High-hydration artisan</td><td style="color:#fbbf24;">Demanding to handle — experts only</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="callout">
+    <strong>The #1 beginner mistake:</strong> Using volume measurements (cups) instead of weight (grams). A "cup of flour" can vary from 120g to 160g depending on how you scoop. That 30% variance ruins ratios. Get a $15 kitchen scale and weigh everything. Your bread will improve overnight.
+  </div>
+
+  <div class="faq-section">
+    <h2>Frequently Asked Questions</h2>
+    <div class="faq-item">
+      <h3>How long does sourdough starter take to mature?</h3>
+      <p>A new starter takes 7-14 days of daily feeding to become reliably active. It should double in size within 4-6 hours of feeding at peak maturity. Don't give up at day 5 when it smells terrible — that's normal. The good bacteria are winning, they just haven't won yet.</p>
+    </div>
+    <div class="faq-item">
+      <h3>Can I substitute instant yeast for active dry?</h3>
+      <p>Yes — use 25% less instant yeast than active dry (e.g., 7g active dry = 5.25g instant). Instant doesn't need proofing in water first and works faster. Use the yeast converter for exact amounts in any recipe.</p>
+    </div>
+    <div class="faq-item">
+      <h3>Why does my bread collapse after baking?</h3>
+      <p>Usually over-proofing. The gluten structure stretched too far and can't support itself. Other causes: under-baking (the interior wasn't set), too much steam late in the bake, or cutting while too hot (wait 45+ minutes before slicing). Use the poke test — the dough should spring back slowly with a slight indent.</p>
+    </div>
+    <div class="faq-item">
+      <h3>Do I need a Dutch oven for bread?</h3>
+      <p>It's the single most impactful upgrade for home bread baking. The enclosed space traps steam, which creates a crispy crust and better oven spring. A $40 Lodge Dutch oven will dramatically improve your loaves. No fancy bread-specific equipment needed.</p>
+    </div>
+  </div>
+
+  <a href="/fine-arts-design-creative-guide-2026" class="apex-link">← Back to Fine Arts &amp; Creative Guide</a>
+</div>

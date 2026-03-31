@@ -1,0 +1,119 @@
+<style>
+  .hub-container { max-width: 1100px; margin: 0 auto; padding: 2rem; color: #e2e8f0; font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; line-height: 1.8; }
+  .hub-header { text-align: center; margin-bottom: 4rem; padding-top: 3rem; }
+  .gradient-h1 { font-size: clamp(2.2rem, 5vw, 3.5rem); font-weight: 800; background: linear-gradient(135deg, #ffffff 0%, #a5b4fc 50%, #818cf8 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 1rem; line-height: 1.15; letter-spacing: -0.02em; }
+  .hub-subtitle { font-size: 1.2rem; color: #94a3b8; max-width: 750px; margin: 0 auto; }
+  .breadcrumb { display: flex; align-items: center; gap: 0.5rem; justify-content: center; margin-bottom: 2rem; font-size: 0.85rem; }
+  .breadcrumb a { color: #818cf8; text-decoration: none; } .breadcrumb a:hover { text-decoration: underline; } .breadcrumb span { color: #475569; }
+  .updated-badge { display: inline-block; background: rgba(129, 140, 248, 0.15); color: #a5b4fc; padding: 0.4rem 1rem; border-radius: 20px; font-size: 0.85rem; margin-bottom: 1.5rem; border: 1px solid rgba(129, 140, 248, 0.3); }
+  .hub-intro { max-width: 800px; margin: 0 auto 3rem; }
+  .hub-intro p { font-size: 1.05rem; color: #cbd5e1; margin-bottom: 1.3rem; } .hub-intro strong { color: #fff; }
+  .hub-section { margin-bottom: 4rem; }
+  .hub-section h2 { font-size: 1.8rem; color: #fff; margin-bottom: 1.5rem; padding-bottom: 0.8rem; border-bottom: 1px solid rgba(255,255,255,0.08); letter-spacing: -0.02em; }
+  .resource-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1.2rem; margin: 2rem 0; }
+  .resource-card { background: #12121a; border: 1px solid rgba(255,255,255,0.08); border-radius: 14px; padding: 1.8rem; transition: all 0.2s; text-decoration: none; display: block; }
+  .resource-card:hover { border-color: rgba(129, 140, 248, 0.4); transform: translateY(-2px); }
+  .resource-card .card-type { font-size: 0.75rem; color: #818cf8; text-transform: uppercase; letter-spacing: 0.08em; font-weight: 600; margin-bottom: 0.6rem; }
+  .resource-card h3 { color: #fff; font-size: 1.15rem; margin: 0 0 0.5rem; }
+  .resource-card p { color: #94a3b8; font-size: 0.95rem; margin: 0; line-height: 1.5; }
+  .callout { border-left: 4px solid #818cf8; background: linear-gradient(90deg, rgba(129, 140, 248, 0.1) 0%, rgba(129, 140, 248, 0.02) 100%); padding: 1.3rem 1.8rem; border-radius: 0 12px 12px 0; margin: 2rem 0; font-size: 1.05rem; color: #e2e8f0; } .callout strong { color: #fff; }
+  .data-table { width: 100%; border-collapse: collapse; margin: 2rem 0; font-size: 0.95rem; }
+  .data-table thead { background: rgba(129, 140, 248, 0.1); }
+  .data-table th { padding: 0.8rem 1rem; text-align: left; color: #a5b4fc; font-weight: 600; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.06em; border-bottom: 1px solid rgba(255,255,255,0.1); }
+  .data-table td { padding: 0.8rem 1rem; color: #cbd5e1; border-bottom: 1px solid rgba(255,255,255,0.04); }
+  .data-table tbody tr:hover { background: rgba(255,255,255,0.02); }
+  .val-good { color: #4ade80; font-weight: 600; } .val-great { color: #22d3ee; font-weight: 700; }
+  .faq-section { margin-bottom: 4rem; }
+  .faq-section h2 { font-size: 1.8rem; color: #fff; margin-bottom: 1.5rem; padding-bottom: 0.8rem; border-bottom: 1px solid rgba(255,255,255,0.08); }
+  .faq-item { margin-bottom: 2rem; } .faq-item h3 { color: #e2e8f0; font-size: 1.15rem; margin-bottom: 0.5rem; } .faq-item p { color: #94a3b8; font-size: 1rem; line-height: 1.7; }
+  .apex-link { display: inline-flex; align-items: center; gap: 0.5rem; background: rgba(129, 140, 248, 0.1); color: #a5b4fc; padding: 0.6rem 1.2rem; border-radius: 10px; text-decoration: none; font-size: 0.95rem; border: 1px solid rgba(129, 140, 248, 0.2); transition: all 0.2s; margin-top: 1rem; }
+  .apex-link:hover { background: rgba(129, 140, 248, 0.2); border-color: rgba(129, 140, 248, 0.4); }
+  @media (max-width: 768px) { .resource-grid { grid-template-columns: 1fr; } .hub-container { padding: 1rem; } }
+</style>
+
+<div class="hub-container">
+  <div class="hub-header">
+    <nav class="breadcrumb">
+      <a href="/">Home</a> <span>›</span>
+      <a href="/real-estate-hospitality-guide-2026">Real Estate &amp; Hospitality</a> <span>›</span>
+      <span style="color:#e2e8f0">Home Energy</span>
+    </nav>
+    <div class="updated-badge">12 Resources · Updated 2026</div>
+    <h1 class="gradient-h1">Home Energy Guide</h1>
+    <p class="hub-subtitle">Solar calculators, electricity cost estimators, BTU sizing, and rate comparisons — the math behind cutting your energy bills and going solar.</p>
+  </div>
+
+  <div class="hub-intro">
+    <p>Energy is most homeowners' largest recurring expense after the mortgage, and most have no idea if they're overpaying. <strong>The average US household spends $2,000+/year on electricity</strong> — and that number is climbing. Between rate increases, inefficient HVAC systems, and phantom loads, most homes are hemorrhaging money on energy waste that's entirely fixable.</p>
+    <p>Solar has crossed the tipping point. In most US markets, a properly sized solar system pays for itself in 6-10 years and generates 20+ years of free electricity after that. But "properly sized" is the key — <strong>an oversized system wastes money, an undersized one doesn't eliminate your bill.</strong> You need to do the math.</p>
+    <p>This hub connects you to calculators for solar sizing, electricity cost estimation, HVAC BTU requirements, and electricity rate comparisons by state. Whether you're evaluating solar, sizing a new AC unit, or just trying to understand your electricity bill, the tools are here.</p>
+  </div>
+
+  <div class="hub-section">
+    <h2>Top Resources in This Cluster</h2>
+    <div class="resource-grid">
+      <a href="https://ijustwantto.live/solar-calculator" class="resource-card">
+        <div class="card-type">Calculator</div>
+        <h3>Solar Calculator</h3>
+        <p>Estimate system size, cost, payback period, and 25-year savings based on your location, usage, and roof specs.</p>
+      </a>
+      <a href="https://ijustwantto.live/electricity-cost-calculator" class="resource-card">
+        <div class="card-type">Calculator</div>
+        <h3>Electricity Cost Calculator</h3>
+        <p>Calculate the cost of running any appliance — watts × hours × rate. Find the vampire loads eating your bill.</p>
+      </a>
+      <a href="https://ijustwantto.live/btu-calculator" class="resource-card">
+        <div class="card-type">Calculator</div>
+        <h3>BTU Calculator</h3>
+        <p>Size your AC, furnace, or heat pump correctly. Room dimensions, insulation quality, climate zone, and window exposure factored in.</p>
+      </a>
+      <a href="https://ijustwantto.live/electricity-rates-by-state" class="resource-card">
+        <div class="card-type">Data</div>
+        <h3>Electricity Rates by State</h3>
+        <p>Current residential electricity rates across all 50 states. See where you stand and whether solar math works in your market.</p>
+      </a>
+    </div>
+  </div>
+
+  <div class="hub-section">
+    <h2>Home Energy Economics</h2>
+    <table class="data-table">
+      <thead>
+        <tr><th>Metric</th><th>Value</th><th>Context</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>Average US electricity cost</td><td>$0.16/kWh</td><td>Ranges from $0.10 (LA) to $0.36 (HI)</td></tr>
+        <tr><td>Average annual electricity bill</td><td style="color:#fbbf24;">$2,000+</td><td>Rising 3-5% annually</td></tr>
+        <tr><td>Solar payback period (national avg)</td><td class="val-great">7-9 years</td><td>Faster in high-rate states</td></tr>
+        <tr><td>Solar system lifespan</td><td class="val-great">25-30 years</td><td>Most panels degrade &lt;0.5%/year</td></tr>
+        <tr><td>HVAC % of home energy use</td><td class="val-good">40-60%</td><td>Correct sizing = biggest efficiency gain</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="callout">
+    <strong>The oversized AC trap:</strong> An AC unit that's too large is WORSE than one that's slightly too small. Oversized units short-cycle — they cool the air quickly but don't run long enough to dehumidify. The result: a cold, clammy house that costs more to operate. Use the BTU calculator to size correctly, and resist the temptation to "go up a size."
+  </div>
+
+  <div class="faq-section">
+    <h2>Frequently Asked Questions</h2>
+    <div class="faq-item">
+      <h3>Is solar worth it in 2026?</h3>
+      <p>In most US markets, yes — especially if your electricity rate exceeds $0.12/kWh and you have a south-facing roof with minimal shading. The federal ITC (Investment Tax Credit) still offers 30% off installation costs through 2032. Run the solar calculator with your actual usage data before committing.</p>
+    </div>
+    <div class="faq-item">
+      <h3>Should I lease or buy solar panels?</h3>
+      <p>Buy (or finance) if you can. Solar leases/PPAs save you 10-30% on electricity but the leasing company captures most of the value. Ownership captures the tax credit, increases home value ($15K-$25K on average), and yields better 25-year economics. Only lease if you can't qualify for financing.</p>
+    </div>
+    <div class="faq-item">
+      <h3>What uses the most electricity in my home?</h3>
+      <p>HVAC (40-60%), water heater (14-18%), large appliances (washer, dryer, fridge: 13-15%), and lighting/electronics (10-15%). The biggest bang for your buck: upgrade to a heat pump, add insulation, and switch to LED lighting. These three changes typically reduce bills by 25-40%.</p>
+    </div>
+    <div class="faq-item">
+      <h3>How do I read my electricity bill?</h3>
+      <p>Focus on two numbers: your rate ($/kWh) and your usage (kWh). Multiply them to get your energy charge. The rest is delivery charges, taxes, and fees that you usually can't control. Compare your kWh month-over-month to spot inefficiencies — a spike without a lifestyle change means something's wrong.</p>
+    </div>
+  </div>
+
+  <a href="/real-estate-hospitality-guide-2026" class="apex-link">← Back to Real Estate &amp; Hospitality Guide</a>
+</div>

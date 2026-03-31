@@ -1,0 +1,120 @@
+<style>
+  .hub-container { max-width: 1100px; margin: 0 auto; padding: 2rem; color: #e2e8f0; font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; line-height: 1.8; }
+  .hub-header { text-align: center; margin-bottom: 4rem; padding-top: 3rem; }
+  .gradient-h1 { font-size: clamp(2.2rem, 5vw, 3.5rem); font-weight: 800; background: linear-gradient(135deg, #ffffff 0%, #a5b4fc 50%, #818cf8 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 1rem; line-height: 1.15; letter-spacing: -0.02em; }
+  .hub-subtitle { font-size: 1.2rem; color: #94a3b8; max-width: 750px; margin: 0 auto; }
+  .breadcrumb { display: flex; align-items: center; gap: 0.5rem; justify-content: center; margin-bottom: 2rem; font-size: 0.85rem; }
+  .breadcrumb a { color: #818cf8; text-decoration: none; } .breadcrumb a:hover { text-decoration: underline; } .breadcrumb span { color: #475569; }
+  .updated-badge { display: inline-block; background: rgba(129, 140, 248, 0.15); color: #a5b4fc; padding: 0.4rem 1rem; border-radius: 20px; font-size: 0.85rem; margin-bottom: 1.5rem; border: 1px solid rgba(129, 140, 248, 0.3); }
+  .hub-intro { max-width: 800px; margin: 0 auto 3rem; }
+  .hub-intro p { font-size: 1.05rem; color: #cbd5e1; margin-bottom: 1.3rem; } .hub-intro strong { color: #fff; }
+  .hub-section { margin-bottom: 4rem; }
+  .hub-section h2 { font-size: 1.8rem; color: #fff; margin-bottom: 1.5rem; padding-bottom: 0.8rem; border-bottom: 1px solid rgba(255,255,255,0.08); letter-spacing: -0.02em; }
+  .resource-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1.2rem; margin: 2rem 0; }
+  .resource-card { background: #12121a; border: 1px solid rgba(255,255,255,0.08); border-radius: 14px; padding: 1.8rem; transition: all 0.2s; text-decoration: none; display: block; }
+  .resource-card:hover { border-color: rgba(129, 140, 248, 0.4); transform: translateY(-2px); }
+  .resource-card .card-type { font-size: 0.75rem; color: #818cf8; text-transform: uppercase; letter-spacing: 0.08em; font-weight: 600; margin-bottom: 0.6rem; }
+  .resource-card h3 { color: #fff; font-size: 1.15rem; margin: 0 0 0.5rem; }
+  .resource-card p { color: #94a3b8; font-size: 0.95rem; margin: 0; line-height: 1.5; }
+  .data-table { width: 100%; border-collapse: collapse; margin: 2rem 0; font-size: 0.95rem; }
+  .data-table thead { background: rgba(129, 140, 248, 0.1); }
+  .data-table th { padding: 0.8rem 1rem; text-align: left; color: #a5b4fc; font-weight: 600; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.06em; border-bottom: 1px solid rgba(255,255,255,0.1); }
+  .data-table td { padding: 0.8rem 1rem; color: #cbd5e1; border-bottom: 1px solid rgba(255,255,255,0.04); }
+  .data-table tbody tr:hover { background: rgba(255,255,255,0.02); }
+  .val-good { color: #4ade80; font-weight: 600; } .val-great { color: #22d3ee; font-weight: 700; }
+  .callout { border-left: 4px solid #818cf8; background: linear-gradient(90deg, rgba(129, 140, 248, 0.1) 0%, rgba(129, 140, 248, 0.02) 100%); padding: 1.3rem 1.8rem; border-radius: 0 12px 12px 0; margin: 2rem 0; font-size: 1.05rem; color: #e2e8f0; } .callout strong { color: #fff; }
+  .faq-section { margin-bottom: 4rem; }
+  .faq-section h2 { font-size: 1.8rem; color: #fff; margin-bottom: 1.5rem; padding-bottom: 0.8rem; border-bottom: 1px solid rgba(255,255,255,0.08); }
+  .faq-item { margin-bottom: 2rem; } .faq-item h3 { color: #e2e8f0; font-size: 1.15rem; margin-bottom: 0.5rem; } .faq-item p { color: #94a3b8; font-size: 1rem; line-height: 1.7; }
+  .apex-link { display: inline-flex; align-items: center; gap: 0.5rem; background: rgba(129, 140, 248, 0.1); color: #a5b4fc; padding: 0.6rem 1.2rem; border-radius: 10px; text-decoration: none; font-size: 0.95rem; border: 1px solid rgba(129, 140, 248, 0.2); transition: all 0.2s; margin-top: 1rem; }
+  .apex-link:hover { background: rgba(129, 140, 248, 0.2); border-color: rgba(129, 140, 248, 0.4); }
+  @media (max-width: 768px) { .resource-grid { grid-template-columns: 1fr; } .hub-container { padding: 1rem; } }
+</style>
+
+<div class="hub-container">
+  <div class="hub-header">
+    <nav class="breadcrumb">
+      <a href="/">Home</a> <span>›</span>
+      <a href="/capital-markets-wealth-guide-2026">Capital Markets &amp; Wealth</a> <span>›</span>
+      <span style="color:#e2e8f0">Market Data Dashboard</span>
+    </nav>
+    <div class="updated-badge">36 Resources · Updated 2026</div>
+    <h1 class="gradient-h1">Market Data Dashboard</h1>
+    <p class="hub-subtitle">Historical returns, valuation metrics, and real-time market indicators — the data you need to make informed allocation decisions instead of guessing.</p>
+  </div>
+
+  <div class="hub-intro">
+    <p>Most investors make decisions based on vibes. They buy when markets feel good (expensive) and sell when markets feel scary (cheap). <strong>Data doesn't have feelings.</strong> This hub gives you the historical context and valuation metrics that separate informed allocation from emotional gambling.</p>
+    <p>The S&amp;P 500's average annual return since 1926 is ~10.5%. But "average" is misleading — in any given year, the market returns between -37% and +53%. What matters is understanding <strong>where we are in the cycle</strong>: valuation levels (PE ratios), market concentration (are 7 stocks driving everything?), sector rotation patterns, and volatility regimes.</p>
+    <p>These aren't tools for timing the market. They're tools for <strong>sizing your bets</strong>. When the Shiller PE is at 35, you don't sell everything — but you might tilt toward international or value stocks. When volatility spikes, you rebalance into the fear. Data-driven, not prediction-driven.</p>
+  </div>
+
+  <div class="hub-section">
+    <h2>Top Resources in This Cluster</h2>
+    <div class="resource-grid">
+      <a href="https://westmountfundamentals.com/sp500-historical-returns-by-year" class="resource-card">
+        <div class="card-type">Data</div>
+        <h3>S&amp;P 500 Historical Returns by Year</h3>
+        <p>Year-by-year returns going back to 1926. See why "average" doesn't mean "typical" and how dispersion drives real outcomes.</p>
+      </a>
+      <a href="https://westmountfundamentals.com/sp500-pe-ratio-history" class="resource-card">
+        <div class="card-type">Data</div>
+        <h3>S&amp;P 500 PE Ratio History</h3>
+        <p>Trailing and Shiller CAPE PE ratios charted over decades. The single best predictor of future 10-year returns.</p>
+      </a>
+      <a href="https://westmountfundamentals.com/market-concentration" class="resource-card">
+        <div class="card-type">Analysis</div>
+        <h3>Market Concentration Tracker</h3>
+        <p>How much of the S&amp;P 500 is driven by the top 10 stocks? When concentration peaks, diversification stops working.</p>
+      </a>
+      <a href="https://westmountfundamentals.com/beta-volatility" class="resource-card">
+        <div class="card-type">Tool</div>
+        <h3>Beta &amp; Volatility Calculator</h3>
+        <p>Calculate portfolio beta, historical volatility, and risk-adjusted returns. Know your actual risk exposure, not what you think it is.</p>
+      </a>
+      <a href="https://westmountfundamentals.com/sector-rotation-tracker" class="resource-card">
+        <div class="card-type">Dashboard</div>
+        <h3>Sector Rotation Tracker</h3>
+        <p>Which sectors are leading and lagging? Relative strength analysis to understand where money is flowing in the current cycle.</p>
+      </a>
+    </div>
+  </div>
+
+  <div class="hub-section">
+    <h2>Key Market Metrics</h2>
+    <table class="data-table">
+      <thead>
+        <tr><th>Indicator</th><th>Historical Average</th><th>What It Tells You</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>Shiller CAPE PE Ratio</td><td class="val-good">~17</td><td>Above 30 = expensive; below 15 = cheap by historical standards</td></tr>
+        <tr><td>S&amp;P 500 avg. annual return</td><td class="val-great">~10.5%</td><td>Nominal, since 1926 — includes crashes and recoveries</td></tr>
+        <tr><td>Top 10 stock concentration</td><td>~20%</td><td>Currently ~35%+ — historically extreme</td></tr>
+        <tr><td>VIX long-term average</td><td>~19</td><td>Below 15 = complacent; above 30 = fear</td></tr>
+        <tr><td>Bear market frequency</td><td style="color:#fbbf24;">Every ~3.5 years</td><td>20%+ decline — normal, not a crisis</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="callout">
+    <strong>The CAPE ratio signal:</strong> When the Shiller PE exceeds 30, subsequent 10-year annualized returns have averaged 4-6%. When it's below 15, subsequent returns average 10-14%. You can't time the market, but you can set return expectations based on starting valuations.
+  </div>
+
+  <div class="faq-section">
+    <h2>Frequently Asked Questions</h2>
+    <div class="faq-item">
+      <h3>Can you actually use PE ratios to time the market?</h3>
+      <p>Not for timing — markets can stay expensive for years. But PE ratios are the best predictor of 10-year forward returns. Use them for expectations, not entry/exit signals. If CAPE is 35, don't expect 10% annual returns for the next decade.</p>
+    </div>
+    <div class="faq-item">
+      <h3>Why does market concentration matter?</h3>
+      <p>When the top 10 stocks make up 35%+ of the index, your "diversified" index fund isn't actually diversified. A selloff in mega-cap tech would disproportionately hammer the S&amp;P 500. Consider equal-weight or international diversification when concentration is historically extreme.</p>
+    </div>
+    <div class="faq-item">
+      <h3>What's the VIX telling us right now?</h3>
+      <p>The VIX measures expected 30-day volatility. Below 15 means markets are complacent (often precedes a spike). Above 30 means genuine fear (historically a good time to be buying). It's not predictive, but it's a useful gauge of sentiment extremes.</p>
+    </div>
+  </div>
+
+  <a href="/capital-markets-wealth-guide-2026" class="apex-link">← Back to Capital Markets &amp; Wealth Guide</a>
+</div>

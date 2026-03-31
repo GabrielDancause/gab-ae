@@ -1,0 +1,124 @@
+<style>
+  .hub-container { max-width: 1100px; margin: 0 auto; padding: 2rem; color: #e2e8f0; font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; line-height: 1.8; }
+  .hub-header { text-align: center; margin-bottom: 4rem; padding-top: 3rem; }
+  .gradient-h1 { font-size: clamp(2.2rem, 5vw, 3.5rem); font-weight: 800; background: linear-gradient(135deg, #ffffff 0%, #a5b4fc 50%, #818cf8 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 1rem; line-height: 1.15; letter-spacing: -0.02em; }
+  .hub-subtitle { font-size: 1.2rem; color: #94a3b8; max-width: 750px; margin: 0 auto; }
+  .breadcrumb { display: flex; align-items: center; gap: 0.5rem; justify-content: center; margin-bottom: 2rem; font-size: 0.85rem; }
+  .breadcrumb a { color: #818cf8; text-decoration: none; } .breadcrumb a:hover { text-decoration: underline; } .breadcrumb span { color: #475569; }
+  .updated-badge { display: inline-block; background: rgba(129, 140, 248, 0.15); color: #a5b4fc; padding: 0.4rem 1rem; border-radius: 20px; font-size: 0.85rem; margin-bottom: 1.5rem; border: 1px solid rgba(129, 140, 248, 0.3); }
+  .hub-intro { max-width: 800px; margin: 0 auto 3rem; }
+  .hub-intro p { font-size: 1.05rem; color: #cbd5e1; margin-bottom: 1.3rem; } .hub-intro strong { color: #fff; }
+  .hub-section { margin-bottom: 4rem; }
+  .hub-section h2 { font-size: 1.8rem; color: #fff; margin-bottom: 1.5rem; padding-bottom: 0.8rem; border-bottom: 1px solid rgba(255,255,255,0.08); letter-spacing: -0.02em; }
+  .resource-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1.2rem; margin: 2rem 0; }
+  .resource-card { background: #12121a; border: 1px solid rgba(255,255,255,0.08); border-radius: 14px; padding: 1.8rem; transition: all 0.2s; text-decoration: none; display: block; }
+  .resource-card:hover { border-color: rgba(129, 140, 248, 0.4); transform: translateY(-2px); }
+  .resource-card .card-type { font-size: 0.75rem; color: #818cf8; text-transform: uppercase; letter-spacing: 0.08em; font-weight: 600; margin-bottom: 0.6rem; }
+  .resource-card h3 { color: #fff; font-size: 1.15rem; margin: 0 0 0.5rem; }
+  .resource-card p { color: #94a3b8; font-size: 0.95rem; margin: 0; line-height: 1.5; }
+  .callout { border-left: 4px solid #818cf8; background: linear-gradient(90deg, rgba(129, 140, 248, 0.1) 0%, rgba(129, 140, 248, 0.02) 100%); padding: 1.3rem 1.8rem; border-radius: 0 12px 12px 0; margin: 2rem 0; font-size: 1.05rem; color: #e2e8f0; } .callout strong { color: #fff; }
+  .data-table { width: 100%; border-collapse: collapse; margin: 2rem 0; font-size: 0.95rem; }
+  .data-table thead { background: rgba(129, 140, 248, 0.1); }
+  .data-table th { padding: 0.8rem 1rem; text-align: left; color: #a5b4fc; font-weight: 600; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.06em; border-bottom: 1px solid rgba(255,255,255,0.1); }
+  .data-table td { padding: 0.8rem 1rem; color: #cbd5e1; border-bottom: 1px solid rgba(255,255,255,0.04); }
+  .data-table tbody tr:hover { background: rgba(255,255,255,0.02); }
+  .val-good { color: #4ade80; font-weight: 600; } .val-great { color: #22d3ee; font-weight: 700; }
+  .faq-section { margin-bottom: 4rem; }
+  .faq-section h2 { font-size: 1.8rem; color: #fff; margin-bottom: 1.5rem; padding-bottom: 0.8rem; border-bottom: 1px solid rgba(255,255,255,0.08); }
+  .faq-item { margin-bottom: 2rem; } .faq-item h3 { color: #e2e8f0; font-size: 1.15rem; margin-bottom: 0.5rem; } .faq-item p { color: #94a3b8; font-size: 1rem; line-height: 1.7; }
+  .apex-link { display: inline-flex; align-items: center; gap: 0.5rem; background: rgba(129, 140, 248, 0.1); color: #a5b4fc; padding: 0.6rem 1.2rem; border-radius: 10px; text-decoration: none; font-size: 0.95rem; border: 1px solid rgba(129, 140, 248, 0.2); transition: all 0.2s; margin-top: 1rem; }
+  .apex-link:hover { background: rgba(129, 140, 248, 0.2); border-color: rgba(129, 140, 248, 0.4); }
+  @media (max-width: 768px) { .resource-grid { grid-template-columns: 1fr; } .hub-container { padding: 1rem; } }
+</style>
+
+<div class="hub-container">
+  <div class="hub-header">
+    <nav class="breadcrumb">
+      <a href="/">Home</a> <span>›</span>
+      <a href="/human-optimization-health-guide-2026">Human Optimization &amp; Health</a> <span>›</span>
+      <span style="color:#e2e8f0">Reproductive Health</span>
+    </nav>
+    <div class="updated-badge">32 Resources · Updated 2026</div>
+    <h1 class="gradient-h1">Reproductive Health Guide</h1>
+    <p class="hub-subtitle">Evidence-based pregnancy calculators, ovulation tracking, fertility resources, and preventive care tools — because reproductive health decisions deserve data, not guesswork.</p>
+  </div>
+
+  <div class="hub-intro">
+    <p>Reproductive health is one of the most consequential areas of healthcare, yet it's surrounded by more misinformation than almost any other topic. Fertility myths, outdated medical advice, and algorithm-driven fear get more engagement than peer-reviewed data. <strong>That's a problem we can fix with better tools.</strong></p>
+    <p>Whether you're trying to conceive, tracking your cycle for awareness, or making preventive health decisions, the fundamentals are the same: <strong>understand your biology, track the right data, and make decisions based on evidence</strong> — not TikTok fertility coaches or your aunt's advice from 1995.</p>
+    <p>This hub connects you to our best reproductive health calculators and guides — from pregnancy due dates to ovulation prediction, HPV vaccination data, and IVF planning tools. Every resource is built on clinical data and designed for practical use.</p>
+  </div>
+
+  <div class="hub-section">
+    <h2>Top Resources in This Cluster</h2>
+    <div class="resource-grid">
+      <a href="https://bodycount.photonbuilder.com/pregnancy-calculator" class="resource-card">
+        <div class="card-type">Calculator</div>
+        <h3>Pregnancy Due Date Calculator</h3>
+        <p>Estimate due date from last menstrual period or conception date. Includes trimester timeline, key milestones, and week-by-week tracking.</p>
+      </a>
+      <a href="https://bodycount.photonbuilder.com/ovulation-calculator" class="resource-card">
+        <div class="card-type">Calculator</div>
+        <h3>Ovulation Calculator</h3>
+        <p>Predict your fertile window based on cycle length. Understand the 5-day conception window and optimize timing.</p>
+      </a>
+      <a href="https://bodycount.photonbuilder.com/hpv-vaccine-guide" class="resource-card">
+        <div class="card-type">Guide</div>
+        <h3>HPV Vaccine Guide</h3>
+        <p>Gardasil 9 data, age recommendations, efficacy by type, and the evidence for catch-up vaccination in adults. One of medicine's biggest wins.</p>
+      </a>
+      <a href="https://bodycount.photonbuilder.com/period-tracker" class="resource-card">
+        <div class="card-type">Tool</div>
+        <h3>Period Tracker</h3>
+        <p>Track cycle length, symptoms, and patterns over time. Identify irregularities that warrant medical attention.</p>
+      </a>
+      <a href="https://bodycount.photonbuilder.com/ivf-due-date-calculator" class="resource-card">
+        <div class="card-type">Calculator</div>
+        <h3>IVF Due Date Calculator</h3>
+        <p>Calculate due dates from embryo transfer dates (3-day or 5-day). Adjusted timeline for IVF pregnancies.</p>
+      </a>
+    </div>
+  </div>
+
+  <div class="hub-section">
+    <h2>Key Reproductive Health Data</h2>
+    <table class="data-table">
+      <thead>
+        <tr><th>Metric</th><th>Value</th><th>Context</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>Fertile window per cycle</td><td class="val-great">~6 days</td><td>5 days before ovulation + ovulation day</td></tr>
+        <tr><td>Average cycle length</td><td class="val-good">28 days</td><td>Normal range: 21-35 days</td></tr>
+        <tr><td>HPV vaccine efficacy (types 16/18)</td><td class="val-great">>97%</td><td>Near-total prevention of highest-risk HPV strains</td></tr>
+        <tr><td>Natural conception rate per cycle (under 35)</td><td class="val-good">20-25%</td><td>Cumulative: ~85% within 12 months</td></tr>
+        <tr><td>IVF success rate per cycle (under 35)</td><td class="val-good">40-50%</td><td>Per transfer, with PGT-A testing</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="callout">
+    <strong>The fertility window reality:</strong> You can only conceive during approximately 6 days per cycle — the 5 days before ovulation (sperm can survive up to 5 days) plus ovulation day itself. An ovulation calculator identifies this window, but cycle tracking over 3+ months gives you the most reliable prediction for your body specifically.
+  </div>
+
+  <div class="faq-section">
+    <h2>Frequently Asked Questions</h2>
+    <div class="faq-item">
+      <h3>How accurate are ovulation calculators?</h3>
+      <p>Calendar-based calculators are a reasonable estimate but not precise — they assume regular cycles. For better accuracy, combine with basal body temperature tracking or LH test strips. The calculators work well as a starting point; biological confirmation methods narrow the window further.</p>
+    </div>
+    <div class="faq-item">
+      <h3>Is the HPV vaccine worth getting as an adult?</h3>
+      <p>If you're under 45 and haven't been vaccinated, the evidence supports catch-up vaccination. Efficacy is highest before sexual debut, but the vaccine still provides protection against HPV types you haven't been exposed to. The cancer prevention benefit is one of the strongest in all of medicine.</p>
+    </div>
+    <div class="faq-item">
+      <h3>When should I see a fertility specialist?</h3>
+      <p>If you're under 35 and haven't conceived after 12 months of regular unprotected sex, or over 35 and haven't conceived after 6 months. Earlier if you have known risk factors (irregular periods, endometriosis, prior pelvic surgery, known male factor). Don't wait for an arbitrary timeline if something feels off.</p>
+    </div>
+    <div class="faq-item">
+      <h3>How reliable are at-home pregnancy tests?</h3>
+      <p>Modern home pregnancy tests are 99%+ accurate when used on or after the day of your expected period. Testing too early (before implantation) can give false negatives. If negative but period doesn't start, retest in 2-3 days. False positives are extremely rare and usually indicate early pregnancy loss.</p>
+    </div>
+  </div>
+
+  <a href="/human-optimization-health-guide-2026" class="apex-link">← Back to Human Optimization &amp; Health Guide</a>
+</div>

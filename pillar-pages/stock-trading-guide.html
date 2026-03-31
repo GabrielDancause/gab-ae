@@ -1,0 +1,103 @@
+<style>
+  .hub-container { max-width: 1100px; margin: 0 auto; padding: 2rem; color: #e2e8f0; font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; line-height: 1.8; }
+  .hub-header { text-align: center; margin-bottom: 4rem; padding-top: 3rem; }
+  .gradient-h1 { font-size: clamp(2.2rem, 5vw, 3.5rem); font-weight: 800; background: linear-gradient(135deg, #ffffff 0%, #a5b4fc 50%, #818cf8 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 1rem; line-height: 1.15; letter-spacing: -0.02em; }
+  .hub-subtitle { font-size: 1.2rem; color: #94a3b8; max-width: 750px; margin: 0 auto; }
+  .breadcrumb { display: flex; align-items: center; gap: 0.5rem; justify-content: center; margin-bottom: 2rem; font-size: 0.85rem; }
+  .breadcrumb a { color: #818cf8; text-decoration: none; } .breadcrumb a:hover { text-decoration: underline; } .breadcrumb span { color: #475569; }
+  .updated-badge { display: inline-block; background: rgba(129, 140, 248, 0.15); color: #a5b4fc; padding: 0.4rem 1rem; border-radius: 20px; font-size: 0.85rem; margin-bottom: 1.5rem; border: 1px solid rgba(129, 140, 248, 0.3); }
+  .hub-intro { max-width: 800px; margin: 0 auto 3rem; }
+  .hub-intro p { font-size: 1.05rem; color: #cbd5e1; margin-bottom: 1.3rem; } .hub-intro strong { color: #fff; }
+  .hub-section { margin-bottom: 4rem; }
+  .hub-section h2 { font-size: 1.8rem; color: #fff; margin-bottom: 1.5rem; padding-bottom: 0.8rem; border-bottom: 1px solid rgba(255,255,255,0.08); letter-spacing: -0.02em; }
+  .resource-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1.2rem; margin: 2rem 0; }
+  .resource-card { background: #12121a; border: 1px solid rgba(255,255,255,0.08); border-radius: 14px; padding: 1.8rem; transition: all 0.2s; text-decoration: none; display: block; }
+  .resource-card:hover { border-color: rgba(129, 140, 248, 0.4); transform: translateY(-2px); }
+  .resource-card .card-type { font-size: 0.75rem; color: #818cf8; text-transform: uppercase; letter-spacing: 0.08em; font-weight: 600; margin-bottom: 0.6rem; }
+  .resource-card h3 { color: #fff; font-size: 1.15rem; margin: 0 0 0.5rem; }
+  .resource-card p { color: #94a3b8; font-size: 0.95rem; margin: 0; line-height: 1.5; }
+  .callout { border-left: 4px solid #818cf8; background: linear-gradient(90deg, rgba(129, 140, 248, 0.1) 0%, rgba(129, 140, 248, 0.02) 100%); padding: 1.3rem 1.8rem; border-radius: 0 12px 12px 0; margin: 2rem 0; font-size: 1.05rem; color: #e2e8f0; } .callout strong { color: #fff; }
+  .callout.warning { border-left-color: #f59e0b; background: linear-gradient(90deg, rgba(245, 158, 11, 0.1) 0%, rgba(245, 158, 11, 0.02) 100%); }
+  .faq-section { margin-bottom: 4rem; }
+  .faq-section h2 { font-size: 1.8rem; color: #fff; margin-bottom: 1.5rem; padding-bottom: 0.8rem; border-bottom: 1px solid rgba(255,255,255,0.08); }
+  .faq-item { margin-bottom: 2rem; } .faq-item h3 { color: #e2e8f0; font-size: 1.15rem; margin-bottom: 0.5rem; } .faq-item p { color: #94a3b8; font-size: 1rem; line-height: 1.7; }
+  .apex-link { display: inline-flex; align-items: center; gap: 0.5rem; background: rgba(129, 140, 248, 0.1); color: #a5b4fc; padding: 0.6rem 1.2rem; border-radius: 10px; text-decoration: none; font-size: 0.95rem; border: 1px solid rgba(129, 140, 248, 0.2); transition: all 0.2s; margin-top: 1rem; }
+  .apex-link:hover { background: rgba(129, 140, 248, 0.2); border-color: rgba(129, 140, 248, 0.4); }
+  @media (max-width: 768px) { .resource-grid { grid-template-columns: 1fr; } .hub-container { padding: 1rem; } }
+</style>
+
+<div class="hub-container">
+  <div class="hub-header">
+    <nav class="breadcrumb">
+      <a href="/">Home</a> <span>›</span>
+      <a href="/capital-markets-wealth-guide-2026">Capital Markets &amp; Wealth</a> <span>›</span>
+      <span style="color:#e2e8f0">Stock Trading</span>
+    </nav>
+    <div class="updated-badge">18 Resources · Updated 2026</div>
+    <h1 class="gradient-h1">Stock Trading Guide</h1>
+    <p class="hub-subtitle">Calculators, screeners, and strategy tools for active traders — from options pricing to short interest analysis. Use responsibly.</p>
+  </div>
+
+  <div class="hub-intro">
+    <p>Let's be honest upfront: <strong>most active traders lose money.</strong> Studies consistently show that 70-90% of day traders are net unprofitable over any 12-month period. The ones who survive aren't smarter — they have better risk management, lower costs, and the discipline to follow rules they set when they weren't emotional.</p>
+    <p>That said, trading tools and techniques aren't just for day traders. Options strategies can hedge a long-term portfolio. Short interest data reveals crowded trades. Margin calculators keep you from blowing up. Even if you're a buy-and-hold investor, understanding these tools makes you a more informed market participant.</p>
+    <p>This hub collects our best trading resources: calculators for options pricing and margin requirements, short interest trackers, stock screeners, and a day trading simulator where you can lose fake money before risking real money. <strong>If you must trade actively, at least do it with the right tools.</strong></p>
+  </div>
+
+  <div class="hub-section">
+    <h2>Top Resources in This Cluster</h2>
+    <div class="resource-grid">
+      <a href="https://westmountfundamentals.com/short-interest" class="resource-card">
+        <div class="card-type">Data</div>
+        <h3>Short Interest Tracker</h3>
+        <p>Current short interest ratios across the market. Find crowded shorts, potential squeeze candidates, and contrarian signals.</p>
+      </a>
+      <a href="https://westmountfundamentals.com/day-trading-simulator" class="resource-card">
+        <div class="card-type">Tool</div>
+        <h3>Day Trading Simulator</h3>
+        <p>Practice with real market data, fake money. Track your P&amp;L, win rate, and average trade. Most people quit after seeing their stats.</p>
+      </a>
+      <a href="https://westmountfundamentals.com/options-calculator" class="resource-card">
+        <div class="card-type">Calculator</div>
+        <h3>Options Calculator</h3>
+        <p>Black-Scholes pricing, Greeks visualization, and profit/loss diagrams. Understand what you're buying before you click.</p>
+      </a>
+      <a href="https://westmountfundamentals.com/margin-calculator" class="resource-card">
+        <div class="card-type">Calculator</div>
+        <h3>Margin Calculator</h3>
+        <p>Calculate margin requirements, maintenance levels, and margin call thresholds. The math that keeps you solvent.</p>
+      </a>
+      <a href="https://westmountfundamentals.com/stock-screener" class="resource-card">
+        <div class="card-type">Tool</div>
+        <h3>Stock Screener</h3>
+        <p>Filter by PE, market cap, sector, momentum, and technical signals. Find candidates that match your criteria.</p>
+      </a>
+    </div>
+  </div>
+
+  <div class="callout warning">
+    <strong>Reality check:</strong> The median day trader in a major academic study (Barber &amp; Odean) earned -3.8% annually, after costs. The top 1% earned 19%. If you're going to trade, use a simulator first, size positions at 1-2% of portfolio per trade, and track every trade in a journal. Without data on your own performance, you're just gambling.
+  </div>
+
+  <div class="faq-section">
+    <h2>Frequently Asked Questions</h2>
+    <div class="faq-item">
+      <h3>What's the minimum I need to day trade?</h3>
+      <p>In the US, the Pattern Day Trader rule requires $25,000 minimum in a margin account to make 4+ day trades in a 5-day period. Below that, you're limited to 3 day trades per rolling 5 days. This rule applies to stocks and options, not crypto or futures.</p>
+    </div>
+    <div class="faq-item">
+      <h3>How does short interest work as a signal?</h3>
+      <p>High short interest (above 20% of float) means a lot of traders are betting against the stock. This creates potential for a short squeeze if the stock rises — shorts are forced to buy, pushing it higher. It's also a contrarian indicator: heavily shorted stocks occasionally recover when the thesis is wrong.</p>
+    </div>
+    <div class="faq-item">
+      <h3>Should I use margin?</h3>
+      <p>For most people, no. Margin amplifies gains AND losses. A 50% decline on 2:1 margin wipes you out completely. If you use margin, keep it below 1.3:1 leverage, use stop losses religiously, and never margin to buy speculative positions. It's a tool for experienced traders, not a way to "invest more."</p>
+    </div>
+    <div class="faq-item">
+      <h3>Are options worth learning?</h3>
+      <p>Yes — but for hedging and income, not speculation. Covered calls on positions you own and protective puts for downside protection are legitimate portfolio tools. Buying naked calls or puts is essentially lottery tickets with a time decay drag. Learn the Greeks before touching options.</p>
+    </div>
+  </div>
+
+  <a href="/capital-markets-wealth-guide-2026" class="apex-link">← Back to Capital Markets &amp; Wealth Guide</a>
+</div>

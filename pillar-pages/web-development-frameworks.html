@@ -1,0 +1,1248 @@
+<style>
+  .wdf-container {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 2rem;
+    color: #e2e8f0;
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    line-height: 1.8;
+  }
+  .wdf-header {
+    text-align: center;
+    margin-bottom: 4rem;
+    padding-top: 3rem;
+  }
+  .gradient-h1 {
+    font-size: clamp(2.2rem, 5vw, 3.5rem);
+    font-weight: 800;
+    background: linear-gradient(135deg, #ffffff 0%, #a5b4fc 50%, #818cf8 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    margin-bottom: 1rem;
+    line-height: 1.15;
+    letter-spacing: -0.02em;
+  }
+  .wdf-subtitle {
+    font-size: 1.2rem;
+    color: #94a3b8;
+    max-width: 750px;
+    margin: 0 auto;
+  }
+  .breadcrumb {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    justify-content: center;
+    margin-bottom: 2rem;
+    font-size: 0.85rem;
+  }
+  .breadcrumb a {
+    color: #818cf8;
+    text-decoration: none;
+  }
+  .breadcrumb a:hover { text-decoration: underline; }
+  .breadcrumb span { color: #475569; }
+  .updated-badge {
+    display: inline-block;
+    background: rgba(129, 140, 248, 0.15);
+    color: #a5b4fc;
+    padding: 0.4rem 1rem;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    margin-bottom: 2rem;
+  }
+  .content-wrapper {
+    display: grid;
+    grid-template-columns: 1fr 280px;
+    gap: 4rem;
+    margin-top: 3rem;
+  }
+  .main-content {
+    min-width: 0;
+  }
+  .sidebar {
+    position: sticky;
+    top: 2rem;
+    height: fit-content;
+    background: #12121a;
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 16px;
+    padding: 1.5rem;
+  }
+  .sidebar h3 {
+    color: #ffffff;
+    font-size: 0.9rem;
+    font-weight: 600;
+    margin: 0 0 1rem 0;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+  .sidebar ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+  .sidebar li {
+    margin: 0;
+  }
+  .sidebar a {
+    display: block;
+    color: #94a3b8;
+    text-decoration: none;
+    padding: 0.5rem 0;
+    border-bottom: 1px solid rgba(255,255,255,0.05);
+    font-size: 0.85rem;
+    transition: color 0.2s;
+  }
+  .sidebar a:hover {
+    color: #a5b4fc;
+  }
+  .section {
+    margin: 4rem 0;
+    scroll-margin-top: 2rem;
+  }
+  .section h2 {
+    color: #ffffff;
+    font-size: 1.8rem;
+    font-weight: 700;
+    margin-bottom: 1.5rem;
+  }
+  .section h3 {
+    color: #e2e8f0;
+    font-size: 1.3rem;
+    font-weight: 600;
+    margin: 2rem 0 1rem 0;
+  }
+  .stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1.5rem;
+    margin: 2rem 0;
+  }
+  .stat-card {
+    background: #12121a;
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 14px;
+    padding: 1.5rem;
+    text-align: center;
+  }
+  .stat-number {
+    font-size: 2.5rem;
+    font-weight: 800;
+    color: #818cf8;
+    display: block;
+    line-height: 1;
+  }
+  .stat-label {
+    color: #94a3b8;
+    font-size: 0.9rem;
+    margin-top: 0.5rem;
+  }
+  .framework-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 2rem;
+    margin: 2rem 0;
+  }
+  .framework-card {
+    background: #12121a;
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 16px;
+    padding: 2rem;
+    position: relative;
+    overflow: hidden;
+  }
+  .framework-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, #818cf8, #a5b4fc);
+  }
+  .framework-card h4 {
+    color: #ffffff;
+    font-size: 1.2rem;
+    font-weight: 600;
+    margin-bottom: 1rem;
+  }
+  .framework-badge {
+    background: rgba(129, 140, 248, 0.15);
+    color: #a5b4fc;
+    padding: 0.3rem 0.8rem;
+    border-radius: 8px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    display: inline-block;
+    margin-bottom: 1rem;
+  }
+  .framework-badge.react { background: rgba(74, 222, 128, 0.15); color: #4ade80; }
+  .framework-badge.vue { background: rgba(251, 191, 36, 0.15); color: #fbbf24; }
+  .framework-badge.angular { background: rgba(248, 113, 113, 0.15); color: #f87171; }
+  .framework-badge.svelte { background: rgba(147, 51, 234, 0.15); color: #9333ea; }
+  .framework-badge.backend { background: rgba(6, 182, 212, 0.15); color: #06b6d4; }
+  .callout {
+    background: rgba(34, 211, 238, 0.1);
+    border-left: 4px solid #22d3ee;
+    border-radius: 0 8px 8px 0;
+    padding: 1.5rem;
+    margin: 2rem 0;
+  }
+  .callout.warning {
+    background: rgba(251, 191, 36, 0.1);
+    border-left-color: #fbbf24;
+  }
+  .callout.success {
+    background: rgba(74, 222, 128, 0.1);
+    border-left-color: #4ade80;
+  }
+  .callout.danger {
+    background: rgba(239, 68, 68, 0.1);
+    border-left-color: #ef4444;
+  }
+  .callout h4 {
+    color: #ffffff;
+    font-size: 1rem;
+    font-weight: 600;
+    margin: 0 0 0.5rem 0;
+  }
+  .comparison-table {
+    width: 100%;
+    background: #12121a;
+    border-radius: 16px;
+    overflow: hidden;
+    border: 1px solid rgba(255,255,255,0.08);
+    margin: 2rem 0;
+  }
+  .comparison-table th {
+    background: #1e293b;
+    color: #ffffff;
+    padding: 1rem;
+    text-align: left;
+    font-weight: 600;
+  }
+  .comparison-table td {
+    padding: 1rem;
+    border-bottom: 1px solid rgba(255,255,255,0.05);
+    color: #e2e8f0;
+  }
+  .comparison-table tr:last-child td {
+    border-bottom: none;
+  }
+  .tier-high { color: #4ade80; }
+  .tier-medium { color: #fbbf24; }
+  .tier-low { color: #f87171; }
+  .tech-calculator {
+    background: #12121a;
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 16px;
+    padding: 2rem;
+    margin: 3rem 0;
+  }
+  .tech-calculator h3 {
+    color: #ffffff;
+    font-size: 1.3rem;
+    font-weight: 600;
+    margin-bottom: 1.5rem;
+    text-align: center;
+  }
+  .calc-inputs {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1rem;
+    margin-bottom: 2rem;
+  }
+  .calc-input {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+  .calc-input label {
+    color: #94a3b8;
+    font-size: 0.85rem;
+    font-weight: 500;
+  }
+  .calc-input input, .calc-input select {
+    background: #1e293b;
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 8px;
+    padding: 0.75rem;
+    color: #e2e8f0;
+    font-size: 0.9rem;
+  }
+  .calc-input input:focus, .calc-input select:focus {
+    outline: none;
+    border-color: #818cf8;
+  }
+  .calc-button {
+    background: #818cf8;
+    color: #ffffff;
+    border: none;
+    border-radius: 8px;
+    padding: 0.75rem 2rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s;
+    width: 100%;
+  }
+  .calc-button:hover {
+    background: #6366f1;
+  }
+  .calc-results {
+    background: rgba(129, 140, 248, 0.1);
+    border-radius: 12px;
+    padding: 1.5rem;
+    margin-top: 1.5rem;
+    display: none;
+  }
+  .calc-results h4 {
+    color: #a5b4fc;
+    font-size: 1.1rem;
+    margin-bottom: 1rem;
+  }
+  .result-breakdown {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 1rem;
+    margin-top: 1rem;
+  }
+  .breakdown-item {
+    background: rgba(255,255,255,0.02);
+    padding: 1rem;
+    border-radius: 8px;
+    text-align: center;
+  }
+  .breakdown-label {
+    color: #94a3b8;
+    font-size: 0.8rem;
+    margin-bottom: 0.25rem;
+  }
+  .breakdown-value {
+    color: #e2e8f0;
+    font-weight: 600;
+    font-size: 0.9rem;
+  }
+  .breakdown-status {
+    color: #818cf8;
+    font-size: 0.75rem;
+    margin-top: 0.25rem;
+  }
+  .stack-cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 1.5rem;
+    margin: 2rem 0;
+  }
+  .stack-card {
+    background: #12121a;
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 14px;
+    padding: 1.5rem;
+  }
+  .stack-card h4 {
+    color: #ffffff;
+    font-size: 1.1rem;
+    font-weight: 600;
+    margin-bottom: 1rem;
+  }
+  .tool-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1.5rem;
+    margin: 2rem 0;
+  }
+  .tool-card {
+    background: #12121a;
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 12px;
+    padding: 1.5rem;
+    text-align: center;
+  }
+  .tool-card h5 {
+    color: #ffffff;
+    margin-bottom: 0.5rem;
+    font-size: 1rem;
+  }
+  .tool-description {
+    font-size: 0.9rem;
+    color: #94a3b8;
+    margin-bottom: 1rem;
+  }
+  .tool-rating {
+    font-size: 0.8rem;
+    color: #818cf8;
+    font-weight: 600;
+  }
+  .faq-section {
+    margin: 4rem 0;
+  }
+  .faq-item {
+    background: #12121a;
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 14px;
+    margin-bottom: 1rem;
+    overflow: hidden;
+  }
+  .faq-question {
+    padding: 1.5rem;
+    color: #ffffff;
+    font-weight: 600;
+    cursor: pointer;
+    border-bottom: 1px solid rgba(255,255,255,0.05);
+  }
+  .faq-answer {
+    padding: 1.5rem;
+    color: #94a3b8;
+  }
+  .cta-cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1.5rem;
+    margin: 3rem 0;
+  }
+  .cta-card {
+    background: linear-gradient(135deg, #1e293b, #334155);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 16px;
+    padding: 2rem;
+    text-align: center;
+  }
+  .cta-card h4 {
+    color: #ffffff;
+    font-size: 1.1rem;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+  }
+  .cta-card p {
+    color: #94a3b8;
+    font-size: 0.9rem;
+    margin-bottom: 1.5rem;
+  }
+  .cta-button {
+    display: inline-block;
+    background: #818cf8;
+    color: #ffffff;
+    padding: 0.7rem 1.5rem;
+    border-radius: 8px;
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 0.9rem;
+    transition: background 0.2s;
+  }
+  .cta-button:hover {
+    background: #6366f1;
+  }
+  
+  @media (max-width: 1024px) {
+    .content-wrapper {
+      grid-template-columns: 1fr;
+      gap: 2rem;
+    }
+    .sidebar {
+      position: relative;
+      top: 0;
+      order: -1;
+    }
+  }
+  
+  @media (max-width: 768px) {
+    .wdf-container {
+      padding: 1rem;
+    }
+    .breadcrumb {
+      flex-wrap: wrap;
+    }
+    .stats-grid {
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    }
+    .framework-grid {
+      grid-template-columns: 1fr;
+    }
+    .stack-cards {
+      grid-template-columns: 1fr;
+    }
+    .tool-grid {
+      grid-template-columns: 1fr;
+    }
+    .cta-cards {
+      grid-template-columns: 1fr;
+    }
+    .calc-inputs {
+      grid-template-columns: 1fr;
+    }
+    .result-breakdown {
+      grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+    }
+  }
+</style>
+
+<div class="wdf-container">
+  <div class="wdf-header">
+    <div class="breadcrumb">
+      <a href="/apex-guides">Apex Guides</a>
+      <span>→</span>
+      <a href="/mobile-app-development">Mobile App Development</a>
+      <span>→</span>
+      <span>Web Development Frameworks</span>
+    </div>
+    
+    <div class="updated-badge">
+      🔧 Updated March 2026
+    </div>
+    
+    <h1 class="gradient-h1">Web Development Frameworks</h1>
+    <p class="wdf-subtitle">Master modern web development through strategic framework selection, full-stack architecture, performance optimization, and best practices for building scalable, maintainable web applications.</p>
+  </div>
+
+  <div class="content-wrapper">
+    <main class="main-content">
+      <div class="stats-grid">
+        <div class="stat-card">
+          <span class="stat-number">67%</span>
+          <div class="stat-label">Developers use JavaScript frameworks</div>
+        </div>
+        <div class="stat-card">
+          <span class="stat-number">40%</span>
+          <div class="stat-label">Performance improvement with modern frameworks</div>
+        </div>
+        <div class="stat-card">
+          <span class="stat-number">5.6B</span>
+          <div class="stat-label">Global internet users accessing web apps</div>
+        </div>
+        <div class="stat-card">
+          <span class="stat-number">85%</span>
+          <div class="stat-label">Faster development with frameworks vs vanilla</div>
+        </div>
+      </div>
+
+      <section id="framework-fundamentals" class="section">
+        <h2>Web Development Framework Fundamentals</h2>
+        <p>Web development frameworks are structured software platforms that provide reusable components, standardized architecture patterns, and development tools to accelerate the creation of web applications while maintaining code quality, performance, and maintainability across complex projects.</p>
+
+        <div class="callout">
+          <h4>🏗️ Framework Architecture Benefits</h4>
+          <p>Modern web frameworks solve common development challenges through established patterns, component reusability, state management, and development tooling. They enable teams to focus on business logic rather than infrastructure, while providing scalable architecture patterns that support complex applications and team collaboration.</p>
+        </div>
+
+        <h3>Frontend Framework Categories</h3>
+        <div class="framework-grid">
+          <div class="framework-card">
+            <div class="framework-badge react">React Ecosystem</div>
+            <h4>⚛️ React & Next.js</h4>
+            <p><strong>Philosophy:</strong> Component-based UI library with unidirectional data flow</p>
+            <p><strong>Strengths:</strong> Massive ecosystem, flexibility, strong community, job market</p>
+            <p><strong>Use Cases:</strong> Complex SPAs, enterprise applications, e-commerce platforms</p>
+            <p><strong>Learning Curve:</strong> Moderate to steep (JSX, state management, ecosystem)</p>
+            <p><strong>Performance:</strong> Excellent with optimization (React 18, Suspense, Server Components)</p>
+          </div>
+
+          <div class="framework-card">
+            <div class="framework-badge vue">Vue Ecosystem</div>
+            <h4>💚 Vue.js & Nuxt</h4>
+            <p><strong>Philosophy:</strong> Progressive framework with template-based approach</p>
+            <p><strong>Strengths:</strong> Gentle learning curve, excellent documentation, versatility</p>
+            <p><strong>Use Cases:</strong> Rapid prototyping, small to medium applications, migration projects</p>
+            <p><strong>Learning Curve:</strong> Easy to moderate (familiar HTML/CSS structure)</p>
+            <p><strong>Performance:</strong> Good performance with Composition API and Vite</p>
+          </div>
+
+          <div class="framework-card">
+            <div class="framework-badge angular">Angular Framework</div>
+            <h4>🅰️ Angular</h4>
+            <p><strong>Philosophy:</strong> Full-featured framework with opinionated architecture</p>
+            <p><strong>Strengths:</strong> Complete tooling, TypeScript first, enterprise features</p>
+            <p><strong>Use Cases:</strong> Large enterprise applications, complex business logic</p>
+            <p><strong>Learning Curve:</strong> Steep (TypeScript, RxJS, extensive concepts)</p>
+            <p><strong>Performance:</strong> Excellent for large applications with proper optimization</p>
+          </div>
+
+          <div class="framework-card">
+            <div class="framework-badge svelte">Svelte Ecosystem</div>
+            <h4>🔥 Svelte & SvelteKit</h4>
+            <p><strong>Philosophy:</strong> Compile-time optimization with minimal runtime</p>
+            <p><strong>Strengths:</strong> Minimal bundle size, simple syntax, excellent performance</p>
+            <p><strong>Use Cases:</strong> Performance-critical apps, content sites, embedded widgets</p>
+            <p><strong>Learning Curve:</strong> Easy to moderate (familiar HTML/CSS/JS)</p>
+            <p><strong>Performance:</strong> Superior runtime performance, small bundle sizes</p>
+          </div>
+
+          <div class="framework-card">
+            <div class="framework-badge backend">Backend Frameworks</div>
+            <h4>🖥️ Server-Side Frameworks</h4>
+            <p><strong>Node.js:</strong> Express, Fastify, Koa for JavaScript backends</p>
+            <p><strong>Python:</strong> Django, Flask, FastAPI for rapid development</p>
+            <p><strong>PHP:**</strong> Laravel, Symfony for web-focused applications</p>
+            <p><strong>Ruby:</strong> Rails for convention-over-configuration approach</p>
+            <p><strong>Java/Kotlin:**</strong> Spring Boot, Ktor for enterprise applications</p>
+          </div>
+        </framework-grid>
+
+        <div class="callout warning">
+          <h4>⚠️ Framework Selection Pitfalls</h4>
+          <p><strong>Hype-Driven Selection:**</strong> Choosing frameworks based on trends rather than project needs<br>
+          <strong>Over-Engineering:**</strong> Using complex frameworks for simple projects<br>
+          <strong>Learning Curve Underestimation:**</strong> Not accounting for team training time and costs<br>
+          <strong>Ecosystem Lock-in:**</strong> Heavy dependence on framework-specific tools and patterns<br>
+          <strong>Performance Assumptions:**</strong> Assuming frameworks automatically provide good performance<br>
+          <strong>Maintenance Burden:**</strong> Not considering long-term maintenance and update costs</p>
+        </div>
+
+        <div class="callout success">
+          <h4>✅ Framework Selection Best Practices</h4>
+          <p><strong>Project Requirements First:**</strong> Match framework capabilities to specific project needs<br>
+          <strong>Team Expertise:</strong> Consider existing team skills and learning preferences<br>
+          <strong>Long-term Viability:**</strong> Evaluate community support, maintenance, and future roadmap<br>
+          <strong>Performance Requirements:**</strong> Test framework performance against specific use cases<br>
+          <strong>Ecosystem Evaluation:**</strong> Assess available libraries, tools, and third-party integrations<br>
+          <strong>Gradual Adoption:**</strong> Start with small projects before committing to large implementations</p>
+        </div>
+      </section>
+
+      <section id="framework-comparison" class="section">
+        <h2>Framework Selection & Comparison</h2>
+
+        <div class="callout">
+          <h4>🎯 Strategic Framework Decision</h4>
+          <p>Choosing the right web framework impacts development speed, maintainability, performance, and team productivity. The best framework for your project balances technical requirements, team capabilities, ecosystem support, and long-term strategic goals.</p>
+        </div>
+
+        <div class="tech-calculator">
+          <h3>🔍 Framework Recommendation Engine</h3>
+          <p>Get personalized framework recommendations based on your project requirements, team, and constraints.</p>
+          
+          <div class="calc-inputs">
+            <div class="calc-input">
+              <label for="projectType">Project Type</label>
+              <select id="projectType">
+                <option value="spa">Single Page Application</option>
+                <option value="ecommerce">E-commerce Platform</option>
+                <option value="cms">Content Management System</option>
+                <option value="dashboard">Admin Dashboard</option>
+                <option value="landing">Landing Pages</option>
+                <option value="blog">Blog/Content Site</option>
+                <option value="saas">SaaS Application</option>
+                <option value="api">REST/GraphQL API</option>
+              </select>
+            </div>
+            
+            <div class="calc-input">
+              <label for="projectSize">Project Complexity</label>
+              <select id="projectSize">
+                <option value="small">Small (< 10 pages/components)</option>
+                <option value="medium">Medium (10-50 pages/components)</option>
+                <option value="large">Large (50+ pages/components)</option>
+                <option value="enterprise">Enterprise (Complex architecture)</option>
+              </select>
+            </div>
+            
+            <div class="calc-input">
+              <label for="teamSize">Team Size</label>
+              <select id="teamSize">
+                <option value="solo">Solo Developer</option>
+                <option value="small">Small Team (2-5)</option>
+                <option value="medium">Medium Team (6-15)</option>
+                <option value="large">Large Team (15+)</option>
+              </select>
+            </div>
+            
+            <div class="calc-input">
+              <label for="teamExperience">Team Experience Level</label>
+              <select id="teamExperience">
+                <option value="junior">Junior/Beginner</option>
+                <option value="intermediate">Intermediate</option>
+                <option value="senior">Senior/Expert</option>
+                <option value="mixed">Mixed Levels</option>
+              </select>
+            </div>
+            
+            <div class="calc-input">
+              <label for="performancePriority">Performance Priority</label>
+              <select id="performancePriority">
+                <option value="low">Low (Basic performance)</option>
+                <option value="medium">Medium (Good performance)</option>
+                <option value="high">High (Critical performance)</option>
+                <option value="extreme">Extreme (Performance-first)</option>
+              </select>
+            </div>
+            
+            <div class="calc-input">
+              <label for="timeline">Development Timeline</label>
+              <select id="timeline">
+                <option value="rushed">Very Fast (< 1 month)</option>
+                <option value="fast">Fast (1-3 months)</option>
+                <option value="normal">Normal (3-6 months)</option>
+                <option value="long">Long-term (6+ months)</option>
+              </select>
+            </div>
+          </div>
+          
+          <button class="calc-button" onclick="calculateFrameworkRecommendation()">Get Framework Recommendation</button>
+          
+          <div class="calc-results" id="frameworkResults">
+            <h4>Your Framework Recommendation</h4>
+            <div class="result-breakdown" id="frameworkBreakdown">
+              <!-- Results will be populated here -->
+            </div>
+          </div>
+        </div>
+
+        <h3>Framework Comparison Matrix</h3>
+        <div class="comparison-table">
+          <table>
+            <thead>
+              <tr>
+                <th>Framework</th>
+                <th>Learning Curve</th>
+                <th>Performance</th>
+                <th>Ecosystem</th>
+                <th>Community</th>
+                <th>Best For</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>React</strong></td>
+                <td class="tier-medium">Moderate</td>
+                <td class="tier-high">Excellent</td>
+                <td class="tier-high">Massive</td>
+                <td class="tier-high">Very Large</td>
+                <td>Complex SPAs, Enterprise apps</td>
+              </tr>
+              <tr>
+                <td><strong>Vue.js</strong></td>
+                <td class="tier-high">Easy</td>
+                <td class="tier-high">Good</td>
+                <td class="tier-medium">Growing</td>
+                <td class="tier-high">Large</td>
+                <td>Rapid development, Mixed teams</td>
+              </tr>
+              <tr>
+                <td><strong>Angular</strong></td>
+                <td class="tier-low">Steep</td>
+                <td class="tier-high">Excellent</td>
+                <td class="tier-high">Complete</td>
+                <td class="tier-medium">Medium</td>
+                <td>Enterprise applications, Large teams</td>
+              </tr>
+              <tr>
+                <td><strong>Svelte</strong></td>
+                <td class="tier-high">Easy</td>
+                <td class="tier-high">Superior</td>
+                <td class="tier-low">Small</td>
+                <td class="tier-medium">Growing</td>
+                <td>Performance-critical, Content sites</td>
+              </tr>
+              <tr>
+                <td><strong>Next.js</strong></td>
+                <td class="tier-medium">Moderate</td>
+                <td class="tier-high">Excellent</td>
+                <td class="tier-high">React-based</td>
+                <td class="tier-high">Very Large</td>
+                <td>Full-stack React apps, SSR/SSG</td>
+              </tr>
+              <tr>
+                <td><strong>Nuxt.js</strong></td>
+                <td class="tier-medium">Moderate</td>
+                <td class="tier-high">Good</td>
+                <td class="tier-medium">Vue-based</td>
+                <td class="tier-medium">Medium</td>
+                <td>Vue full-stack apps, JAMstack</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <h3>Backend Framework Selection</h3>
+        <div class="stack-cards">
+          <div class="stack-card">
+            <h4>🟢 Node.js Ecosystem</h4>
+            <p><strong>Express:</strong> Minimal, flexible framework for rapid API development</p>
+            <p><strong>Fastify:**</strong> High-performance alternative with built-in validation and serialization</p>
+            <p><strong>NestJS:**</strong> Angular-inspired framework with decorators and dependency injection</p>
+            <p><strong>Best For:**</strong> JavaScript teams, real-time applications, microservices</p>
+            <p><strong>Considerations:**</strong> Single-threaded nature, callback complexity, tooling maturity</p>
+          </div>
+
+          <div class="stack-card">
+            <h4>🐍 Python Frameworks</h4>
+            <p><strong>Django:**</strong> Full-featured framework with admin interface and ORM</p>
+            <p><strong>Flask:**</strong> Lightweight, flexible framework for custom architectures</p>
+            <p><strong>FastAPI:**</strong> Modern framework with automatic API documentation and type validation</p>
+            <p><strong>Best For:**</strong> Rapid prototyping, data-heavy applications, ML integration</p>
+            <p><strong>Considerations:**</strong> GIL limitations, deployment complexity, dependency management</p>
+          </div>
+
+          <div class="stack-card">
+            <h4>☕ Java/JVM Frameworks</h4>
+            <p><strong>Spring Boot:**</strong> Enterprise-grade framework with extensive ecosystem</p>
+            <p><strong>Quarkus:**</strong> Cloud-native framework optimized for containers and GraalVM</p>
+            <p><strong>Ktor:**</strong> Kotlin-native asynchronous framework</p>
+            <p><strong>Best For:**</strong> Enterprise applications, high-performance systems, team scaling</p>
+            <p><strong>Considerations:**</strong> Complexity, resource usage, longer startup times</p>
+          </div>
+
+          <div class="stack-card">
+            <h4>🔷 .NET Ecosystem</h4>
+            <p><strong>ASP.NET Core:**</strong> Cross-platform framework with high performance</p>
+            <p><strong>Blazor:**</strong> Framework for building web UIs with C#</p>
+            <p><strong>Minimal APIs:**</strong> Lightweight approach for simple APIs</p>
+            <p><strong>Best For:**</strong> Microsoft ecosystem, C# teams, enterprise integration</p>
+            <p><strong>Considerations:**</strong> Licensing costs, platform dependencies, learning curve</p>
+          </div>
+        </stack-cards>
+      </section>
+
+      <section id="development-best-practices" class="section">
+        <h2>Development Best Practices</h2>
+
+        <div class="callout success">
+          <h4>🏆 Framework-Agnostic Excellence</h4>
+          <p>Great web applications share common characteristics regardless of framework choice: clean architecture, performance optimization, accessibility, security, and maintainability. Focus on these fundamentals while leveraging framework-specific features and optimizations.</p>
+        </div>
+
+        <h3>Architecture & Design Patterns</h3>
+        <div class="stack-cards">
+          <div class="stack-card">
+            <h4>🏗️ Component Architecture</h4>
+            <p><strong>Single Responsibility:**</strong> Each component should have one clear purpose and responsibility</p>
+            <p><strong>Composition over Inheritance:**</strong> Build complex UIs by composing simpler components</p>
+            <p><strong>Props/Data Flow:**</strong> Clear data flow patterns with minimal prop drilling</p>
+            <p><strong>State Management:**</strong> Appropriate state placement (local vs global vs server)</p>
+            <p><strong>Reusability:**</strong> Design components for reuse across different contexts</p>
+          </div>
+
+          <div class="stack-card">
+            <h4>📁 Project Structure</h4>
+            <p><strong>Feature-First Organization:**</strong> Group files by feature rather than file type</p>
+            <p><strong>Layered Architecture:**</strong> Clear separation between presentation, business, and data layers</p>
+            <p><strong>Barrel Exports:**</strong> Simplified imports through index files</p>
+            <p><strong>Configuration Management:**</strong> Environment-specific settings and feature flags</p>
+            <p><strong>Asset Organization:**</strong> Structured approach to images, styles, and static files</p>
+          </div>
+
+          <div class="stack-card">
+            <h4>⚡ Performance Optimization</h4>
+            <p><strong>Code Splitting:**</strong> Load only necessary code for each route or feature</p>
+            <p><strong>Lazy Loading:**</strong> Defer loading of non-critical components and resources</p>
+            <p><strong>Bundle Analysis:**</strong> Regular analysis and optimization of bundle sizes</p>
+            <p><strong>Caching Strategies:**</strong> HTTP caching, service workers, and application-level caching</p>
+            <p><strong>Image Optimization:**</strong> Responsive images, modern formats, and lazy loading</p>
+          </div>
+
+          <div class="stack-card">
+            <h4>🔒 Security & Quality</h4>
+            <p><strong>Input Validation:**</strong> Client and server-side validation with sanitization</p>
+            <p><strong>Authentication/Authorization:**</strong> Secure user management and access control</p>
+            <p><strong>XSS Prevention:**</strong> Proper output encoding and Content Security Policy</p>
+            <p><strong>HTTPS Everywhere:**</strong> SSL/TLS for all communications and secure cookie settings</p>
+            <p><strong>Code Quality:**</strong> Linting, formatting, type checking, and automated testing</p>
+          </div>
+        </stack-cards>
+
+        <h3>Development Tools & Workflow</h3>
+        <div class="tool-grid">
+          <div class="tool-card">
+            <h5>📦 Build Tools</h5>
+            <div class="tool-description">
+              Vite, Webpack, Rollup, Parcel for bundling and optimization
+            </div>
+            <div class="tool-rating">Performance Impact: High | Learning: Medium | Essential: Yes</div>
+          </div>
+
+          <div class="tool-card">
+            <h5>🔍 Code Quality</h5>
+            <div class="tool-description">
+              ESLint, Prettier, TypeScript for code consistency and error prevention
+            </div>
+            <div class="tool-rating">Team Productivity: High | Maintenance: Low | Essential: Yes</div>
+          </div>
+
+          <div class="tool-card">
+            <h5>🧪 Testing Framework</h5>
+            <div class="tool-description">
+              Jest, Vitest, Playwright, Cypress for unit, integration, and E2E testing
+            </div>
+            <div class="tool-rating">Quality Assurance: High | Setup: Medium | Essential: Yes</div>
+          </div>
+
+          <div class="tool-card">
+            <h5>🚀 Deployment Platforms</h5>
+            <div class="tool-description">
+              Vercel, Netlify, AWS, Digital Ocean for hosting and CI/CD
+            </div>
+            <div class="tool-rating">Developer Experience: High | Cost: Variable | Essential: Yes</div>
+          </div>
+
+          <div class="tool-card">
+            <h5>📊 Monitoring & Analytics</h5>
+            <div class="tool-description">
+              Sentry, LogRocket, Google Analytics for error tracking and user insights
+            </div>
+            <div class="tool-rating">Production Insights: High | Privacy: Consider | Essential: Production</div>
+          </div>
+
+          <div class="tool-card">
+            <h5>🎨 Design Systems</h5>
+            <div class="tool-description">
+              Storybook, Figma, design tokens for consistent UI components
+            </div>
+            <div class="tool-rating">Team Scaling: High | Initial Setup: Medium | Essential: Large Teams</div>
+          </div>
+        </tool-grid>
+
+        <h3>Performance Optimization Strategies</h3>
+        <div class="comparison-table">
+          <table>
+            <thead>
+              <tr>
+                <th>Optimization</th>
+                <th>Impact Level</th>
+                <th>Implementation Difficulty</th>
+                <th>Framework Support</th>
+                <th>When to Apply</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>Code Splitting</strong></td>
+                <td class="tier-high">High</td>
+                <td class="tier-medium">Medium</td>
+                <td class="tier-high">Excellent</td>
+                <td>All applications > 100KB bundle</td>
+              </tr>
+              <tr>
+                <td><strong>Server-Side Rendering</strong></td>
+                <td class="tier-high">High</td>
+                <td class="tier-high">High</td>
+                <td class="tier-medium">Good</td>
+                <td>SEO-critical, content-heavy sites</td>
+              </tr>
+              <tr>
+                <td><strong>Static Generation</strong></td>
+                <td class="tier-high">Very High</td>
+                <td class="tier-medium">Low-Medium</td>
+                <td class="tier-high">Excellent</td>
+                <td>Content sites, marketing pages</td>
+              </tr>
+              <tr>
+                <td><strong>Image Optimization</strong></td>
+                <td class="tier-high">High</td>
+                <td class="tier-low">Low</td>
+                <td class="tier-medium">Good</td>
+                <td>Media-rich applications</td>
+              </tr>
+              <tr>
+                <td><strong>Service Workers</strong></td>
+                <td class="tier-medium">Medium</td>
+                <td class="tier-high">High</td>
+                <td class="tier-low">Limited</td>
+                <td>Offline-first applications</td>
+              </tr>
+              <tr>
+                <td><strong>CDN Integration</strong></td>
+                <td class="tier-high">High</td>
+                <td class="tier-low">Low</td>
+                <td class="tier-medium">Platform-dependent</td>
+                <td>Global applications</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="callout danger">
+          <h4>🚨 Common Development Mistakes</h4>
+          <p><strong>Premature Optimization:**</strong> Optimizing before identifying actual performance bottlenecks<br>
+          <strong>Framework Overuse:**</strong> Using heavy frameworks for simple projects that don't need them<br>
+          <strong>Neglecting Accessibility:**</strong> Building interfaces that aren't usable by all users<br>
+          <strong>Security Oversights:**</strong> Inadequate input validation, XSS vulnerabilities, insecure data handling<br>
+          <strong>Technical Debt:**</strong> Accumulating shortcuts and workarounds without refactoring<br>
+          <strong>Testing Neglect:**</strong> Insufficient testing coverage leading to production bugs</p>
+        </div>
+      </section>
+
+      <section id="faq" class="faq-section">
+        <h2>Frequently Asked Questions</h2>
+
+        <div class="faq-item">
+          <div class="faq-question">Which framework should I learn first as a beginner?</div>
+          <div class="faq-answer">Start with Vue.js for its gentle learning curve and excellent documentation, or React if job market opportunities are your priority. Both have strong ecosystems and transfer skills to other frameworks. Focus on mastering JavaScript fundamentals first—understanding closures, async programming, and DOM manipulation will serve you regardless of framework choice.</div>
+        </div>
+
+        <div class="faq-item">
+          <div class="faq-question">How do I decide between React, Vue, and Angular for my project?</div>
+          <div class="faq-answer">Consider: React for maximum flexibility and job market demand; Vue for rapid development and team onboarding; Angular for large enterprise applications with complex requirements. Evaluate your team's experience, project complexity, performance needs, and long-term maintenance capabilities. All three can build excellent applications when used appropriately.</div>
+        </div>
+
+        <div class="faq-item">
+          <div class="faq-question">Should I use a full-stack framework like Next.js or separate frontend/backend?</div>
+          <div class="faq-answer">Use full-stack frameworks (Next.js, Nuxt, SvelteKit) when you need SSR/SSG, simplified deployment, or are building primarily web applications. Choose separate frontend/backend when you need API reusability across platforms, different team specializations, or when scaling concerns require independent deployment and scaling.</div>
+        </div>
+
+        <div class="faq-item">
+          <div class="faq-question">How important is TypeScript for web development?</div>
+          <div class="faq-answer">TypeScript is increasingly important, especially for larger projects and teams. It prevents common JavaScript errors, improves IDE support, and makes codebases more maintainable. Start with TypeScript if you're beginning a new project, or gradually migrate existing JavaScript projects. Most modern frameworks have excellent TypeScript support.</div>
+        </div>
+
+        <div class="faq-item">
+          <div class="faq-question">What's the best way to handle state management in modern web apps?</div>
+          <div class="faq-answer">Start with built-in state management (useState, Vue reactivity, Angular services). Add dedicated libraries (Redux, Zustand, Pinia, NgRx) only when you have complex state requirements, multiple components sharing state, or need time-travel debugging. Consider server state separately with tools like React Query or SWR.</div>
+        </div>
+
+        <div class="faq-item">
+          <div class="faq-question">How do I optimize web application performance?</div>
+          <div class="faq-answer">Focus on: code splitting and lazy loading, image optimization, bundle size reduction, caching strategies, and minimizing JavaScript execution time. Use browser dev tools and tools like Lighthouse to identify bottlenecks. Optimize based on actual metrics rather than assumptions, and consider your users' devices and network conditions.</div>
+        </div>
+
+        <div class="faq-item">
+          <div class="faq-question">Should I use a CSS framework or write custom CSS?</div>
+          <div class="faq-answer">Use CSS frameworks (Tailwind, Bootstrap, Bulma) for rapid prototyping, consistent design systems, or when design resources are limited. Write custom CSS when you need unique designs, want to minimize bundle size, or have specific performance requirements. Many teams use a hybrid approach with utility frameworks and custom components.</div>
+        </div>
+
+        <div class="faq-item">
+          <div class="faq-question">How do I keep up with the rapidly changing web development ecosystem?</div>
+          <div class="faq-answer">Focus on fundamentals (JavaScript, HTML, CSS, browser APIs) that don't change frequently. Follow key maintainers and official channels for your chosen frameworks. Experiment with new tools in side projects before using them in production. Prioritize learning depth in your chosen stack over breadth across all new technologies.</div>
+        </div>
+      </section>
+
+      <div class="cta-cards">
+        <div class="cta-card">
+          <h4>📱 Mobile Development</h4>
+          <p>Extend web development skills to mobile app development with React Native, Ionic, or Progressive Web Apps.</p>
+          <a href="/mobile-app-development" class="cta-button">Mobile Development</a>
+        </div>
+
+        <div class="cta-card">
+          <h4>🤖 AI Automation</h4>
+          <p>Integrate AI and automation capabilities into web applications for enhanced user experiences and business value.</p>
+          <a href="/ai-automation-business" class="cta-button">AI Automation</a>
+        </div>
+
+        <div class="cta-card">
+          <h4>🚀 Startup Strategy</h4>
+          <p>Apply web development expertise to startup ventures and technology entrepreneurship opportunities.</p>
+          <a href="/startup-funding-investment" class="cta-button">Startup Strategy</a>
+        </div>
+      </div>
+    </main>
+
+    <aside class="sidebar">
+      <h3>Contents</h3>
+      <ul>
+        <li><a href="#framework-fundamentals">Framework Fundamentals</a></li>
+        <li><a href="#framework-comparison">Framework Comparison</a></li>
+        <li><a href="#development-best-practices">Development Best Practices</a></li>
+        <li><a href="#faq">FAQ</a></li>
+      </ul>
+    </aside>
+  </div>
+</div>
+
+<script>
+function calculateFrameworkRecommendation() {
+  const projectType = document.getElementById('projectType').value;
+  const projectSize = document.getElementById('projectSize').value;
+  const teamSize = document.getElementById('teamSize').value;
+  const teamExperience = document.getElementById('teamExperience').value;
+  const performancePriority = document.getElementById('performancePriority').value;
+  const timeline = document.getElementById('timeline').value;
+  
+  // Framework scoring system
+  const frameworks = {
+    react: { name: 'React + Next.js', score: 0 },
+    vue: { name: 'Vue.js + Nuxt', score: 0 },
+    angular: { name: 'Angular', score: 0 },
+    svelte: { name: 'Svelte + SvelteKit', score: 0 }
+  };
+  
+  // Project type scoring
+  const projectTypeScores = {
+    spa: { react: 3, vue: 3, angular: 2, svelte: 2 },
+    ecommerce: { react: 3, vue: 2, angular: 1, svelte: 2 },
+    cms: { react: 2, vue: 3, angular: 1, svelte: 2 },
+    dashboard: { react: 3, vue: 2, angular: 3, svelte: 1 },
+    landing: { react: 2, vue: 3, angular: 1, svelte: 3 },
+    blog: { react: 2, vue: 3, angular: 1, svelte: 3 },
+    saas: { react: 3, vue: 2, angular: 3, svelte: 2 },
+    api: { react: 2, vue: 2, angular: 2, svelte: 2 }
+  };
+  
+  // Project size scoring
+  const sizeScores = {
+    small: { react: 1, vue: 3, angular: 0, svelte: 3 },
+    medium: { react: 2, vue: 3, angular: 2, svelte: 2 },
+    large: { react: 3, vue: 2, angular: 3, svelte: 1 },
+    enterprise: { react: 2, vue: 1, angular: 3, svelte: 0 }
+  };
+  
+  // Team size scoring
+  const teamScores = {
+    solo: { react: 2, vue: 3, angular: 1, svelte: 3 },
+    small: { react: 3, vue: 3, angular: 2, svelte: 2 },
+    medium: { react: 3, vue: 2, angular: 3, svelte: 1 },
+    large: { react: 3, vue: 2, angular: 3, svelte: 1 }
+  };
+  
+  // Experience level scoring
+  const experienceScores = {
+    junior: { react: 1, vue: 3, angular: 0, svelte: 3 },
+    intermediate: { react: 2, vue: 3, angular: 2, svelte: 2 },
+    senior: { react: 3, vue: 2, angular: 3, svelte: 2 },
+    mixed: { react: 2, vue: 3, angular: 1, svelte: 2 }
+  };
+  
+  // Performance priority scoring
+  const performanceScores = {
+    low: { react: 2, vue: 2, angular: 2, svelte: 2 },
+    medium: { react: 3, vue: 2, angular: 2, svelte: 3 },
+    high: { react: 3, vue: 2, angular: 3, svelte: 3 },
+    extreme: { react: 2, vue: 2, angular: 2, svelte: 3 }
+  };
+  
+  // Timeline scoring
+  const timelineScores = {
+    rushed: { react: 2, vue: 3, angular: 0, svelte: 2 },
+    fast: { react: 2, vue: 3, angular: 1, svelte: 3 },
+    normal: { react: 3, vue: 3, angular: 2, svelte: 2 },
+    long: { react: 3, vue: 2, angular: 3, svelte: 2 }
+  };
+  
+  // Calculate scores
+  Object.keys(frameworks).forEach(fw => {
+    frameworks[fw].score += projectTypeScores[projectType][fw];
+    frameworks[fw].score += sizeScores[projectSize][fw];
+    frameworks[fw].score += teamScores[teamSize][fw];
+    frameworks[fw].score += experienceScores[teamExperience][fw];
+    frameworks[fw].score += performanceScores[performancePriority][fw];
+    frameworks[fw].score += timelineScores[timeline][fw];
+  });
+  
+  // Sort by score
+  const sortedFrameworks = Object.entries(frameworks)
+    .sort(([,a], [,b]) => b.score - a.score);
+  
+  const winner = sortedFrameworks[0][1];
+  const runner = sortedFrameworks[1][1];
+  
+  // Generate reasoning
+  const generateReasoning = (projectType, projectSize, teamExperience, performancePriority) => {
+    let reasons = [];
+    
+    if (projectType === 'enterprise' || projectSize === 'enterprise') {
+      reasons.push('Enterprise complexity requires structured framework');
+    }
+    if (teamExperience === 'junior') {
+      reasons.push('Gentle learning curve important for team');
+    }
+    if (performancePriority === 'extreme') {
+      reasons.push('Performance-critical requirements prioritized');
+    }
+    if (timeline === 'rushed') {
+      reasons.push('Rapid development timeline considered');
+    }
+    
+    return reasons.length > 0 ? reasons.join('; ') : 'Balanced evaluation across criteria';
+  };
+  
+  const reasoning = generateReasoning(projectType, projectSize, teamExperience, performancePriority);
+  
+  // Confidence calculation
+  const topScore = winner.score;
+  const secondScore = runner.score;
+  const confidenceLevel = topScore - secondScore;
+  
+  let confidence = '';
+  if (confidenceLevel >= 4) confidence = 'Very High';
+  else if (confidenceLevel >= 3) confidence = 'High';
+  else if (confidenceLevel >= 2) confidence = 'Moderate';
+  else confidence = 'Low';
+  
+  // Learning time estimation
+  const getLearningTime = (framework, experience) => {
+    const baseTimes = {
+      'React + Next.js': { junior: 8, intermediate: 4, senior: 2, mixed: 6 },
+      'Vue.js + Nuxt': { junior: 4, intermediate: 2, senior: 1, mixed: 3 },
+      'Angular': { junior: 12, intermediate: 8, senior: 4, mixed: 10 },
+      'Svelte + SvelteKit': { junior: 3, intermediate: 2, senior: 1, mixed: 2 }
+    };
+    
+    return baseTimes[framework][experience] || 4;
+  };
+  
+  const learningWeeks = getLearningTime(winner.name, teamExperience);
+  
+  // Ecosystem strength
+  const ecosystemStrength = {
+    'React + Next.js': 'Massive',
+    'Vue.js + Nuxt': 'Growing',
+    'Angular': 'Complete',
+    'Svelte + SvelteKit': 'Small but Quality'
+  };
+  
+  // Job market
+  const jobMarket = {
+    'React + Next.js': 'Excellent',
+    'Vue.js + Nuxt': 'Good',
+    'Angular': 'Good',
+    'Svelte + SvelteKit': 'Growing'
+  };
+  
+  // Development cost estimation (per month)
+  const getDevelopmentCost = (framework, teamSize) => {
+    const baseCost = {
+      solo: 8000,
+      small: 25000,
+      medium: 75000,
+      large: 150000
+    };
+    
+    const frameworkMultiplier = {
+      'React + Next.js': 1.0,
+      'Vue.js + Nuxt': 0.9,
+      'Angular': 1.2,
+      'Svelte + SvelteKit': 0.85
+    };
+    
+    return baseCost[teamSize] * frameworkMultiplier[framework];
+  };
+  
+  const monthlyCost = getDevelopmentCost(winner.name, teamSize);
+  
+  // Display results
+  const breakdown = document.getElementById('frameworkBreakdown');
+  breakdown.innerHTML = `
+    <div class="breakdown-item">
+      <div class="breakdown-label">Recommended Framework</div>
+      <div class="breakdown-value">${winner.name.split(' ')[0]}</div>
+      <div class="breakdown-status">${confidence} confidence</div>
+    </div>
+    <div class="breakdown-item">
+      <div class="breakdown-label">Runner-up</div>
+      <div class="breakdown-value">${runner.name.split(' ')[0]}</div>
+      <div class="breakdown-status">Alternative option</div>
+    </div>
+    <div class="breakdown-item">
+      <div class="breakdown-label">Learning Time</div>
+      <div class="breakdown-value">${learningWeeks} weeks</div>
+      <div class="breakdown-status">For ${teamExperience} level</div>
+    </div>
+    <div class="breakdown-item">
+      <div class="breakdown-label">Ecosystem</div>
+      <div class="breakdown-value">${ecosystemStrength[winner.name]}</div>
+      <div class="breakdown-status">Library & tool support</div>
+    </div>
+    <div class="breakdown-item">
+      <div class="breakdown-label">Job Market</div>
+      <div class="breakdown-value">${jobMarket[winner.name]}</div>
+      <div class="breakdown-status">Career opportunities</div>
+    </div>
+    <div class="breakdown-item">
+      <div class="breakdown-label">Est. Monthly Cost</div>
+      <div class="breakdown-value">$${(monthlyCost / 1000).toFixed(0)}K</div>
+      <div class="breakdown-status">${teamSize} team</div>
+    </div>
+  `;
+  
+  document.getElementById('frameworkResults').style.display = 'block';
+}
+</script>

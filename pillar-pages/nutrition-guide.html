@@ -1,0 +1,124 @@
+<style>
+  .hub-container { max-width: 1100px; margin: 0 auto; padding: 2rem; color: #e2e8f0; font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; line-height: 1.8; }
+  .hub-header { text-align: center; margin-bottom: 4rem; padding-top: 3rem; }
+  .gradient-h1 { font-size: clamp(2.2rem, 5vw, 3.5rem); font-weight: 800; background: linear-gradient(135deg, #ffffff 0%, #a5b4fc 50%, #818cf8 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 1rem; line-height: 1.15; letter-spacing: -0.02em; }
+  .hub-subtitle { font-size: 1.2rem; color: #94a3b8; max-width: 750px; margin: 0 auto; }
+  .breadcrumb { display: flex; align-items: center; gap: 0.5rem; justify-content: center; margin-bottom: 2rem; font-size: 0.85rem; }
+  .breadcrumb a { color: #818cf8; text-decoration: none; } .breadcrumb a:hover { text-decoration: underline; } .breadcrumb span { color: #475569; }
+  .updated-badge { display: inline-block; background: rgba(129, 140, 248, 0.15); color: #a5b4fc; padding: 0.4rem 1rem; border-radius: 20px; font-size: 0.85rem; margin-bottom: 1.5rem; border: 1px solid rgba(129, 140, 248, 0.3); }
+  .hub-intro { max-width: 800px; margin: 0 auto 3rem; }
+  .hub-intro p { font-size: 1.05rem; color: #cbd5e1; margin-bottom: 1.3rem; } .hub-intro strong { color: #fff; }
+  .hub-section { margin-bottom: 4rem; }
+  .hub-section h2 { font-size: 1.8rem; color: #fff; margin-bottom: 1.5rem; padding-bottom: 0.8rem; border-bottom: 1px solid rgba(255,255,255,0.08); letter-spacing: -0.02em; }
+  .resource-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1.2rem; margin: 2rem 0; }
+  .resource-card { background: #12121a; border: 1px solid rgba(255,255,255,0.08); border-radius: 14px; padding: 1.8rem; transition: all 0.2s; text-decoration: none; display: block; }
+  .resource-card:hover { border-color: rgba(129, 140, 248, 0.4); transform: translateY(-2px); }
+  .resource-card .card-type { font-size: 0.75rem; color: #818cf8; text-transform: uppercase; letter-spacing: 0.08em; font-weight: 600; margin-bottom: 0.6rem; }
+  .resource-card h3 { color: #fff; font-size: 1.15rem; margin: 0 0 0.5rem; }
+  .resource-card p { color: #94a3b8; font-size: 0.95rem; margin: 0; line-height: 1.5; }
+  .callout { border-left: 4px solid #818cf8; background: linear-gradient(90deg, rgba(129, 140, 248, 0.1) 0%, rgba(129, 140, 248, 0.02) 100%); padding: 1.3rem 1.8rem; border-radius: 0 12px 12px 0; margin: 2rem 0; font-size: 1.05rem; color: #e2e8f0; } .callout strong { color: #fff; }
+  .data-table { width: 100%; border-collapse: collapse; margin: 2rem 0; font-size: 0.95rem; }
+  .data-table thead { background: rgba(129, 140, 248, 0.1); }
+  .data-table th { padding: 0.8rem 1rem; text-align: left; color: #a5b4fc; font-weight: 600; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.06em; border-bottom: 1px solid rgba(255,255,255,0.1); }
+  .data-table td { padding: 0.8rem 1rem; color: #cbd5e1; border-bottom: 1px solid rgba(255,255,255,0.04); }
+  .data-table tbody tr:hover { background: rgba(255,255,255,0.02); }
+  .val-good { color: #4ade80; font-weight: 600; } .val-great { color: #22d3ee; font-weight: 700; }
+  .faq-section { margin-bottom: 4rem; }
+  .faq-section h2 { font-size: 1.8rem; color: #fff; margin-bottom: 1.5rem; padding-bottom: 0.8rem; border-bottom: 1px solid rgba(255,255,255,0.08); }
+  .faq-item { margin-bottom: 2rem; } .faq-item h3 { color: #e2e8f0; font-size: 1.15rem; margin-bottom: 0.5rem; } .faq-item p { color: #94a3b8; font-size: 1rem; line-height: 1.7; }
+  .apex-link { display: inline-flex; align-items: center; gap: 0.5rem; background: rgba(129, 140, 248, 0.1); color: #a5b4fc; padding: 0.6rem 1.2rem; border-radius: 10px; text-decoration: none; font-size: 0.95rem; border: 1px solid rgba(129, 140, 248, 0.2); transition: all 0.2s; margin-top: 1rem; }
+  .apex-link:hover { background: rgba(129, 140, 248, 0.2); border-color: rgba(129, 140, 248, 0.4); }
+  @media (max-width: 768px) { .resource-grid { grid-template-columns: 1fr; } .hub-container { padding: 1rem; } }
+</style>
+
+<div class="hub-container">
+  <div class="hub-header">
+    <nav class="breadcrumb">
+      <a href="/">Home</a> <span>›</span>
+      <a href="/human-optimization-health-guide-2026">Human Optimization &amp; Health</a> <span>›</span>
+      <span style="color:#e2e8f0">Nutrition</span>
+    </nav>
+    <div class="updated-badge">28 Resources · Updated 2026</div>
+    <h1 class="gradient-h1">Nutrition Guide</h1>
+    <p class="hub-subtitle">Calorie calculators, protein targets, meal estimators, fasting protocols, and food databases — the evidence-based toolkit for eating with intention.</p>
+  </div>
+
+  <div class="hub-intro">
+    <p>Nutrition advice is a minefield. Every year brings a new villain (carbs, fat, seed oils, lectins) and a new savior (keto, carnivore, plant-based, Mediterranean). Here's what the evidence actually supports: <strong>calories determine weight change, protein determines body composition, and food quality determines health outcomes.</strong> That's it. The rest is optimization or ideology.</p>
+    <p>Most people overcomplicate nutrition because complexity sells books and supplements. The fundamentals are boring: eat enough protein (most people don't), eat enough fiber (definitely not), don't massively overconsume calories (the hard part), and eat mostly whole foods. <strong>Get these four things right and you're ahead of 90% of the population.</strong></p>
+    <p>This hub connects you to calculators that remove the guesswork — from calorie targets to protein requirements, meal estimation tools, and fasting tracking. Data-driven eating, not diet dogma.</p>
+  </div>
+
+  <div class="hub-section">
+    <h2>Top Resources in This Cluster</h2>
+    <div class="resource-grid">
+      <a href="https://bodycount.photonbuilder.com/calorie-calculator" class="resource-card">
+        <div class="card-type">Calculator</div>
+        <h3>Calorie Calculator</h3>
+        <p>Daily calorie targets based on your stats, activity level, and goal (lose, maintain, gain). The starting point for any nutrition plan.</p>
+      </a>
+      <a href="https://bodycount.photonbuilder.com/protein-calculator" class="resource-card">
+        <div class="card-type">Calculator</div>
+        <h3>Protein Calculator</h3>
+        <p>Optimal protein intake based on body weight, lean mass, and training status. Most people need more than they think.</p>
+      </a>
+      <a href="https://bodycount.photonbuilder.com/meal-calorie-estimator" class="resource-card">
+        <div class="card-type">Tool</div>
+        <h3>Meal Calorie Estimator</h3>
+        <p>Estimate calories in a meal without weighing everything. Useful for restaurant meals and quick logging.</p>
+      </a>
+      <a href="https://bodycount.photonbuilder.com/fasting-tracker" class="resource-card">
+        <div class="card-type">Tool</div>
+        <h3>Fasting Tracker</h3>
+        <p>Track intermittent fasting windows, extended fasts, and metabolic milestones. Timer with phase-based guidance.</p>
+      </a>
+      <a href="https://bodycount.photonbuilder.com/high-protein-foods" class="resource-card">
+        <div class="card-type">Database</div>
+        <h3>High Protein Foods List</h3>
+        <p>Ranked by protein per calorie — the metric that actually matters. Stop eating chicken breast if you hate it; there are better options.</p>
+      </a>
+    </div>
+  </div>
+
+  <div class="hub-section">
+    <h2>Daily Nutrition Targets</h2>
+    <table class="data-table">
+      <thead>
+        <tr><th>Nutrient</th><th>General Population</th><th>Active / Training</th><th>Why It Matters</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>Protein</td><td>0.8g/kg BW</td><td class="val-great">1.6-2.2g/kg BW</td><td>Muscle preservation, satiety, thermic effect</td></tr>
+        <tr><td>Fiber</td><td class="val-good">25-30g/day</td><td class="val-good">30-40g/day</td><td>Gut health, satiety, cholesterol</td></tr>
+        <tr><td>Water</td><td>2-3L/day</td><td class="val-good">3-4L/day</td><td>Performance, cognition, recovery</td></tr>
+        <tr><td>Calorie deficit (fat loss)</td><td colspan="2">300-500 cal/day below TDEE</td><td style="color:#fbbf24;">Larger deficits → more muscle loss</td></tr>
+        <tr><td>Calorie surplus (muscle gain)</td><td colspan="2" class="val-good">200-300 cal/day above TDEE</td><td>Larger surpluses → more fat gain</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="callout">
+    <strong>The protein priority:</strong> If you change one thing about your diet, increase protein. Higher protein intake (1.6g+ per kg) preserves muscle during fat loss, increases satiety (you feel fuller), has a higher thermic effect (your body burns 20-30% of protein calories just digesting it), and supports recovery from training. It's the single highest-ROI nutrition lever.
+  </div>
+
+  <div class="faq-section">
+    <h2>Frequently Asked Questions</h2>
+    <div class="faq-item">
+      <h3>Do I need to count calories?</h3>
+      <p>Not forever, but everyone should do it for 2-4 weeks at least once. Most people wildly underestimate their intake (by 30-50%). Counting for a few weeks calibrates your intuition. After that, you can estimate more accurately. Think of it as training wheels — necessary at first, optional once you've learned.</p>
+    </div>
+    <div class="faq-item">
+      <h3>Is intermittent fasting actually beneficial?</h3>
+      <p>For weight loss, IF works primarily by reducing overall calorie intake — there's no metabolic magic. For health, there's emerging evidence that extended fasting windows (16-18h) promote autophagy and improve insulin sensitivity. If IF helps you eat less and you feel good doing it, great. If it makes you binge at your eating window, it's counterproductive.</p>
+    </div>
+    <div class="faq-item">
+      <h3>How much protein can I absorb per meal?</h3>
+      <p>The "30g per meal" limit is a myth. Your body can absorb and utilize much more — studies show muscle protein synthesis benefits from 40-60g per meal in active individuals. However, spreading protein across 3-5 meals optimizes muscle protein synthesis better than cramming it all in one meal. Aim for 30-50g per meal.</p>
+    </div>
+    <div class="faq-item">
+      <h3>What supplements are actually worth taking?</h3>
+      <p>The evidence-supported short list: creatine monohydrate (5g/day — the most studied supplement in sports nutrition), vitamin D (if you're deficient, which most people are), omega-3s (if you don't eat fatty fish 2x/week), and protein powder (for convenience, not necessity). Everything else has marginal or no evidence.</p>
+    </div>
+  </div>
+
+  <a href="/human-optimization-health-guide-2026" class="apex-link">← Back to Human Optimization &amp; Health Guide</a>
+</div>
