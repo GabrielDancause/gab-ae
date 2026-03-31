@@ -1,0 +1,1254 @@
+<style>
+  .adi-container {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 2rem;
+    color: #e2e8f0;
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    line-height: 1.8;
+  }
+  .adi-header {
+    text-align: center;
+    margin-bottom: 4rem;
+    padding-top: 3rem;
+  }
+  .gradient-h1 {
+    font-size: clamp(2.2rem, 5vw, 3.5rem);
+    font-weight: 800;
+    background: linear-gradient(135deg, #ffffff 0%, #a5b4fc 50%, #818cf8 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    margin-bottom: 1rem;
+    line-height: 1.15;
+    letter-spacing: -0.02em;
+  }
+  .adi-subtitle {
+    font-size: 1.2rem;
+    color: #94a3b8;
+    max-width: 750px;
+    margin: 0 auto;
+  }
+  .breadcrumb {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    justify-content: center;
+    margin-bottom: 2rem;
+    font-size: 0.85rem;
+  }
+  .breadcrumb a {
+    color: #818cf8;
+    text-decoration: none;
+  }
+  .breadcrumb a:hover { text-decoration: underline; }
+  .breadcrumb span { color: #475569; }
+  .updated-badge {
+    display: inline-block;
+    background: rgba(129, 140, 248, 0.15);
+    color: #a5b4fc;
+    padding: 0.4rem 1rem;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    margin-bottom: 2rem;
+  }
+  .content-wrapper {
+    display: grid;
+    grid-template-columns: 1fr 280px;
+    gap: 4rem;
+    margin-top: 3rem;
+  }
+  .main-content {
+    min-width: 0;
+  }
+  .sidebar {
+    position: sticky;
+    top: 2rem;
+    height: fit-content;
+    background: #12121a;
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 16px;
+    padding: 1.5rem;
+  }
+  .sidebar h3 {
+    color: #ffffff;
+    font-size: 0.9rem;
+    font-weight: 600;
+    margin: 0 0 1rem 0;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+  .sidebar ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+  .sidebar li {
+    margin: 0;
+  }
+  .sidebar a {
+    display: block;
+    color: #94a3b8;
+    text-decoration: none;
+    padding: 0.5rem 0;
+    border-bottom: 1px solid rgba(255,255,255,0.05);
+    font-size: 0.85rem;
+    transition: color 0.2s;
+  }
+  .sidebar a:hover {
+    color: #a5b4fc;
+  }
+  .section {
+    margin: 4rem 0;
+    scroll-margin-top: 2rem;
+  }
+  .section h2 {
+    color: #ffffff;
+    font-size: 1.8rem;
+    font-weight: 700;
+    margin-bottom: 1.5rem;
+  }
+  .section h3 {
+    color: #e2e8f0;
+    font-size: 1.3rem;
+    font-weight: 600;
+    margin: 2rem 0 1rem 0;
+  }
+  .stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1.5rem;
+    margin: 2rem 0;
+  }
+  .stat-card {
+    background: #12121a;
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 14px;
+    padding: 1.5rem;
+    text-align: center;
+  }
+  .stat-number {
+    font-size: 2.5rem;
+    font-weight: 800;
+    color: #818cf8;
+    display: block;
+    line-height: 1;
+  }
+  .stat-label {
+    color: #94a3b8;
+    font-size: 0.9rem;
+    margin-top: 0.5rem;
+  }
+  .api-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 2rem;
+    margin: 2rem 0;
+  }
+  .api-card {
+    background: #12121a;
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 16px;
+    padding: 2rem;
+    position: relative;
+    overflow: hidden;
+  }
+  .api-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, #818cf8, #a5b4fc);
+  }
+  .api-card h4 {
+    color: #ffffff;
+    font-size: 1.2rem;
+    font-weight: 600;
+    margin-bottom: 1rem;
+  }
+  .api-badge {
+    background: rgba(129, 140, 248, 0.15);
+    color: #a5b4fc;
+    padding: 0.3rem 0.8rem;
+    border-radius: 8px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    display: inline-block;
+    margin-bottom: 1rem;
+  }
+  .api-badge.rest { background: rgba(74, 222, 128, 0.15); color: #4ade80; }
+  .api-badge.graphql { background: rgba(251, 191, 36, 0.15); color: #fbbf24; }
+  .api-badge.websocket { background: rgba(248, 113, 113, 0.15); color: #f87171; }
+  .api-badge.grpc { background: rgba(147, 51, 234, 0.15); color: #9333ea; }
+  .api-badge.microservice { background: rgba(6, 182, 212, 0.15); color: #06b6d4; }
+  .callout {
+    background: rgba(34, 211, 238, 0.1);
+    border-left: 4px solid #22d3ee;
+    border-radius: 0 8px 8px 0;
+    padding: 1.5rem;
+    margin: 2rem 0;
+  }
+  .callout.warning {
+    background: rgba(251, 191, 36, 0.1);
+    border-left-color: #fbbf24;
+  }
+  .callout.success {
+    background: rgba(74, 222, 128, 0.1);
+    border-left-color: #4ade80;
+  }
+  .callout.danger {
+    background: rgba(239, 68, 68, 0.1);
+    border-left-color: #ef4444;
+  }
+  .callout h4 {
+    color: #ffffff;
+    font-size: 1rem;
+    font-weight: 600;
+    margin: 0 0 0.5rem 0;
+  }
+  .comparison-table {
+    width: 100%;
+    background: #12121a;
+    border-radius: 16px;
+    overflow: hidden;
+    border: 1px solid rgba(255,255,255,0.08);
+    margin: 2rem 0;
+  }
+  .comparison-table th {
+    background: #1e293b;
+    color: #ffffff;
+    padding: 1rem;
+    text-align: left;
+    font-weight: 600;
+  }
+  .comparison-table td {
+    padding: 1rem;
+    border-bottom: 1px solid rgba(255,255,255,0.05);
+    color: #e2e8f0;
+  }
+  .comparison-table tr:last-child td {
+    border-bottom: none;
+  }
+  .tier-high { color: #4ade80; }
+  .tier-medium { color: #fbbf24; }
+  .tier-low { color: #f87171; }
+  .design-calculator {
+    background: #12121a;
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 16px;
+    padding: 2rem;
+    margin: 3rem 0;
+  }
+  .design-calculator h3 {
+    color: #ffffff;
+    font-size: 1.3rem;
+    font-weight: 600;
+    margin-bottom: 1.5rem;
+    text-align: center;
+  }
+  .calc-inputs {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1rem;
+    margin-bottom: 2rem;
+  }
+  .calc-input {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+  .calc-input label {
+    color: #94a3b8;
+    font-size: 0.85rem;
+    font-weight: 500;
+  }
+  .calc-input input, .calc-input select {
+    background: #1e293b;
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 8px;
+    padding: 0.75rem;
+    color: #e2e8f0;
+    font-size: 0.9rem;
+  }
+  .calc-input input:focus, .calc-input select:focus {
+    outline: none;
+    border-color: #818cf8;
+  }
+  .calc-button {
+    background: #818cf8;
+    color: #ffffff;
+    border: none;
+    border-radius: 8px;
+    padding: 0.75rem 2rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s;
+    width: 100%;
+  }
+  .calc-button:hover {
+    background: #6366f1;
+  }
+  .calc-results {
+    background: rgba(129, 140, 248, 0.1);
+    border-radius: 12px;
+    padding: 1.5rem;
+    margin-top: 1.5rem;
+    display: none;
+  }
+  .calc-results h4 {
+    color: #a5b4fc;
+    font-size: 1.1rem;
+    margin-bottom: 1rem;
+  }
+  .result-breakdown {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 1rem;
+    margin-top: 1rem;
+  }
+  .breakdown-item {
+    background: rgba(255,255,255,0.02);
+    padding: 1rem;
+    border-radius: 8px;
+    text-align: center;
+  }
+  .breakdown-label {
+    color: #94a3b8;
+    font-size: 0.8rem;
+    margin-bottom: 0.25rem;
+  }
+  .breakdown-value {
+    color: #e2e8f0;
+    font-weight: 600;
+    font-size: 0.9rem;
+  }
+  .breakdown-status {
+    color: #818cf8;
+    font-size: 0.75rem;
+    margin-top: 0.25rem;
+  }
+  .pattern-cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 1.5rem;
+    margin: 2rem 0;
+  }
+  .pattern-card {
+    background: #12121a;
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 14px;
+    padding: 1.5rem;
+  }
+  .pattern-card h4 {
+    color: #ffffff;
+    font-size: 1.1rem;
+    font-weight: 600;
+    margin-bottom: 1rem;
+  }
+  .tool-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1.5rem;
+    margin: 2rem 0;
+  }
+  .tool-card {
+    background: #12121a;
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 12px;
+    padding: 1.5rem;
+    text-align: center;
+  }
+  .tool-card h5 {
+    color: #ffffff;
+    margin-bottom: 0.5rem;
+    font-size: 1rem;
+  }
+  .tool-description {
+    font-size: 0.9rem;
+    color: #94a3b8;
+    margin-bottom: 1rem;
+  }
+  .tool-rating {
+    font-size: 0.8rem;
+    color: #818cf8;
+    font-weight: 600;
+  }
+  .faq-section {
+    margin: 4rem 0;
+  }
+  .faq-item {
+    background: #12121a;
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 14px;
+    margin-bottom: 1rem;
+    overflow: hidden;
+  }
+  .faq-question {
+    padding: 1.5rem;
+    color: #ffffff;
+    font-weight: 600;
+    cursor: pointer;
+    border-bottom: 1px solid rgba(255,255,255,0.05);
+  }
+  .faq-answer {
+    padding: 1.5rem;
+    color: #94a3b8;
+  }
+  .cta-cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1.5rem;
+    margin: 3rem 0;
+  }
+  .cta-card {
+    background: linear-gradient(135deg, #1e293b, #334155);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 16px;
+    padding: 2rem;
+    text-align: center;
+  }
+  .cta-card h4 {
+    color: #ffffff;
+    font-size: 1.1rem;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+  }
+  .cta-card p {
+    color: #94a3b8;
+    font-size: 0.9rem;
+    margin-bottom: 1.5rem;
+  }
+  .cta-button {
+    display: inline-block;
+    background: #818cf8;
+    color: #ffffff;
+    padding: 0.7rem 1.5rem;
+    border-radius: 8px;
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 0.9rem;
+    transition: background 0.2s;
+  }
+  .cta-button:hover {
+    background: #6366f1;
+  }
+  
+  @media (max-width: 1024px) {
+    .content-wrapper {
+      grid-template-columns: 1fr;
+      gap: 2rem;
+    }
+    .sidebar {
+      position: relative;
+      top: 0;
+      order: -1;
+    }
+  }
+  
+  @media (max-width: 768px) {
+    .adi-container {
+      padding: 1rem;
+    }
+    .breadcrumb {
+      flex-wrap: wrap;
+    }
+    .stats-grid {
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    }
+    .api-grid {
+      grid-template-columns: 1fr;
+    }
+    .pattern-cards {
+      grid-template-columns: 1fr;
+    }
+    .tool-grid {
+      grid-template-columns: 1fr;
+    }
+    .cta-cards {
+      grid-template-columns: 1fr;
+    }
+    .calc-inputs {
+      grid-template-columns: 1fr;
+    }
+    .result-breakdown {
+      grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+    }
+  }
+</style>
+
+<div class="adi-container">
+  <div class="adi-header">
+    <div class="breadcrumb">
+      <a href="/apex-guides">Apex Guides</a>
+      <span>→</span>
+      <a href="/web-development-frameworks">Web Development Frameworks</a>
+      <span>→</span>
+      <span>API Development & Integration</span>
+    </div>
+    
+    <div class="updated-badge">
+      🔌 Updated March 2026
+    </div>
+    
+    <h1 class="gradient-h1">API Development & Integration</h1>
+    <p class="adi-subtitle">Master modern API development through strategic design patterns, implementation best practices, integration architecture, and scalable solutions for building robust, interoperable systems.</p>
+  </div>
+
+  <div class="content-wrapper">
+    <main class="main-content">
+      <div class="stats-grid">
+        <div class="stat-card">
+          <span class="stat-number">83%</span>
+          <div class="stat-label">Organizations use APIs for digital transformation</div>
+        </div>
+        <div class="stat-card">
+          <span class="stat-number">$2.2T</span>
+          <div class="stat-label">Economic value created by APIs annually</div>
+        </div>
+        <div class="stat-card">
+          <span class="stat-number">15,000</span>
+          <div class="stat-label">Average API calls per second for large systems</div>
+        </div>
+        <div class="stat-card">
+          <span class="stat-number">40%</span>
+          <div class="stat-label">Faster development with well-designed APIs</div>
+        </div>
+      </div>
+
+      <section id="api-fundamentals" class="section">
+        <h2>API Development Fundamentals</h2>
+        <p>Application Programming Interface (API) development encompasses designing, building, and maintaining interfaces that enable software components, applications, and systems to communicate effectively while providing reliable, secure, and scalable access to functionality and data across distributed architectures.</p>
+
+        <div class="callout">
+          <h4>🔌 API-First Architecture Benefits</h4>
+          <p>APIs serve as the foundation of modern digital ecosystems, enabling microservices architectures, third-party integrations, mobile applications, and business partnerships. Well-designed APIs accelerate development, improve system modularity, and create new business opportunities through platform expansion and ecosystem development.</p>
+        </div>
+
+        <h3>API Architecture Patterns</h3>
+        <div class="api-grid">
+          <div class="api-card">
+            <div class="api-badge rest">REST</div>
+            <h4>🌐 RESTful APIs</h4>
+            <p><strong>Architecture:</strong> Representational State Transfer with stateless client-server communication</p>
+            <p><strong>HTTP Methods:**</strong> GET, POST, PUT, DELETE for resource manipulation</p>
+            <p><strong>Data Format:**</strong> JSON, XML with standardized status codes and headers</p>
+            <p><strong>Benefits:**</strong> Simplicity, cacheable, stateless, wide tooling support</p>
+            <p><strong>Use Cases:**</strong> Web services, CRUD operations, public APIs, mobile backends</p>
+          </div>
+
+          <div class="api-card">
+            <div class="api-badge graphql">GraphQL</div>
+            <h4>📊 GraphQL APIs</h4>
+            <p><strong>Query Language:**</strong> Client-specified data fetching with single endpoint</p>
+            <p><strong>Type System:**</strong> Strong typing with introspection and validation</p>
+            <p><strong>Flexibility:**</strong> Clients request exactly what they need, reducing over/under-fetching</p>
+            <p><strong>Real-time:**</strong> Subscriptions for live data updates and event streams</p>
+            <p><strong>Ideal For:**</strong> Complex data requirements, mobile apps, real-time applications</p>
+          </div>
+
+          <div class="api-card">
+            <div class="api-badge websocket">WebSocket</div>
+            <h4>⚡ Real-Time APIs</h4>
+            <p><strong>Protocol:**</strong> Full-duplex communication over persistent connections</p>
+            <p><strong>Low Latency:**</strong> Bidirectional messaging without HTTP overhead</p>
+            <p><strong>Event-Driven:**</strong> Server and client initiated communication patterns</p>
+            <p><strong>Scalability:**</strong> Connection pooling and load balancing considerations</p>
+            <p><strong>Applications:**</strong> Chat systems, gaming, trading platforms, live updates</p>
+          </div>
+
+          <div class="api-card">
+            <div class="api-badge grpc">gRPC</div>
+            <h4>🚀 High-Performance APIs</h4>
+            <p><strong>Protocol:**</strong> HTTP/2 with Protocol Buffers for efficient serialization</p>
+            <p><strong>Features:**</strong> Streaming, authentication, load balancing, health checking</p>
+            <p><strong>Code Generation:**</strong> Automatic client/server code from service definitions</p>
+            <p><strong>Performance:**</strong> Binary protocol, multiplexing, compression optimization</p>
+            <p><strong>Best For:**</strong> Microservices, high-throughput systems, inter-service communication</p>
+          </div>
+
+          <div class="api-card">
+            <div class="api-badge microservice">Event-Driven</div>
+            <h4>📨 Asynchronous APIs</h4>
+            <p><strong>Messaging:**</strong> Event streaming, message queues, publish-subscribe patterns</p>
+            <p><strong>Decoupling:**</strong> Temporal and spatial decoupling between services</p>
+            <p><strong>Scalability:**</strong> Horizontal scaling with event-driven architectures</p>
+            <p><strong>Reliability:**</strong> At-least-once delivery, dead letter queues, retry mechanisms</p>
+            <p><strong>Use Cases:**</strong> Microservices, IoT, data processing, workflow orchestration</p>
+          </div>
+        </api-grid>
+
+        <div class="callout warning">
+          <h4>⚠️ Common API Design Pitfalls</h4>
+          <p><strong>Inconsistent Naming:**</strong> Mixed conventions for endpoints, parameters, and response formats<br>
+          <strong>Over/Under-fetching:**</strong> APIs that return too much or too little data for client needs<br>
+          <strong>Poor Error Handling:**</strong> Vague error messages and inconsistent error response formats<br>
+          <strong>Lack of Versioning:**</strong> Breaking changes without proper API versioning strategies<br>
+          <strong>Security Oversights:**</strong> Insufficient authentication, authorization, and input validation<br>
+          <strong>Performance Issues:**</strong> N+1 queries, lack of caching, inefficient data loading</p>
+        </div>
+
+        <div class="callout success">
+          <h4>✅ API Excellence Principles</h4>
+          <p><strong>Developer Experience:**</strong> Clear documentation, intuitive design, consistent patterns<br>
+          <strong>Performance Optimization:**</strong> Efficient queries, caching strategies, payload optimization<br>
+          <strong>Security by Design:**</strong> Authentication, authorization, encryption, rate limiting<br>
+          <strong>Scalability Planning:**</strong> Horizontal scaling, caching layers, database optimization<br>
+          <strong>Monitoring & Analytics:**</strong> Comprehensive logging, metrics, alerting, and usage analytics<br>
+          <strong>Backward Compatibility:**</strong> Versioning strategies that maintain client compatibility</p>
+        </div>
+      </section>
+
+      <section id="design-patterns" class="section">
+        <h2>API Design & Implementation Patterns</h2>
+
+        <div class="callout">
+          <h4>🎯 Strategic API Design</h4>
+          <p>Effective API design balances developer experience, performance, security, and maintainability. The best APIs are intuitive to use, efficient to implement, and scalable to grow with business needs while maintaining backward compatibility and clear contracts.</p>
+        </div>
+
+        <div class="design-calculator">
+          <h3>🔧 API Architecture Selector</h3>
+          <p>Get personalized API architecture recommendations based on your project requirements and constraints.</p>
+          
+          <div class="calc-inputs">
+            <div class="calc-input">
+              <label for="apiPurpose">Primary API Purpose</label>
+              <select id="apiPurpose">
+                <option value="web-service">Web Service/CRUD</option>
+                <option value="mobile-backend">Mobile Backend</option>
+                <option value="microservices">Microservices Communication</option>
+                <option value="real-time">Real-time Applications</option>
+                <option value="public-api">Public/Partner API</option>
+                <option value="data-streaming">Data Streaming/Analytics</option>
+              </select>
+            </div>
+            
+            <div class="calc-input">
+              <label for="dataComplexity">Data Complexity</label>
+              <select id="dataComplexity">
+                <option value="simple">Simple (Basic CRUD)</option>
+                <option value="moderate">Moderate (Relationships)</option>
+                <option value="complex">Complex (Deep nesting)</option>
+                <option value="varied">Varied Client Needs</option>
+              </select>
+            </div>
+            
+            <div class="calc-input">
+              <label for="performanceReq">Performance Requirements</label>
+              <select id="performanceReq">
+                <option value="standard">Standard (< 100ms)</option>
+                <option value="fast">Fast (< 50ms)</option>
+                <option value="real-time">Real-time (< 10ms)</option>
+                <option value="high-throughput">High Throughput</option>
+              </select>
+            </div>
+            
+            <div class="calc-input">
+              <label for="clientTypes">Client Types</label>
+              <select id="clientTypes">
+                <option value="web-only">Web Applications Only</option>
+                <option value="mobile-web">Mobile + Web</option>
+                <option value="mixed">Mixed (Web/Mobile/IoT)</option>
+                <option value="third-party">Third-party Developers</option>
+              </select>
+            </div>
+            
+            <div class="calc-input">
+              <label for="teamExperience">Team API Experience</label>
+              <select id="teamExperience">
+                <option value="beginner">Beginner</option>
+                <option value="intermediate">Intermediate</option>
+                <option value="advanced">Advanced</option>
+                <option value="expert">Expert</option>
+              </select>
+            </div>
+            
+            <div class="calc-input">
+              <label for="scalingNeeds">Expected Scale</label>
+              <select id="scalingNeeds">
+                <option value="small">Small (< 1K requests/day)</option>
+                <option value="medium">Medium (1K-100K/day)</option>
+                <option value="large">Large (100K-10M/day)</option>
+                <option value="massive">Massive (> 10M/day)</option>
+              </select>
+            </div>
+          </div>
+          
+          <button class="calc-button" onclick="calculateAPIRecommendation()">Get API Recommendation</button>
+          
+          <div class="calc-results" id="apiResults">
+            <h4>Your API Architecture Recommendation</h4>
+            <div class="result-breakdown" id="apiBreakdown">
+              <!-- Results will be populated here -->
+            </div>
+          </div>
+        </div>
+
+        <h3>API Architecture Comparison</h3>
+        <div class="comparison-table">
+          <table>
+            <thead>
+              <tr>
+                <th>API Type</th>
+                <th>Learning Curve</th>
+                <th>Performance</th>
+                <th>Flexibility</th>
+                <th>Tooling</th>
+                <th>Best Use Cases</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>REST</strong></td>
+                <td class="tier-high">Low</td>
+                <td class="tier-medium">Good</td>
+                <td class="tier-medium">Medium</td>
+                <td class="tier-high">Excellent</td>
+                <td>Web services, public APIs, CRUD operations</td>
+              </tr>
+              <tr>
+                <td><strong>GraphQL</strong></td>
+                <td class="tier-medium">Medium</td>
+                <td class="tier-medium">Good</td>
+                <td class="tier-high">Excellent</td>
+                <td class="tier-medium">Good</td>
+                <td>Complex data, mobile apps, flexible queries</td>
+              </tr>
+              <tr>
+                <td><strong>gRPC</strong></td>
+                <td class="tier-low">High</td>
+                <td class="tier-high">Excellent</td>
+                <td class="tier-low">Low</td>
+                <td class="tier-medium">Good</td>
+                <td>Microservices, high-performance systems</td>
+              </tr>
+              <tr>
+                <td><strong>WebSocket</strong></td>
+                <td class="tier-medium">Medium</td>
+                <td class="tier-high">Excellent</td>
+                <td class="tier-medium">Medium</td>
+                <td class="tier-medium">Good</td>
+                <td>Real-time apps, gaming, live updates</td>
+              </tr>
+              <tr>
+                <td><strong>Event-Driven</strong></td>
+                <td class="tier-low">High</td>
+                <td class="tier-high">Excellent</td>
+                <td class="tier-high">High</td>
+                <td class="tier-medium">Good</td>
+                <td>Microservices, async processing, IoT</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <h3>Design Patterns & Best Practices</h3>
+        <div class="pattern-cards">
+          <div class="pattern-card">
+            <h4>🏗️ Resource-Oriented Design</h4>
+            <p><strong>RESTful Principles:**</strong> Resources as nouns, HTTP verbs for actions, stateless operations</p>
+            <p><strong>URL Structure:**</strong> Hierarchical paths, consistent naming conventions, query parameters</p>
+            <p><strong>HTTP Status Codes:**</strong> Appropriate codes for different outcomes (200, 201, 400, 404, 500)</p>
+            <p><strong>Content Negotiation:**</strong> Accept/Content-Type headers, versioning, format support</p>
+            <p><strong>HATEOAS Implementation:**</strong> Hypermedia controls for API discoverability and navigation</p>
+          </div>
+
+          <div class="pattern-card">
+            <h4>🔒 Security Patterns</h4>
+            <p><strong>Authentication:**</strong> JWT tokens, OAuth 2.0, API keys, mutual TLS</p>
+            <p><strong>Authorization:**</strong> RBAC, ABAC, scope-based access control, resource permissions</p>
+            <p><strong>Rate Limiting:**</strong> Token bucket, sliding window, user-based limits</p>
+            <p><strong>Input Validation:**</strong> Schema validation, sanitization, parameter checking</p>
+            <p><strong>Security Headers:**</strong> CORS, CSP, encryption in transit, secure defaults</p>
+          </div>
+
+          <div class="pattern-card">
+            <h4>⚡ Performance Patterns</h4>
+            <p><strong>Caching Strategies:**</strong> HTTP caching, Redis, CDN, application-level caching</p>
+            <p><strong>Pagination:**</strong> Cursor-based, offset-based, limit/offset patterns</p>
+            <p><strong>Batch Operations:**</strong> Bulk endpoints, batch processing, transaction management</p>
+            <p><strong>Compression:**</strong> Gzip, Brotli, response compression, payload optimization</p>
+            <p><strong>Connection Management:**</strong> Keep-alive, connection pooling, circuit breakers</p>
+          </div>
+
+          <div class="pattern-card">
+            <h4>🔄 Integration Patterns</h4>
+            <p><strong>API Gateway:**</strong> Single entry point, request routing, cross-cutting concerns</p>
+            <p><strong>Service Mesh:**</strong> Inter-service communication, observability, security</p>
+            <p><strong>Event Sourcing:**</strong> Event streams, command query separation, audit trails</p>
+            <p><strong>Saga Pattern:**</strong> Distributed transactions, compensation, orchestration</p>
+            <p><strong>Backend for Frontend:**</strong> Client-specific APIs, aggregation, transformation</p>
+          </div>
+        </pattern-cards>
+
+        <h3>API Documentation & Testing</h3>
+        <div class="tool-grid">
+          <div class="tool-card">
+            <h5>📚 OpenAPI/Swagger</h5>
+            <div class="tool-description">
+              Specification-first development with automatic documentation generation
+            </div>
+            <div class="tool-rating">Adoption: Very High | Learning: Easy | Features: Comprehensive</div>
+          </div>
+
+          <div class="tool-card">
+            <h5>🧪 Postman</h5>
+            <div class="tool-description">
+              API development, testing, and collaboration platform
+            </div>
+            <div class="tool-rating">Usability: Excellent | Testing: Strong | Collaboration: Good</div>
+          </div>
+
+          <div class="tool-card">
+            <h5>⚡ Insomnia</h5>
+            <div class="tool-description">
+              Lightweight API client with GraphQL support and team features
+            </div>
+            <div class="tool-rating">Performance: Fast | Interface: Clean | GraphQL: Excellent</div>
+          </div>
+
+          <div class="tool-card">
+            <h5>🤖 Newman/Jest</h5>
+            <div class="tool-description">
+              Automated testing frameworks for API validation and regression testing
+            </div>
+            <div class="tool-rating">Automation: Excellent | CI/CD: Strong | Maintenance: Medium</div>
+          </div>
+
+          <div class="tool-card">
+            <h5>📊 Grafana/DataDog</h5>
+            <div class="tool-description">
+              API monitoring, metrics, alerting, and performance analysis
+            </div>
+            <div class="tool-rating">Monitoring: Comprehensive | Alerting: Strong | Cost: Variable</div>
+          </div>
+
+          <div class="tool-card">
+            <h5>🚪 Kong/Zuul</h5>
+            <div class="tool-description">
+              API gateway solutions for routing, security, and traffic management
+            </div>
+            <div class="tool-rating">Features: Rich | Scalability: High | Configuration: Complex</div>
+          </div>
+        </tool-grid>
+      </section>
+
+      <section id="integration-architecture" class="section">
+        <h2>Integration Architecture & Scalability</h2>
+
+        <div class="callout success">
+          <h4>🌐 Enterprise Integration Excellence</h4>
+          <p>Successful API integration architectures balance performance, reliability, and maintainability while enabling business agility. Focus on loosely coupled systems, event-driven architectures, and comprehensive monitoring to build resilient, scalable integration platforms.</p>
+        </div>
+
+        <h3>Integration Patterns</h3>
+        <div class="pattern-cards">
+          <div class="pattern-card">
+            <h4>🚪 API Gateway Pattern</h4>
+            <p><strong>Single Entry Point:**</strong> Centralized access control, routing, and cross-cutting concerns</p>
+            <p><strong>Traffic Management:**</strong> Load balancing, rate limiting, circuit breaker patterns</p>
+            <p><strong>Security Layer:**</strong> Authentication, authorization, API key management, threat protection</p>
+            <p><strong>Observability:**</strong> Logging, monitoring, analytics, request/response transformation</p>
+            <p><strong>Protocol Translation:**</strong> REST to GraphQL, HTTP to gRPC, legacy system integration</p>
+          </div>
+
+          <div class="pattern-card">
+            <h4>🎭 Backend for Frontend (BFF)</h4>
+            <p><strong>Client-Specific:**</strong> Tailored APIs for web, mobile, IoT, and partner integrations</p>
+            <p><strong>Data Aggregation:**</strong> Combining multiple backend services into cohesive responses</p>
+            <p><strong>Transformation:**</strong> Data formatting, filtering, and optimization for specific clients</p>
+            <p><strong>Caching Strategy:**</strong> Client-appropriate caching policies and cache warming</p>
+            <p><strong>Team Ownership:**</strong> Frontend teams own their BFF for faster iteration cycles</p>
+          </div>
+
+          <div class="pattern-card">
+            <h4>📨 Event-Driven Integration</h4>
+            <p><strong>Asynchronous Processing:**</strong> Event streaming, message queues, pub/sub patterns</p>
+            <p><strong>Loose Coupling:**</strong> Services communicate through events rather than direct calls</p>
+            <p><strong>Scalability:**</strong> Independent scaling of producers and consumers</p>
+            <p><strong>Resilience:**</strong> Event replay, dead letter queues, at-least-once delivery</p>
+            <p><strong>Business Events:**</strong> Domain events that capture business state changes</p>
+          </div>
+
+          <div class="pattern-card">
+            <h4>🔗 Service Mesh Architecture</h4>
+            <p><strong>Inter-Service Communication:**</strong> Service discovery, load balancing, failover</p>
+            <p><strong>Observability:**</strong> Distributed tracing, metrics collection, logging aggregation</p>
+            <p><strong>Security:**</strong> mTLS, policy enforcement, certificate management</p>
+            <p><strong>Traffic Management:**</strong> Canary deployments, A/B testing, traffic splitting</p>
+            <p><strong>Operational Simplicity:**</strong> Configuration via control plane, sidecar proxy pattern</p>
+          </div>
+        </pattern-cards>
+
+        <h3>Scalability & Performance</h3>
+        <div class="comparison-table">
+          <table>
+            <thead>
+              <tr>
+                <th>Scalability Pattern</th>
+                <th>Implementation Effort</th>
+                <th>Performance Impact</th>
+                <th>Operational Complexity</th>
+                <th>Cost Efficiency</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>Horizontal Scaling</strong></td>
+                <td class="tier-medium">Medium</td>
+                <td class="tier-high">High</td>
+                <td class="tier-medium">Medium</td>
+                <td class="tier-high">Good</td>
+              </tr>
+              <tr>
+                <td><strong>Caching Layers</strong></td>
+                <td class="tier-low">Low</td>
+                <td class="tier-high">Very High</td>
+                <td class="tier-low">Low</td>
+                <td class="tier-high">Excellent</td>
+              </tr>
+              <tr>
+                <td><strong>Database Sharding</strong></td>
+                <td class="tier-low">High</td>
+                <td class="tier-high">High</td>
+                <td class="tier-low">High</td>
+                <td class="tier-medium">Medium</td>
+              </tr>
+              <tr>
+                <td><strong>CDN Integration</strong></td>
+                <td class="tier-low">Low</td>
+                <td class="tier-high">High</td>
+                <td class="tier-low">Low</td>
+                <td class="tier-high">Good</td>
+              </tr>
+              <tr>
+                <td><strong>Async Processing</strong></td>
+                <td class="tier-medium">Medium</td>
+                <td class="tier-high">High</td>
+                <td class="tier-medium">Medium</td>
+                <td class="tier-high">Good</td>
+              </tr>
+              <tr>
+                <td><strong>Microservices</strong></td>
+                <td class="tier-low">High</td>
+                <td class="tier-medium">Variable</td>
+                <td class="tier-low">High</td>
+                <td class="tier-medium">Medium</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <h3>API Monitoring & Observability</h3>
+        <div class="pattern-cards">
+          <div class="pattern-card">
+            <h4>📊 Metrics & KPIs</h4>
+            <p><strong>Performance Metrics:**</strong> Response time, throughput, error rate, availability</p>
+            <p><strong>Business Metrics:**</strong> API usage, adoption rate, feature utilization, revenue impact</p>
+            <p><strong>Technical Metrics:**</strong> CPU/memory usage, database performance, cache hit rates</p>
+            <p><strong>User Experience:**</strong> Client-side performance, mobile app metrics, conversion rates</p>
+            <p><strong>SLA Monitoring:**</strong> Uptime tracking, performance SLA compliance, penalty alerts</p>
+          </div>
+
+          <div class="pattern-card">
+            <h4>🔍 Distributed Tracing</h4>
+            <p><strong>Request Tracking:**</strong> End-to-end request flow across microservices</p>
+            <p><strong>Performance Analysis:**</strong> Bottleneck identification, latency analysis</p>
+            <p><strong>Error Investigation:**</strong> Root cause analysis, error propagation tracking</p>
+            <p><strong>Dependency Mapping:**</strong> Service dependency visualization and health status</p>
+            <p><strong>Tools Integration:**</strong> Jaeger, Zipkin, OpenTelemetry, cloud-native solutions</p>
+          </div>
+
+          <div class="pattern-card">
+            <h4>📝 Logging Strategy</h4>
+            <p><strong>Structured Logging:**</strong> JSON format, consistent fields, correlation IDs</p>
+            <p><strong>Log Aggregation:**</strong> Centralized collection, searchable indexes, retention policies</p>
+            <p><strong>Security Logging:**</strong> Authentication events, authorization failures, suspicious activity</p>
+            <p><strong>Performance Logging:**</strong> Slow queries, resource usage, scaling events</p>
+            <p><strong>Compliance Logging:**</strong> Audit trails, data access logs, regulatory requirements</p>
+          </div>
+
+          <div class="pattern-card">
+            <h4>🚨 Alerting & Incident Response</h4>
+            <p><strong>Proactive Alerts:**</strong> Threshold-based, anomaly detection, trend analysis</p>
+            <p><strong>Alert Fatigue Prevention:**</strong> Intelligent grouping, escalation policies, noise reduction</p>
+            <p><strong>Incident Management:**</strong> Runbooks, escalation procedures, postmortem processes</p>
+            <p><strong>Auto-Remediation:**</strong> Circuit breakers, auto-scaling, failover mechanisms</p>
+            <p><strong>Communication:**</strong> Status pages, stakeholder notifications, customer communication</p>
+          </div>
+        </pattern-cards>
+
+        <div class="callout danger">
+          <h4>🚨 Critical Integration Mistakes</h4>
+          <p><strong>Synchronous Over-coupling:**</strong> Creating tight dependencies between services through synchronous calls<br>
+          <strong>Inadequate Error Handling:**</strong> Poor error propagation and inadequate fallback mechanisms<br>
+          <strong>Shared Database Anti-pattern:**</strong> Multiple services accessing same database tables<br>
+          <strong>Insufficient Monitoring:**</strong> Lack of visibility into distributed system behavior<br>
+          <strong>Versioning Negligence:**</strong> Breaking API changes without proper versioning strategy<br>
+          <strong>Security Gaps:**</strong> Insufficient inter-service security and inadequate input validation</p>
+        </div>
+      </section>
+
+      <section id="faq" class="faq-section">
+        <h2>Frequently Asked Questions</h2>
+
+        <div class="faq-item">
+          <div class="faq-question">Should I choose REST or GraphQL for my new API?</div>
+          <div class="faq-answer">Choose REST for simpler requirements, public APIs, and when your team needs proven patterns with extensive tooling. Choose GraphQL when you have complex data relationships, multiple client types with different data needs, or want to minimize over/under-fetching. REST is easier to learn and scale, while GraphQL offers more flexibility for client-driven data requirements.</div>
+        </div>
+
+        <div class="faq-item">
+          <div class="faq-question">How do I handle API versioning effectively?</div>
+          <div class="faq-answer">Use semantic versioning (major.minor.patch) with URL path versioning (e.g., /api/v1/) for major changes. Support multiple versions simultaneously with gradual deprecation timelines. Consider header-based versioning for minor changes. Document breaking changes clearly, provide migration guides, and give clients sufficient notice before deprecating old versions.</div>
+        </div>
+
+        <div class="faq-item">
+          <div class="faq-question">What are the most important API security practices?</div>
+          <div class="faq-answer">Implement authentication (JWT, OAuth 2.0), authorization (RBAC/ABAC), rate limiting, input validation, HTTPS everywhere, and security headers. Use API keys for identification, implement proper logging, validate all inputs, sanitize outputs, and regularly audit for vulnerabilities. Consider API gateways for centralized security policies.</div>
+        </div>
+
+        <div class="faq-item">
+          <div class="faq-question">How do I design APIs for high performance and scalability?</div>
+          <div class="faq-answer">Implement caching at multiple layers (CDN, application, database), use pagination for large datasets, design efficient database queries, implement async processing where possible, use connection pooling, and monitor performance metrics. Consider API gateways for load balancing and implement circuit breakers for resilience.</div>
+        </div>
+
+        <div class="faq-item">
+          <div class="faq-question">What's the best way to document APIs for developers?</div>
+          <div class="faq-answer">Use OpenAPI/Swagger specifications for interactive documentation, provide code samples in multiple languages, include authentication examples, document error responses, and maintain changelog. Consider tools like Postman collections, provide sandbox environments, and gather developer feedback to improve documentation continuously.</div>
+        </div>
+
+        <div class="faq-item">
+          <div class="faq-question">How do I handle errors and failures in distributed API systems?</div>
+          <div class="faq-answer">Implement circuit breaker patterns, retry mechanisms with exponential backoff, timeout configurations, and graceful degradation. Use consistent error response formats, provide meaningful error messages, implement health checks, and plan for partial failures. Monitor error rates and have incident response procedures ready.</div>
+        </div>
+
+        <div class="faq-item">
+          <div class="faq-question">What monitoring and analytics should I implement for APIs?</div>
+          <div class="faq-answer">Monitor response times, throughput, error rates, and availability. Track business metrics like API usage patterns, feature adoption, and client behavior. Implement distributed tracing for microservices, use structured logging with correlation IDs, set up alerts for SLA violations, and create dashboards for different stakeholders.</div>
+        </div>
+
+        <div class="faq-item">
+          <div class="faq-question">How do I transition from monolith to microservices APIs?</div>
+          <div class="faq-answer">Start with API-first design within the monolith, identify bounded contexts, extract services gradually (strangler fig pattern), implement API gateways for traffic management, ensure data consistency strategies, and maintain comprehensive testing. Focus on business capabilities rather than technical layers, and prepare your team for distributed system complexity.</div>
+        </div>
+      </section>
+
+      <div class="cta-cards">
+        <div class="cta-card">
+          <h4>🌐 Web Development</h4>
+          <p>Integrate API development expertise with modern web frameworks for full-stack application development.</p>
+          <a href="/web-development-frameworks" class="cta-button">Web Development</a>
+        </div>
+
+        <div class="cta-card">
+          <h4>🗄️ Database Systems</h4>
+          <p>Apply database management principles to API data layer design and optimization strategies.</p>
+          <a href="/database-management-systems" class="cta-button">Database Systems</a>
+        </div>
+
+        <div class="cta-card">
+          <h4>☁️ Cloud Computing</h4>
+          <p>Deploy and scale APIs using cloud computing services and serverless architectures.</p>
+          <a href="/cloud-computing-services" class="cta-button">Cloud Computing</a>
+        </div>
+      </div>
+    </main>
+
+    <aside class="sidebar">
+      <h3>Contents</h3>
+      <ul>
+        <li><a href="#api-fundamentals">API Fundamentals</a></li>
+        <li><a href="#design-patterns">Design Patterns</a></li>
+        <li><a href="#integration-architecture">Integration Architecture</a></li>
+        <li><a href="#faq">FAQ</a></li>
+      </ul>
+    </aside>
+  </div>
+</div>
+
+<script>
+function calculateAPIRecommendation() {
+  const purpose = document.getElementById('apiPurpose').value;
+  const dataComplexity = document.getElementById('dataComplexity').value;
+  const performance = document.getElementById('performanceReq').value;
+  const clientTypes = document.getElementById('clientTypes').value;
+  const teamExperience = document.getElementById('teamExperience').value;
+  const scale = document.getElementById('scalingNeeds').value;
+  
+  // API scoring system
+  const apis = {
+    rest: { name: 'REST API', score: 0, type: 'HTTP/JSON' },
+    graphql: { name: 'GraphQL', score: 0, type: 'Query Language' },
+    grpc: { name: 'gRPC', score: 0, type: 'RPC Framework' },
+    websocket: { name: 'WebSocket', score: 0, type: 'Real-time' },
+    eventdriven: { name: 'Event-Driven', score: 0, type: 'Async Messaging' }
+  };
+  
+  // Purpose-based scoring
+  const purposeScores = {
+    'web-service': { rest: 5, graphql: 3, grpc: 2, websocket: 1, eventdriven: 2 },
+    'mobile-backend': { rest: 4, graphql: 5, grpc: 2, websocket: 3, eventdriven: 2 },
+    'microservices': { rest: 3, graphql: 2, grpc: 5, websocket: 2, eventdriven: 4 },
+    'real-time': { rest: 2, graphql: 3, grpc: 3, websocket: 5, eventdriven: 4 },
+    'public-api': { rest: 5, graphql: 4, grpc: 1, websocket: 2, eventdriven: 1 },
+    'data-streaming': { rest: 2, graphql: 3, grpc: 4, websocket: 4, eventdriven: 5 }
+  };
+  
+  // Data complexity scoring
+  const complexityScores = {
+    simple: { rest: 5, graphql: 3, grpc: 4, websocket: 3, eventdriven: 3 },
+    moderate: { rest: 4, graphql: 4, grpc: 4, websocket: 3, eventdriven: 4 },
+    complex: { rest: 3, graphql: 5, grpc: 3, websocket: 2, eventdriven: 4 },
+    varied: { rest: 3, graphql: 5, grpc: 2, websocket: 3, eventdriven: 3 }
+  };
+  
+  // Performance scoring
+  const performanceScores = {
+    standard: { rest: 4, graphql: 4, grpc: 4, websocket: 4, eventdriven: 4 },
+    fast: { rest: 4, graphql: 3, grpc: 5, websocket: 4, eventdriven: 5 },
+    'real-time': { rest: 2, graphql: 3, grpc: 4, websocket: 5, eventdriven: 5 },
+    'high-throughput': { rest: 3, graphql: 2, grpc: 5, websocket: 4, eventdriven: 5 }
+  };
+  
+  // Client types scoring
+  const clientScores = {
+    'web-only': { rest: 5, graphql: 4, grpc: 3, websocket: 4, eventdriven: 3 },
+    'mobile-web': { rest: 4, graphql: 5, grpc: 3, websocket: 4, eventdriven: 3 },
+    mixed: { rest: 4, graphql: 5, grpc: 4, websocket: 4, eventdriven: 4 },
+    'third-party': { rest: 5, graphql: 4, grpc: 2, websocket: 3, eventdriven: 2 }
+  };
+  
+  // Team experience scoring
+  const experienceScores = {
+    beginner: { rest: 5, graphql: 3, grpc: 2, websocket: 3, eventdriven: 2 },
+    intermediate: { rest: 4, graphql: 4, grpc: 3, websocket: 4, eventdriven: 3 },
+    advanced: { rest: 4, graphql: 4, grpc: 4, websocket: 4, eventdriven: 4 },
+    expert: { rest: 4, graphql: 5, grpc: 5, websocket: 5, eventdriven: 5 }
+  };
+  
+  // Scale scoring
+  const scaleScores = {
+    small: { rest: 5, graphql: 4, grpc: 3, websocket: 3, eventdriven: 3 },
+    medium: { rest: 4, graphql: 4, grpc: 4, websocket: 4, eventdriven: 4 },
+    large: { rest: 4, graphql: 3, grpc: 5, websocket: 4, eventdriven: 5 },
+    massive: { rest: 3, graphql: 3, grpc: 5, websocket: 4, eventdriven: 5 }
+  };
+  
+  // Calculate scores
+  Object.keys(apis).forEach(api => {
+    apis[api].score += purposeScores[purpose][api];
+    apis[api].score += complexityScores[dataComplexity][api];
+    apis[api].score += performanceScores[performance][api];
+    apis[api].score += clientScores[clientTypes][api];
+    apis[api].score += experienceScores[teamExperience][api];
+    apis[api].score += scaleScores[scale][api];
+  });
+  
+  // Sort by score
+  const sortedAPIs = Object.entries(apis)
+    .sort(([,a], [,b]) => b.score - a.score);
+  
+  const winner = sortedAPIs[0][1];
+  const runner = sortedAPIs[1][1];
+  
+  // Confidence calculation
+  const topScore = winner.score;
+  const secondScore = runner.score;
+  const confidenceLevel = topScore - secondScore;
+  
+  let confidence = '';
+  if (confidenceLevel >= 4) confidence = 'Very High';
+  else if (confidenceLevel >= 3) confidence = 'High';
+  else if (confidenceLevel >= 2) confidence = 'Moderate';
+  else confidence = 'Low';
+  
+  // Implementation complexity
+  const implementationComplexity = {
+    'REST API': 'Low',
+    'GraphQL': 'Medium',
+    'gRPC': 'High',
+    'WebSocket': 'Medium',
+    'Event-Driven': 'High'
+  };
+  
+  // Development time estimate
+  const getDevelopmentTime = (api, experience) => {
+    const baseTimes = {
+      'REST API': { beginner: 4, intermediate: 2, advanced: 1, expert: 1 },
+      'GraphQL': { beginner: 8, intermediate: 4, advanced: 2, expert: 1 },
+      'gRPC': { beginner: 12, intermediate: 6, advanced: 3, expert: 2 },
+      'WebSocket': { beginner: 6, intermediate: 3, advanced: 2, expert: 1 },
+      'Event-Driven': { beginner: 10, intermediate: 6, advanced: 4, expert: 2 }
+    };
+    
+    return baseTimes[api][experience] || 4;
+  };
+  
+  const developmentWeeks = getDevelopmentTime(winner.name, teamExperience);
+  
+  // Ecosystem strength
+  const ecosystemStrength = {
+    'REST API': 'Mature',
+    'GraphQL': 'Growing',
+    'gRPC': 'Enterprise',
+    'WebSocket': 'Specialized',
+    'Event-Driven': 'Complex'
+  };
+  
+  // Performance characteristics
+  const performanceProfile = {
+    'REST API': 'Good',
+    'GraphQL': 'Flexible',
+    'gRPC': 'High',
+    'WebSocket': 'Real-time',
+    'Event-Driven': 'Scalable'
+  };
+  
+  // Tooling availability
+  const toolingAvailability = {
+    'REST API': 'Excellent',
+    'GraphQL': 'Good',
+    'gRPC': 'Good',
+    'WebSocket': 'Moderate',
+    'Event-Driven': 'Moderate'
+  };
+  
+  // Display results
+  const breakdown = document.getElementById('apiBreakdown');
+  breakdown.innerHTML = `
+    <div class="breakdown-item">
+      <div class="breakdown-label">Recommended API</div>
+      <div class="breakdown-value">${winner.name.split(' ')[0]}</div>
+      <div class="breakdown-status">${confidence} confidence</div>
+    </div>
+    <div class="breakdown-item">
+      <div class="breakdown-label">Architecture Type</div>
+      <div class="breakdown-value">${winner.type}</div>
+      <div class="breakdown-status">Technical approach</div>
+    </div>
+    <div class="breakdown-item">
+      <div class="breakdown-label">Development Time</div>
+      <div class="breakdown-value">${developmentWeeks} weeks</div>
+      <div class="breakdown-status">For ${teamExperience} team</div>
+    </div>
+    <div class="breakdown-item">
+      <div class="breakdown-label">Implementation</div>
+      <div class="breakdown-value">${implementationComplexity[winner.name]}</div>
+      <div class="breakdown-status">Complexity level</div>
+    </div>
+    <div class="breakdown-item">
+      <div class="breakdown-label">Performance Profile</div>
+      <div class="breakdown-value">${performanceProfile[winner.name]}</div>
+      <div class="breakdown-status">Expected characteristics</div>
+    </div>
+    <div class="breakdown-item">
+      <div class="breakdown-label">Tooling Ecosystem</div>
+      <div class="breakdown-value">${toolingAvailability[winner.name]}</div>
+      <div class="breakdown-status">Support & resources</div>
+    </div>
+  `;
+  
+  document.getElementById('apiResults').style.display = 'block';
+}
+</script>
