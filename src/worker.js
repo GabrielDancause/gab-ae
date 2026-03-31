@@ -114,6 +114,28 @@ export default {
     // Strip leading slash for slug lookup
     const slug = path.slice(1);
 
+    // Check for redirects (status='redirect')
+    try {
+      const redir = await env.DB.prepare("SELECT slug FROM pages WHERE slug = ? AND status = 'redirect'").bind(slug).first();
+      if (redir) {
+        // Duplicate apex slugs → guide-2026 versions
+        const APEX_REDIRECTS = {
+          'capital-markets-wealth': 'capital-markets-wealth-guide-2026',
+          'digital-media-creator-economy': 'digital-media-creator-economy-guide-2026',
+          'ecommerce-supply-chain': 'ecommerce-supply-chain-guide-2026',
+          'education-knowledge-commerce': 'education-knowledge-commerce-guide-2026',
+          'fine-arts-design-creative': 'fine-arts-design-creative-guide-2026',
+          'global-mobility-geo-arbitrage': 'global-mobility-geo-arbitrage-guide-2026',
+          'human-optimization-health': 'human-optimization-health-guide-2026',
+          'interpersonal-dynamics-intimacy': 'interpersonal-dynamics-intimacy-guide-2026',
+          'real-estate-hospitality': 'real-estate-hospitality-guide-2026',
+          'software-ai-infrastructure': 'software-ai-infrastructure-guide-2026',
+        };
+        const target = APEX_REDIRECTS[slug] || slug;
+        return Response.redirect(new URL('/' + target, url.origin).toString(), 301);
+      }
+    } catch(e) {}
+
     // Look up page in D1
     try {
       const page = await env.DB.prepare('SELECT * FROM pages WHERE slug = ? AND status = ?')
@@ -655,13 +677,16 @@ async function siteTreeAPI(env) {
       apex.clusterMap[clusterName].push({ domain: row.domain, path: row.path, title: row.title || `${row.domain}${row.path}` });
     }
 
-    // Convert to array format
-    const apexes = Object.values(apexMap).map(a => ({
-      slug: a.slug,
-      name: a.name,
-      icon: a.icon,
-      clusters: Object.entries(a.clusterMap).map(([name, pages]) => ({ name, pages })),
-    }));
+    // Convert to array format — put sub-guides first, then sort rest by page count
+    const apexes = Object.values(apexMap).map(a => {
+      const clusters = Object.entries(a.clusterMap).map(([name, pages]) => ({ name, pages }));
+      clusters.sort((x, y) => {
+        if (x.name === 'sub-guide') return -1;
+        if (y.name === 'sub-guide') return 1;
+        return y.pages.length - x.pages.length;
+      });
+      return { slug: a.slug, name: a.name, icon: a.icon, clusters };
+    });
 
     return new Response(JSON.stringify({ apexes }), { headers });
   } catch (e) {
