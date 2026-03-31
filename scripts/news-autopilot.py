@@ -183,9 +183,27 @@ def fetch_rss():
 
 
 def strip_html(text):
-    """Remove HTML tags and decode entities."""
+    """Remove HTML tags, decode entities, and clean junk patterns."""
     text = re.sub(r'<[^>]+>', '', text)
     text = html.unescape(text)
+    # Remove common concatenated junk from scraped pages
+    junk_patterns = [
+        r'ShareSave\w*',
+        r'Add as preferred on Google',
+        r'Getty Images\w*',
+        r'AFP via Getty Images',
+        r'Associated Press',
+        r'Reuters\s*/',
+        r'AP Photo/[^\s]+',
+        r'\b\w+ reporter\b(?=\w)',  # "Nick EdserBusiness reporter" → byline glued to text
+        r'Image source[,:]\s*\w+',
+        r'Image caption[,:]\s*',
+        r'Copyright \d{4}',
+    ]
+    for pat in junk_patterns:
+        text = re.sub(pat, '', text, flags=re.IGNORECASE)
+    # Clean up multiple spaces
+    text = re.sub(r'\s{2,}', ' ', text)
     return text.strip()
 
 
@@ -279,6 +297,15 @@ def fetch_article_content(url):
                     break
             else:
                 content = data
+        
+        # Remove common junk elements before extracting paragraphs
+        # Strip buttons, share widgets, bylines, image captions, figure captions
+        for junk_tag in ['button', 'figcaption', 'aside', 'nav', 'footer', 'header', 'script', 'style', 'noscript']:
+            content = re.sub(f'<{junk_tag}[^>]*>.*?</{junk_tag}>', '', content, flags=re.DOTALL)
+        # Strip spans with known junk classes (share, save, social, byline, caption)
+        content = re.sub(r'<span[^>]*class="[^"]*(?:share|save|social|byline|caption|credit|getty|image|photo|icon|button|toolbar|action)[^"]*"[^>]*>.*?</span>', '', content, flags=re.DOTALL|re.IGNORECASE)
+        # Strip links that are just buttons (short text, no sentence structure)
+        content = re.sub(r'<a[^>]*class="[^"]*(?:share|save|button|action|social)[^"]*"[^>]*>.*?</a>', '', content, flags=re.DOTALL|re.IGNORECASE)
         
         # Extract <p> tags
         for p_match in re.finditer(r'<p[^>]*>(.*?)</p>', content, re.DOTALL):
