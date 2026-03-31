@@ -28,27 +28,22 @@ function timeAgo(dateStr) {
 
 export default {
   async scheduled(event, env, ctx) {
-    // Alternate between news autopilot and seed pages every cron run
-    const cycle = Math.floor(Date.now() / 300000) % 2;
-
-    if (cycle === 0) {
-      // News autopilot
-      try {
-        await newsAutopilot(env);
-      } catch (e) {
-        console.log(`❌ News Autopilot cron error: ${e.message}`);
-      }
-    } else {
-      // Seed pages
-      try {
-        await seedPages(env);
-      } catch (e) {
-        console.log(`❌ Seed Pages cron error: ${e.message}`);
-      }
+    // Both news and seed run every 5 minutes
+    try {
+      await newsAutopilot(env);
+    } catch (e) {
+      console.log(`❌ News Autopilot cron error: ${e.message}`);
     }
 
-    // Upgrade trigger — run on news autopilot cycles (every ~10 min)
-    if (cycle === 0) {
+    try {
+      await seedPages(env);
+    } catch (e) {
+      console.log(`❌ Seed Pages cron error: ${e.message}`);
+    }
+
+    // Upgrade trigger — check once per hour
+    const hourCycle = Math.floor(Date.now() / 3600000);
+    if (Date.now() % 3600000 < 300000) {
       try {
         await upgradeTrigger(env);
       } catch (e) {
