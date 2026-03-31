@@ -16,8 +16,6 @@
 
     /* Container */
     .pillar-container {
-    overflow-x: hidden;
-    max-width: 100vw;
         background-color: var(--bg-color);
         color: var(--text-main);
         line-height: 1.7;
@@ -265,6 +263,30 @@
         font-size: 0.95rem;
         line-height: 1.5;
     }
+
+  /* ── Mobile Fix ── */
+  *, *::before, *::after { box-sizing: border-box; }
+  p, li, td, th, span, h1, h2, h3, h4, div { 
+    overflow-wrap: break-word; 
+    word-break: break-word; 
+  }
+  img, video, canvas, svg { max-width: 100%; height: auto; }
+  table { width: 100%; }
+  @media (max-width: 1024px) {
+    .fh-layout, .rei-layout, .sma-layout,
+    [class"-layout"] { 
+      grid-template-columns: 1fr !important; 
+    }
+    .sticky-toc { position: static !important; top: auto !important; }
+    .data-table { display: block; overflow-x: auto; -webkit-overflow-scrolling: touch; }
+  }
+  @media (max-width: 768px) {
+    .tool-grid, .strategy-grid, .comparison-grid,
+    [class"-grid"] { grid-template-columns: 1fr !important; }
+    .callout, [class*="callout"] { padding: 1rem; }
+    .section h2 { font-size: 1.4rem; }
+  }
+
 </style>
 <div class="pillar-container">
 <aside>
