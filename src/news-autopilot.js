@@ -148,6 +148,7 @@ const SKIP_PHRASES = [
   'paywall', 'members only', 'premium content', 'full access',
   'to read the full', 'continue reading', 'unlock this article',
   'support our journalism', 'become a member',
+  'hide caption', 'show caption',
 ];
 
 // ─── Helper functions ───
@@ -364,17 +365,22 @@ function extractParagraphs(data) {
     // Strip author bylines like "Francisco Velasquez Updated" or "John Doe Published"
     text = text.replace(/^(?:By\s+)?(?:[A-Z][a-zA-Z']*\s+){2,3}(?:Updated|Published|Reporting)\b[\s\:\-\,]*/, '');
 
+    text = text.replace(/\s*hide caption\s*/gi, "").replace(/\s*show caption\s*/gi, "");
+    text = text.replace(/\s+[A-Z][a-z]+ [A-Z]?\.?\s*[A-Z][a-z]+\/(?:AP|Reuters|Getty|AFP)\s*$/g, "");
+
     // Filters
     const isLinkList = (text.match(/\|/g) || []).length >= 3;
     const isShortFrag = text.length < 60 && text.includes(':');
     const isByline = /^[A-Z][a-z]+ [A-Z][a-z]+\s+(?:Mon|Tue|Wed|Thu|Fri|Sat|Sun)/.test(text);
     const isTickerDump = /^(?:[A-Z]{2,5}\s+){2,}/.test(text);
+    const isImageDesc = text.length < 100 && /\b[A-Z][a-z]+ [A-Z]?\.?\s*[A-Z][a-z]+\/(?:AP|Reuters|Getty|AFP)\b/.test(text);
 
     if (text.length > 50
       && !isLinkList
       && !isShortFrag
       && !isByline
       && !isTickerDump
+      && !isImageDesc
       && !SKIP_PHRASES.some(skip => text.toLowerCase().includes(skip))) {
       paragraphs.push(text);
     }
