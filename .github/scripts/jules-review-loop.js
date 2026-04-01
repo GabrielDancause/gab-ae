@@ -132,35 +132,133 @@ async function dispatchJules(prompt, title) {
   return data.name; // session ID
 }
 
-// ─── Review logic ───
+// ─── LLM Review ───
 
-function reviewDiff(diff, fileContext) {
-  // Simple heuristic review — find common issues
+async function llmReview(diff, fileContext, issueTitle) {
+  const apiKey = process.env.ANTHROPIC_API_KEY;
+  if (!apiKey) {
+    log('No ANTHROPIC_API_KEY — falling back to basic review');
+    return basicReview(diff);
+  }
+
+  // Truncate diff if too long (keep under 30k chars for cost control)
+  const truncatedDiff = diff.length > 30000 ? diff.slice(0, 30000) + '\n... (truncated)' : diff;
+
+  const resp = await fetch('https://api.anthropic.com/v1/messages', {
+    method: 'POST',
+    headers: {
+      'x-api-key': apiKey,
+      'anthropic-version': '2023-06-01',
+      'content-type': 'application/json',
+    },
+    body: JSON.stringify({
+      model: 'claude-sonnet-4-20250514',
+      max_tokens: 1024,
+      messages: [{
+        role: 'user',
+        content: `You are a code reviewer for a Cloudflare Worker that generates news articles and seed pages. Review this PR diff and find 1-2 concrete improvements.
+
+File: ${fileContext}
+Issue: ${issueTitle || 'unknown'}
+
+Rules:
+- Be specific: point to exact code and suggest the fix
+- Focus on bugs, logic errors, edge cases, or missing validation
+- Ignore style/formatting — only substantive issues
+- If the code looks solid, respond with exactly: LGTM
+- Keep your response under 300 words
+- Format as a PR comment (markdown)
+
+Diff:
+\`\`\`
+${truncatedDiff}
+\`\`\`
+
+Your review:`
+      }],
+    }),
+  });
+
+  const data = await resp.json();
+  if (data.error) {
+    log(`LLM error: ${JSON.stringify(data.error)}`);
+    return basicReview(diff);
+  }
+
+  const review = data.content?.[0]?.text?.trim() || '';
+  if (review === 'LGTM' || review.toLowerCase().includes('lgtm')) {
+    return []; // No issues found
+  }
+  return [review]; // Return the full review as one item
+}
+
+function basicReview(diff) {
   const issues = [];
-
   if (diff.includes('pnpm-lock.yaml') || diff.includes('package-lock.json')) {
     issues.push('Lock file added — please remove it from this PR.');
   }
-
-  // Count additions
   const additions = (diff.match(/^\+[^+]/gm) || []).length;
-  const deletions = (diff.match(/^-[^-]/gm) || []).length;
-
   if (additions < 3) {
     issues.push('Very few changes — is this really addressing the full issue?');
   }
-
-  // Check for common patterns
-  if (diff.includes('console.log') && !diff.includes('console.warn') && !diff.includes('console.error')) {
-    issues.push('Consider using console.warn/error for validation messages instead of console.log.');
-  }
-
-  // Check for hardcoded values that should be dynamic
-  if (diff.includes("'The Bottom Line'") && fileContext === 'src/news-autopilot.js') {
-    // Already known pattern, ok
-  }
-
   return issues;
+}
+
+// ─── LLM-powered issue finding ───
+
+async function llmFindIssue(contentSamples, fileContext) {
+  const apiKey = process.env.ANTHROPIC_API_KEY;
+  if (!apiKey) return null;
+
+  const resp = await fetch('https://api.anthropic.com/v1/messages', {
+    method: 'POST',
+    headers: {
+      'x-api-key': apiKey,
+      'anthropic-version': '2023-06-01',
+      'content-type': 'application/json',
+    },
+    body: JSON.stringify({
+      model: 'claude-sonnet-4-20250514',
+      max_tokens: 512,
+      messages: [{
+        role: 'user',
+        content: `You analyze content quality from a Cloudflare Worker that generates articles/pages. Look at these recent content samples and find ONE concrete bug or quality issue.
+
+File that generates this: ${fileContext}
+
+Content samples:
+${contentSamples}
+
+Rules:
+- Find ONE specific, fixable bug (not vague suggestions)
+- Respond in JSON: {"title": "short issue title", "body": "## Problem\\n...\\n### Fix\\n..."}
+- The title should start with the filename without path (e.g. "news-autopilot: ..." or "seed-pages: ...")
+- The body should describe the problem with examples and suggest a specific fix
+- If everything looks fine, respond with exactly: null
+- Keep it under 200 words`
+      }],
+    }),
+  });
+
+  const data = await resp.json();
+  if (data.error) {
+    log(`LLM findIssue error: ${JSON.stringify(data.error)}`);
+    return null;
+  }
+
+  const text = data.content?.[0]?.text?.trim() || '';
+  if (text === 'null' || !text) return null;
+
+  try {
+    return JSON.parse(text);
+  } catch {
+    // Try to extract JSON from markdown code block
+    const match = text.match(/\{[\s\S]*\}/);
+    if (match) {
+      try { return JSON.parse(match[0]); } catch {}
+    }
+    return null;
+  }
 }
 
 // ─── Find issues in D1 content ───
@@ -296,7 +394,17 @@ async function main() {
 
         case 'reviewing': {
           const diff = getPRDiff(fileState.currentPR);
-          const issues = reviewDiff(diff, file);
+          
+          // Get issue title for context
+          let issueTitle = '';
+          try {
+            issueTitle = execSync(
+              `gh issue view ${fileState.currentIssue} --json title --jq .title`,
+              { encoding: 'utf8', timeout: 15000 }
+            ).trim();
+          } catch {}
+
+          const issues = await llmReview(diff, file, issueTitle);
 
           fileState.reviewRounds = (fileState.reviewRounds || 0) + 1;
 
@@ -304,9 +412,11 @@ async function main() {
             fileState.status = 'ready-to-merge';
             summary.push(`${label}: PR #${fileState.currentPR} passed review (round ${fileState.reviewRounds}). Ready to merge.`);
           } else {
-            const comment = `## Review — Round ${fileState.reviewRounds}/${MAX_REVIEW_ROUNDS}\n\n${issues.map(i => `- ${i}`).join('\n')}\n\nPlease fix and push to this branch.`;
+            const comment = issues.length === 1 && issues[0].includes('#')
+              ? issues[0]  // LLM already formatted as markdown
+              : `## Review — Round ${fileState.reviewRounds}/${MAX_REVIEW_ROUNDS}\n\n${issues.map(i => `- ${i}`).join('\n')}\n\nPlease fix and push to this branch.`;
             commentPR(fileState.currentPR, comment);
-            summary.push(`${label}: PR #${fileState.currentPR} reviewed (round ${fileState.reviewRounds}), posted ${issues.length} improvement(s).`);
+            summary.push(`${label}: PR #${fileState.currentPR} reviewed (round ${fileState.reviewRounds}), posted improvements.`);
           }
           break;
         }
@@ -328,7 +438,38 @@ async function main() {
         }
 
         case 'finding-next-issue': {
-          const issue = isNews ? await findNewsIssue() : await findSeedIssue();
+          // Try LLM-powered analysis first, fall back to rule-based
+          let issue = null;
+
+          if (isNews) {
+            try {
+              const rows = await queryD1(
+                "SELECT slug, title, category, tags, faqs, lede, sections FROM news ORDER BY published_at DESC LIMIT 3"
+              );
+              const samples = rows.map(r => {
+                const faqs = r.faqs && r.faqs !== 'null' ? JSON.parse(r.faqs) : [];
+                const sections = JSON.parse(r.sections || '[]');
+                return `Title: ${r.title}\nCategory: ${r.category}\nTags: ${r.tags}\nFAQs: ${faqs.length}\nLede: ${(r.lede || '').slice(0, 150)}\nSections: ${sections.map(s => s.heading).join(', ')}\nFirst para: ${(sections[0]?.paragraphs?.[0] || '').slice(0, 200)}`;
+              }).join('\n---\n');
+              issue = await llmFindIssue(samples, 'src/news-autopilot.js');
+            } catch (err) {
+              log(`LLM news analysis failed: ${err.message}`);
+            }
+            if (!issue) issue = await findNewsIssue();
+          } else {
+            try {
+              const rows = await queryD1(
+                "SELECT slug, title, html, page_type, quality FROM pages WHERE quality='template' ORDER BY created_at DESC LIMIT 3"
+              );
+              const samples = rows.map(r => {
+                return `Slug: ${r.slug}\nTitle: ${r.title}\nType: ${r.page_type}\nHTML length: ${(r.html || '').length}\nFirst 500 chars: ${(r.html || '').slice(0, 500)}`;
+              }).join('\n---\n');
+              issue = await llmFindIssue(samples, 'src/seed-pages.js');
+            } catch (err) {
+              log(`LLM seed analysis failed: ${err.message}`);
+            }
+            if (!issue) issue = await findSeedIssue();
+          }
 
           if (issue) {
             const issueNum = createIssue(issue.title, issue.body);
