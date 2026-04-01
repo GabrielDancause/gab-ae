@@ -2,10 +2,10 @@
   "mode": "jules-review-loop",
   "files": {
     "src/news-autopilot.js": {
-      "currentIssue": 33,
-      "currentPR": 35,
-      "reviewRounds": 1,
-      "status": "ready-to-merge",
+      "currentIssue": null,
+      "currentPR": null,
+      "reviewRounds": 0,
+      "status": "finding-next-issue",
       "julesSession": "sessions/3505100767209698019"
     },
     "src/seed-pages.js": {
@@ -17,5 +17,5 @@
     }
   },
   "maxReviewRounds": 3,
-  "lastHeartbeat": "2026-04-01T12:34:48.329Z"
+  "lastHeartbeat": "2026-04-01T12:39:19.384Z"
 }
