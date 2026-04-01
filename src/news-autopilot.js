@@ -751,7 +751,27 @@ function buildArticle(story, paragraphs) {
   }
 
   // Lede
-  const lede = paragraphs.length > 0 ? paragraphs[0].slice(0, 200) : (description || '').slice(0, 200);
+  let firstParagraph = paragraphs.length > 0 ? paragraphs[0] : '';
+  if (firstParagraph) {
+    firstParagraph = firstParagraph
+      .replace(/\b[A-Z]{1,5}\.PVT\b/g, '')
+      .replace(/\^[A-Z]{1,5}\b/g, '')
+      .replace(/\b[A-Z]{1,5}=[A-Z]\b/g, '');
+
+    const bylineRegex = /^((?:[A-Z][a-z\u00C0-\u024F\.\-]+(?:\s+and\s+|\s+)){1,5})(?:Updated\s+|[A-Z0-9\.\^\=\-\+\:]+\s+|\^\s+)+([A-Z][a-z\u00C0-\u024F][\s\S]{48,})$/;
+    let match = firstParagraph.match(bylineRegex);
+    if (match) {
+      firstParagraph = match[2];
+    }
+
+    firstParagraph = firstParagraph.trim();
+
+    if (firstParagraph.length < 50 && paragraphs.length > 1) {
+      firstParagraph = paragraphs[1];
+    }
+  }
+
+  const lede = firstParagraph ? firstParagraph.slice(0, 200) : (description || '').slice(0, 200);
   const metaDesc = lede.length > 155 ? lede.slice(0, 155) + '...' : lede;
 
   return {
