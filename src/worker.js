@@ -628,7 +628,7 @@ async function newsIndex(env, category = null) {
 
   return new Response(layout({
     title: category ? `${category.charAt(0).toUpperCase() + category.slice(1)} News | gab.ae` : 'Latest News & Analysis | gab.ae',
-    description: 'Latest news, breaking stories, and in-depth analysis across business, tech, world affairs, health, science, and entertainment. Updated every 5 minutes.',
+    description: category ? `Latest ${category} news, breaking stories, and in-depth analysis. Updated every 5 minutes with AI-powered summaries and expert context.` : 'Latest news, breaking stories, and in-depth analysis across business, tech, world affairs, health, science, and entertainment. Updated every 5 minutes.',
     canonical: category ? `https://gab.ae/news/category/${category}` : 'https://gab.ae/news',
     body,
   }), { headers: { 'content-type': 'text/html;charset=UTF-8' } });
@@ -712,7 +712,7 @@ async function categoryPage(env, category) {
 
     const html = layout({
       title: `${catName} Tools | gab.ae`,
-      description: `Free ${category} tools, calculators, and resources. Fast, simple, useful.`,
+      description: `Free ${category} tools, calculators, guides, and resources. Expert-written content updated daily with data-driven insights and practical recommendations.`,
       canonical: `https://gab.ae/category/${category}`,
       body,
     });
@@ -867,7 +867,7 @@ async function resourcesPage(env) {
 
   const html = layout({
     title: 'Resources | gab.ae',
-    description: 'Free tools, calculators, guides, and data across finance, tech, health, travel, and more.',
+    description: 'Free tools, calculators, expert guides, and data across finance, tech, health, travel, gaming, education, and more. 10 knowledge hubs with thousands of pages updated daily.',
     canonical: 'https://gab.ae/resources',
     body,
   });
