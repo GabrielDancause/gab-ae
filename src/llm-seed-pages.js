@@ -76,7 +76,7 @@ export async function llmSeedPages(env) {
      WHERE status = 'new' 
        AND kd <= 20 
        AND volume >= 50 
-       AND keyword NOT IN (SELECT keyword FROM pages WHERE status = 'live')
+       AND NOT EXISTS (SELECT 1 FROM pages WHERE pages.keyword = keywords.keyword AND pages.status = 'live')
      ORDER BY (cpc * volume) / (kd + 1) DESC
      LIMIT 1`
   ).first();
