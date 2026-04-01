@@ -469,7 +469,7 @@ async function homepage(env) {
     <div class="min-h-[60vh] flex flex-col items-center justify-center">
       <div class="max-w-2xl mx-auto text-center mb-8">
         <h1 class="text-4xl font-black text-white mb-4">Hi, my name is Gab</h1>
-        <p class="text-lg text-gray-400">My team of humans and robots are answering your questions.</p>
+        <p class="text-lg text-gray-400">My team of humans and robots are answering questions and giving information.</p>
         <p class="text-lg text-accent mt-1">Fire away.</p>
       </div>
 
@@ -479,7 +479,7 @@ async function homepage(env) {
             class="flex-1 px-5 py-4 bg-surface border border-surface-border rounded-xl text-white text-lg focus:border-accent focus:outline-none transition-colors"
             autocomplete="off" required>
           <button type="submit" id="ask-btn" class="px-6 py-4 bg-accent text-white text-base font-medium rounded-xl hover:bg-accent/80 transition-colors whitespace-nowrap">
-            Create &rarr;
+            Go
           </button>
         </form>
         <div id="ask-status" class="mt-3 text-sm text-gray-500 hidden text-center"></div>
@@ -492,7 +492,7 @@ async function homepage(env) {
       var btn = document.getElementById('ask-btn');
       var status = document.getElementById('ask-status');
       if (input) input.value = '';
-      if (btn) { btn.disabled = false; btn.textContent = 'Create \u2192'; }
+      if (btn) { btn.disabled = false; btn.textContent = 'Go'; }
       if (status) { status.classList.add('hidden'); status.textContent = ''; }
     }
     window.addEventListener('pageshow', resetAskForm);
@@ -526,13 +526,13 @@ async function homepage(env) {
           status.textContent = '\u274c ' + (data.error || 'Something went wrong. Try again.');
           status.className = 'mt-3 text-sm text-red-400 text-center';
           btn.disabled = false;
-          btn.textContent = 'Create \u2192';
+          btn.textContent = 'Go';
         }
       } catch (err) {
         status.textContent = '\u274c Network error. Try again.';
         status.className = 'mt-3 text-sm text-red-400 text-center';
         btn.disabled = false;
-        btn.textContent = 'Create \u2192';
+        btn.textContent = 'Go';
       }
       return false;
     }
@@ -541,7 +541,7 @@ async function homepage(env) {
 
   return new Response(layout({
     title: 'gab.ae — Ask the Team',
-    description: 'My team of humans and robots are answering your questions. Ask anything.',
+    description: 'My team of humans and robots are answering questions and giving information. Ask anything.',
     canonical: 'https://gab.ae/',
     body,
   }), {
