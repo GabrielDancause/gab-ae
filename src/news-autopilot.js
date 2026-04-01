@@ -524,7 +524,13 @@ function generateFaqs(title, category, sections) {
     const section = sections[i];
     if (!section.paragraphs || section.paragraphs.length === 0) continue;
 
-    let subject = section.heading || title.replace(/^(why|how|what)\s+/i, '').trim();
+    let subject = section.heading || '';
+    const genericHeadings = ['what happened', 'why it matters', 'what comes next', 'key details', 'context', 'overview', 'the bottom line'];
+    if (!subject || genericHeadings.includes(subject.toLowerCase())) {
+      subject = title;
+    }
+    subject = subject.replace(/^(why|how|what)\s+/i, '').trim();
+
     if (subject.split(/\s+/).length > 7) {
       subject = subject.split(/\s+/).slice(0, 5).join(' ') + '…';
     }
