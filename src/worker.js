@@ -30,11 +30,14 @@ function timeAgo(dateStr) {
 
 export default {
   async scheduled(event, env, ctx) {
-    // LLM-powered content generation (Haiku)
-    try {
-      await llmNews(env);
-    } catch (e) {
-      console.log(`❌ LLM News error: ${e.message}`);
+    // LLM News — only every 5 minutes (cron fires every 1 min)
+    const minute = new Date().getUTCMinutes();
+    if (minute % 5 === 0) {
+      try {
+        await llmNews(env);
+      } catch (e) {
+        console.log(`❌ LLM News error: ${e.message}`);
+      }
     }
 
     try {
