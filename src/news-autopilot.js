@@ -153,6 +153,9 @@ const SKIP_PHRASES = [
   'commodity futures trading commission', 'hypothetical in nature',
   'it is my goal to point out', 'not for everyone',
   'past performance', 'risk of loss',
+  'underestimate how much they need to retire', 'our team just released a report',
+  'indispensable monopoly', 'one little-known company', 'motley fool', 'continue »',
+  'how prepared they are',
 ];
 
 // ─── Helper functions ───
@@ -368,6 +371,7 @@ function extractParagraphs(data) {
 
     // Strip author bylines like "Francisco Velasquez Updated" or "John Doe Published"
     text = text.replace(/^(?:By\s+)?(?:[A-Z][a-zA-Z']*\s+){2,3}(?:Updated|Published|Reporting)\b[\s\:\-\,]*/, '');
+    text = text.replace(/^[A-Z][a-z]+ [A-Z][a-zA-Z'-]+(?:,? (?:The )?[A-Z][A-Za-z ]+)? (?:[A-Z]{1,5} ){1,4}/, "");
 
     text = text.replace(/\s*hide caption\s*/gi, "").replace(/\s*show caption\s*/gi, "");
     text = text.replace(/\s+[A-Z][a-z]+ [A-Z]?\.?\s*[A-Z][a-z]+\/(?:AP|Reuters|Getty|AFP)\s*$/g, "");
