@@ -52,7 +52,8 @@ const CATEGORY_KEYWORDS = {
   tech: ['ai', 'artificial intelligence', 'openai', 'google', 'apple', 'meta', 'microsoft',
     'nvidia', 'chip', 'semiconductor', 'robot', 'quantum', 'spacex', 'tesla'],
   health: ['fda', 'vaccine', 'covid', 'drug', 'health', 'hospital', 'medical', 'cancer',
-    'disease', 'mental health', 'diet', 'nutrition', 'exercise'],
+    'disease', 'mental health', 'diet', 'nutrition', 'exercise', 'air quality',
+    'pollution', 'nosebleed', 'respiratory', 'smog', 'aqi', 'pm2.5', 'wildfire smoke'],
   science: ['nasa', 'space', 'climate', 'earthquake', 'hurricane', 'research', 'study',
     'discovery', 'species', 'ocean', 'environment'],
   travel: ['airline', 'flight', 'airport', 'tourism', 'visa', 'cruise', 'hotel'],
@@ -662,6 +663,58 @@ function buildArticle(story, paragraphs) {
   };
 }
 
+function validateArticle(article) {
+  // 1. Valid category from allowed list
+  const allowedCategories = Object.keys(CATEGORY_KEYWORDS);
+  // 'business', 'world', 'politics', 'tech', 'health', 'science', 'travel', 'sports', 'entertainment'
+  if (!allowedCategories.includes(article.category)) {
+    console.warn(`   ❌ Validation failed: Invalid category '${article.category}'`);
+    return false;
+  }
+
+  // 2. Title is not empty
+  if (!article.title || !article.title.trim()) {
+    console.warn(`   ❌ Validation failed: Empty title`);
+    return false;
+  }
+
+  // 3. At least 2 sections
+  if (!article.sections || article.sections.length < 2) {
+    console.warn(`   ❌ Validation failed: Less than 2 sections (${article.sections ? article.sections.length : 0})`);
+    return false;
+  }
+
+  // 4. No empty section headings
+  for (let i = 0; i < article.sections.length; i++) {
+    const s = article.sections[i];
+    if (!s.heading || !s.heading.trim()) {
+      if (i > 0) {
+        // Merge into previous section
+        article.sections[i - 1].paragraphs.push(...s.paragraphs);
+        // Remove this section
+        article.sections.splice(i, 1);
+        i--; // Adjust index since we removed an element
+      } else {
+        // Assign default heading if it's the first section
+        s.heading = 'The Bottom Line';
+      }
+    }
+  }
+
+  // Check again in case we merged sections and now have < 2
+  if (article.sections.length < 2) {
+    console.warn(`   ❌ Validation failed: Less than 2 sections after merging empty headings`);
+    return false;
+  }
+
+  // 5. Missing FAQs check (warning only)
+  if (!article.faqs || article.faqs.length === 0) {
+    console.warn(`   ⚠️ Warning: faqs array is empty or missing`);
+  }
+
+  return true;
+}
+
 // ─── Main scheduled handler ───
 
 export async function newsAutopilot(env) {
@@ -795,6 +848,11 @@ export async function newsAutopilot(env) {
   const article = buildArticle(story, paragraphs);
   console.log(`   Category: ${article.category} | Tags: ${article.tags.slice(0, 5).join(', ')}`);
   console.log(`   Slug: ${article.slug}`);
+
+  if (!validateArticle(article)) {
+    console.log(`   ⏭️ Skipping publication due to failed validation.`);
+    return;
+  }
 
   // 6. Insert into D1
   try {
