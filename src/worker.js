@@ -147,6 +147,11 @@ export default {
       });
     }
 
+        // Resources — apex guides hub
+    if (path === '/resources') {
+      return resourcesPage(env);
+    }
+
     // Updates / Changelog
     if (path === '/updates') {
       try {
@@ -693,6 +698,58 @@ async function categoryPage(env, category) {
   } catch (err) {
     return new Response(`Error: ${err.message}`, { status: 500 });
   }
+}
+
+async function resourcesPage(env) {
+  const APEX_GUIDES = [
+    { slug: 'capital-markets-wealth-guide-2026', name: 'Capital Markets & Wealth', icon: '📊', desc: 'Investment analysis, market data, portfolio tools, and financial calculators.' },
+    { slug: 'software-ai-infrastructure-guide-2026', name: 'Software & AI Infrastructure', icon: '⚡', desc: 'Developer tools, AI resources, performance benchmarks, and tech utilities.' },
+    { slug: 'digital-media-creator-economy-guide-2026', name: 'Digital Media & Creator Economy', icon: '🎮', desc: 'Content creation tools, gaming resources, and digital media guides.' },
+    { slug: 'human-optimization-health-guide-2026', name: 'Human Optimization & Health', icon: '❤️', desc: 'Health calculators, body metrics, fitness tools, and wellness guides.' },
+    { slug: 'fine-arts-design-creative-guide-2026', name: 'Fine Arts, Design & Creative', icon: '🎨', desc: 'Creative tools, design resources, and artistic references.' },
+    { slug: 'global-mobility-geo-arbitrage-guide-2026', name: 'Global Mobility & Geo-Arbitrage', icon: '🌍', desc: 'Travel tools, visa indexes, cost of living data, and nomad resources.' },
+    { slug: 'education-knowledge-commerce-guide-2026', name: 'Education & Knowledge Commerce', icon: '📚', desc: 'Academic calculators, learning tools, and educational references.' },
+    { slug: 'real-estate-hospitality-guide-2026', name: 'Real Estate & Hospitality', icon: '🏠', desc: 'Property tools, mortgage calculators, and home improvement guides.' },
+    { slug: 'interpersonal-dynamics-intimacy-guide-2026', name: 'Interpersonal Dynamics & Intimacy', icon: '💜', desc: 'Relationship guides, sexual health tools, and interpersonal resources.' },
+    { slug: 'ecommerce-supply-chain-guide-2026', name: 'E-Commerce & Supply Chain', icon: '🛒', desc: 'Business tools, career resources, and e-commerce guides.' },
+  ];
+
+  // Get page counts per apex
+  let pageCounts = {};
+  try {
+    const { results } = await env.DB.prepare(
+      "SELECT apex_slug, COUNT(*) as cnt FROM tracked_pages WHERE status='active' GROUP BY apex_slug"
+    ).all();
+    for (const r of results) pageCounts[r.apex_slug] = r.cnt;
+  } catch {}
+
+  const guidesHtml = APEX_GUIDES.map(g => {
+    const count = pageCounts[g.slug] || 0;
+    return `
+      <a href="/${g.slug}" class="group block bg-surface border border-surface-border rounded-xl p-6 hover:border-accent/30 transition-all">
+        <div class="text-3xl mb-3">${g.icon}</div>
+        <h2 class="text-lg font-bold text-white group-hover:text-accent transition-colors mb-2">${g.name}</h2>
+        <p class="text-sm text-gray-400 mb-3">${g.desc}</p>
+        ${count > 0 ? `<span class="text-xs text-gray-500">${count} pages</span>` : ''}
+      </a>`;
+  }).join('');
+
+  const body = `
+    <div class="max-w-4xl mx-auto">
+      <h1 class="text-3xl font-black text-white mb-2">Resources</h1>
+      <p class="text-gray-400 mb-8">In-depth guides, tools, and data across ${APEX_GUIDES.length} knowledge hubs.</p>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        ${guidesHtml}
+      </div>
+    </div>`;
+
+  const html = layout({
+    title: 'Resources | gab.ae',
+    description: 'Free tools, calculators, guides, and data across finance, tech, health, travel, and more.',
+    canonical: 'https://gab.ae/resources',
+    body,
+  });
+  return new Response(html, { headers: { 'content-type': 'text/html;charset=UTF-8', 'cache-control': 'public, max-age=300' } });
 }
 
 function notFound() {
