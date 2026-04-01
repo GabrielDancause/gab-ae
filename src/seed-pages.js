@@ -530,24 +530,32 @@ const CALCULATOR_CONTENT = {
 
 function generateCalculator(kw) {
   const { month, year } = getMonthYear();
-  const pk = kw.primary_keyword;
-  const pkTitle = titleCase(pk);
+
+  const readableText = (kw.slug || '').replace(/-/g, ' ');
+  const pageTypeWord = kw.page_type || 'calculator';
+  const typeRegex = new RegExp('\\s+' + pageTypeWord + '$', 'i');
+
+  const hasSuffix = typeRegex.test(readableText);
+  const topic = (hasSuffix ? readableText.replace(typeRegex, '') : readableText) || kw.primary_keyword;
+  const topicTitle = titleCase(topic);
+  const h1Text = hasSuffix ? titleCase(readableText) : `${topicTitle} Calculator`;
+
   const apexSlug = SITE_TO_APEX[kw.target_site] || 'software-ai-infrastructure-guide-2026';
   const apexName = APEX_NAMES[apexSlug] || 'Guide';
 
   const category = SITE_TO_CATEGORY[kw.target_site] || 'default';
   const content = CALCULATOR_CONTENT[category] || CALCULATOR_CONTENT['default'];
-  const howText = content.howText.replace(/\{keyword\}/g, pk);
-  const faqText = content.faqText.replace(/\{keyword\}/g, pk);
+  const howText = content.howText.replace(/\{keyword\}/g, topic);
+  const faqText = content.faqText.replace(/\{keyword\}/g, topic);
 
   return `${SEED_CSS}
 <div class="seed-page">
-  <h1>${esc(pkTitle)} Calculator</h1>
+  <h1>${esc(h1Text)}</h1>
   <p class="seed-meta">Updated ${month} ${year} · ${(kw.total_volume || 0).toLocaleString()}+ monthly searches</p>
 
   <div class="seed-section">
-    <h2>Calculate ${esc(pkTitle)}</h2>
-    <p>Use this calculator to quickly compute ${esc(pk)}. Enter your values below for instant results.</p>
+    <h2>Calculate ${esc(topicTitle)}</h2>
+    <p>Use this calculator to quickly compute ${esc(topic)}. Enter your values below for instant results.</p>
     <div class="seed-calc-grid">
       <div class="seed-calc-input">
         <label>Value A</label>
@@ -572,14 +580,14 @@ function generateCalculator(kw) {
   </div>
 
   <div class="seed-section">
-    <h2>How to Calculate ${esc(pkTitle)}</h2>
+    <h2>How to Calculate ${esc(topicTitle)}</h2>
     <p>${esc(howText)}</p>
   </div>
 
   <div class="seed-section">
     <h2>Frequently Asked Questions</h2>
     <div class="faq-item">
-      <h3>How do I use this ${esc(pk)} calculator?</h3>
+      <h3>How do I use this ${esc(topic)} calculator?</h3>
       <p>${esc(faqText)}</p>
     </div>
   </div>
@@ -623,25 +631,33 @@ const COMPARISON_CONTENT = {
 
 function generateComparison(kw) {
   const { month, year } = getMonthYear();
-  const pk = kw.primary_keyword;
-  const pkTitle = titleCase(pk);
+
+  const readableText = (kw.slug || '').replace(/-/g, ' ');
+  const pageTypeWord = kw.page_type || 'comparison';
+  const typeRegex = new RegExp('\\s+' + pageTypeWord + '$', 'i');
+
+  const hasSuffix = typeRegex.test(readableText);
+  const topic = (hasSuffix ? readableText.replace(typeRegex, '') : readableText) || kw.primary_keyword;
+  const topicTitle = titleCase(topic);
+  const h1Text = hasSuffix ? titleCase(readableText) : `${topicTitle} — Side-by-Side Comparison`;
+
   const secondaries = JSON.parse(kw.secondary_keywords || '[]');
   const apexSlug = SITE_TO_APEX[kw.target_site] || 'software-ai-infrastructure-guide-2026';
   const apexName = APEX_NAMES[apexSlug] || 'Guide';
 
   const category = SITE_TO_CATEGORY[kw.target_site] || 'default';
   const content = COMPARISON_CONTENT[category] || COMPARISON_CONTENT['default'];
-  const introText = content.intro.replace(/\{keyword\}/g, pk);
-  const keyDiffText = content.keyDiff.replace(/\{keyword\}/g, pk);
-  const faqText = content.faqText.replace(/\{keyword\}/g, pk);
+  const introText = content.intro.replace(/\{keyword\}/g, topic);
+  const keyDiffText = content.keyDiff.replace(/\{keyword\}/g, topic);
+  const faqText = content.faqText.replace(/\{keyword\}/g, topic);
 
   return `${SEED_CSS}
 <div class="seed-page">
-  <h1>${esc(pkTitle)} — Side-by-Side Comparison</h1>
+  <h1>${esc(h1Text)}</h1>
   <p class="seed-meta">Updated ${month} ${year} · ${(kw.total_volume || 0).toLocaleString()}+ monthly searches</p>
 
   <div class="seed-section">
-    <h2>${esc(pkTitle)} Comparison</h2>
+    <h2>${esc(topicTitle)} Comparison</h2>
     <p>${esc(introText)}</p>
     <table class="seed-compare-table">
       <thead>
@@ -668,7 +684,7 @@ function generateComparison(kw) {
   <div class="seed-section">
     <h2>Frequently Asked Questions</h2>
     <div class="faq-item">
-      <h3>Which ${esc(pk)} is best?</h3>
+      <h3>Which ${esc(topic)} is best?</h3>
       <p>${esc(faqText)}</p>
     </div>
   </div>
