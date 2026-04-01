@@ -9,12 +9,12 @@
       "julesSession": "sessions/3505100767209698019"
     },
     "src/seed-pages.js": {
-      "currentIssue": 32,
-      "currentPR": 34,
-      "reviewRounds": 1,
-      "status": "ready-to-merge"
+      "currentIssue": null,
+      "currentPR": null,
+      "reviewRounds": 0,
+      "status": "finding-next-issue"
     }
   },
   "maxReviewRounds": 3,
-  "lastHeartbeat": "2026-04-01T11:41:49.618Z"
+  "lastHeartbeat": "2026-04-01T11:45:46.563Z"
 }
