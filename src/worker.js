@@ -123,6 +123,104 @@ export default {
     }
 
     // Search API
+    // On-demand page generation
+    if (path === '/api/generate' && request.method === 'POST') {
+      try {
+        const { keyword } = await request.json();
+        if (!keyword || keyword.length < 3 || keyword.length > 200) {
+          return new Response(JSON.stringify({ error: 'Keyword must be 3-200 characters' }), { status: 400, headers: { 'content-type': 'application/json' } });
+        }
+
+        // Slugify
+        const slug = keyword.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '').slice(0, 80);
+
+        // Check if page already exists
+        const existing = await env.DB.prepare("SELECT slug FROM pages WHERE slug = ? AND status = 'live'").bind(slug).first();
+        if (existing) {
+          return new Response(JSON.stringify({ slug, existing: true }), { headers: { 'content-type': 'application/json' } });
+        }
+
+        // Import and call the LLM seed page generator
+        const apiKey = env.ANTHROPIC_API_KEY;
+        if (!apiKey) {
+          return new Response(JSON.stringify({ error: 'API not configured' }), { status: 500, headers: { 'content-type': 'application/json' } });
+        }
+
+        // Call Haiku directly
+        const resp = await fetch('https://api.anthropic.com/v1/messages', {
+          method: 'POST',
+          headers: { 'x-api-key': apiKey, 'anthropic-version': '2023-06-01', 'content-type': 'application/json' },
+          body: JSON.stringify({
+            model: 'claude-haiku-4-5-20251001',
+            max_tokens: 4096,
+            messages: [{ role: 'user', content: `Create a comprehensive, expert-quality page about "${keyword}".
+
+Return ONLY raw HTML using these CSS classes (no markdown, no backticks):
+
+The page should include:
+- Detailed explanation of what "${keyword}" is
+- Key facts, data points, or comparisons
+- A reference table if applicable
+- Practical recommendations
+- 3-5 FAQs that real people search for
+
+Use this structure:
+<style>
+.seed-page { max-width: 780px; margin: 0 auto; padding: 1.5rem 1rem; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; color: #e2e8f0; }
+.seed-page h1 { font-size: 1.75rem; font-weight: 800; color: #fff; margin-bottom: 0.5rem; line-height: 1.2; }
+.seed-meta { font-size: 0.8rem; color: #64748b; margin-bottom: 2rem; }
+.seed-section { background: #12121a; border: 1px solid #1e1e2e; border-radius: 12px; padding: 1.25rem 1.5rem; margin-bottom: 1rem; }
+.seed-section h2 { font-size: 1.15rem; font-weight: 700; color: #818cf8; margin-bottom: 0.75rem; }
+.seed-section h3 { font-size: 1rem; font-weight: 600; color: #e2e8f0; margin-bottom: 0.5rem; }
+.seed-section p { font-size: 0.95rem; line-height: 1.7; color: #94a3b8; margin-bottom: 0.5rem; }
+.seed-section ul, .seed-section ol { padding-left: 1.25rem; color: #94a3b8; font-size: 0.95rem; line-height: 1.8; }
+.seed-compare-table { width: 100%; border-collapse: collapse; margin: 1rem 0; font-size: 0.9rem; }
+.seed-compare-table th, .seed-compare-table td { padding: 0.6rem 0.75rem; text-align: left; border-bottom: 1px solid #1e1e2e; }
+.seed-compare-table th { color: #818cf8; font-weight: 600; }
+.seed-compare-table td { color: #94a3b8; }
+</style>
+<div class="seed-page">
+  <h1>Compelling title about ${keyword}</h1>
+  <p class="seed-meta">Updated ${new Date().toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}</p>
+  [sections with seed-section class]
+  [FAQ section]
+</div>
+
+Rules:
+- Write like a human expert — no template filler
+- Do NOT include JavaScript, script tags, or interactive elements
+- Minimum 2000 characters of content
+- null over fake data` }],
+          }),
+        });
+        const aiData = await resp.json();
+        if (aiData.error) {
+          return new Response(JSON.stringify({ error: 'AI generation failed' }), { status: 500, headers: { 'content-type': 'application/json' } });
+        }
+
+        let html = aiData.content?.[0]?.text || '';
+        html = html.replace(/^\`\`\`html?\\s*/i, '').replace(/\\s*\`\`\`$/i, '').trim();
+
+        if (!html.includes('seed-page') || html.length < 500) {
+          return new Response(JSON.stringify({ error: 'Generated content too short or invalid' }), { status: 500, headers: { 'content-type': 'application/json' } });
+        }
+
+        // Extract title from h1
+        const h1 = (html.match(/<h1[^>]*>(.*?)<\/h1>/) || [])[1] || keyword;
+        const title = h1.replace(/<[^>]+>/g, '').trim() + ' | gab.ae';
+        const now = new Date().toISOString().replace('T', ' ').slice(0, 19);
+
+        // Insert
+        await env.DB.prepare(
+          "INSERT INTO pages (slug, title, description, category, engine, html, status, quality, keyword, page_type, published_at, updated_at, created_at) VALUES (?, ?, ?, 'on-demand', 'llm-haiku', ?, 'live', 'llm', ?, 'educational', ?, ?, ?)"
+        ).bind(slug, title, "Everything about " + keyword, html, keyword, now, now, now).run();
+
+        return new Response(JSON.stringify({ slug, title: h1 }), { headers: { 'content-type': 'application/json' } });
+      } catch (e) {
+        return new Response(JSON.stringify({ error: e.message }), { status: 500, headers: { 'content-type': 'application/json' } });
+      }
+    }
+
     if (path === '/_search') {
       const q = url.searchParams.get('q')?.toLowerCase() || '';
       if (q.length < 2) return new Response(JSON.stringify({ results: [] }), { headers: { 'content-type': 'application/json' } });
@@ -459,6 +557,23 @@ async function homepage(env) {
       </div>
     </div>
 
+    <!-- Ask the Team -->
+    <div class="max-w-2xl mx-auto mb-8">
+      <div class="bg-surface border border-surface-border rounded-xl p-5">
+        <h2 class="text-base font-bold text-white mb-2">🤖 Ask the Team</h2>
+        <p class="text-xs text-gray-500 mb-3">Type any topic — we'll create a page about it in seconds.</p>
+        <form id="ask-form" class="flex gap-2" onsubmit="return handleAsk(event)">
+          <input type="text" id="ask-input" placeholder="e.g. best noise cancelling headphones 2026" 
+            class="flex-1 px-4 py-3 bg-black/30 border border-surface-border rounded-lg text-white text-sm focus:border-accent focus:outline-none transition-colors"
+            autocomplete="off" required>
+          <button type="submit" id="ask-btn" class="px-5 py-3 bg-accent text-white text-sm font-medium rounded-lg hover:bg-accent/80 transition-colors whitespace-nowrap">
+            Create →
+          </button>
+        </form>
+        <div id="ask-status" class="mt-2 text-xs text-gray-500 hidden"></div>
+      </div>
+    </div>
+
     <!-- Latest News -->
     ${renderNewsCards(latestNews)}
 
@@ -498,6 +613,47 @@ async function homepage(env) {
     </div>
 
     <script>
+    // Ask the Team — on-demand page generation
+    async function handleAsk(e) {
+      e.preventDefault();
+      const input = document.getElementById('ask-input');
+      const btn = document.getElementById('ask-btn');
+      const status = document.getElementById('ask-status');
+      const keyword = input.value.trim();
+      if (!keyword || keyword.length < 3) return false;
+
+      btn.disabled = true;
+      btn.textContent = 'Creating...';
+      status.classList.remove('hidden');
+      status.textContent = '⏳ Generating your page — this takes about 10 seconds...';
+      status.className = 'mt-2 text-xs text-accent';
+
+      try {
+        const resp = await fetch('/api/generate', {
+          method: 'POST',
+          headers: { 'content-type': 'application/json' },
+          body: JSON.stringify({ keyword }),
+        });
+        const data = await resp.json();
+        if (data.slug) {
+          status.textContent = '✅ Page created! Redirecting...';
+          status.className = 'mt-2 text-xs text-green-400';
+          setTimeout(() => { window.location.href = '/' + data.slug; }, 500);
+        } else {
+          status.textContent = '❌ ' + (data.error || 'Something went wrong. Try again.');
+          status.className = 'mt-2 text-xs text-red-400';
+          btn.disabled = false;
+          btn.textContent = 'Create →';
+        }
+      } catch (err) {
+        status.textContent = '❌ Network error. Try again.';
+        status.className = 'mt-2 text-xs text-red-400';
+        btn.disabled = false;
+        btn.textContent = 'Create →';
+      }
+      return false;
+    }
+
     // Live search
     const searchInput = document.getElementById('search');
     const searchResults = document.getElementById('search-results');
