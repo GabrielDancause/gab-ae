@@ -3,18 +3,18 @@
   "files": {
     "src/news-autopilot.js": {
       "currentIssue": 33,
-      "currentPR": null,
+      "currentPR": 35,
       "reviewRounds": 0,
-      "status": "waiting-for-pr",
+      "status": "reviewing",
       "julesSession": "sessions/3505100767209698019"
     },
     "src/seed-pages.js": {
-      "currentIssue": null,
+      "currentIssue": 36,
       "currentPR": null,
       "reviewRounds": 0,
-      "status": "finding-next-issue"
+      "status": "dispatching"
     }
   },
   "maxReviewRounds": 3,
-  "lastHeartbeat": "2026-04-01T11:45:46.563Z"
+  "lastHeartbeat": "2026-04-01T12:00:28.062Z"
 }
