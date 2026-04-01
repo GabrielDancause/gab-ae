@@ -208,19 +208,42 @@ function categorize(title, description, hint) {
   return hint || 'world';
 }
 
-function extractTags(title, description) {
-  const text = (title + ' ' + description).toLowerCase();
+function extractTags(category, paragraphs) {
   const tags = new Set();
-  for (const [pattern, tag] of TAG_PATTERNS) {
-    if (pattern.test(text)) {
-      tags.add(tag);
+  tags.add(category); // primary (first) tag
+
+  const text = paragraphs.join(' ');
+  const counts = new Map();
+
+  // Simplistic proper noun extraction:
+  // 1. Split into sentences to avoid counting first words.
+  const sentences = text.match(/[^.!?]+[.!?]+(?:\s|$)/g) || [text];
+
+  for (const s of sentences) {
+    const words = s.trim().split(/\s+/);
+    // skip the first word of the sentence
+    for (let i = 1; i < words.length; i++) {
+      const word = words[i].replace(/[^a-zA-Z]/g, '');
+      // If it starts with a capital and the rest is lowercase, and length > 3
+      if (word.length > 3 && /^[A-Z][a-z]+$/.test(word)) {
+        counts.set(word, (counts.get(word) || 0) + 1);
+      }
     }
-    // Reset lastIndex for global regexes
-    pattern.lastIndex = 0;
   }
-  const cat = categorize(title, description, null);
-  tags.add(cat);
-  return [...tags].slice(0, 8);
+
+  const sortedNouns = [...counts.entries()]
+    .sort((a, b) => b[1] - a[1])
+    .map(e => e[0].toLowerCase());
+
+  let added = 0;
+  for (let i = 0; i < sortedNouns.length && added < 4; i++) {
+     if (!tags.has(sortedNouns[i])) {
+       tags.add(sortedNouns[i]);
+       added++;
+     }
+  }
+
+  return [...tags];
 }
 
 function findInternalLinks(title, description) {
@@ -383,10 +406,10 @@ function extractParagraphs(data) {
     const isLinkList = (text.match(/\|/g) || []).length >= 3;
     const isShortFrag = text.length < 60 && text.includes(':');
     const isByline = /^[A-Z][a-z]+ [A-Z][a-z]+\s+(?:Mon|Tue|Wed|Thu|Fri|Sat|Sun)/.test(text);
-    const isTickerDump = /^(?:[A-Z]{2,5}\s+){2,}/.test(text);
+    const isTickerDump = /\b(?:[A-Z]{2,5}\s+){2,}\b/.test(text);
     const isImageDesc = text.length < 100 && /\b[A-Z][a-z]+ [A-Z]?\.?\s*[A-Z][a-z]+\/(?:AP|Reuters|Getty|AFP)\b/.test(text);
-    const isHeadlineBleed = text.length < 100 && /^[A-Z]/.test(text) && !/[;,]/.test(text) && (text.match(/\b[A-Z][a-z]*/g) || []).length >= 3;
-    const isPromoDisclaimer = /\$\d{1,3}(?:,\d{3})*!\*/.test(text);
+    const isHeadlineBleed = text.length < 120 && /^[A-Z]/.test(text) && !/[;.!?]/.test(text);
+    const isPromoDisclaimer = /\$\d+(?:,\d+)*(?:\.\d+)?!\*/.test(text);
 
     if (text.length > 50
       && !isLinkList
@@ -496,7 +519,7 @@ function generateContextParagraph(category, titleHash) {
 function buildArticle(story, paragraphs) {
   const { title, description } = story;
   const category = categorize(title, description, story.hintCategory);
-  const tags = extractTags(title, description);
+  const tags = extractTags(category, paragraphs);
   let internalLinks = findInternalLinks(title, description);
 
   // Slug
@@ -515,47 +538,34 @@ function buildArticle(story, paragraphs) {
   // Structure sections
   const sections = [];
 
-  if (paragraphs.length > 0) {
-    if (paragraphs.length <= 5) {
-      // Short article format (e.g. RSS fallback)
-      const contextParagraph = generateContextParagraph(category, titleHash);
-
-      const keyDetailsCount = Math.min(2, paragraphs.length);
-      sections.push({
-        heading: 'Key Details',
-        paragraphs: paragraphs.slice(0, keyDetailsCount),
-      });
-
-      const remainingParagraphs = paragraphs.slice(keyDetailsCount);
-      const contextParagraphs = remainingParagraphs.concat([contextParagraph]);
+  if (paragraphs.length >= 6) {
+      const pCount = paragraphs.length;
+      const third = Math.floor(pCount / 3);
+      const p1 = Math.max(2, third);
+      const p2 = Math.max(2, Math.floor((pCount - p1) / 2));
+      const p3 = pCount - p1 - p2;
 
       sections.push({
-        heading: 'Context',
-        paragraphs: contextParagraphs,
+        heading: 'Overview',
+        paragraphs: paragraphs.slice(0, p1),
       });
-
-    } else {
-      // Standard format
       sections.push({
-        heading: 'What Happened',
-        paragraphs: paragraphs.slice(0, Math.min(4, paragraphs.length)),
+        heading: 'Why It Matters',
+        paragraphs: paragraphs.slice(p1, p1 + p2),
       });
-      if (paragraphs.length > 4) {
-        sections.push({
-          heading: 'Why It Matters',
-          paragraphs: paragraphs.slice(4, Math.min(8, paragraphs.length)),
-        });
-      }
-      if (paragraphs.length > 8) {
-        sections.push({
-          heading: 'What Comes Next',
-          paragraphs: paragraphs.slice(8),
-        });
-      }
-    }
+      sections.push({
+        heading: 'The Bottom Line',
+        paragraphs: paragraphs.slice(p1 + p2),
+      });
+  } else if (paragraphs.length > 0) {
+    // Fallback if somehow < 6 paragraphs get through
+    sections.push({
+      heading: 'Overview',
+      paragraphs: paragraphs,
+    });
   } else {
     sections.push({
-      heading: 'What Happened',
+      heading: 'Overview',
       paragraphs: [description || 'Breaking story — details emerging.'],
     });
   }
@@ -648,6 +658,23 @@ function buildArticle(story, paragraphs) {
   const lede = paragraphs.length > 0 ? paragraphs[0].slice(0, 200) : (description || '').slice(0, 200);
   const metaDesc = lede.length > 155 ? lede.slice(0, 155) + '...' : lede;
 
+  // Dynamic FAQs based on actual sentences (null over fake data, always)
+  const faqs = [];
+  if (paragraphs.length >= 2 && tags.length > 1) {
+      const fullText = paragraphs.join(' ');
+      const sentences = fullText.match(/[^.!?]+[.!?]+(?:\s|$)/g) || [];
+      const topNoun = tags[1].replace(/-/g, ' ');
+
+      // Find sentences containing the top noun
+      const nounSentences = sentences.filter(s => s.toLowerCase().includes(topNoun));
+      if (nounSentences.length > 0) {
+         faqs.push({
+            question: nounSentences[0].trim(),
+            answer: nounSentences.length > 1 ? nounSentences[1].trim() : nounSentences[0].trim()
+         });
+      }
+  }
+
   return {
     slug,
     title,
@@ -659,7 +686,7 @@ function buildArticle(story, paragraphs) {
     sections,
     tags,
     sources: [{ name: story.source, url: story.link }],
-    faqs: [],
+    faqs: faqs.length > 0 ? faqs : null,
   };
 }
 
@@ -839,8 +866,8 @@ export async function newsAutopilot(env) {
   const paragraphs = await fetchArticleContent(story.link, story.description);
   console.log(`   Got ${paragraphs.length} paragraphs`);
 
-  if (paragraphs.length < 3) {
-    console.log(`❌ Still have <3 paragraphs (${paragraphs.length}), aborting publish to meet minimum threshold.`);
+  if (paragraphs.length < 6 || paragraphs.join(' ').length < 4000) {
+    console.log(`❌ Still have <6 paragraphs or <4000 chars, aborting publish to meet minimum threshold.`);
     return;
   }
 
