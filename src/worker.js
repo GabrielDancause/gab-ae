@@ -473,13 +473,13 @@ async function homepage(env) {
     <div class="min-h-[60vh] flex flex-col items-center justify-center">
       <div class="max-w-2xl mx-auto text-center mb-8">
         <h1 class="text-4xl font-black text-white mb-4">Hi, my name is Gab</h1>
-        <p class="text-lg text-gray-400">My team of humans and robots are answering questions and giving information.</p>
+        <p class="text-lg text-gray-400">My team of robots and I love to answer questions and give information.</p>
         <p class="text-lg text-accent mt-1">Fire away.</p>
       </div>
 
       <div class="w-full max-w-2xl">
         <form id="ask-form" class="flex gap-2" onsubmit="return handleAsk(event)">
-          <input type="text" id="ask-input" placeholder="Ask anything..." 
+          <input type="text" id="ask-input" placeholder="Ask us anything..." 
             class="flex-1 px-5 py-4 bg-surface border border-surface-border rounded-xl text-white text-lg focus:border-accent focus:outline-none transition-colors"
             autocomplete="off" required>
           <button type="submit" id="ask-btn" class="px-6 py-4 bg-accent text-white text-base font-medium rounded-xl hover:bg-accent/80 transition-colors whitespace-nowrap">
@@ -545,7 +545,7 @@ async function homepage(env) {
 
   return new Response(layout({
     title: 'gab.ae — Ask the Team',
-    description: 'My team of humans and robots are answering questions and giving information. Ask anything.',
+    description: 'My team of robots and I love to answer questions and give information. Ask anything.',
     canonical: 'https://gab.ae/',
     body,
   }), {
