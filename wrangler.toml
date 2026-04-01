@@ -15,4 +15,4 @@ pattern = "gab.ae/*"
 zone_name = "gab.ae"
 
 [triggers]
-crons = ["*/5 * * * *"]
+crons = ["*/1 * * * *"]
