@@ -187,7 +187,10 @@ Rules:
   try {
     html = await callHaiku(apiKey, prompt);
     // Clean up: remove markdown fences if present
-    html = html.replace(/^```html?\s*/i, '').replace(/\s*```$/i, '').trim();
+    html = html.replace(/^```html?\s*\n?/i, '').replace(/\n?```\s*$/i, '').trim();
+    // Fix wrong dates from Haiku (training data cutoff)
+    const currentDate = new Date().toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
+    html = html.replace(/Updated\s+(?:January|February|March|April|May|June|July|August|September|October|November|December)\s+20\d{2}/gi, 'Updated ' + currentDate);
   } catch (e) {
     console.log(`❌ Haiku error: ${e.message}`);
     return;

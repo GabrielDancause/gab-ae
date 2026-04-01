@@ -201,6 +201,9 @@ Rules:
         let html = aiData.content?.[0]?.text || '';
         // Strip markdown code fences (```html ... ```)
         html = html.replace(/^```html?\s*\n?/i, '').replace(/\n?```\s*$/i, '').trim();
+        // Fix wrong dates from Haiku (training data cutoff)
+        const currentDate = new Date().toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
+        html = html.replace(/Updated\s+(?:January|February|March|April|May|June|July|August|September|October|November|December)\s+20\d{2}/gi, 'Updated ' + currentDate);
 
         if (!html.includes('seed-page') || html.length < 500) {
           return new Response(JSON.stringify({ error: 'Generated content too short or invalid' }), { status: 500, headers: { 'content-type': 'application/json' } });
