@@ -105,13 +105,13 @@ export async function llmSeedPages(env) {
 
   // 4. Build the prompt based on page type
   const typeInstructions = {
-    calculator: `Create an INTERACTIVE calculator page. Include:
-- A working calculator with real inputs specific to "${kw.primary_keyword}" (NOT generic "Value A/Value B")
-- Input fields with proper labels, units, and placeholder values
-- A JavaScript seedCalc() function that does a real calculation
-- An explanation of the formula used
-- A comparison table or reference data if applicable
-- 3-5 FAQs specific to this calculation`,
+    calculator: `Create a DATA-DRIVEN reference page about "${kw.primary_keyword}". Include:
+- A clear explanation of what it measures/calculates and why it matters
+- A reference table with common values, ranges, or benchmarks
+- Step-by-step guide on how to calculate or interpret results manually
+- Key factors that affect the result
+- Do NOT include any JavaScript or interactive calculator — just informational content
+- 3-5 FAQs specific to this topic`,
 
     educational: `Create a comprehensive EDUCATIONAL guide. Include:
 - Clear explanation of what "${kw.primary_keyword}" is
@@ -171,8 +171,7 @@ Structure:
 2. <h1> with a compelling title (NOT just the keyword repeated)
 3. <p class="seed-meta"> with "Updated ${new Date().toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}"
 4. Multiple <div class="seed-section"> blocks for content
-5. Calculator with real JS if type is calculator
-6. FAQ section with <h3> questions and <p> answers
+5. FAQ section with <h3> questions and <p> answers
 7. <p class="seed-explore"> with link to <a href="/${apexSlug}">${apexName} Guide</a>
 
 Rules:
@@ -180,6 +179,8 @@ Rules:
 - Use REAL data, stats, and specifics — not placeholder text
 - If it's a calculator, the math MUST be correct
 - Minimum 2000 characters of content
+- Do NOT include any JavaScript, <script> tags, or interactive calculators
+- No input fields, no forms — content only
 - null over fake data — if you don't know exact numbers, use reasonable ranges with caveats`;
 
   let html;
