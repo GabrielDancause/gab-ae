@@ -5,6 +5,8 @@ import { renderChangelog } from './engines/changelog.js';
 import { newsAutopilot } from './news-autopilot.js';
 import { seedPages } from './seed-pages.js';
 import { upgradeTrigger } from './upgrade-trigger.js';
+import { llmNews } from './llm-news.js';
+import { llmSeedPages } from './llm-seed-pages.js';
 
 const ENGINES = {
   calculator: renderCalculator,
@@ -28,18 +30,18 @@ function timeAgo(dateStr) {
 
 export default {
   async scheduled(event, env, ctx) {
-    // PAUSED — redesigning to use LLM-generated content instead of rule-based
-    // try {
-    //   await newsAutopilot(env);
-    // } catch (e) {
-    //   console.log(`❌ News Autopilot cron error: ${e.message}`);
-    // }
+    // LLM-powered content generation (Haiku)
+    try {
+      await llmNews(env);
+    } catch (e) {
+      console.log(`❌ LLM News error: ${e.message}`);
+    }
 
-    // try {
-    //   await seedPages(env);
-    // } catch (e) {
-    //   console.log(`❌ Seed Pages cron error: ${e.message}`);
-    // }
+    try {
+      await llmSeedPages(env);
+    } catch (e) {
+      console.log(`❌ LLM Seed Pages error: ${e.message}`);
+    }
 
     // Upgrade trigger — check once per hour
     const hourCycle = Math.floor(Date.now() / 3600000);
