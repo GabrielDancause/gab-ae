@@ -572,6 +572,16 @@ function generateCalculator(kw) {
   const howText = content.howText.replace(/\{keyword\}/g, topic);
   const faqText = content.faqText.replace(/\{keyword\}/g, topic);
 
+  // Contextual inputs logic based on slug/keyword
+  let labelA = 'Value A';
+  let labelB = 'Value B';
+  const slug = (kw.slug || '').toLowerCase();
+
+  if (slug.includes('macro')) {
+    labelA = 'Protein (g)';
+    labelB = 'Carbs (g)';
+  }
+
   return `${SEED_CSS}
 <div class="seed-page">
   <h1>${esc(h1Text)}</h1>
@@ -582,11 +592,11 @@ function generateCalculator(kw) {
     <p>Use this calculator to quickly compute ${esc(topic)}. Enter your values below for instant results.</p>
     <div class="seed-calc-grid">
       <div class="seed-calc-input">
-        <label>Value A</label>
+        <label>${esc(labelA)}</label>
         <input type="number" id="seed-input-a" placeholder="Enter value" oninput="seedCalc()">
       </div>
       <div class="seed-calc-input">
-        <label>Value B</label>
+        <label>${esc(labelB)}</label>
         <input type="number" id="seed-input-b" placeholder="Enter value" oninput="seedCalc()">
       </div>
       <div class="seed-calc-output">
