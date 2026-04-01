@@ -516,9 +516,13 @@ function generateContextParagraph(category, titleHash) {
 // ─── Build structured article ───
 
 function generateFaqs(title, category, sections) {
-  if (!sections || sections.length < 2) return [];
+  if (!sections || sections.length === 0) return [];
 
   let subject = title.replace(/^(why|how|what)\s+/i, '').trim();
+  const subjectWords = subject.split(/\s+/);
+  if (subjectWords.length > 5) {
+    subject = subjectWords.slice(0, 5).join(' ');
+  }
 
   const faqs = [];
 
