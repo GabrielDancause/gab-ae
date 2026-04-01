@@ -536,7 +536,7 @@ function generateCalculator(kw) {
   const typeRegex = new RegExp('\\s+' + pageTypeWord + '$', 'i');
 
   const hasSuffix = typeRegex.test(readableText);
-  const topic = hasSuffix ? readableText.replace(typeRegex, '') : readableText;
+  const topic = (hasSuffix ? readableText.replace(typeRegex, '') : readableText) || kw.primary_keyword;
   const topicTitle = titleCase(topic);
   const h1Text = hasSuffix ? titleCase(readableText) : `${titleCase(readableText)} Calculator`;
 
@@ -637,7 +637,7 @@ function generateComparison(kw) {
   const typeRegex = new RegExp('\\s+' + pageTypeWord + '$', 'i');
 
   const hasSuffix = typeRegex.test(readableText);
-  const topic = hasSuffix ? readableText.replace(typeRegex, '') : readableText;
+  const topic = (hasSuffix ? readableText.replace(typeRegex, '') : readableText) || kw.primary_keyword;
   const topicTitle = titleCase(topic);
   const h1Text = hasSuffix ? titleCase(readableText) : `${titleCase(readableText)} — Side-by-Side Comparison`;
 
