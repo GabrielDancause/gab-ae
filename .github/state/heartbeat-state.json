@@ -1,0 +1,24 @@
+{
+  "mode": "jules-review-loop",
+  "files": {
+    "src/news-autopilot.js": {
+      "currentIssue": 29,
+      "currentPR": 31,
+      "reviewRounds": 3,
+      "status": "ready-to-merge"
+    },
+    "src/seed-pages.js": {
+      "currentIssue": 32,
+      "currentPR": null,
+      "reviewRounds": 0,
+      "status": "waiting-for-pr",
+      "julesSession": "14308704634129466522"
+    }
+  },
+  "maxReviewRounds": 3,
+  "lastHeartbeat": "2026-04-01T10:35:00Z",
+  "lastUpdateToGab": "2026-04-01T10:35:00Z",
+  "nextIssueQueue": {
+    "src/news-autopilot.js": "Explore more section pushed twice + dead comment wall (was #30)"
+  }
+}
