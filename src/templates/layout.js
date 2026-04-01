@@ -58,7 +58,6 @@ export function layout({ title, description, canonical, schemaJson, body }) {
       <div class="flex gap-6 text-sm text-gray-400">
         <a href="/news" class="hover:text-white transition-colors">News</a>
         <a href="/resources" class="hover:text-white transition-colors">Resources</a>
-        <a href="/#finance" class="hover:text-white transition-colors">Finance</a>
       </div>
     </div>
   </nav>
