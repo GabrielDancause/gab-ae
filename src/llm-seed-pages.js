@@ -70,42 +70,54 @@ export async function llmSeedPages(env) {
   const apiKey = env.ANTHROPIC_API_KEY;
   if (!apiKey) { console.log('❌ No ANTHROPIC_API_KEY'); return; }
 
-  // 1. Pick the best keyword: high CPC × volume, low KD
+  // 1. Pick a long-tail keyword: low KD, reasonable volume, has CPC value
   const kw = await env.DB.prepare(
-    `SELECT * FROM keyword_queue 
-     WHERE status = 'queued' 
-     ORDER BY score DESC 
+    `SELECT * FROM keywords 
+     WHERE status = 'new' 
+       AND kd <= 20 
+       AND volume >= 50 
+       AND keyword NOT IN (SELECT keyword FROM pages WHERE status = 'live')
+     ORDER BY (cpc * volume) / (kd + 1) DESC
      LIMIT 1`
   ).first();
 
   if (!kw) {
-    console.log('❌ No queued keywords');
+    console.log('❌ No keywords matching criteria');
     return;
   }
 
-  // 2. Check if slug already exists
+  // 2. Build slug and check if exists
+  const slug = kw.target_slug || kw.keyword.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '').slice(0, 80);
+  
   const existing = await env.DB.prepare(
     "SELECT slug FROM pages WHERE slug = ?"
-  ).bind(kw.slug).first();
+  ).bind(slug).first();
 
   if (existing) {
-    await env.DB.prepare("UPDATE keyword_queue SET status = 'skipped' WHERE slug = ?").bind(kw.slug).run();
-    console.log(`⏭️ Slug exists: ${kw.slug}`);
+    await env.DB.prepare("UPDATE keywords SET status = 'skip' WHERE keyword = ?").bind(kw.keyword).run();
+    console.log(`⏭️ Slug exists: ${slug}`);
     return;
   }
 
-  // 3. Get context — what apex/pillar does this keyword belong under?
-  const targetSite = kw.target_site || 'siliconbased';
+  // 3. Get context — what category does this keyword belong under?
+  const kwCategory = kw.category || 'general';
+  const categoryToSite = {
+    'finance': 'westmount', 'tech': 'siliconbased', 'health': 'bodycount',
+    'food': '28grams', 'travel': 'migratingmammals', 'gaming': 'leeroyjenkins',
+    'education': 'sendnerds', 'career': 'getthebag', 'automotive': 'pleasestartplease',
+    'home': 'ijustwantto', 'general': 'siliconbased',
+  };
+  const targetSite = categoryToSite[kwCategory] || 'siliconbased';
   const apexSlug = SITE_TO_APEX[targetSite] || 'software-ai-infrastructure-guide-2026';
   const apexName = APEX_NAMES[apexSlug] || 'General';
   const category = SITE_TO_CATEGORY[targetSite] || 'tools';
-  const pageType = kw.page_type || 'educational';
+  const pageType = kw.engine || 'educational';
 
-  console.log(`📝 Generating: "${kw.primary_keyword}" (${pageType}, ${category}, ${targetSite})`);
+  console.log(`📝 Generating: "${kw.keyword}" (${pageType}, ${category}, vol:${kw.volume}, kd:${kw.kd}, cpc:$${kw.cpc})`);
 
   // 4. Build the prompt based on page type
   const typeInstructions = {
-    calculator: `Create a DATA-DRIVEN reference page about "${kw.primary_keyword}". Include:
+    calculator: `Create a DATA-DRIVEN reference page about "${kw.keyword}". Include:
 - A clear explanation of what it measures/calculates and why it matters
 - A reference table with common values, ranges, or benchmarks
 - Step-by-step guide on how to calculate or interpret results manually
@@ -114,7 +126,7 @@ export async function llmSeedPages(env) {
 - 3-5 FAQs specific to this topic`,
 
     educational: `Create a comprehensive EDUCATIONAL guide. Include:
-- Clear explanation of what "${kw.primary_keyword}" is
+- Clear explanation of what "${kw.keyword}" is
 - How it works (step-by-step if applicable)
 - Key facts, statistics, or data points
 - Practical tips or recommendations
@@ -135,7 +147,7 @@ export async function llmSeedPages(env) {
 - 3-5 FAQs about the comparison`,
   };
 
-  const prompt = `You are a content writer for gab.ae. Create a high-quality ${pageType} page about "${kw.primary_keyword}".
+  const prompt = `You are a content writer for gab.ae. Create a high-quality ${pageType} page about "${kw.keyword}".
 
 This page sits under the "${apexName}" content hub in the ${category} category.
 
@@ -202,9 +214,9 @@ Rules:
   // 6. Build title and metadata
   // Extract h1 from generated HTML
   const h1Match = html.match(/<h1[^>]*>(.*?)<\/h1>/);
-  const title = h1Match ? h1Match[1].replace(/<[^>]+>/g, '').trim() : kw.primary_keyword;
+  const title = h1Match ? h1Match[1].replace(/<[^>]+>/g, '').trim() : kw.keyword;
   const fullTitle = `${title} | gab.ae`;
-  const description = `Everything you need to know about ${kw.primary_keyword}. Expert guide with tools, data, and FAQs.`;
+  const description = `Everything you need to know about ${kw.keyword}. Expert guide with tools, data, and FAQs.`;
   const now = new Date().toISOString().replace('T', ' ').slice(0, 19);
 
   // 7. Insert into pages
@@ -212,8 +224,8 @@ Rules:
     `INSERT INTO pages (slug, title, description, category, engine, html, status, quality, keyword, keyword_volume, keyword_kd, page_type, target_site, published_at, updated_at, created_at)
      VALUES (?, ?, ?, ?, 'llm-haiku', ?, 'live', 'llm', ?, ?, ?, ?, ?, ?, ?, ?)`
   ).bind(
-    kw.slug, fullTitle, description, category, html,
-    kw.primary_keyword, kw.total_volume || 0, kw.avg_kd || 0, pageType, targetSite,
+    slug, fullTitle, description, category, html,
+    kw.keyword, kw.volume || 0, kw.kd || 0, pageType, targetSite,
     now, now, now
   ).run();
 
@@ -222,16 +234,16 @@ Rules:
     await env.DB.prepare(
       `INSERT OR IGNORE INTO tracked_pages (domain, path, title, apex_slug, cluster, status)
        VALUES ('gab.ae', ?, ?, ?, ?, 'active')`
-    ).bind('/' + kw.slug, fullTitle, apexSlug, pageType).run();
+    ).bind('/' + slug, fullTitle, apexSlug, pageType).run();
   } catch (e) {
     console.log(`⚠️ tracked_pages: ${e.message}`);
   }
 
-  // 9. Update keyword queue
+  // 9. Mark keyword as live
   await env.DB.prepare(
-    "UPDATE keyword_queue SET status = 'published', published_at = ? WHERE slug = ?"
-  ).bind(now, kw.slug).run();
+    "UPDATE keywords SET status = 'live', page_slug = ?, built_at = ? WHERE keyword = ?"
+  ).bind(slug, now, kw.keyword).run();
 
-  console.log(`✅ Published: ${kw.slug} (${pageType}, ${category}, ${kw.total_volume} vol)`);
-  return { slug: kw.slug, title, pageType, category };
+  console.log(`✅ Published: ${slug} (${pageType}, ${category}, ${kw.volume} vol)`);
+  return { slug: slug, title, pageType, category };
 }
