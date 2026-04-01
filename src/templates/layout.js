@@ -68,9 +68,34 @@ export function layout({ title, description, canonical, schemaJson, body }) {
   </main>
 
   <!-- Footer -->
-  <footer class="border-t border-surface-border px-4 py-6 mt-16 no-print">
-    <div class="max-w-5xl mx-auto text-center text-sm text-gray-500">
-      &copy; ${new Date().getFullYear()} gab.ae
+  <footer class="border-t border-surface-border px-4 py-8 mt-16 no-print">
+    <div class="max-w-5xl mx-auto">
+      <div class="mb-6">
+        <h3 class="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-4">Our Sites</h3>
+        <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-x-6 gap-y-2 text-sm">
+          <a href="https://westmountfundamentals.com" class="text-gray-400 hover:text-white transition-colors">📊 Westmount Fundamentals</a>
+          <a href="https://firemaths.info" class="text-gray-400 hover:text-white transition-colors">🔥 Firemaths</a>
+          <a href="https://siliconbased.dev" class="text-gray-400 hover:text-white transition-colors">⚡ SiliconBased</a>
+          <a href="https://bodycount.photonbuilder.com" class="text-gray-400 hover:text-white transition-colors">❤️ Body Count</a>
+          <a href="https://thenookienook.com" class="text-gray-400 hover:text-white transition-colors">💜 The Nookie Nook</a>
+          <a href="https://migratingmammals.com" class="text-gray-400 hover:text-white transition-colors">🌍 Migrating Mammals</a>
+          <a href="https://ijustwantto.live" class="text-gray-400 hover:text-white transition-colors">🏠 I Just Want To Live</a>
+          <a href="https://28grams.vip" class="text-gray-400 hover:text-white transition-colors">🍳 28 Grams</a>
+          <a href="https://leeroyjenkins.quest" class="text-gray-400 hover:text-white transition-colors">🎮 Leeroy Jenkins</a>
+          <a href="https://sendnerds.photonbuilder.com" class="text-gray-400 hover:text-white transition-colors">📚 Send Nerds</a>
+          <a href="https://getthebag.photonbuilder.com" class="text-gray-400 hover:text-white transition-colors">💼 Get The Bag</a>
+          <a href="https://fixitwithducttape.photonbuilder.com" class="text-gray-400 hover:text-white transition-colors">🔧 Fix It With Duct Tape</a>
+          <a href="https://justonemoment.photonbuilder.com" class="text-gray-400 hover:text-white transition-colors">⏱️ Just One Moment</a>
+          <a href="https://papyruspeople.photonbuilder.com" class="text-gray-400 hover:text-white transition-colors">📝 Papyrus People</a>
+          <a href="https://eeniemeenie.photonbuilder.com" class="text-gray-400 hover:text-white transition-colors">🎲 Eenie Meenie</a>
+          <a href="https://pleasestartplease.photonbuilder.com" class="text-gray-400 hover:text-white transition-colors">🚗 Please Start Please</a>
+          <a href="https://aliimperiale.com" class="text-gray-400 hover:text-white transition-colors">✨ Ali Imperiale</a>
+          <a href="https://aubergedenosaieux.com" class="text-gray-400 hover:text-white transition-colors">🏔️ Auberge de nos Aïeux</a>
+        </div>
+      </div>
+      <div class="text-center text-sm text-gray-500">
+        &copy; ${new Date().getFullYear()} gab.ae
+      </div>
     </div>
   </footer>
 </body>
