@@ -53,9 +53,11 @@ const CATEGORY_KEYWORDS = {
     'nvidia', 'chip', 'semiconductor', 'robot', 'quantum', 'spacex', 'tesla'],
   health: ['fda', 'vaccine', 'covid', 'drug', 'health', 'hospital', 'medical', 'cancer',
     'disease', 'mental health', 'diet', 'nutrition', 'exercise', 'air quality',
-    'pollution', 'nosebleed', 'respiratory', 'smog', 'aqi', 'pm2.5', 'wildfire smoke'],
+    'pollution', 'respiratory', 'smog', 'aqi', 'pm2.5', 'wildfire smoke', 'asthma', 'lung'],
   science: ['nasa', 'space', 'climate', 'earthquake', 'hurricane', 'research', 'study',
-    'discovery', 'species', 'ocean', 'environment'],
+    'discovery', 'species', 'ocean', 'environment', 'deforestation', 'emissions',
+    'carbon', 'biodiversity', 'ecosystem', 'global warming', 'renewable', 'solar',
+    'wind energy', 'habitat', 'conservation', 'endangered'],
   travel: ['airline', 'flight', 'airport', 'tourism', 'visa', 'cruise', 'hotel'],
   sports: ['nba', 'nfl', 'mlb', 'fifa', 'olympic', 'championship', 'tournament', 'game'],
   entertainment: ['movie', 'film', 'oscar', 'grammy', 'music', 'celebrity', 'netflix',
@@ -188,8 +190,8 @@ function slugify(text) {
   return s.slice(0, 80);
 }
 
-function categorize(title, description, hint) {
-  const text = (title + ' ' + description).toLowerCase();
+function categorize(title, description, hint, paragraphs = []) {
+  const text = (title + ' ' + description + ' ' + paragraphs.join(' ')).toLowerCase();
   const scores = {};
   for (const [cat, keywords] of Object.entries(CATEGORY_KEYWORDS)) {
     let score = 0;
@@ -208,19 +210,39 @@ function categorize(title, description, hint) {
   return hint || 'world';
 }
 
-function extractTags(title, description) {
-  const text = (title + ' ' + description).toLowerCase();
-  const tags = new Set();
-  for (const [pattern, tag] of TAG_PATTERNS) {
-    if (pattern.test(text)) {
-      tags.add(tag);
+function extractTags(title, description, paragraphs = []) {
+  const cat = categorize(title, description, null, paragraphs);
+  const tags = new Set([cat]);
+
+  // Extract 2-4 proper nouns from actual content
+  const content = paragraphs.join(' ');
+  const words = content.split(/\s+/);
+  const properNouns = {};
+
+  for (let i = 0; i < words.length; i++) {
+    const word = words[i].replace(/[^a-zA-Z]/g, '');
+    if (word.length > 3 && /^[A-Z][a-z]+$/.test(word)) {
+      properNouns[word] = (properNouns[word] || 0) + 1;
     }
-    // Reset lastIndex for global regexes
-    pattern.lastIndex = 0;
   }
-  const cat = categorize(title, description, null);
-  tags.add(cat);
-  return [...tags].slice(0, 8);
+
+  // Common words to ignore
+  const ignore = new Set([
+    'The', 'This', 'That', 'When', 'What', 'How', 'According', 'While', 'After', 'Before', 'Some', 'Many', 'Most', 'These', 'Those', 'They', 'There', 'Their', 'Here', 'Because', 'Since', 'Although',
+    'January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December',
+    'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday',
+    'However', 'Meanwhile', 'Earlier', 'Recently', 'Still', 'Just', 'Also', 'Now', 'During', 'Between', 'About', 'Until', 'Could', 'Would', 'Should', 'Other', 'Another', 'Every', 'Under', 'Over'
+  ]);
+
+  const sortedNouns = Object.entries(properNouns)
+    .filter(([noun]) => !ignore.has(noun))
+    .sort((a, b) => b[1] - a[1]);
+
+  for (let i = 0; i < Math.min(4, sortedNouns.length); i++) {
+    tags.add(sortedNouns[i][0]);
+  }
+
+  return [...tags];
 }
 
 function findInternalLinks(title, description) {
@@ -493,10 +515,73 @@ function generateContextParagraph(category, titleHash) {
 
 // ─── Build structured article ───
 
+function generateFaqs(title, category, sections) {
+  const faqs = [];
+
+  for (let i = 0; i < sections.length; i++) {
+    const section = sections[i];
+    if (!section.paragraphs || section.paragraphs.length === 0) continue;
+
+    // Find a good sentence to act as an answer
+    let answerSentence = '';
+    for (const paragraph of section.paragraphs) {
+      const sentences = paragraph.match(/[^.!?]+[.!?]+/g) || [paragraph];
+      for (let s of sentences) {
+        s = s.trim();
+        if (s.length > 50 && s.length < 200 && !s.includes('?') && !s.toLowerCase().startsWith('but') && !s.toLowerCase().startsWith('and')) {
+          answerSentence = s;
+          break;
+        }
+      }
+      if (answerSentence) break;
+    }
+
+    if (!answerSentence) continue;
+
+    // Extract a noun phrase from heading + first paragraph to form a question
+    const contextText = (section.heading + " " + section.paragraphs[0]).replace(/[^a-zA-Z\s]/g, '');
+    const words = contextText.split(/\s+/);
+    let subject = category; // fallback
+
+    for (const word of words) {
+      if (word.length > 4 && /^[A-Z][a-z]+$/.test(word)) {
+        subject = word;
+        break; // take the first capitalized noun
+      }
+    }
+
+    if (subject === category && words.length > 3) {
+      // try looking for a decent length word
+      const longWords = words.filter(w => w.length >= 6);
+      if (longWords.length > 0) {
+        subject = longWords[0].toLowerCase();
+      }
+    }
+
+    let q = '';
+    if (i === 0 || section.heading.toLowerCase().includes('happened')) {
+      q = `What is the latest update regarding ${subject}?`;
+    } else if (i === 1 || section.heading.toLowerCase().includes('matters')) {
+      q = `Why is the situation with ${subject} significant?`;
+    } else {
+      q = `How does this impact the future of ${subject}?`;
+    }
+
+    faqs.push({
+      q: q,
+      a: answerSentence
+    });
+
+    if (faqs.length >= 3) break;
+  }
+
+  return faqs;
+}
+
 function buildArticle(story, paragraphs) {
   const { title, description } = story;
-  const category = categorize(title, description, story.hintCategory);
-  const tags = extractTags(title, description);
+  const category = categorize(title, description, story.hintCategory, paragraphs);
+  const tags = extractTags(title, description, paragraphs);
   let internalLinks = findInternalLinks(title, description);
 
   // Slug
@@ -535,23 +620,44 @@ function buildArticle(story, paragraphs) {
       });
 
     } else {
-      // Standard format
+      // Standard format - distribute paragraphs evenly to ensure min 2 per section
+      // We have at least 6 paragraphs due to the early return check.
+      const total = paragraphs.length;
+      let w1 = Math.max(2, Math.floor(total * 0.4));
+      let w2 = Math.max(2, Math.floor((total - w1) * 0.5));
+      let w3 = total - w1 - w2;
+
+      // Adjust to ensure min 2 paragraphs per section if possible
+      if (w3 < 2 && total >= 6) {
+        w3 = 2;
+        w2 = Math.max(2, Math.floor((total - w3) * 0.4));
+        w1 = total - w2 - w3;
+      }
+
       sections.push({
         heading: 'What Happened',
-        paragraphs: paragraphs.slice(0, Math.min(4, paragraphs.length)),
+        paragraphs: paragraphs.slice(0, w1),
       });
-      if (paragraphs.length > 4) {
-        sections.push({
-          heading: 'Why It Matters',
-          paragraphs: paragraphs.slice(4, Math.min(8, paragraphs.length)),
-        });
+      let whyItMatters = paragraphs.slice(w1, w1 + w2);
+      let whatComesNext = paragraphs.slice(w1 + w2);
+
+      // Expand thin sections if needed
+      // (Even though we early return if < 6, this provides safety for future changes)
+      if (whyItMatters.length < 2) {
+        whyItMatters.push(generateContextParagraph(category, titleHash + 1));
       }
-      if (paragraphs.length > 8) {
-        sections.push({
-          heading: 'What Comes Next',
-          paragraphs: paragraphs.slice(8),
-        });
+      if (whatComesNext.length < 2) {
+        whatComesNext.push(generateContextParagraph(category, titleHash + 2));
       }
+
+      sections.push({
+        heading: 'Why It Matters',
+        paragraphs: whyItMatters,
+      });
+      sections.push({
+        heading: 'What Comes Next',
+        paragraphs: whatComesNext,
+      });
     }
   } else {
     sections.push({
@@ -659,7 +765,7 @@ function buildArticle(story, paragraphs) {
     sections,
     tags,
     sources: [{ name: story.source, url: story.link }],
-    faqs: [],
+    faqs: generateFaqs(title, category, sections),
   };
 }
 
@@ -688,15 +794,17 @@ function validateArticle(article) {
   for (let i = 0; i < article.sections.length; i++) {
     const s = article.sections[i];
     if (!s.heading || !s.heading.trim()) {
-      if (i > 0) {
-        // Merge into previous section
-        article.sections[i - 1].paragraphs.push(...s.paragraphs);
-        // Remove this section
-        article.sections.splice(i, 1);
-        i--; // Adjust index since we removed an element
-      } else {
-        // Assign default heading if it's the first section
+      if (i === 0) {
+        // First section empty -> 'Overview'
+        s.heading = 'Overview';
+      } else if (i === article.sections.length - 1) {
+        // Last section empty -> 'The Bottom Line'
         s.heading = 'The Bottom Line';
+      } else {
+        // Middle section empty -> merge into previous section
+        article.sections[i - 1].paragraphs.push(...s.paragraphs);
+        article.sections.splice(i, 1);
+        i--;
       }
     }
   }
@@ -839,8 +947,9 @@ export async function newsAutopilot(env) {
   const paragraphs = await fetchArticleContent(story.link, story.description);
   console.log(`   Got ${paragraphs.length} paragraphs`);
 
-  if (paragraphs.length < 3) {
-    console.log(`❌ Still have <3 paragraphs (${paragraphs.length}), aborting publish to meet minimum threshold.`);
+  const totalChars = paragraphs.join(' ').length;
+  if (paragraphs.length < 6 || totalChars < 4000) {
+    console.log(`❌ Minimum length threshold not met (${paragraphs.length} paragraphs, ${totalChars} chars). Aborting publish.`);
     return;
   }
 
