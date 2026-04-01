@@ -37,5 +37,9 @@ jobs:
         run: |
           git config user.name "David (agent)"
           git config user.email "david@gab.ae"
+          git pull --rebase origin main || true
           git add .github/state/heartbeat-state.json
-          git diff --cached --quiet || git commit -m "chore: update review loop state" && git push
+          if ! git diff --cached --quiet; then
+            git commit -m "chore: update review loop state"
+            git push || git pull --rebase origin main && git push
+          fi
