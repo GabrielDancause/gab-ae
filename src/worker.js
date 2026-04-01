@@ -509,9 +509,9 @@ async function homepage(env) {
       if (!keyword || keyword.length < 3) return false;
 
       btn.disabled = true;
-      btn.textContent = 'Creating...';
+      btn.textContent = 'Generating...';
       status.classList.remove('hidden');
-      status.textContent = '\u23f3 Generating your page \u2014 this takes about 10 seconds...';
+      status.textContent = '\u23f3 Generating answer \u2014 this takes about 10 seconds...';
       status.className = 'mt-3 text-sm text-accent text-center';
 
       try {
