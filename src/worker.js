@@ -28,18 +28,18 @@ function timeAgo(dateStr) {
 
 export default {
   async scheduled(event, env, ctx) {
-    // Both news and seed run every 5 minutes
-    try {
-      await newsAutopilot(env);
-    } catch (e) {
-      console.log(`❌ News Autopilot cron error: ${e.message}`);
-    }
+    // PAUSED — redesigning to use LLM-generated content instead of rule-based
+    // try {
+    //   await newsAutopilot(env);
+    // } catch (e) {
+    //   console.log(`❌ News Autopilot cron error: ${e.message}`);
+    // }
 
-    try {
-      await seedPages(env);
-    } catch (e) {
-      console.log(`❌ Seed Pages cron error: ${e.message}`);
-    }
+    // try {
+    //   await seedPages(env);
+    // } catch (e) {
+    //   console.log(`❌ Seed Pages cron error: ${e.message}`);
+    // }
 
     // Upgrade trigger — check once per hour
     const hourCycle = Math.floor(Date.now() / 3600000);
