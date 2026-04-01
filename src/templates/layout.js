@@ -48,6 +48,18 @@ export function layout({ title, description, canonical, schemaJson, body }) {
       .no-print { display: none !important; }
       body { background: white; color: black; }
     }
+    /* Mobile table fix — horizontal scroll */
+    .seed-section table, .seed-page table, main table {
+      display: block;
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+    }
+    .seed-section table th, .seed-section table td,
+    .seed-page table th, .seed-page table td,
+    main table th, main table td {
+      min-width: 100px;
+      white-space: normal;
+    }
   </style>
 </head>
 <body class="bg-surface text-gray-200 min-h-screen">
