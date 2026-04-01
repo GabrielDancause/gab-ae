@@ -204,6 +204,8 @@ Rules:
         // Fix wrong dates from Haiku (training data cutoff)
         const currentDate = new Date().toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
         html = html.replace(/(?:Updated|Last updated:?)\s+(?:January|February|March|April|May|June|July|August|September|October|November|December)\s+20\d{2}/gi, 'Updated ' + currentDate);
+        // Strip stray document tags Haiku might include
+        html = html.replace(/<!DOCTYPE[^>]*>/gi, '').replace(/<\/?html[^>]*>/gi, '').replace(/<head>[\s\S]*?<\/head>/gi, '').replace(/<\/?body[^>]*>/gi, '').replace(/<title>[\s\S]*?<\/title>/gi, '').replace(/<meta[^>]*>/gi, '');
 
         if (!html.includes('seed-page') || html.length < 500) {
           return new Response(JSON.stringify({ error: 'Generated content too short or invalid' }), { status: 500, headers: { 'content-type': 'application/json' } });
@@ -223,6 +225,11 @@ Rules:
       } catch (e) {
         return new Response(JSON.stringify({ error: e.message }), { status: 500, headers: { 'content-type': 'application/json' } });
       }
+    }
+
+    // Redirect /guides/* to /resources (these were planned but never created)
+    if (path.startsWith('/guides/')) {
+      return Response.redirect('https://gab.ae/resources', 301);
     }
 
     if (path === '/api/404s') {
@@ -351,7 +358,14 @@ Rules:
 
       if (page.html) {
         // Full HTML page stored in D1 — serve directly in layout shell
-        body = page.html;
+        // Strip any stray HTML document tags that Haiku might include
+        body = page.html
+          .replace(/<!DOCTYPE[^>]*>/gi, '')
+          .replace(/<\/?html[^>]*>/gi, '')
+          .replace(/<head>[\s\S]*?<\/head>/gi, '')
+          .replace(/<\/?body[^>]*>/gi, '')
+          .replace(/<title>[\s\S]*?<\/title>/gi, '')
+          .replace(/<meta[^>]*>/gi, '');
       } else {
         // Legacy config-driven engine
         const engine = ENGINES[page.engine];
@@ -551,7 +565,7 @@ async function homepage(env) {
 
   return new Response(layout({
     title: 'gab.ae — Ask the Team',
-    description: 'My team of robots and I love to answer questions and give information. Ask anything.',
+    description: 'Free tools, news, and expert guides across finance, tech, health, travel, gaming, and more. Built by a team of humans and AI agents answering your questions.',
     canonical: 'https://gab.ae/',
     body,
   }), {
@@ -613,8 +627,8 @@ async function newsIndex(env, category = null) {
   `;
 
   return new Response(layout({
-    title: category ? `${category.charAt(0).toUpperCase() + category.slice(1)} News | GAB` : 'News | GAB',
-    description: 'Latest news, breaking stories and analysis.',
+    title: category ? `${category.charAt(0).toUpperCase() + category.slice(1)} News | gab.ae` : 'Latest News & Analysis | gab.ae',
+    description: 'Latest news, breaking stories, and in-depth analysis across business, tech, world affairs, health, science, and entertainment. Updated every 5 minutes.',
     canonical: category ? `https://gab.ae/news/category/${category}` : 'https://gab.ae/news',
     body,
   }), { headers: { 'content-type': 'text/html;charset=UTF-8' } });
