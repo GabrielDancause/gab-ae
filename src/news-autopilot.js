@@ -155,7 +155,9 @@ const SKIP_PHRASES = [
   'past performance', 'risk of loss',
   'underestimate how much they need to retire', 'our team just released a report',
   'indispensable monopoly', 'one little-known company', 'motley fool', 'continue »',
-  'how prepared they are',
+  'how prepared they are', 'if you invested $1,000', 'at the time of our recommendation',
+  'stock advisor', 'consider when', 'made this list on', 'total average return',
+  'returns as of',
 ];
 
 // ─── Helper functions ───
@@ -383,6 +385,7 @@ function extractParagraphs(data) {
     const isTickerDump = /^(?:[A-Z]{2,5}\s+){2,}/.test(text);
     const isImageDesc = text.length < 100 && /\b[A-Z][a-z]+ [A-Z]?\.?\s*[A-Z][a-z]+\/(?:AP|Reuters|Getty|AFP)\b/.test(text);
     const isHeadlineBleed = text.length < 100 && /^[A-Z]/.test(text) && !/[;,]/.test(text) && (text.match(/\b[A-Z][a-z]*/g) || []).length >= 3;
+    const isPromoDisclaimer = /\$\d{1,3}(?:,\d{3})*!\*/.test(text);
 
     if (text.length > 50
       && !isLinkList
@@ -391,6 +394,7 @@ function extractParagraphs(data) {
       && !isTickerDump
       && !isImageDesc
       && !isHeadlineBleed
+      && !isPromoDisclaimer
       && !SKIP_PHRASES.some(skip => text.toLowerCase().includes(skip))) {
       paragraphs.push(text);
     }
