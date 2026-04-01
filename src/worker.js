@@ -465,161 +465,34 @@ function renderPropertyCards() {
 }
 
 async function homepage(env) {
-  // Get counts & categories
-  let pageCount = 0;
-  let categoryBreakdown = [];
-  try {
-    const countResult = await env.DB.prepare("SELECT COUNT(*) as count FROM pages WHERE status = 'live'").first();
-    pageCount = countResult?.count || 0;
-    const catResult = await env.DB.prepare("SELECT category, COUNT(*) as count FROM pages WHERE status = 'live' GROUP BY category ORDER BY count DESC").all();
-    categoryBreakdown = catResult?.results || [];
-  } catch (e) {}
-
-  // Popular tools (high-value pages)
-  let popularPages = [];
-  try {
-    const pop = await env.DB.prepare("SELECT slug, title, description, category FROM pages WHERE status = 'live' ORDER BY published_at ASC LIMIT 8").all();
-    popularPages = pop?.results || [];
-  } catch (e) {}
-
-  // Per-category featured (top 6 per category, top 4 categories)
-  const topCats = categoryBreakdown.slice(0, 6);
-  const catSections = [];
-  for (const cat of topCats) {
-    try {
-      const pages = await env.DB.prepare("SELECT slug, title, description FROM pages WHERE status = 'live' AND category = ? ORDER BY published_at ASC LIMIT 6").bind(cat.category).all();
-      catSections.push({ name: cat.category, count: cat.count, pages: pages?.results || [] });
-    } catch (e) {}
-  }
-
-  // Latest news
-  let latestNews = [];
-  try {
-    const newsResult = await env.DB.prepare("SELECT slug, title, description, category, image, image_alt, published_at FROM news WHERE status='live' ORDER BY published_at DESC LIMIT 6").all();
-    latestNews = newsResult?.results || [];
-  } catch (e) {}
-
-  // Category icons (15 categories — no "general")
-  const catIcons = {
-    finance: '💰', math: '🔢', health: '🏥', education: '📚',
-    lifestyle: '🏠', gaming: '🎮', construction: '🔨',
-    productivity: '📊', science: '🔬', food: '🍔',
-    tools: '⚙️', shipping: '📦', tech: '💻', auto: '🚗',
-    sports: '⚽',
-  };
-
-  // Category nav tabs
-  const catTabsHtml = categoryBreakdown.map(c => 
-    `<a href="/category/${c.category}" class="flex-shrink-0 px-4 py-2 rounded-full text-sm font-medium bg-surface border border-surface-border text-gray-300 hover:bg-accent hover:text-white hover:border-accent transition-all">
-      ${catIcons[c.category] || '📁'} ${c.category.charAt(0).toUpperCase() + c.category.slice(1)}
-    </a>`
-  ).join('');
-
-  // Popular tools grid
-  const popularHtml = popularPages.map(p => 
-    `<a href="/${p.slug}" class="group block bg-surface border border-surface-border rounded-xl p-4 hover:border-accent transition-all">
-      <div class="text-white font-semibold group-hover:text-accent transition-colors mb-1">${esc(p.title.replace(' | gab.ae', ''))}</div>
-      <div class="text-sm text-gray-500 line-clamp-2">${esc(p.description || '').slice(0, 80)}${(p.description || '').length > 80 ? '...' : ''}</div>
-      <div class="mt-2 text-xs text-gray-600 capitalize">${p.category}</div>
-    </a>`
-  ).join('');
-
-  // Category sections
-  const catSectionsHtml = catSections.map(cat => `
-    <div class="mb-10">
-      <div class="flex items-center justify-between mb-4">
-        <h2 class="text-lg font-bold text-white flex items-center gap-2">
-          <span class="w-1 h-5 bg-accent rounded-full inline-block"></span>
-          ${catIcons[cat.name] || '📁'} ${cat.name.charAt(0).toUpperCase() + cat.name.slice(1)}
-        </h2>
-        <a href="/category/${cat.name}" class="text-sm text-accent hover:underline">${cat.count} tools →</a>
-      </div>
-      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
-        ${cat.pages.map(p => `
-          <a href="/${p.slug}" class="group flex items-start gap-3 p-3 rounded-lg hover:bg-surface-card transition-colors">
-            <div class="flex-1 min-w-0">
-              <div class="text-sm font-medium text-gray-200 group-hover:text-accent transition-colors truncate">${esc(p.title.replace(' | gab.ae', ''))}</div>
-              <div class="text-xs text-gray-500 mt-0.5 line-clamp-1">${esc(p.description || '').slice(0, 60)}</div>
-            </div>
-          </a>`).join('')}
-      </div>
-    </div>`).join('');
-
   const body = `
-    <!-- Search -->
-    <div class="mt-4 mb-8">
-      <div class="max-w-2xl mx-auto relative">
-        <svg class="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
-        <input type="text" id="search" placeholder="Search news, tools & calculators..." 
-          class="w-full pl-12 pr-6 py-4 bg-surface border border-surface-border rounded-xl text-white text-lg focus:border-accent focus:outline-none transition-colors"
-          autocomplete="off">
-        <div id="search-results" class="absolute left-0 right-0 top-full mt-2 bg-surface-card border border-surface-border rounded-xl shadow-2xl z-50 hidden max-h-80 overflow-y-auto"></div>
+    <div class="min-h-[60vh] flex flex-col items-center justify-center">
+      <div class="max-w-2xl mx-auto text-center mb-8">
+        <h1 class="text-4xl font-black text-white mb-4">Hi, my name is Gab</h1>
+        <p class="text-lg text-gray-400">My team of humans and robots are answering your questions.</p>
+        <p class="text-lg text-accent mt-1">Fire away.</p>
       </div>
-    </div>
 
-    <!-- Ask the Team -->
-    <div class="max-w-2xl mx-auto mb-8">
-      <div class="bg-surface border border-surface-border rounded-xl p-5">
-        <h2 class="text-base font-bold text-white mb-2">🤖 Ask the Team</h2>
-        <p class="text-xs text-gray-500 mb-3">Type any topic — we'll create a page about it in seconds.</p>
+      <div class="w-full max-w-2xl">
         <form id="ask-form" class="flex gap-2" onsubmit="return handleAsk(event)">
-          <input type="text" id="ask-input" placeholder="e.g. best noise cancelling headphones 2026" 
-            class="flex-1 px-4 py-3 bg-black/30 border border-surface-border rounded-lg text-white text-sm focus:border-accent focus:outline-none transition-colors"
+          <input type="text" id="ask-input" placeholder="Ask anything..." 
+            class="flex-1 px-5 py-4 bg-surface border border-surface-border rounded-xl text-white text-lg focus:border-accent focus:outline-none transition-colors"
             autocomplete="off" required>
-          <button type="submit" id="ask-btn" class="px-5 py-3 bg-accent text-white text-sm font-medium rounded-lg hover:bg-accent/80 transition-colors whitespace-nowrap">
-            Create →
+          <button type="submit" id="ask-btn" class="px-6 py-4 bg-accent text-white text-base font-medium rounded-xl hover:bg-accent/80 transition-colors whitespace-nowrap">
+            Create &rarr;
           </button>
         </form>
-        <div id="ask-status" class="mt-2 text-xs text-gray-500 hidden"></div>
+        <div id="ask-status" class="mt-3 text-sm text-gray-500 hidden text-center"></div>
       </div>
-    </div>
-
-    <!-- Latest News -->
-    ${renderNewsCards(latestNews)}
-
-    <!-- Category Tabs -->
-    <div class="flex gap-2 overflow-x-auto pb-2 mb-8 scrollbar-hide">
-      ${catTabsHtml}
-    </div>
-
-    <!-- Popular Tools -->
-    <div class="mb-10">
-      <h2 class="text-lg font-bold text-white flex items-center gap-2 mb-4">
-        <span class="w-1 h-5 bg-accent rounded-full inline-block"></span>
-        🔥 Popular Tools
-      </h2>
-      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
-        ${popularHtml}
-      </div>
-    </div>
-
-    <!-- Category Sections -->
-    ${catSectionsHtml}
-
-    <!-- Finance -->
-    <div id="finance" class="mb-10 mt-4">
-      <div class="flex items-center gap-2 mb-4">
-        <h2 class="text-lg font-bold text-white flex items-center gap-2">
-          <span class="w-1 h-5 bg-accent rounded-full inline-block"></span>
-          💰 Finance
-        </h2>
-      </div>
-      ${renderPropertyCards()}
-    </div>
-
-    <!-- Stats footer -->
-    <div class="text-center py-8 border-t border-surface-border mt-8">
-      <p class="text-gray-500 text-sm">${pageCount} free tools across ${categoryBreakdown.length} categories — growing every day</p>
     </div>
 
     <script>
-    // Ask the Team — on-demand page generation
     function resetAskForm() {
       var input = document.getElementById('ask-input');
       var btn = document.getElementById('ask-btn');
       var status = document.getElementById('ask-status');
       if (input) input.value = '';
-      if (btn) { btn.disabled = false; btn.textContent = 'Create →'; }
+      if (btn) { btn.disabled = false; btn.textContent = 'Create \u2192'; }
       if (status) { status.classList.add('hidden'); status.textContent = ''; }
     }
     window.addEventListener('pageshow', resetAskForm);
@@ -635,8 +508,8 @@ async function homepage(env) {
       btn.disabled = true;
       btn.textContent = 'Creating...';
       status.classList.remove('hidden');
-      status.textContent = '⏳ Generating your page — this takes about 10 seconds...';
-      status.className = 'mt-2 text-xs text-accent';
+      status.textContent = '\u23f3 Generating your page \u2014 this takes about 10 seconds...';
+      status.className = 'mt-3 text-sm text-accent text-center';
 
       try {
         var resp = await fetch('/api/generate', {
@@ -646,77 +519,32 @@ async function homepage(env) {
         });
         var data = await resp.json();
         if (data.slug) {
-          status.textContent = '✅ Page created! Redirecting...';
-          status.className = 'mt-2 text-xs text-green-400';
+          status.textContent = '\u2705 Page created! Redirecting...';
+          status.className = 'mt-3 text-sm text-green-400 text-center';
           setTimeout(function() { window.location.href = '/' + data.slug; }, 500);
         } else {
-          status.textContent = '❌ ' + (data.error || 'Something went wrong. Try again.');
-          status.className = 'mt-2 text-xs text-red-400';
+          status.textContent = '\u274c ' + (data.error || 'Something went wrong. Try again.');
+          status.className = 'mt-3 text-sm text-red-400 text-center';
           btn.disabled = false;
-          btn.textContent = 'Create →';
+          btn.textContent = 'Create \u2192';
         }
       } catch (err) {
-        status.textContent = '❌ Network error. Try again.';
-        status.className = 'mt-2 text-xs text-red-400';
+        status.textContent = '\u274c Network error. Try again.';
+        status.className = 'mt-3 text-sm text-red-400 text-center';
         btn.disabled = false;
-        btn.textContent = 'Create →';
+        btn.textContent = 'Create \u2192';
       }
       return false;
     }
-
-    // Live search
-    const searchInput = document.getElementById('search');
-    const searchResults = document.getElementById('search-results');
-    let searchTimeout;
-
-    searchInput?.addEventListener('input', function(e) {
-      clearTimeout(searchTimeout);
-      const q = e.target.value.trim().toLowerCase();
-      if (q.length < 2) { searchResults.classList.add('hidden'); return; }
-      
-      searchTimeout = setTimeout(async () => {
-        try {
-          const resp = await fetch('/_search?q=' + encodeURIComponent(q));
-          const data = await resp.json();
-          if (data.results?.length) {
-            searchResults.innerHTML = data.results.map(r => {
-              var href = r.type === 'news' ? '/news/' + r.slug : '/' + r.slug;
-              var badge = r.type === 'news' ? '<span class="text-[10px] bg-blue-500/20 text-blue-400 px-1.5 py-0.5 rounded ml-2">NEWS</span>' : '';
-              return '<a href="' + href + '" class="block px-4 py-3 hover:bg-surface border-b border-surface-border last:border-0 transition-colors">' +
-              '<div class="text-white font-medium">' + r.title.replace(' | gab.ae', '') + badge + '</div>' +
-              '<div class="text-xs text-gray-500 capitalize">' + r.category + '</div></a>';
-            }).join('');
-            searchResults.classList.remove('hidden');
-          } else {
-            searchResults.innerHTML = '<div class="px-4 py-3 text-gray-500">No results found</div>';
-            searchResults.classList.remove('hidden');
-          }
-        } catch(e) { searchResults.classList.add('hidden'); }
-      }, 200);
-    });
-
-    document.addEventListener('click', function(e) {
-      if (!searchInput?.contains(e.target) && !searchResults?.contains(e.target)) {
-        searchResults?.classList.add('hidden');
-      }
-    });
     </script>
+  `;
 
-    <style>
-    .line-clamp-1 { overflow:hidden; display:-webkit-box; -webkit-line-clamp:1; -webkit-box-orient:vertical; }
-    .line-clamp-2 { overflow:hidden; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; }
-    .scrollbar-hide::-webkit-scrollbar { display:none; }
-    .scrollbar-hide { -ms-overflow-style:none; scrollbar-width:none; }
-    </style>`;
-
-  const html = layout({
-    title: 'GAB — Tools, Calculators & Answers',
-    description: 'Free online tools, calculators, converters, and instant answers. Fast, simple, useful.',
+  return new Response(layout({
+    title: 'gab.ae — Ask the Team',
+    description: 'My team of humans and robots are answering your questions. Ask anything.',
     canonical: 'https://gab.ae/',
     body,
-  });
-
-  return new Response(html, {
+  }), {
     headers: { 'content-type': 'text/html;charset=UTF-8' },
   });
 }
