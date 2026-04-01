@@ -10,11 +10,11 @@
     },
     "src/seed-pages.js": {
       "currentIssue": 32,
-      "currentPR": null,
+      "currentPR": 34,
       "reviewRounds": 0,
-      "status": "waiting-for-pr"
+      "status": "reviewing"
     }
   },
   "maxReviewRounds": 3,
-  "lastHeartbeat": "2026-04-01T11:13:31.788Z"
+  "lastHeartbeat": "2026-04-01T11:37:48.423Z"
 }
