@@ -225,6 +225,13 @@ Rules:
       }
     }
 
+    if (path === '/api/404s') {
+      const { results } = await env.DB.prepare(
+        "SELECT path, count, last_seen FROM not_found_log ORDER BY count DESC LIMIT 50"
+      ).all();
+      return new Response(JSON.stringify(results), { headers: { 'content-type': 'application/json', 'cache-control': 'public, max-age=60' } });
+    }
+
     if (path === '/_search') {
       const q = url.searchParams.get('q')?.toLowerCase() || '';
       if (q.length < 2) return new Response(JSON.stringify({ results: [] }), { headers: { 'content-type': 'application/json' } });
@@ -334,7 +341,7 @@ Rules:
         .first();
 
       if (!page) {
-        return notFound();
+        return notFound(env, path);
       }
 
       ctx.waitUntil(trackView(env, slug));
@@ -670,7 +677,7 @@ async function categoryPage(env, category) {
     const pages = result?.results || [];
 
     if (pages.length === 0) {
-      return notFound();
+      return notFound(env, path);
     }
 
     const pagesHtml = pages.map(p =>
@@ -853,7 +860,15 @@ async function resourcesPage(env) {
   return new Response(html, { headers: { 'content-type': 'text/html;charset=UTF-8', 'cache-control': 'public, max-age=300' } });
 }
 
-function notFound() {
+function notFound(env, path) {
+  if (env && path) {
+    try {
+      env.DB.prepare(
+        `INSERT INTO not_found_log (path, count, last_seen) VALUES (?, 1, datetime('now'))
+         ON CONFLICT(path) DO UPDATE SET count = count + 1, last_seen = datetime('now')`
+      ).bind(path).run();
+    } catch {}
+  }
   const html = layout({
     title: '404 — Not Found',
     description: 'Page not found',
