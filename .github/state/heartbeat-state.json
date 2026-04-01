@@ -5,7 +5,8 @@
       "currentIssue": 33,
       "currentPR": null,
       "reviewRounds": 0,
-      "status": "dispatching"
+      "status": "waiting-for-pr",
+      "julesSession": "sessions/3505100767209698019"
     },
     "src/seed-pages.js": {
       "currentIssue": 32,
@@ -15,5 +16,5 @@
     }
   },
   "maxReviewRounds": 3,
-  "lastHeartbeat": "2026-04-01T11:00:41.714Z"
+  "lastHeartbeat": "2026-04-01T11:13:31.788Z"
 }
