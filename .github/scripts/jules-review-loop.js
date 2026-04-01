@@ -492,15 +492,26 @@ async function main() {
             break;
           }
 
-          // Read the issue body to build the prompt
-          const issueBody = execSync(
-            `gh issue view ${fileState.currentIssue} --json title,body --jq '.title + "\\n\\n" + .body'`,
+          // Read the issue body — this becomes the actual instructions for Jules
+          const issueData = JSON.parse(execSync(
+            `gh issue view ${fileState.currentIssue} --json title,body`,
             { encoding: 'utf8', timeout: 30000 }
-          ).trim();
+          ));
 
-          const prompt = `Fix the bug described below in ${file}. Reference issue #${fileState.currentIssue} in commits.\n\n${issueBody}\n\nONLY modify ${file}. Do NOT create new files. Do NOT add lock files.\n\nnull over fake data, always.`;
+          // Build prompt with the actual fix instructions (Jules can't read GitHub issues)
+          const prompt = [
+            `${issueData.title}`,
+            '',
+            issueData.body,
+            '',
+            `ONLY modify ${file}. Do NOT create new files. Do NOT add pnpm-lock.yaml or lock files.`,
+            '',
+            `Reference #${fileState.currentIssue} in commit messages.`,
+            '',
+            'null over fake data, always.'
+          ].join('\n');
 
-          const sessionId = await dispatchJules(prompt, `Fix ${file} (#${fileState.currentIssue})`);
+          const sessionId = await dispatchJules(prompt, `Fix: ${issueData.title} (#${fileState.currentIssue})`);
           fileState.julesSession = sessionId;
           fileState.status = 'waiting-for-pr';
           summary.push(`${label}: Dispatched Jules session ${sessionId} for issue #${fileState.currentIssue}.`);
