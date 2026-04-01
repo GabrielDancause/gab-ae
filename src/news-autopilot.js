@@ -516,63 +516,37 @@ function generateContextParagraph(category, titleHash) {
 // ─── Build structured article ───
 
 function generateFaqs(title, category, sections) {
+  if (!sections || sections.length < 2) return [];
+
+  let subject = title.replace(/^(why|how|what)\s+/i, '').trim();
+
   const faqs = [];
 
-  for (let i = 0; i < sections.length; i++) {
+  for (let i = 0; i < Math.min(3, sections.length); i++) {
     const section = sections[i];
     if (!section.paragraphs || section.paragraphs.length === 0) continue;
 
-    // Find a good sentence to act as an answer
-    let answerSentence = '';
-    for (const paragraph of section.paragraphs) {
-      const sentences = paragraph.match(/[^.!?]+[.!?]+/g) || [paragraph];
-      for (let s of sentences) {
-        s = s.trim();
-        if (s.length > 50 && s.length < 200 && !s.includes('?') && !s.toLowerCase().startsWith('but') && !s.toLowerCase().startsWith('and')) {
-          answerSentence = s;
-          break;
-        }
-      }
-      if (answerSentence) break;
+    const firstParagraph = section.paragraphs[0];
+    const sentencesMatch = firstParagraph.match(/[^.!?]+[.!?]+(?:\s|$)/g);
+    let answer = "";
+    if (sentencesMatch) {
+      answer = sentencesMatch.slice(0, 2).join(' ').trim();
+    } else {
+      answer = firstParagraph.trim();
     }
 
-    if (!answerSentence) continue;
-
-    // Extract a noun phrase from heading + first paragraph to form a question
-    const contextText = (section.heading + " " + section.paragraphs[0]).replace(/[^a-zA-Z\s]/g, '');
-    const words = contextText.split(/\s+/);
-    let subject = category; // fallback
-
-    for (const word of words) {
-      if (word.length > 4 && /^[A-Z][a-z]+$/.test(word)) {
-        subject = word;
-        break; // take the first capitalized noun
-      }
-    }
-
-    if (subject === category && words.length > 3) {
-      // try looking for a decent length word
-      const longWords = words.filter(w => w.length >= 6);
-      if (longWords.length > 0) {
-        subject = longWords[0].toLowerCase();
-      }
-    }
+    if (!answer) continue;
 
     let q = '';
-    if (i === 0 || section.heading.toLowerCase().includes('happened')) {
-      q = `What is the latest update regarding ${subject}?`;
-    } else if (i === 1 || section.heading.toLowerCase().includes('matters')) {
+    if (i === 0) {
+      q = `What happened with ${subject}?`;
+    } else if (i === 1) {
       q = `Why is the situation with ${subject} significant?`;
     } else {
-      q = `How does this impact the future of ${subject}?`;
+      q = `What should we expect next regarding ${subject}?`;
     }
 
-    faqs.push({
-      q: q,
-      a: answerSentence
-    });
-
-    if (faqs.length >= 3) break;
+    faqs.push({ q, a: answer });
   }
 
   return faqs;
