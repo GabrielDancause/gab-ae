@@ -474,7 +474,6 @@ async function homepage(env) {
       <div class="max-w-2xl mx-auto text-center mb-8">
         <h1 class="text-4xl font-black text-white mb-4">Hi, my name is Gab</h1>
         <p class="text-lg text-gray-400">My team of robots and I love to answer questions and give information.</p>
-        <p class="text-lg text-accent mt-1">Fire away.</p>
       </div>
 
       <div class="w-full max-w-2xl">
