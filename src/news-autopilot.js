@@ -546,7 +546,7 @@ function buildArticle(story, paragraphs) {
       const p3 = pCount - p1 - p2;
 
       sections.push({
-        heading: 'Overview',
+        heading: 'What Happened',
         paragraphs: paragraphs.slice(0, p1),
       });
       sections.push({
@@ -554,18 +554,18 @@ function buildArticle(story, paragraphs) {
         paragraphs: paragraphs.slice(p1, p1 + p2),
       });
       sections.push({
-        heading: 'The Bottom Line',
+        heading: 'What Comes Next',
         paragraphs: paragraphs.slice(p1 + p2),
       });
   } else if (paragraphs.length > 0) {
     // Fallback if somehow < 6 paragraphs get through
     sections.push({
-      heading: 'Overview',
+      heading: 'What Happened',
       paragraphs: paragraphs,
     });
   } else {
     sections.push({
-      heading: 'Overview',
+      heading: 'What Happened',
       paragraphs: [description || 'Breaking story — details emerging.'],
     });
   }
@@ -663,15 +663,24 @@ function buildArticle(story, paragraphs) {
   if (paragraphs.length >= 2 && tags.length > 1) {
       const fullText = paragraphs.join(' ');
       const sentences = fullText.match(/[^.!?]+[.!?]+(?:\s|$)/g) || [];
-      const topNoun = tags[1].replace(/-/g, ' ');
 
-      // Find sentences containing the top noun
-      const nounSentences = sentences.filter(s => s.toLowerCase().includes(topNoun));
-      if (nounSentences.length > 0) {
-         faqs.push({
-            question: nounSentences[0].trim(),
-            answer: nounSentences.length > 1 ? nounSentences[1].trim() : nounSentences[0].trim()
-         });
+      const questionFormats = [
+          "What happened with {subject}?",
+          "How is {subject} involved in this situation?",
+          "What is the significance of {subject}?",
+          "How does {subject} affect the broader context?"
+      ];
+
+      for (let i = 1; i < Math.min(tags.length, 4); i++) {
+          const subject = tags[i].replace(/-/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
+          const nounSentences = sentences.filter(s => s.toLowerCase().includes(subject.toLowerCase()));
+
+          if (nounSentences.length > 0) {
+              faqs.push({
+                  q: questionFormats[(i - 1) % questionFormats.length].replace('{subject}', subject),
+                  a: nounSentences[0].trim()
+              });
+          }
       }
   }
 
