@@ -732,6 +732,19 @@ async function resourcesPage(env) {
     latestPages = results || [];
   } catch {}
 
+  // Get most popular pages (from page_metrics table, last 24h)
+  let popularPages = [];
+  try {
+    const { results } = await env.DB.prepare(
+      `SELECT pm.slug, pm.views_24h, p.title, p.category, p.page_type, p.keyword_volume 
+       FROM page_metrics pm 
+       JOIN pages p ON pm.slug = p.slug 
+       WHERE pm.views_24h > 0 AND p.status = 'live'
+       ORDER BY pm.views_24h DESC LIMIT 10`
+    ).all();
+    popularPages = results || [];
+  } catch {}
+
   const guidesHtml = APEX_GUIDES.map(g => {
     const count = pageCounts[g.slug] || 0;
     return `
@@ -743,25 +756,39 @@ async function resourcesPage(env) {
       </a>`;
   }).join('');
 
-  const latestHtml = latestPages.length > 0 ? `
-    <div class="mt-12">
-      <h2 class="text-xl font-bold text-white mb-4">Recently Published</h2>
-      <div class="space-y-3">
-        ${latestPages.map(p => {
-          const typeIcons = { educational: '📖', calculator: '🧮', listicle: '📋', comparison: '⚖️' };
-          const icon = typeIcons[p.page_type] || '📄';
-          const date = p.created_at ? new Date(p.created_at + 'Z').toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) : '';
-          const cleanTitle = p.title.replace(' | gab.ae', '');
-          return `
-            <a href="/${p.slug}" class="group flex items-center gap-3 bg-surface border border-surface-border rounded-lg px-4 py-3 hover:border-accent/30 transition-all">
-              <span class="text-lg">${icon}</span>
-              <div class="flex-1 min-w-0">
-                <div class="text-sm font-medium text-white group-hover:text-accent transition-colors truncate">${esc(cleanTitle)}</div>
-                <div class="text-xs text-gray-500">${p.category || ''} · ${p.page_type || ''} · ${date}</div>
-              </div>
-              ${p.keyword_volume ? `<span class="text-xs text-gray-600">${p.keyword_volume.toLocaleString()} vol</span>` : ''}
-            </a>`;
-        }).join('')}
+  function renderPageList(pages, showViews = false) {
+    return pages.map(p => {
+      const typeIcons = { educational: '📖', calculator: '🧮', listicle: '📋', comparison: '⚖️' };
+      const icon = typeIcons[p.page_type] || '📄';
+      const date = p.created_at ? new Date(p.created_at + 'Z').toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) : '';
+      const cleanTitle = (p.title || '').replace(' | gab.ae', '');
+      const rightStat = showViews && p.views_24h
+        ? `<span class="text-xs text-accent font-medium">${p.views_24h.toLocaleString()} views</span>`
+        : p.keyword_volume ? `<span class="text-xs text-gray-600">${p.keyword_volume.toLocaleString()} vol</span>` : '';
+      return `
+        <a href="/${p.slug}" class="group flex items-center gap-3 bg-surface border border-surface-border rounded-lg px-4 py-3 hover:border-accent/30 transition-all">
+          <span class="text-lg">${icon}</span>
+          <div class="flex-1 min-w-0">
+            <div class="text-sm font-medium text-white group-hover:text-accent transition-colors truncate">${esc(cleanTitle)}</div>
+            <div class="text-xs text-gray-500">${p.category || ''} · ${p.page_type || ''} · ${date}</div>
+          </div>
+          ${rightStat}
+        </a>`;
+    }).join('');
+  }
+
+  const hasPopular = popularPages.length > 0;
+  const latestHtml = (latestPages.length > 0 || hasPopular) ? `
+    <div class="mb-8">
+      <div class="flex gap-2 mb-4">
+        <button onclick="document.getElementById('tab-recent').style.display='block';document.getElementById('tab-popular').style.display='none';this.classList.add('bg-accent','text-white');this.classList.remove('bg-surface','text-gray-400');this.nextElementSibling.classList.remove('bg-accent','text-white');this.nextElementSibling.classList.add('bg-surface','text-gray-400')" class="px-4 py-1.5 rounded-full text-sm font-medium bg-accent text-white border border-surface-border transition-all">🆕 Recently Published</button>
+        <button onclick="document.getElementById('tab-popular').style.display='block';document.getElementById('tab-recent').style.display='none';this.classList.add('bg-accent','text-white');this.classList.remove('bg-surface','text-gray-400');this.previousElementSibling.classList.remove('bg-accent','text-white');this.previousElementSibling.classList.add('bg-surface','text-gray-400')" class="px-4 py-1.5 rounded-full text-sm font-medium bg-surface text-gray-400 border border-surface-border transition-all">🔥 Most Popular (24h)</button>
+      </div>
+      <div id="tab-recent" class="space-y-3">
+        ${latestPages.length > 0 ? renderPageList(latestPages) : '<p class="text-gray-500 text-sm">No pages yet — check back soon.</p>'}
+      </div>
+      <div id="tab-popular" class="space-y-3" style="display:none">
+        ${hasPopular ? renderPageList(popularPages, true) : '<p class="text-gray-500 text-sm">No view data yet — analytics sync coming soon.</p>'}
       </div>
     </div>` : '';
 
@@ -769,10 +796,11 @@ async function resourcesPage(env) {
     <div class="max-w-4xl mx-auto">
       <h1 class="text-3xl font-black text-white mb-2">Resources</h1>
       <p class="text-gray-400 mb-8">In-depth guides, tools, and data across ${APEX_GUIDES.length} knowledge hubs.</p>
+      ${latestHtml}
+      <h2 class="text-xl font-bold text-white mb-4 mt-12">Knowledge Hubs</h2>
       <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
         ${guidesHtml}
       </div>
-      ${latestHtml}
     </div>`;
 
   const html = layout({
