@@ -227,7 +227,12 @@ function extractTags(title, description, paragraphs = []) {
   }
 
   // Common words to ignore
-  const ignore = new Set(['The', 'This', 'That', 'When', 'What', 'How', 'According', 'While', 'After', 'Before', 'Some', 'Many', 'Most', 'These', 'Those', 'They', 'There', 'Their', 'Here', 'Because', 'Since', 'Although']);
+  const ignore = new Set([
+    'The', 'This', 'That', 'When', 'What', 'How', 'According', 'While', 'After', 'Before', 'Some', 'Many', 'Most', 'These', 'Those', 'They', 'There', 'Their', 'Here', 'Because', 'Since', 'Although',
+    'January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December',
+    'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday',
+    'However', 'Meanwhile', 'Earlier', 'Recently', 'Still', 'Just', 'Also', 'Now', 'During', 'Between', 'About', 'Until', 'Could', 'Would', 'Should', 'Other', 'Another', 'Every', 'Under', 'Over'
+  ]);
 
   const sortedNouns = Object.entries(properNouns)
     .filter(([noun]) => !ignore.has(noun))
@@ -512,52 +517,62 @@ function generateContextParagraph(category, titleHash) {
 
 function generateFaqs(title, category, sections) {
   const faqs = [];
-  const allSentences = [];
 
-  for (const section of sections) {
+  for (let i = 0; i < sections.length; i++) {
+    const section = sections[i];
+    if (!section.paragraphs || section.paragraphs.length === 0) continue;
+
+    // Find a good sentence to act as an answer
+    let answerSentence = '';
     for (const paragraph of section.paragraphs) {
-      // Very basic sentence splitting
       const sentences = paragraph.match(/[^.!?]+[.!?]+/g) || [paragraph];
       for (let s of sentences) {
         s = s.trim();
         if (s.length > 50 && s.length < 200 && !s.includes('?') && !s.toLowerCase().startsWith('but') && !s.toLowerCase().startsWith('and')) {
-          allSentences.push(s);
+          answerSentence = s;
+          break;
         }
       }
+      if (answerSentence) break;
     }
-  }
 
-  // Shuffle sentences predictably based on title length or pick evenly spaced ones
-  if (allSentences.length < 3) return [];
+    if (!answerSentence) continue;
 
-  const step = Math.floor(allSentences.length / 3);
-  const selectedSentences = [
-    allSentences[0],
-    allSentences[step],
-    allSentences[step * 2]
-  ].filter(Boolean);
+    // Extract a noun phrase from heading + first paragraph to form a question
+    const contextText = (section.heading + " " + section.paragraphs[0]).replace(/[^a-zA-Z\s]/g, '');
+    const words = contextText.split(/\s+/);
+    let subject = category; // fallback
 
-  const keywords = CATEGORY_KEYWORDS[category] || [];
-  let keywordMatch = keywords[0] || category;
-  for (const kw of keywords) {
-    if (title.toLowerCase().includes(kw)) {
-      keywordMatch = kw;
-      break;
+    for (const word of words) {
+      if (word.length > 4 && /^[A-Z][a-z]+$/.test(word)) {
+        subject = word;
+        break; // take the first capitalized noun
+      }
     }
-  }
 
-  const queryTemplates = [
-    `What are the latest updates on ${keywordMatch}?`,
-    `How does this impact the ${category} sector?`,
-    `Why is this development significant?`,
-    `What should we expect next regarding ${keywordMatch}?`
-  ];
+    if (subject === category && words.length > 3) {
+      // try looking for a decent length word
+      const longWords = words.filter(w => w.length >= 6);
+      if (longWords.length > 0) {
+        subject = longWords[0].toLowerCase();
+      }
+    }
 
-  for (let i = 0; i < Math.min(3, selectedSentences.length); i++) {
+    let q = '';
+    if (i === 0 || section.heading.toLowerCase().includes('happened')) {
+      q = `What is the latest update regarding ${subject}?`;
+    } else if (i === 1 || section.heading.toLowerCase().includes('matters')) {
+      q = `Why is the situation with ${subject} significant?`;
+    } else {
+      q = `How does this impact the future of ${subject}?`;
+    }
+
     faqs.push({
-      q: queryTemplates[i % queryTemplates.length],
-      a: selectedSentences[i]
+      q: q,
+      a: answerSentence
     });
+
+    if (faqs.length >= 3) break;
   }
 
   return faqs;
