@@ -158,10 +158,6 @@ Return ONLY the raw HTML (no markdown fences, no explanation). The HTML must use
 .seed-calc-input input, .seed-calc-input select { width: 100%; background: transparent; border: none; color: #fff; font-size: 1.1rem; outline: none; }
 .seed-calc-output { background: #0a0a0a; border: 1px solid #1e1e2e; border-radius: 8px; padding: 0.75rem; }
 .seed-calc-output .value { font-size: 1.3rem; font-weight: 700; color: #818cf8; }
-.seed-compare-table { width: 100%; border-collapse: collapse; margin: 1rem 0; font-size: 0.9rem; }
-.seed-compare-table th, .seed-compare-table td { padding: 0.6rem 0.75rem; text-align: left; border-bottom: 1px solid #1e1e2e; }
-.seed-compare-table th { color: #818cf8; font-weight: 600; }
-.seed-compare-table td { color: #94a3b8; }
 .seed-explore { text-align: center; margin-top: 1.5rem; font-size: 0.85rem; color: #64748b; }
 .seed-explore a { color: #818cf8; text-decoration: underline; }
 </style>
@@ -180,6 +176,7 @@ Rules:
 - If it's a calculator, the math MUST be correct
 - Minimum 2000 characters of content
 - Do NOT include any JavaScript, <script> tags, or interactive calculators
+- Do NOT use HTML tables — use bullet lists, numbered lists, or card-style sections instead. Tables look terrible on mobile.
 - No input fields, no forms — content only
 - null over fake data — if you don't know exact numbers, use reasonable ranges with caveats`;
 

@@ -174,10 +174,6 @@ Use this structure:
 .seed-section h3 { font-size: 1rem; font-weight: 600; color: #e2e8f0; margin-bottom: 0.5rem; }
 .seed-section p { font-size: 0.95rem; line-height: 1.7; color: #94a3b8; margin-bottom: 0.5rem; }
 .seed-section ul, .seed-section ol { padding-left: 1.25rem; color: #94a3b8; font-size: 0.95rem; line-height: 1.8; }
-.seed-compare-table { width: 100%; border-collapse: collapse; margin: 1rem 0; font-size: 0.9rem; }
-.seed-compare-table th, .seed-compare-table td { padding: 0.6rem 0.75rem; text-align: left; border-bottom: 1px solid #1e1e2e; }
-.seed-compare-table th { color: #818cf8; font-weight: 600; }
-.seed-compare-table td { color: #94a3b8; }
 </style>
 <div class="seed-page">
   <h1>Compelling title about ${keyword}</h1>
@@ -189,6 +185,7 @@ Use this structure:
 Rules:
 - Write like a human expert — no template filler
 - Do NOT include JavaScript, script tags, or interactive elements
+- Do NOT use HTML tables — use bullet lists, numbered lists, or card-style sections instead
 - Minimum 2000 characters of content
 - null over fake data` }],
           }),
