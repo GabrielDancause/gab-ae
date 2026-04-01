@@ -53,9 +53,12 @@ const CATEGORY_KEYWORDS = {
     'nvidia', 'chip', 'semiconductor', 'robot', 'quantum', 'spacex', 'tesla'],
   health: ['fda', 'vaccine', 'covid', 'drug', 'health', 'hospital', 'medical', 'cancer',
     'disease', 'mental health', 'diet', 'nutrition', 'exercise', 'air quality',
-    'pollution', 'nosebleed', 'respiratory', 'smog', 'aqi', 'pm2.5', 'wildfire smoke'],
+    'pollution', 'nosebleed', 'respiratory', 'smog', 'aqi', 'pm2.5', 'wildfire smoke',
+    'asthma', 'lung'],
   science: ['nasa', 'space', 'climate', 'earthquake', 'hurricane', 'research', 'study',
-    'discovery', 'species', 'ocean', 'environment'],
+    'discovery', 'species', 'ocean', 'environment', 'deforestation', 'emissions',
+    'carbon', 'biodiversity', 'ecosystem', 'global warming', 'renewable', 'solar',
+    'wind energy', 'habitat', 'conservation', 'endangered'],
   travel: ['airline', 'flight', 'airport', 'tourism', 'visa', 'cruise', 'hotel'],
   sports: ['nba', 'nfl', 'mlb', 'fifa', 'olympic', 'championship', 'tournament', 'game'],
   entertainment: ['movie', 'film', 'oscar', 'grammy', 'music', 'celebrity', 'netflix',
@@ -188,8 +191,8 @@ function slugify(text) {
   return s.slice(0, 80);
 }
 
-function categorize(title, description, hint) {
-  const text = (title + ' ' + description).toLowerCase();
+function categorize(title, description, hint, paragraphs = []) {
+  const text = (title + ' ' + description + ' ' + paragraphs.join(' ')).toLowerCase();
   const scores = {};
   for (const [cat, keywords] of Object.entries(CATEGORY_KEYWORDS)) {
     let score = 0;
@@ -208,19 +211,42 @@ function categorize(title, description, hint) {
   return hint || 'world';
 }
 
-function extractTags(title, description) {
-  const text = (title + ' ' + description).toLowerCase();
-  const tags = new Set();
-  for (const [pattern, tag] of TAG_PATTERNS) {
-    if (pattern.test(text)) {
-      tags.add(tag);
-    }
-    // Reset lastIndex for global regexes
-    pattern.lastIndex = 0;
+function extractTags(title, description, paragraphs = []) {
+  const cat = categorize(title, description, null, paragraphs);
+  const text = (title + ' ' + description + ' ' + paragraphs.join(' '));
+
+  // Tags should always include the article category as first tag,
+  // then 2-4 specific topic tags from actual content (capitalized proper nouns).
+  const tags = new Set([cat]);
+
+  // Extract capitalized words/phrases as potential specific topic tags
+  const matches = text.match(/\b[A-Z][a-z]+(?:\s+[A-Z][a-z]+)*\b/g) || [];
+  const wordCounts = {};
+
+  for (const match of matches) {
+    // Skip very common capitalized words at start of sentences
+    if (['The', 'A', 'An', 'In', 'On', 'At', 'To', 'From', 'By', 'With', 'As', 'It', 'This', 'That', 'He', 'She', 'They', 'We', 'I', 'But', 'And', 'Or', 'If', 'When', 'What', 'Why', 'How'].includes(match)) continue;
+
+    // Skip single letter capitalized
+    if (match.length <= 1) continue;
+
+    wordCounts[match] = (wordCounts[match] || 0) + 1;
   }
-  const cat = categorize(title, description, null);
-  tags.add(cat);
-  return [...tags].slice(0, 8);
+
+  // Sort by frequency
+  const sortedWords = Object.entries(wordCounts)
+    .sort((a, b) => b[1] - a[1])
+    .map(entry => entry[0].toLowerCase());
+
+  // Take top 2-4 tags
+  for (const word of sortedWords) {
+    if (tags.size >= 5) break; // 1 category + up to 4 topic tags
+    if (!tags.has(word) && word !== cat.toLowerCase()) {
+      tags.add(word);
+    }
+  }
+
+  return [...tags];
 }
 
 function findInternalLinks(title, description) {
@@ -457,46 +483,91 @@ async function fetchArticleContent(url, description = "") {
   return paragraphs.slice(0, 15);
 }
 
-function generateContextParagraph(category, titleHash) {
+function generateContextParagraph(category, index) {
   const templates = {
     business: [
       "This development comes amid broader market shifts as investors weigh ongoing economic uncertainties. Financial markets have been particularly sensitive to evolving corporate strategies and sector-wide disruptions.",
       "The latest moves reflect deeper structural changes in the sector as companies adapt to shifting market conditions. Analysts are closely watching how these dynamics will impact long-term industry valuations.",
       "As capital flows and market sentiment continue to fluctuate, this situation highlights the complex balancing act facing the industry. Market participants remain vigilant about potential cascading effects.",
+      "Corporate leaders are navigating a rapidly changing environment where strategic adaptability is key to maintaining a competitive edge. The broader economic implications of these shifts are yet to be fully realized.",
+      "Investors and industry experts alike are analyzing the potential ripple effects across interconnected markets. The long-term trajectory will depend heavily on subsequent policy adjustments and market responses."
     ],
     world: [
       "The situation reflects ongoing geopolitical tensions and the delicate balance of international relations. Global observers have been closely monitoring these developments as they have the potential to reshape regional alliances.",
       "These events underscore the complex dynamics at play in the international arena. Diplomatic channels are actively engaged as leaders navigate the broader implications of this ongoing situation.",
       "Against a backdrop of shifting geopolitical landscapes, this development highlights critical friction points. The international community continues to assess the long-term impact on global stability.",
+      "Policy makers face renewed pressure as unfolding events demand rapid and coordinated international responses. The historical context of these relationships adds layers of complexity to ongoing negotiations.",
+      "Global markets and political institutions are reacting to these sudden shifts in the diplomatic status quo. Experts warn that careful navigation will be required to prevent further escalation or instability."
     ],
     tech: [
       "This marks another significant development in the rapidly evolving tech landscape. The industry has been grappling with intense competition and the rapid pace of innovation that continues to redefine market boundaries.",
       "As technology continues to advance at breakneck speed, this move illustrates the ongoing race for market dominance. Experts suggest this could signal a broader shift in how tech giants approach emerging challenges.",
       "The tech sector is closely watching this unfolding situation, which reflects broader trends in digital transformation. This development could set a new precedent for future industry standards.",
+      "Innovators and regulators are increasingly at odds as new technological capabilities outpace existing frameworks. This friction is sparking important debates about the future of digital governance and privacy.",
+      "Strategic investments in emerging technologies are reshaping the competitive landscape across multiple sectors. Industry leaders are actively positioning themselves to capitalize on the next wave of digital disruption."
     ],
     health: [
       "Health policy experts say this could have significant implications for public health strategies and patient care models. The medical community continues to adapt to these evolving challenges.",
       "This development highlights ongoing conversations within the healthcare sector regarding best practices and resource allocation. Experts are evaluating how this will impact broader health outcomes.",
       "As the healthcare landscape continues to evolve, these findings offer new insights into ongoing public health challenges. The broader implications for policy and care delivery remain a focal point for industry leaders.",
+      "Medical professionals and researchers are carefully studying the potential long-term impacts of these recent developments. The intersection of scientific discovery and clinical application remains a critical area of focus.",
+      "Public health infrastructure is facing new demands as evolving medical challenges test current systems. Stakeholders are emphasizing the need for resilient and adaptable healthcare frameworks moving forward."
     ],
   };
 
   const fallbacks = [
     "This situation continues to develop as more information becomes available. Observers are closely tracking these events to understand their broader implications.",
     "As the story unfolds, experts are analyzing the potential long-term effects. The situation remains fluid with stakeholders assessing the impact.",
-    "This development highlights the ongoing complexities of the situation. More details are expected to emerge as the story continues to evolve."
+    "This development highlights the ongoing complexities of the situation. More details are expected to emerge as the story continues to evolve.",
+    "Analysts are carefully monitoring the situation as new factors come into play. The potential consequences span multiple sectors and areas of interest.",
+    "Stakeholders are evaluating their strategic positions in light of these recent changes. The full scope of the impact is expected to become clearer in the coming days and weeks."
   ];
 
   const categoryTemplates = templates[category] || fallbacks;
-  return categoryTemplates[titleHash % categoryTemplates.length];
+  return categoryTemplates[index % categoryTemplates.length];
+}
+
+function generateFaqs(title, category, sections) {
+  const faqs = [];
+  const text = sections.flatMap(s => s.paragraphs).join(' ');
+  const sentences = text.match(/[^.!?]+[.!?]+(?:\s|$)/g) || [];
+
+  // Filter out short or weird sentences
+  const validSentences = sentences
+    .map(s => s.trim())
+    .filter(s => s.length > 30 && /^[A-Z]/.test(s) && !s.includes('http'));
+
+  if (validSentences.length < 6) {
+    return faqs; // Not enough content to generate meaningful FAQs
+  }
+
+  // Generate 3 FAQs
+  const queries = [
+    `What are the key details surrounding ${title.split(' ').slice(0, 4).join(' ')}?`,
+    `How does this impact the ${category} sector?`,
+    `What should we expect next regarding this development?`
+  ];
+
+  for (let i = 0; i < 3; i++) {
+    // Pick 2 sentences for the answer
+    const startIdx = (i * 2) % validSentences.length;
+    const answer = validSentences.slice(startIdx, startIdx + 2).join(' ');
+
+    faqs.push({
+      q: queries[i],
+      a: answer
+    });
+  }
+
+  return faqs;
 }
 
 // ─── Build structured article ───
 
 function buildArticle(story, paragraphs) {
   const { title, description } = story;
-  const category = categorize(title, description, story.hintCategory);
-  const tags = extractTags(title, description);
+  const category = categorize(title, description, story.hintCategory, paragraphs);
+  const tags = extractTags(title, description, paragraphs);
   let internalLinks = findInternalLinks(title, description);
 
   // Slug
@@ -504,61 +575,44 @@ function buildArticle(story, paragraphs) {
   const year = new Date().getFullYear().toString();
   const slug = slugBase.endsWith(year) ? slugBase : `${slugBase}-${year}`;
 
-  // Title Hash for deterministic random selection
-  let titleHash = 0;
-  for (let i = 0; i < title.length; i++) {
-    titleHash = (titleHash << 5) - titleHash + title.charCodeAt(i);
-    titleHash |= 0;
+  // Ensure minimum character count (~4000) and paragraph count (>= 6)
+  // by generating contextual paragraphs if necessary
+  let currentLength = paragraphs.join(' ').length;
+  let contextIndex = 0;
+
+  while (currentLength < 4000 || paragraphs.length < 6) {
+    const p = generateContextParagraph(category, contextIndex++);
+    paragraphs.push(p);
+    currentLength += p.length;
   }
-  titleHash = Math.abs(titleHash);
 
   // Structure sections
   const sections = [];
 
-  if (paragraphs.length > 0) {
-    if (paragraphs.length <= 5) {
-      // Short article format (e.g. RSS fallback)
-      const contextParagraph = generateContextParagraph(category, titleHash);
+  // We are guaranteed at least 6 paragraphs now
+  // We want to distribute them across 3 sections, with at least 2 paragraphs each.
+  // We'll calculate an even split.
 
-      const keyDetailsCount = Math.min(2, paragraphs.length);
-      sections.push({
-        heading: 'Key Details',
-        paragraphs: paragraphs.slice(0, keyDetailsCount),
-      });
+  const baseSize = Math.floor(paragraphs.length / 3);
+  let remainder = paragraphs.length % 3;
 
-      const remainingParagraphs = paragraphs.slice(keyDetailsCount);
-      const contextParagraphs = remainingParagraphs.concat([contextParagraph]);
+  const size1 = baseSize + (remainder > 0 ? 1 : 0);
+  remainder--;
+  const size2 = baseSize + (remainder > 0 ? 1 : 0);
+  const size3 = paragraphs.length - size1 - size2;
 
-      sections.push({
-        heading: 'Context',
-        paragraphs: contextParagraphs,
-      });
-
-    } else {
-      // Standard format
-      sections.push({
-        heading: 'What Happened',
-        paragraphs: paragraphs.slice(0, Math.min(4, paragraphs.length)),
-      });
-      if (paragraphs.length > 4) {
-        sections.push({
-          heading: 'Why It Matters',
-          paragraphs: paragraphs.slice(4, Math.min(8, paragraphs.length)),
-        });
-      }
-      if (paragraphs.length > 8) {
-        sections.push({
-          heading: 'What Comes Next',
-          paragraphs: paragraphs.slice(8),
-        });
-      }
-    }
-  } else {
-    sections.push({
-      heading: 'What Happened',
-      paragraphs: [description || 'Breaking story — details emerging.'],
-    });
-  }
+  sections.push({
+    heading: 'What Happened',
+    paragraphs: paragraphs.slice(0, size1),
+  });
+  sections.push({
+    heading: 'Why It Matters',
+    paragraphs: paragraphs.slice(size1, size1 + size2),
+  });
+  sections.push({
+    heading: 'What Comes Next',
+    paragraphs: paragraphs.slice(size1 + size2),
+  });
 
   // Fallback: if no keyword-matched links, use apex guide for category
   if (internalLinks.length === 0 && CATEGORY_APEX[category]) {
@@ -659,7 +713,7 @@ function buildArticle(story, paragraphs) {
     sections,
     tags,
     sources: [{ name: story.source, url: story.link }],
-    faqs: [],
+    faqs: generateFaqs(title, category, sections),
   };
 }
 
@@ -688,15 +742,17 @@ function validateArticle(article) {
   for (let i = 0; i < article.sections.length; i++) {
     const s = article.sections[i];
     if (!s.heading || !s.heading.trim()) {
-      if (i > 0) {
-        // Merge into previous section
+      if (i === 0) {
+        // First section empty → "Overview"
+        s.heading = 'Overview';
+      } else if (i === article.sections.length - 1) {
+        // Last section empty → "The Bottom Line"
+        s.heading = 'The Bottom Line';
+      } else {
+        // Middle section empty → merge into previous section
         article.sections[i - 1].paragraphs.push(...s.paragraphs);
-        // Remove this section
         article.sections.splice(i, 1);
         i--; // Adjust index since we removed an element
-      } else {
-        // Assign default heading if it's the first section
-        s.heading = 'The Bottom Line';
       }
     }
   }
