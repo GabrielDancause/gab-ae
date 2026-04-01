@@ -518,17 +518,16 @@ function generateContextParagraph(category, titleHash) {
 function generateFaqs(title, category, sections) {
   if (!sections || sections.length === 0) return [];
 
-  let subject = title.replace(/^(why|how|what)\s+/i, '').trim();
-  const subjectWords = subject.split(/\s+/);
-  if (subjectWords.length > 5) {
-    subject = subjectWords.slice(0, 5).join(' ');
-  }
-
   const faqs = [];
 
   for (let i = 0; i < Math.min(3, sections.length); i++) {
     const section = sections[i];
     if (!section.paragraphs || section.paragraphs.length === 0) continue;
+
+    let subject = section.heading || title.replace(/^(why|how|what)\s+/i, '').trim();
+    if (subject.split(/\s+/).length > 7) {
+      subject = subject.split(/\s+/).slice(0, 5).join(' ') + '…';
+    }
 
     const firstParagraph = section.paragraphs[0];
     const sentencesMatch = firstParagraph.match(/[^.!?]+[.!?]+(?:\s|$)/g);
@@ -538,6 +537,8 @@ function generateFaqs(title, category, sections) {
     } else {
       answer = firstParagraph.trim();
     }
+
+    if (answer.length > 250) answer = answer.slice(0, 247) + "...";
 
     if (!answer) continue;
 
