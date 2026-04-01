@@ -538,7 +538,7 @@ function generateCalculator(kw) {
   const hasSuffix = typeRegex.test(readableText);
   const topic = (hasSuffix ? readableText.replace(typeRegex, '') : readableText) || kw.primary_keyword;
   const topicTitle = titleCase(topic);
-  const h1Text = hasSuffix ? titleCase(readableText) : `${titleCase(readableText)} Calculator`;
+  const h1Text = hasSuffix ? titleCase(readableText) : `${topicTitle} Calculator`;
 
   const apexSlug = SITE_TO_APEX[kw.target_site] || 'software-ai-infrastructure-guide-2026';
   const apexName = APEX_NAMES[apexSlug] || 'Guide';
@@ -639,7 +639,7 @@ function generateComparison(kw) {
   const hasSuffix = typeRegex.test(readableText);
   const topic = (hasSuffix ? readableText.replace(typeRegex, '') : readableText) || kw.primary_keyword;
   const topicTitle = titleCase(topic);
-  const h1Text = hasSuffix ? titleCase(readableText) : `${titleCase(readableText)} — Side-by-Side Comparison`;
+  const h1Text = hasSuffix ? titleCase(readableText) : `${topicTitle} — Side-by-Side Comparison`;
 
   const secondaries = JSON.parse(kw.secondary_keywords || '[]');
   const apexSlug = SITE_TO_APEX[kw.target_site] || 'software-ai-infrastructure-guide-2026';
