@@ -614,12 +614,22 @@ async function homepage(env) {
 
     <script>
     // Ask the Team — on-demand page generation
+    function resetAskForm() {
+      var input = document.getElementById('ask-input');
+      var btn = document.getElementById('ask-btn');
+      var status = document.getElementById('ask-status');
+      if (input) input.value = '';
+      if (btn) { btn.disabled = false; btn.textContent = 'Create →'; }
+      if (status) { status.classList.add('hidden'); status.textContent = ''; }
+    }
+    window.addEventListener('pageshow', resetAskForm);
+
     async function handleAsk(e) {
       e.preventDefault();
-      const input = document.getElementById('ask-input');
-      const btn = document.getElementById('ask-btn');
-      const status = document.getElementById('ask-status');
-      const keyword = input.value.trim();
+      var input = document.getElementById('ask-input');
+      var btn = document.getElementById('ask-btn');
+      var status = document.getElementById('ask-status');
+      var keyword = input.value.trim();
       if (!keyword || keyword.length < 3) return false;
 
       btn.disabled = true;
@@ -629,16 +639,16 @@ async function homepage(env) {
       status.className = 'mt-2 text-xs text-accent';
 
       try {
-        const resp = await fetch('/api/generate', {
+        var resp = await fetch('/api/generate', {
           method: 'POST',
           headers: { 'content-type': 'application/json' },
-          body: JSON.stringify({ keyword }),
+          body: JSON.stringify({ keyword: keyword }),
         });
-        const data = await resp.json();
+        var data = await resp.json();
         if (data.slug) {
           status.textContent = '✅ Page created! Redirecting...';
           status.className = 'mt-2 text-xs text-green-400';
-          setTimeout(() => { window.location.href = '/' + data.slug; }, 500);
+          setTimeout(function() { window.location.href = '/' + data.slug; }, 500);
         } else {
           status.textContent = '❌ ' + (data.error || 'Something went wrong. Try again.');
           status.className = 'mt-2 text-xs text-red-400';
