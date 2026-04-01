@@ -43,6 +43,13 @@ export default {
       console.log(`❌ LLM Seed Pages error: ${e.message}`);
     }
 
+    // Reset daily views at midnight UTC (first cron run of the day)
+    const nowHour = new Date().getUTCHours();
+    const nowMin = new Date().getUTCMinutes();
+    if (nowHour === 0 && nowMin < 5) {
+      await resetDailyViews(env);
+    }
+
     // Upgrade trigger — check once per hour
     const hourCycle = Math.floor(Date.now() / 3600000);
     if (Date.now() % 3600000 < 300000) {
@@ -54,7 +61,7 @@ export default {
     }
   },
 
-  async fetch(request, env) {
+  async fetch(request, env, ctx) {
     const url = new URL(request.url);
     const path = url.pathname.replace(/\/$/, '') || '/';
 
@@ -186,6 +193,7 @@ export default {
       try {
         const article = await env.DB.prepare("SELECT * FROM news WHERE slug = ? AND status = 'live'").bind(newsMatch[1]).first();
         if (article) {
+          ctx.waitUntil(trackView(env, 'news/' + newsMatch[1]));
           const html = renderNews(article);
           return new Response(html, { headers: { 'content-type': 'text/html;charset=UTF-8', 'cache-control': 'public, max-age=300' } });
         }
@@ -226,6 +234,8 @@ export default {
       if (!page) {
         return notFound();
       }
+
+      ctx.waitUntil(trackView(env, slug));
 
       let body;
       let schemaJson = page.schema_json ? JSON.parse(page.schema_json) : null;
@@ -700,6 +710,28 @@ async function categoryPage(env, category) {
   }
 }
 
+// ─── View tracking ───
+async function trackView(env, slug) {
+  try {
+    await env.DB.prepare(
+      `INSERT INTO view_counts (slug, views_24h, views_total, last_reset) 
+       VALUES (?, 1, 1, datetime('now'))
+       ON CONFLICT(slug) DO UPDATE SET views_24h = views_24h + 1, views_total = views_total + 1`
+    ).bind(slug).run();
+  } catch (e) {
+    // Non-critical — don't break page loads
+  }
+}
+
+async function resetDailyViews(env) {
+  try {
+    await env.DB.prepare("UPDATE view_counts SET views_24h = 0, last_reset = datetime('now')").run();
+    console.log('🔄 Daily view counts reset');
+  } catch (e) {
+    console.log(`❌ View reset error: ${e.message}`);
+  }
+}
+
 async function resourcesPage(env) {
   const APEX_GUIDES = [
     { slug: 'capital-markets-wealth-guide-2026', name: 'Capital Markets & Wealth', icon: '📊', desc: 'Investment analysis, market data, portfolio tools, and financial calculators.' },
@@ -732,17 +764,29 @@ async function resourcesPage(env) {
     latestPages = results || [];
   } catch {}
 
-  // Get most popular pages (from page_metrics table, last 24h)
+  // Get most popular pages (from view_counts, last 24h)
   let popularPages = [];
   try {
     const { results } = await env.DB.prepare(
-      `SELECT pm.slug, pm.views_24h, p.title, p.category, p.page_type, p.keyword_volume 
-       FROM page_metrics pm 
-       JOIN pages p ON pm.slug = p.slug 
-       WHERE pm.views_24h > 0 AND p.status = 'live'
-       ORDER BY pm.views_24h DESC LIMIT 10`
+      `SELECT vc.slug, vc.views_24h, p.title, p.category, p.page_type, p.keyword_volume, p.created_at
+       FROM view_counts vc 
+       JOIN pages p ON vc.slug = p.slug 
+       WHERE vc.views_24h > 0 AND p.status = 'live'
+       ORDER BY vc.views_24h DESC LIMIT 10`
     ).all();
     popularPages = results || [];
+  } catch {}
+  
+  // Also check news views
+  try {
+    const { results } = await env.DB.prepare(
+      `SELECT vc.slug, vc.views_24h, n.title, n.category, 'news' as page_type, 0 as keyword_volume, n.published_at as created_at
+       FROM view_counts vc 
+       JOIN news n ON ('news/' || n.slug) = vc.slug 
+       WHERE vc.views_24h > 0 AND n.status = 'live'
+       ORDER BY vc.views_24h DESC LIMIT 10`
+    ).all();
+    popularPages = [...popularPages, ...(results || [])].sort((a, b) => b.views_24h - a.views_24h).slice(0, 10);
   } catch {}
 
   const guidesHtml = APEX_GUIDES.map(g => {
