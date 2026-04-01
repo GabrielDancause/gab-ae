@@ -4,17 +4,18 @@
     "src/news-autopilot.js": {
       "currentIssue": 33,
       "currentPR": 35,
-      "reviewRounds": 0,
-      "status": "reviewing",
+      "reviewRounds": 1,
+      "status": "ready-to-merge",
       "julesSession": "sessions/3505100767209698019"
     },
     "src/seed-pages.js": {
       "currentIssue": 36,
       "currentPR": null,
       "reviewRounds": 0,
-      "status": "dispatching"
+      "status": "waiting-for-pr",
+      "julesSession": "sessions/5588158729732769677"
     }
   },
   "maxReviewRounds": 3,
-  "lastHeartbeat": "2026-04-01T12:00:28.062Z"
+  "lastHeartbeat": "2026-04-01T12:34:48.329Z"
 }
