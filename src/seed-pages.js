@@ -44,7 +44,7 @@ const SITE_TO_CATEGORY = {
   'fixitwithducttape': 'tech',
   'leeroyjenkins': 'gaming',
   'bodycount': 'health',
-  '28grams': 'food',
+  '28grams': 'art',
   'migratingmammals': 'lifestyle',
   'sendnerds': 'education',
   'getthebag': 'lifestyle',
@@ -110,6 +110,18 @@ function getMonthYear() {
 }
 
 const CATEGORY_DESCRIPTORS = {
+  art: [
+    "Celebrated for its exceptional artistic quality and creative vision",
+    "Highly regarded for its masterful use of composition and color theory",
+    "Offers the most innovative and boundary-pushing techniques in its medium",
+    "Known for utilizing premium, archival-quality materials and pigments",
+    "Considered the absolute gold standard for professional design workflows",
+    "Features incredibly detailed textures and striking visual aesthetics",
+    "The most versatile tool for mixed media and experimental creation",
+    "Provides unparalleled precision for intricate illustrations and drafting",
+    "Widely recognized for its deep historical significance and cultural impact",
+    "The ultimate choice for achieving gallery-ready, museum-quality finishes"
+  ],
   finance: [
     "Known for consistently low expense ratios and strong fee structures",
     "Offers the highest historical dividend yield in its specific category",
@@ -258,6 +270,18 @@ const LISTICLE_STRUCTURES = [
 ];
 
 const EDUCATIONAL_CONTENT = {
+  art: {
+    what: "A {keyword} is a foundational element of fine arts and design, providing the conceptual and physical framework for creative expression. Artists and designers use them to communicate complex ideas, evoke emotion, and build compelling visual narratives. The market for {keyword} has grown significantly, with a renewed focus on both traditional craftsmanship and digital innovation.",
+    how: "The mechanics of {keyword} involve the deliberate application of technique, spatial awareness, and material understanding. Key factors include proportion, light, form, and the tactile qualities of the chosen medium. Most experts recommend approaching {keyword} with a balance of structured foundational skills and experimental freedom.",
+    facts: [
+      "Mastery of {keyword} fundamentally alters how a creator perceives light, shadow, and negative space.",
+      "The choice of materials profoundly dictates the longevity and archival quality of the finished piece.",
+      "Considered a core pillar of visual communication across both traditional and digital mediums.",
+      "Historical context often heavily influences modern interpretations and stylistic choices."
+    ],
+    faq1: "The best {keyword} seamlessly aligns with your specific creative vision, offering the right balance of control, fluidity, and material quality for your chosen medium.",
+    faq2: "Understanding {keyword} empowers you to elevate basic concepts into profound, gallery-ready artwork. It provides the essential vocabulary needed for high-level visual storytelling."
+  },
   finance: {
     what: "A {keyword} is a foundational financial concept that plays a critical role in strategic capital allocation and wealth preservation. Investors use them to mitigate risk, optimize their portfolios, and ensure long-term stability in volatile markets. The market for {keyword} has grown significantly, with increasing institutional adoption and regulatory clarity driving mainstream interest.",
     how: "The mechanics of {keyword} involve complex interplay between market forces, economic indicators, and investor sentiment. Key factors include prevailing interest rates, inflation expectations, and macroeconomic policy shifts. Most experts recommend approaching {keyword} with a diversified strategy and a long-term perspective.",
