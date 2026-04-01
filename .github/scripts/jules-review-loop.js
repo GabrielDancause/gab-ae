@@ -75,11 +75,15 @@ function closeIssue(number, comment) {
 }
 
 function createIssue(title, body, labels = 'bug,agent:jules') {
+  // Sanitize title for shell safety (strip $, backticks, quotes)
+  const safeTitle = title.replace(/[\$`"\\]/g, '').slice(0, 120);
+  // Write body to temp file to avoid shell escaping issues
+  const tmpFile = '/tmp/gh-issue-body.md';
+  fs.writeFileSync(tmpFile, body);
   const out = execSync(
-    `gh issue create --title ${JSON.stringify(title)} --label "${labels}" --body ${JSON.stringify(body)}`,
+    `gh issue create --title "${safeTitle}" --label "${labels}" --body-file ${tmpFile}`,
     { encoding: 'utf8', timeout: 30000 }
   );
-  // Returns URL like https://github.com/owner/repo/issues/33
   const match = out.match(/issues\/(\d+)/);
   return match ? parseInt(match[1]) : null;
 }
