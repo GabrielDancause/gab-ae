@@ -723,6 +723,15 @@ async function resourcesPage(env) {
     for (const r of results) pageCounts[r.apex_slug] = r.cnt;
   } catch {}
 
+  // Get latest 10 LLM-generated pages
+  let latestPages = [];
+  try {
+    const { results } = await env.DB.prepare(
+      "SELECT slug, title, category, page_type, keyword_volume, created_at FROM pages WHERE status='live' AND engine='llm-haiku' ORDER BY created_at DESC LIMIT 10"
+    ).all();
+    latestPages = results || [];
+  } catch {}
+
   const guidesHtml = APEX_GUIDES.map(g => {
     const count = pageCounts[g.slug] || 0;
     return `
@@ -734,6 +743,28 @@ async function resourcesPage(env) {
       </a>`;
   }).join('');
 
+  const latestHtml = latestPages.length > 0 ? `
+    <div class="mt-12">
+      <h2 class="text-xl font-bold text-white mb-4">Recently Published</h2>
+      <div class="space-y-3">
+        ${latestPages.map(p => {
+          const typeIcons = { educational: '📖', calculator: '🧮', listicle: '📋', comparison: '⚖️' };
+          const icon = typeIcons[p.page_type] || '📄';
+          const date = p.created_at ? new Date(p.created_at + 'Z').toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) : '';
+          const cleanTitle = p.title.replace(' | gab.ae', '');
+          return `
+            <a href="/${p.slug}" class="group flex items-center gap-3 bg-surface border border-surface-border rounded-lg px-4 py-3 hover:border-accent/30 transition-all">
+              <span class="text-lg">${icon}</span>
+              <div class="flex-1 min-w-0">
+                <div class="text-sm font-medium text-white group-hover:text-accent transition-colors truncate">${esc(cleanTitle)}</div>
+                <div class="text-xs text-gray-500">${p.category || ''} · ${p.page_type || ''} · ${date}</div>
+              </div>
+              ${p.keyword_volume ? `<span class="text-xs text-gray-600">${p.keyword_volume.toLocaleString()} vol</span>` : ''}
+            </a>`;
+        }).join('')}
+      </div>
+    </div>` : '';
+
   const body = `
     <div class="max-w-4xl mx-auto">
       <h1 class="text-3xl font-black text-white mb-2">Resources</h1>
@@ -741,6 +772,7 @@ async function resourcesPage(env) {
       <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
         ${guidesHtml}
       </div>
+      ${latestHtml}
     </div>`;
 
   const html = layout({
