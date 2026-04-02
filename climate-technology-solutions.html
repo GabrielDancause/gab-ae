@@ -1,0 +1,852 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Climate Technology Solutions - ClimaTech Guide</title>
+    <meta name="description" content="Comprehensive guide to climate technology solutions, carbon capture, renewable energy, green finance, sustainability tech, and climate adaptation strategies.">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            line-height: 1.6;
+            color: #e0e0e0;
+            background: #0a0a0a;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+        
+        header {
+            background: #111;
+            border-bottom: 1px solid #333;
+            padding: 2rem 0;
+        }
+        
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+        
+        .logo {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #fff;
+        }
+        
+        .tagline {
+            color: #888;
+            font-size: 0.9rem;
+        }
+        
+        .hero {
+            background: linear-gradient(135deg, #1a1a1a 0%, #059669 100%);
+            padding: 4rem 0;
+            text-align: center;
+        }
+        
+        .hero h1 {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            color: #fff;
+            font-weight: 700;
+        }
+        
+        .hero p {
+            font-size: 1.25rem;
+            color: #ccc;
+            max-width: 800px;
+            margin: 0 auto 2rem;
+        }
+        
+        .section {
+            padding: 4rem 0;
+        }
+        
+        .section h2 {
+            font-size: 2.5rem;
+            margin-bottom: 2rem;
+            color: #fff;
+            text-align: center;
+        }
+        
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-top: 2rem;
+        }
+        
+        .card {
+            background: #1a1a1a;
+            border: 1px solid #333;
+            border-radius: 8px;
+            padding: 2rem;
+            transition: transform 0.2s, border-color 0.2s;
+        }
+        
+        .card:hover {
+            transform: translateY(-5px);
+            border-color: #666;
+        }
+        
+        .card h3 {
+            color: #fff;
+            margin-bottom: 1rem;
+            font-size: 1.5rem;
+        }
+        
+        .card p {
+            color: #ccc;
+            margin-bottom: 1rem;
+        }
+        
+        .card ul {
+            color: #aaa;
+            padding-left: 1.5rem;
+        }
+        
+        .card ul li {
+            margin-bottom: 0.5rem;
+        }
+        
+        .highlight {
+            background: #2a1810;
+            border: 1px solid #8B4513;
+            border-radius: 8px;
+            padding: 2rem;
+            margin: 2rem 0;
+        }
+        
+        .highlight h3 {
+            color: #DEB887;
+            margin-bottom: 1rem;
+        }
+        
+        .highlight p {
+            color: #ccc;
+        }
+        
+        .two-column {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 3rem;
+            margin: 2rem 0;
+        }
+        
+        .comparison-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 2rem 0;
+            background: #1a1a1a;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+        
+        .comparison-table th,
+        .comparison-table td {
+            padding: 1rem;
+            text-align: left;
+            border-bottom: 1px solid #333;
+        }
+        
+        .comparison-table th {
+            background: #2a2a2a;
+            color: #fff;
+            font-weight: 600;
+        }
+        
+        .comparison-table td {
+            color: #ccc;
+        }
+        
+        .pros-cons {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+        }
+        
+        .pros, .cons {
+            background: #1a1a1a;
+            border-radius: 8px;
+            padding: 1.5rem;
+        }
+        
+        .pros {
+            border-left: 4px solid #4CAF50;
+        }
+        
+        .cons {
+            border-left: 4px solid #F44336;
+        }
+        
+        .pros h4 {
+            color: #4CAF50;
+            margin-bottom: 1rem;
+        }
+        
+        .cons h4 {
+            color: #F44336;
+            margin-bottom: 1rem;
+        }
+        
+        .cta {
+            background: #2a1810;
+            padding: 3rem 0;
+            text-align: center;
+            margin: 4rem 0;
+            border-radius: 12px;
+        }
+        
+        .cta h2 {
+            margin-bottom: 1rem;
+            color: #DEB887;
+        }
+        
+        .cta p {
+            margin-bottom: 2rem;
+            color: #ccc;
+            font-size: 1.1rem;
+        }
+        
+        .btn {
+            display: inline-block;
+            padding: 12px 30px;
+            background: #8B4513;
+            color: white;
+            text-decoration: none;
+            border-radius: 6px;
+            font-weight: 600;
+            transition: background 0.3s;
+        }
+        
+        .btn:hover {
+            background: #A0522D;
+        }
+        
+        footer {
+            background: #111;
+            border-top: 1px solid #333;
+            padding: 2rem 0;
+            text-align: center;
+        }
+        
+        footer p {
+            color: #888;
+        }
+        
+        @media (max-width: 768px) {
+            .hero h1 {
+                font-size: 2rem;
+            }
+            
+            .two-column {
+                grid-template-columns: 1fr;
+                gap: 2rem;
+            }
+            
+            .pros-cons {
+                grid-template-columns: 1fr;
+            }
+            
+            .header-content {
+                text-align: center;
+            }
+        }
+        
+        .feature-highlight {
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            color: white;
+            padding: 2rem;
+            border-radius: 8px;
+            margin: 2rem 0;
+        }
+        
+        .solutions-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 2rem;
+            margin: 3rem 0;
+        }
+        
+        .solution-card {
+            background: #1a1a1a;
+            border: 1px solid #333;
+            border-radius: 8px;
+            padding: 2rem;
+            text-align: center;
+            transition: transform 0.2s;
+        }
+        
+        .solution-card:hover {
+            transform: translateY(-3px);
+            border-color: #666;
+        }
+        
+        .solution-card .icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 2rem;
+            margin: 3rem 0;
+        }
+        
+        .stat-card {
+            background: #1a1a1a;
+            border: 1px solid #333;
+            border-radius: 8px;
+            padding: 2rem;
+            text-align: center;
+        }
+        
+        .stat-card .number {
+            font-size: 3rem;
+            color: #059669;
+            font-weight: bold;
+            display: block;
+        }
+        
+        .stat-card .label {
+            color: #ccc;
+            margin-top: 0.5rem;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <div class="header-content">
+                <div class="logo">GAB</div>
+                <div class="tagline">Climate Technology Guide</div>
+            </div>
+        </div>
+    </header>
+
+    <section class="hero">
+        <div class="container">
+            <h1>Climate Technology Solutions</h1>
+            <p>Explore cutting-edge climate technologies driving the transition to a sustainable future through carbon capture, renewable energy, and innovative climate adaptation solutions.</p>
+        </div>
+    </section>
+
+    <section class="section">
+        <div class="container">
+            <h2>Climate Tech Market Overview</h2>
+            
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <span class="number">$1.4T</span>
+                    <div class="label">Climate Tech Investment Needed</div>
+                </div>
+                <div class="stat-card">
+                    <span class="number">$165B</span>
+                    <div class="label">Climate Tech Funding (2024)</div>
+                </div>
+                <div class="stat-card">
+                    <span class="number">50Gt</span>
+                    <div class="label">CO2 Reduction Target by 2030</div>
+                </div>
+                <div class="stat-card">
+                    <span class="number">1.5°C</span>
+                    <div class="label">Global Warming Limit Target</div>
+                </div>
+            </div>
+
+            <div class="highlight">
+                <h3>The Climate Tech Revolution</h3>
+                <p>Climate technology is critical for achieving net-zero emissions by 2050. From carbon capture and renewable energy to sustainable agriculture and climate adaptation, innovative technologies are creating massive market opportunities while addressing the climate crisis.</p>
+            </div>
+        </div>
+    </section>
+
+    <section class="section">
+        <div class="container">
+            <h2>Core Climate Technology Areas</h2>
+            
+            <div class="grid">
+                <div class="card">
+                    <h3>Carbon Capture & Storage</h3>
+                    <p>Technologies removing CO2 from atmosphere and industrial processes for permanent storage or utilization.</p>
+                    <ul>
+                        <li>Direct air capture (DAC)</li>
+                        <li>Point source capture</li>
+                        <li>Carbon utilization and storage</li>
+                        <li>Bio-energy with carbon capture</li>
+                        <li>Enhanced weathering</li>
+                    </ul>
+                </div>
+                
+                <div class="card">
+                    <h3>Renewable Energy Systems</h3>
+                    <p>Advanced clean energy generation, storage, and grid integration technologies.</p>
+                    <ul>
+                        <li>Next-gen solar and wind</li>
+                        <li>Energy storage solutions</li>
+                        <li>Smart grid technologies</li>
+                        <li>Green hydrogen production</li>
+                        <li>Floating offshore wind</li>
+                    </ul>
+                </div>
+                
+                <div class="card">
+                    <h3>Sustainable Transportation</h3>
+                    <p>Clean mobility solutions reducing emissions from the transportation sector.</p>
+                    <ul>
+                        <li>Electric vehicle infrastructure</li>
+                        <li>Sustainable aviation fuels</li>
+                        <li>Maritime decarbonization</li>
+                        <li>Autonomous electric fleets</li>
+                        <li>Micro-mobility solutions</li>
+                    </ul>
+                </div>
+                
+                <div class="card">
+                    <h3>Green Buildings & Industry</h3>
+                    <p>Technologies reducing emissions from buildings, manufacturing, and industrial processes.</p>
+                    <ul>
+                        <li>Building energy management</li>
+                        <li>Heat pump systems</li>
+                        <li>Industrial electrification</li>
+                        <li>Sustainable materials</li>
+                        <li>Process optimization</li>
+                    </ul>
+                </div>
+                
+                <div class="card">
+                    <h3>Climate Adaptation</h3>
+                    <p>Technologies helping communities and ecosystems adapt to climate change impacts.</p>
+                    <ul>
+                        <li>Flood management systems</li>
+                        <li>Drought-resistant agriculture</li>
+                        <li>Climate monitoring & prediction</li>
+                        <li>Ecosystem restoration</li>
+                        <li>Resilient infrastructure</li>
+                    </ul>
+                </div>
+                
+                <div class="card">
+                    <h3>Circular Economy Technologies</h3>
+                    <p>Solutions enabling waste reduction, recycling, and resource efficiency.</p>
+                    <ul>
+                        <li>Advanced recycling processes</li>
+                        <li>Waste-to-energy systems</li>
+                        <li>Biomaterials and bioplastics</li>
+                        <li>Resource tracking systems</li>
+                        <li>Product lifecycle optimization</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="section">
+        <div class="container">
+            <h2>Leading Climate Tech Solutions</h2>
+            
+            <div class="solutions-grid">
+                <div class="solution-card">
+                    <div class="icon">🌪️</div>
+                    <h3>Direct Air Capture</h3>
+                    <p>Climeworks and Carbon Engineering removing CO2 directly from ambient air with renewable energy.</p>
+                </div>
+                
+                <div class="solution-card">
+                    <div class="icon">🔋</div>
+                    <h3>Grid-Scale Storage</h3>
+                    <p>Tesla Megapack, Form Energy, and others enabling renewable energy grid integration.</p>
+                </div>
+                
+                <div class="solution-card">
+                    <div class="icon">🌿</div>
+                    <h3>Green Hydrogen</h3>
+                    <p>Electrolyzer technology from Nel, ITM Power producing clean hydrogen for industry and transport.</p>
+                </div>
+                
+                <div class="solution-card">
+                    <div class="icon">🏭</div>
+                    <h3>Industrial Decarbonization</h3>
+                    <p>Boston Metal, Heliogen using innovative processes to decarbonize steel, cement, and chemicals.</p>
+                </div>
+                
+                <div class="solution-card">
+                    <div class="icon">🚗</div>
+                    <h3>Electric Mobility</h3>
+                    <p>ChargePoint, EVgo expanding EV charging infrastructure, enabling transportation electrification.</p>
+                </div>
+                
+                <div class="solution-card">
+                    <div class="icon">📊</div>
+                    <h3>Climate Analytics</h3>
+                    <p>Climate AI, Jupiter Intelligence providing climate risk assessment and prediction tools.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="section">
+        <div class="container">
+            <h2>Investment & Financing</h2>
+            
+            <div class="two-column">
+                <div>
+                    <h3>Funding Sources</h3>
+                    <ul style="color: #ccc; padding-left: 1.5rem;">
+                        <li><strong>Venture Capital:</strong> Breakthrough Energy, Lowercarbon Capital</li>
+                        <li><strong>Corporate Investment:</strong> Amazon Climate Pledge Fund</li>
+                        <li><strong>Government Programs:</strong> DOE, EU Green Deal funding</li>
+                        <li><strong>Green Bonds:</strong> Debt financing for climate projects</li>
+                        <li><strong>Carbon Markets:</strong> Revenue from carbon credits</li>
+                        <li><strong>Development Banks:</strong> World Bank, regional development funds</li>
+                    </ul>
+                </div>
+                
+                <div>
+                    <h3>Investment Strategies</h3>
+                    <ul style="color: #ccc; padding-left: 1.5rem;">
+                        <li><strong>Early-Stage Deep Tech:</strong> High-risk, high-reward innovations</li>
+                        <li><strong>Scale-up Growth:</strong> Proven technologies reaching commercialization</li>
+                        <li><strong>Infrastructure Deployment:</strong> Large-scale project development</li>
+                        <li><strong>ESG Integration:</strong> Climate considerations in all investments</li>
+                        <li><strong>Blended Finance:</strong> Public-private partnership models</li>
+                        <li><strong>Impact Measurement:</strong> Tracking climate and financial returns</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="feature-highlight">
+                <h3>Market Opportunity</h3>
+                <p>Climate tech represents a $130 trillion market opportunity through 2050. Key sectors include renewable energy ($65T), sustainable transport ($25T), energy efficiency ($20T), and carbon management ($15T). Early-stage technologies showing 30-50% annual growth rates.</p>
+            </div>
+        </div>
+    </section>
+
+    <section class="section">
+        <div class="container">
+            <h2>Technology Readiness Comparison</h2>
+            
+            <table class="comparison-table">
+                <thead>
+                    <tr>
+                        <th>Technology</th>
+                        <th>Maturity Level</th>
+                        <th>Commercial Scale</th>
+                        <th>Cost Competitiveness</th>
+                        <th>Deployment Timeline</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Solar & Wind</td>
+                        <td>Commercial</td>
+                        <td>Large Scale</td>
+                        <td>Cost Competitive</td>
+                        <td>Now</td>
+                    </tr>
+                    <tr>
+                        <td>Battery Storage</td>
+                        <td>Commercial</td>
+                        <td>Rapidly Scaling</td>
+                        <td>Competitive</td>
+                        <td>Now</td>
+                    </tr>
+                    <tr>
+                        <td>Green Hydrogen</td>
+                        <td>Early Commercial</td>
+                        <td>Pilot/Demo</td>
+                        <td>2-3x Premium</td>
+                        <td>2025-2030</td>
+                    </tr>
+                    <tr>
+                        <td>Direct Air Capture</td>
+                        <td>Demonstration</td>
+                        <td>Small Scale</td>
+                        <td>10x Premium</td>
+                        <td>2030-2035</td>
+                    </tr>
+                    <tr>
+                        <td>Sustainable Aviation Fuel</td>
+                        <td>Early Commercial</td>
+                        <td>Limited</td>
+                        <td>3-4x Premium</td>
+                        <td>2025-2030</td>
+                    </tr>
+                    <tr>
+                        <td>Advanced Nuclear</td>
+                        <td>Development</td>
+                        <td>Prototype</td>
+                        <td>Unknown</td>
+                        <td>2030+</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </section>
+
+    <section class="section">
+        <div class="container">
+            <h2>Implementation Strategies</h2>
+            
+            <div class="grid">
+                <div class="card">
+                    <h3>Technology Development</h3>
+                    <p>R&D strategies for advancing climate technology solutions from lab to market.</p>
+                    <ul>
+                        <li>University research partnerships</li>
+                        <li>Government lab collaborations</li>
+                        <li>Pilot project development</li>
+                        <li>IP strategy and protection</li>
+                        <li>Technology validation and testing</li>
+                    </ul>
+                </div>
+                
+                <div class="card">
+                    <h3>Market Entry</h3>
+                    <p>Commercial strategies for bringing climate technologies to market successfully.</p>
+                    <ul>
+                        <li>Customer discovery and validation</li>
+                        <li>Partnership and distribution channels</li>
+                        <li>Regulatory compliance strategy</li>
+                        <li>Competitive positioning</li>
+                        <li>Go-to-market execution</li>
+                    </ul>
+                </div>
+                
+                <div class="card">
+                    <h3>Scaling Operations</h3>
+                    <p>Growth strategies for scaling climate tech solutions globally and sustainably.</p>
+                    <ul>
+                        <li>Manufacturing and supply chain</li>
+                        <li>Quality assurance systems</li>
+                        <li>International expansion</li>
+                        <li>Talent acquisition and retention</li>
+                        <li>Financial management and reporting</li>
+                    </ul>
+                </div>
+                
+                <div class="card">
+                    <h3>Impact Measurement</h3>
+                    <p>Frameworks for measuring and reporting climate and business impact.</p>
+                    <ul>
+                        <li>Carbon footprint assessment</li>
+                        <li>Life cycle analysis</li>
+                        <li>ESG reporting standards</li>
+                        <li>Third-party verification</li>
+                        <li>Continuous monitoring systems</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="section">
+        <div class="container">
+            <h2>Policy & Regulation</h2>
+            
+            <div class="two-column">
+                <div>
+                    <h3>Supportive Policies</h3>
+                    <ul style="color: #ccc; padding-left: 1.5rem;">
+                        <li><strong>Carbon Pricing:</strong> Cap-and-trade, carbon tax systems</li>
+                        <li><strong>Clean Energy Standards:</strong> Renewable portfolio standards</li>
+                        <li><strong>R&D Investment:</strong> Government research funding programs</li>
+                        <li><strong>Tax Incentives:</strong> ITC, PTC for clean energy projects</li>
+                        <li><strong>Green Procurement:</strong> Government purchasing mandates</li>
+                        <li><strong>Infrastructure Investment:</strong> Grid modernization, EV charging</li>
+                    </ul>
+                </div>
+                
+                <div>
+                    <h3>Regulatory Considerations</h3>
+                    <ul style="color: #ccc; padding-left: 1.5rem;">
+                        <li><strong>Environmental Permits:</strong> Project approval processes</li>
+                        <li><strong>Safety Standards:</strong> Technology-specific regulations</li>
+                        <li><strong>Grid Interconnection:</strong> Utility integration requirements</li>
+                        <li><strong>International Trade:</strong> Tariffs, export controls</li>
+                        <li><strong>Financial Regulation:</strong> Green taxonomy, disclosure rules</li>
+                        <li><strong>Innovation Sandboxes:</strong> Regulatory flexibility for testing</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="section">
+        <div class="container">
+            <h2>Opportunities & Challenges</h2>
+            
+            <div class="pros-cons">
+                <div class="pros">
+                    <h4>✅ Opportunities</h4>
+                    <ul style="color: #ccc; padding-left: 1.5rem; margin-top: 1rem;">
+                        <li>$130T+ market opportunity by 2050</li>
+                        <li>Strong policy tailwinds globally</li>
+                        <li>Growing corporate climate commitments</li>
+                        <li>Decreasing technology costs</li>
+                        <li>Increasing climate urgency</li>
+                        <li>Access to green capital</li>
+                        <li>Job creation potential</li>
+                    </ul>
+                </div>
+                
+                <div class="cons">
+                    <h4>⚠️ Challenges</h4>
+                    <ul style="color: #ccc; padding-left: 1.5rem; margin-top: 1rem;">
+                        <li>High capital requirements</li>
+                        <li>Long development timelines</li>
+                        <li>Regulatory uncertainty</li>
+                        <li>Technology risk and unproven scale</li>
+                        <li>Incumbency resistance</li>
+                        <li>Infrastructure dependencies</li>
+                        <li>Skills and talent gaps</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="highlight" style="margin-top: 3rem;">
+                <h3>Success Factors</h3>
+                <p>Climate tech success requires deep technical expertise, strong partnerships across the value chain, patient capital for long development cycles, regulatory navigation capabilities, and clear impact measurement frameworks to demonstrate both climate and financial returns.</p>
+            </div>
+        </div>
+    </section>
+
+    <div class="cta">
+        <div class="container">
+            <h2>Ready to Build Climate Solutions?</h2>
+            <p>Explore the transformative world of climate technology and discover opportunities to create sustainable impact while building profitable ventures.</p>
+            <a href="https://gab.ae" class="btn">Explore More Climate Tech Resources</a>
+        </div>
+    </div>
+
+    <footer>
+        <div class="container">
+            <p>&copy; 2026 GAB Ventures. Climate Technology Solutions Guide.</p>
+        </div>
+    </footer>
+
+    <script>
+        // Add smooth scrolling for anchor links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                document.querySelector(this.getAttribute('href')).scrollIntoView({
+                    behavior: 'smooth'
+                });
+            });
+        });
+
+        // Add intersection observer for animations
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -50px 0px'
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.style.opacity = '1';
+                    entry.target.style.transform = 'translateY(0)';
+                }
+            });
+        }, observerOptions);
+
+        // Observe all cards and sections
+        document.querySelectorAll('.card, .solution-card, .stat-card').forEach(el => {
+            el.style.opacity = '0';
+            el.style.transform = 'translateY(20px)';
+            el.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
+            observer.observe(el);
+        });
+
+        // Interactive solution showcase
+        document.querySelectorAll('.solution-card').forEach(card => {
+            card.addEventListener('click', function() {
+                this.style.transform = 'translateY(-5px) scale(1.02)';
+                setTimeout(() => {
+                    this.style.transform = 'translateY(-3px)';
+                }, 200);
+            });
+        });
+
+        // Stats counter animation
+        function animateCounter(element, target, suffix = '', duration = 2000) {
+            const start = 0;
+            const increment = target / (duration / 16);
+            let current = start;
+            
+            const timer = setInterval(() => {
+                current += increment;
+                if (current >= target) {
+                    current = target;
+                    clearInterval(timer);
+                }
+                
+                if (suffix === 'T') {
+                    element.textContent = '$' + current.toFixed(1) + 'T';
+                } else if (suffix === 'B') {
+                    element.textContent = '$' + Math.floor(current) + 'B';
+                } else if (suffix === 'Gt') {
+                    element.textContent = Math.floor(current) + 'Gt';
+                } else if (suffix === '°C') {
+                    element.textContent = current.toFixed(1) + '°C';
+                } else {
+                    element.textContent = Math.floor(current) + suffix;
+                }
+            }, 16);
+        }
+
+        // Trigger counter animations when stats come into view
+        const statsObserver = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting && !entry.target.classList.contains('animated')) {
+                    entry.target.classList.add('animated');
+                    const number = entry.target.querySelector('.number');
+                    const text = number.textContent;
+                    
+                    if (text.includes('$1.4T')) animateCounter(number, 1.4, 'T', 2000);
+                    else if (text.includes('$165B')) animateCounter(number, 165, 'B', 2000);
+                    else if (text.includes('50Gt')) animateCounter(number, 50, 'Gt', 2000);
+                    else if (text.includes('1.5°C')) animateCounter(number, 1.5, '°C', 2000);
+                }
+            });
+        }, { threshold: 0.5 });
+
+        document.querySelectorAll('.stat-card').forEach(card => {
+            statsObserver.observe(card);
+        });
+
+        // Interactive table highlighting
+        document.querySelectorAll('.comparison-table tbody tr').forEach(row => {
+            row.addEventListener('mouseenter', function() {
+                this.style.backgroundColor = '#2a2a2a';
+            });
+            
+            row.addEventListener('mouseleave', function() {
+                this.style.backgroundColor = 'transparent';
+            });
+        });
+
+        // Climate solution interaction tracking
+        document.querySelectorAll('.solution-card').forEach((card, index) => {
+            card.addEventListener('click', function() {
+                const solutions = ['DAC', 'Storage', 'Hydrogen', 'Industrial', 'Mobility', 'Analytics'];
+                console.log(`Exploring ${solutions[index]} climate solution`);
+            });
+        });
+    </script>
+</body>
+</html>

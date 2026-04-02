@@ -6,7 +6,7 @@ import { newsAutopilot } from './news-autopilot.js';
 import { seedPages } from './seed-pages.js';
 import { upgradeTrigger } from './upgrade-trigger.js';
 import { llmNews } from './llm-news.js';
-import { llmSeedPages } from './llm-seed-pages.js';
+import { llmSeedPages, detectIntent } from './llm-seed-pages.js';
 
 const ENGINES = {
   calculator: renderCalculator,
@@ -156,18 +156,22 @@ export default {
           body: JSON.stringify({
             model: 'claude-haiku-4-5-20251001',
             max_tokens: 4096,
-            messages: [{ role: 'user', content: `Create a comprehensive, expert-quality page about "${keyword}".
+            messages: [{ role: 'user', content: (() => {
+              const intent = detectIntent(keyword);
+              const intentInstructions = {
+                listicle: `Create a TOP LIST about "${keyword}". Include 7-10 items ranked with name, key features, pros/cons, and a one-line verdict. Start with a quick summary of the top 3 picks. Add a "How We Evaluated" section and 3-5 FAQs.`,
+                comparison: `Create a SIDE-BY-SIDE COMPARISON for "${keyword}". Compare 2-4 options across multiple criteria. Lead with a summary verdict (who should pick what). Give each option its own section. End with 3-5 FAQs.`,
+                tutorial: `Create a STEP-BY-STEP TUTORIAL for "${keyword}". Start with what you'll learn and why. Use numbered steps, each in its own section. Include common mistakes to avoid, prerequisites if any, and 3-5 FAQs.`,
+                calculator: `Create a DATA-DRIVEN REFERENCE page about "${keyword}". Explain what it measures and why it matters. Include reference tables with common values/ranges/benchmarks, a manual calculation guide, key factors, and 3-5 FAQs. No JavaScript or interactive elements.`,
+                definition: `Create a clear EXPLAINER page about "${keyword}". Start with a plain-English definition. Cover why it matters, how it works with examples, related concepts, common misconceptions, and 3-5 FAQs.`,
+                review: `Create an HONEST REVIEW of "${keyword}". Lead with a verdict summary (who it's for, key takeaway). Cover what it does well, what it does poorly, who should/shouldn't use it, 2-3 alternatives, and 3-5 FAQs.`,
+                list_query: `Create a COMPREHENSIVE LIST for "${keyword}". Brief intro on scope and selection criteria. Each item gets a short description. Organize by subcategory if applicable. Summarize key patterns and add 3-5 FAQs.`,
+                educational: `Create a comprehensive EDUCATIONAL guide about "${keyword}". Cover what it is, how it works, key facts/data, practical tips, and 3-5 FAQs that real people search for.`,
+              };
+              return `You are a content writer for gab.ae. ${intentInstructions[intent] || intentInstructions.educational}
 
-Return ONLY raw HTML using these CSS classes (no markdown, no backticks):
+Return ONLY raw HTML (no markdown fences, no explanation). Use these CSS classes:
 
-The page should include:
-- Detailed explanation of what "${keyword}" is
-- Key facts, data points, or comparisons
-- A reference table if applicable
-- Practical recommendations
-- 3-5 FAQs that real people search for
-
-Use this structure:
 <style>
 .seed-page { max-width: 780px; margin: 0 auto; padding: 1.5rem 1rem; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; color: #e2e8f0; }
 .seed-page h1 { font-size: 1.75rem; font-weight: 800; color: #fff; margin-bottom: 0.5rem; line-height: 1.2; }
@@ -190,7 +194,8 @@ Rules:
 - Do NOT include JavaScript, script tags, or interactive elements
 - Do NOT use HTML tables — use bullet lists, numbered lists, or card-style sections instead
 - Minimum 2000 characters of content
-- null over fake data` }],
+- null over fake data`;
+            })() }],
           }),
         });
         const aiData = await resp.json();
@@ -204,8 +209,11 @@ Rules:
         // Fix wrong dates from Haiku (training data cutoff)
         const currentDate = new Date().toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
         html = html.replace(/(?:Updated|Last updated:?)\s+(?:January|February|March|April|May|June|July|August|September|October|November|December)\s+20\d{2}/gi, 'Updated ' + currentDate);
-        // Strip stray document tags Haiku might include
+        // Strip stray document tags Haiku might include — but preserve <style> blocks
+        const genStyles = [];
+        html.replace(/<style[^>]*>[\s\S]*?<\/style>/gi, m => { genStyles.push(m); return ''; });
         html = html.replace(/<!DOCTYPE[^>]*>/gi, '').replace(/<\/?html[^>]*>/gi, '').replace(/<head>[\s\S]*?<\/head>/gi, '').replace(/<\/?body[^>]*>/gi, '').replace(/<title>[\s\S]*?<\/title>/gi, '').replace(/<meta[^>]*>/gi, '');
+        if (genStyles.length) html = genStyles.join('\n') + '\n' + html;
 
         if (!html.includes('seed-page') || html.length < 500) {
           return new Response(JSON.stringify({ error: 'Generated content too short or invalid' }), { status: 500, headers: { 'content-type': 'application/json' } });
@@ -358,7 +366,9 @@ Rules:
 
       if (page.html) {
         // Full HTML page stored in D1 — serve directly in layout shell
-        // Strip any stray HTML document tags that Haiku might include
+        // Extract <style> blocks before stripping <head> so CSS is preserved
+        const styleBlocks = [];
+        page.html.replace(/<style[^>]*>[\s\S]*?<\/style>/gi, m => { styleBlocks.push(m); return ''; });
         body = page.html
           .replace(/<!DOCTYPE[^>]*>/gi, '')
           .replace(/<\/?html[^>]*>/gi, '')
@@ -366,6 +376,7 @@ Rules:
           .replace(/<\/?body[^>]*>/gi, '')
           .replace(/<title>[\s\S]*?<\/title>/gi, '')
           .replace(/<meta[^>]*>/gi, '');
+        if (styleBlocks.length) body = styleBlocks.join('\n') + '\n' + body;
       } else {
         // Legacy config-driven engine
         const engine = ENGINES[page.engine];
@@ -532,7 +543,7 @@ async function homepage(env) {
       btn.disabled = true;
       btn.textContent = 'Generating...';
       status.classList.remove('hidden');
-      status.textContent = '\u23f3 Generating answer \u2014 this takes about 10 seconds...';
+      status.textContent = '\u23f3 Generating answer \u2014 this takes about 30 seconds...';
       status.className = 'mt-3 text-sm text-accent text-center';
 
       try {
@@ -584,7 +595,7 @@ async function newsIndex(env, category = null) {
     articles = result?.results || [];
     const catResult = await env.DB.prepare("SELECT category, COUNT(*) as cnt FROM news WHERE status='live' GROUP BY category ORDER BY cnt DESC").all();
     categories = catResult?.results || [];
-  } catch (e) {}
+  } catch (e) { console.log('❌ newsIndex error:', e.message, e.stack); }
 
   const catIcons = { us: '🇺🇸', world: '🌍', politics: '🏛️', business: '💼', health: '🏥', entertainment: '🎬', travel: '✈️', sports: '⚽', science: '🔬', climate: '🌱', tech: '💻' };
 

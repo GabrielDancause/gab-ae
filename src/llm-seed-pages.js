@@ -45,6 +45,37 @@ const APEX_NAMES = {
   'real-estate-hospitality-guide-2026': 'Real Estate & Hospitality',
 };
 
+// ─── Intent Detection ───
+// Rule-based classifier: keyword patterns → page type
+// Falls back to 'educational' for ambiguous queries
+export function detectIntent(keyword) {
+  const kw = keyword.toLowerCase();
+
+  // Listicle: "best X", "top X", "worst X", "X alternatives", "cheapest X"
+  if (/\b(best|top|worst|cheapest|fastest|most popular|alternatives to|similar to)\b/.test(kw)) return 'listicle';
+
+  // Comparison: "X vs Y", "X versus Y", "X or Y", "X compared to Y", "difference between"
+  if (/\b(vs\.?|versus|compared to|comparison|difference between)\b/.test(kw) || /\b\w+\s+or\s+\w+\b/.test(kw) && kw.length < 40) return 'comparison';
+
+  // Tutorial/how-to: "how to X", "guide to X", "step by step", "tutorial"
+  if (/\b(how to|how do|step by step|tutorial|beginner'?s? guide|walkthrough|setup guide)\b/.test(kw)) return 'tutorial';
+
+  // Calculator/data: "calculator", "formula", "convert", "average", "rate", "cost of"
+  if (/\b(calculator|formula|equation|convert|conversion|average|median|rate|cost of|price of|salary|income|roi|yield)\b/.test(kw)) return 'calculator';
+
+  // Definition/what-is: "what is", "what are", "meaning of", "definition"
+  if (/\b(what is|what are|what does|meaning of|definition of|explain)\b/.test(kw)) return 'definition';
+
+  // Review: "review", "worth it", "pros and cons", "honest review"
+  if (/\b(review|worth it|pros and cons|is it good|should i buy|hands on)\b/.test(kw)) return 'review';
+
+  // List query: "list of", "types of", "examples of", "all X"
+  if (/\b(list of|types of|examples of|kinds of|categories of|all the)\b/.test(kw)) return 'list_query';
+
+  // Default
+  return 'educational';
+}
+
 // ─── Call Haiku ───
 async function callHaiku(apiKey, prompt) {
   const resp = await fetch('https://api.anthropic.com/v1/messages', {
@@ -111,7 +142,8 @@ export async function llmSeedPages(env) {
   const apexSlug = SITE_TO_APEX[targetSite] || 'software-ai-infrastructure-guide-2026';
   const apexName = APEX_NAMES[apexSlug] || 'General';
   const category = SITE_TO_CATEGORY[targetSite] || 'tools';
-  const pageType = kw.engine || 'educational';
+  // Auto-detect intent from keyword, with manual override from kw.engine
+  const pageType = kw.engine || detectIntent(kw.keyword);
 
   console.log(`📝 Generating: "${kw.keyword}" (${pageType}, ${category}, vol:${kw.volume}, kd:${kw.kd}, cpc:$${kw.cpc})`);
 
@@ -133,18 +165,50 @@ export async function llmSeedPages(env) {
 - A comparison table if relevant (e.g. top options, plans, products)
 - 3-5 FAQs that real people search for`,
 
-    listicle: `Create a TOP 10 LISTICLE. Include:
-- 10 items with name, key features, pros/cons, and a one-line verdict
-- A quick comparison table at the top
-- A "How We Picked" methodology section
+    listicle: `Create a TOP LIST about "${kw.keyword}". Include:
+- 7-10 items ranked with name, key features, pros/cons, and a one-line verdict
+- A quick summary of the top 3 picks at the very top
+- A "How We Evaluated" methodology section explaining your criteria
+- Each item gets its own seed-section with a clear heading
 - 3-5 FAQs about choosing the right option`,
 
-    comparison: `Create a SIDE-BY-SIDE COMPARISON. Include:
+    comparison: `Create a SIDE-BY-SIDE COMPARISON for "${kw.keyword}". Include:
 - 2-4 options compared across multiple criteria
-- A comparison table with clear winners per category
-- Detailed analysis of each option
-- A verdict: who should pick which option
+- A summary verdict at the top (who should pick what)
+- Detailed analysis of each option in its own section
+- Clear winners per use case (e.g. "Best for beginners", "Best value")
 - 3-5 FAQs about the comparison`,
+
+    tutorial: `Create a STEP-BY-STEP TUTORIAL for "${kw.keyword}". Include:
+- A brief intro explaining what you'll learn and why it matters
+- Numbered steps, each in its own section with clear instructions
+- Common mistakes or pitfalls to avoid at each step
+- A "What You'll Need" section if applicable (tools, prerequisites)
+- Expected outcome / what success looks like
+- 3-5 FAQs about common issues people encounter`,
+
+    definition: `Create a clear EXPLAINER page about "${kw.keyword}". Include:
+- A concise, plain-English definition in the first paragraph
+- Why it matters / real-world relevance
+- How it works in practice with concrete examples
+- Key related concepts and how they connect
+- Common misconceptions
+- 3-5 FAQs people search for about this topic`,
+
+    review: `Create an HONEST REVIEW of "${kw.keyword}". Include:
+- A verdict summary at the top (rating, who it's for, key takeaway)
+- What it does well (with specific examples)
+- What it does poorly or could improve
+- Who should and shouldn't get/use it
+- How it compares to 2-3 alternatives
+- 3-5 FAQs about this product/service`,
+
+    list_query: `Create a COMPREHENSIVE LIST for "${kw.keyword}". Include:
+- A brief intro explaining the scope and how items were selected
+- Each item with a short description and key details
+- Items organized by subcategory or type if applicable
+- A summary section with key patterns or takeaways
+- 3-5 FAQs related to this topic`,
   };
 
   const prompt = `You are a content writer for gab.ae. Create a high-quality ${pageType} page about "${kw.keyword}".

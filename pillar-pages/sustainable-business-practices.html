@@ -1,0 +1,1212 @@
+<style>
+  .sbp-container {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 2rem;
+    color: #e2e8f0;
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    line-height: 1.8;
+  }
+  .sbp-header {
+    text-align: center;
+    margin-bottom: 4rem;
+    padding-top: 3rem;
+  }
+  .gradient-h1 {
+    font-size: clamp(2.2rem, 5vw, 3.5rem);
+    font-weight: 800;
+    background: linear-gradient(135deg, #ffffff 0%, #a5b4fc 50%, #818cf8 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    margin-bottom: 1rem;
+    line-height: 1.15;
+    letter-spacing: -0.02em;
+  }
+  .sbp-subtitle {
+    font-size: 1.2rem;
+    color: #94a3b8;
+    max-width: 750px;
+    margin: 0 auto;
+  }
+  .breadcrumb {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    justify-content: center;
+    margin-bottom: 2rem;
+    font-size: 0.85rem;
+  }
+  .breadcrumb a {
+    color: #818cf8;
+    text-decoration: none;
+  }
+  .breadcrumb a:hover { text-decoration: underline; }
+  .breadcrumb span { color: #475569; }
+  .updated-badge {
+    display: inline-block;
+    background: rgba(129, 140, 248, 0.15);
+    color: #a5b4fc;
+    padding: 0.4rem 1rem;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    margin-bottom: 2rem;
+  }
+  .content-wrapper {
+    display: grid;
+    grid-template-columns: 1fr 280px;
+    gap: 4rem;
+    margin-top: 3rem;
+  }
+  .main-content {
+    min-width: 0;
+  }
+  .sidebar {
+    position: sticky;
+    top: 2rem;
+    height: fit-content;
+    background: #12121a;
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 16px;
+    padding: 1.5rem;
+  }
+  .sidebar h3 {
+    color: #ffffff;
+    font-size: 0.9rem;
+    font-weight: 600;
+    margin: 0 0 1rem 0;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+  .sidebar ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+  .sidebar li {
+    margin: 0;
+  }
+  .sidebar a {
+    display: block;
+    color: #94a3b8;
+    text-decoration: none;
+    padding: 0.5rem 0;
+    border-bottom: 1px solid rgba(255,255,255,0.05);
+    font-size: 0.85rem;
+    transition: color 0.2s;
+  }
+  .sidebar a:hover {
+    color: #a5b4fc;
+  }
+  .section {
+    margin: 4rem 0;
+    scroll-margin-top: 2rem;
+  }
+  .section h2 {
+    color: #ffffff;
+    font-size: 1.8rem;
+    font-weight: 700;
+    margin-bottom: 1.5rem;
+  }
+  .section h3 {
+    color: #e2e8f0;
+    font-size: 1.3rem;
+    font-weight: 600;
+    margin: 2rem 0 1rem 0;
+  }
+  .stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1.5rem;
+    margin: 2rem 0;
+  }
+  .stat-card {
+    background: #12121a;
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 14px;
+    padding: 1.5rem;
+    text-align: center;
+  }
+  .stat-number {
+    font-size: 2.5rem;
+    font-weight: 800;
+    color: #818cf8;
+    display: block;
+    line-height: 1;
+  }
+  .stat-label {
+    color: #94a3b8;
+    font-size: 0.9rem;
+    margin-top: 0.5rem;
+  }
+  .sustainability-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 2rem;
+    margin: 2rem 0;
+  }
+  .sustainability-card {
+    background: #12121a;
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 16px;
+    padding: 2rem;
+    position: relative;
+    overflow: hidden;
+  }
+  .sustainability-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, #818cf8, #a5b4fc);
+  }
+  .sustainability-card h4 {
+    color: #ffffff;
+    font-size: 1.2rem;
+    font-weight: 600;
+    margin-bottom: 1rem;
+  }
+  .sustainability-badge {
+    background: rgba(129, 140, 248, 0.15);
+    color: #a5b4fc;
+    padding: 0.3rem 0.8rem;
+    border-radius: 8px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    display: inline-block;
+    margin-bottom: 1rem;
+  }
+  .sustainability-badge.environmental { background: rgba(74, 222, 128, 0.15); color: #4ade80; }
+  .sustainability-badge.social { background: rgba(251, 191, 36, 0.15); color: #fbbf24; }
+  .sustainability-badge.governance { background: rgba(248, 113, 113, 0.15); color: #f87171; }
+  .sustainability-badge.circular { background: rgba(147, 51, 234, 0.15); color: #9333ea; }
+  .sustainability-badge.climate { background: rgba(6, 182, 212, 0.15); color: #06b6d4; }
+  .callout {
+    background: rgba(34, 211, 238, 0.1);
+    border-left: 4px solid #22d3ee;
+    border-radius: 0 8px 8px 0;
+    padding: 1.5rem;
+    margin: 2rem 0;
+  }
+  .callout.warning {
+    background: rgba(251, 191, 36, 0.1);
+    border-left-color: #fbbf24;
+  }
+  .callout.success {
+    background: rgba(74, 222, 128, 0.1);
+    border-left-color: #4ade80;
+  }
+  .callout.danger {
+    background: rgba(239, 68, 68, 0.1);
+    border-left-color: #ef4444;
+  }
+  .callout h4 {
+    color: #ffffff;
+    font-size: 1rem;
+    font-weight: 600;
+    margin: 0 0 0.5rem 0;
+  }
+  .comparison-table {
+    width: 100%;
+    background: #12121a;
+    border-radius: 16px;
+    overflow: hidden;
+    border: 1px solid rgba(255,255,255,0.08);
+    margin: 2rem 0;
+  }
+  .comparison-table th {
+    background: #1e293b;
+    color: #ffffff;
+    padding: 1rem;
+    text-align: left;
+    font-weight: 600;
+  }
+  .comparison-table td {
+    padding: 1rem;
+    border-bottom: 1px solid rgba(255,255,255,0.05);
+    color: #e2e8f0;
+  }
+  .comparison-table tr:last-child td {
+    border-bottom: none;
+  }
+  .tier-high { color: #4ade80; }
+  .tier-medium { color: #fbbf24; }
+  .tier-low { color: #f87171; }
+  .maturity-calculator {
+    background: #12121a;
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 16px;
+    padding: 2rem;
+    margin: 3rem 0;
+  }
+  .maturity-calculator h3 {
+    color: #ffffff;
+    font-size: 1.3rem;
+    font-weight: 600;
+    margin-bottom: 1.5rem;
+    text-align: center;
+  }
+  .calc-inputs {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1rem;
+    margin-bottom: 2rem;
+  }
+  .calc-input {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+  .calc-input label {
+    color: #94a3b8;
+    font-size: 0.85rem;
+    font-weight: 500;
+  }
+  .calc-input input, .calc-input select {
+    background: #1e293b;
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 8px;
+    padding: 0.75rem;
+    color: #e2e8f0;
+    font-size: 0.9rem;
+  }
+  .calc-input input:focus, .calc-input select:focus {
+    outline: none;
+    border-color: #818cf8;
+  }
+  .calc-button {
+    background: #818cf8;
+    color: #ffffff;
+    border: none;
+    border-radius: 8px;
+    padding: 0.75rem 2rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s;
+    width: 100%;
+  }
+  .calc-button:hover {
+    background: #6366f1;
+  }
+  .calc-results {
+    background: rgba(129, 140, 248, 0.1);
+    border-radius: 12px;
+    padding: 1.5rem;
+    margin-top: 1.5rem;
+    display: none;
+  }
+  .calc-results h4 {
+    color: #a5b4fc;
+    font-size: 1.1rem;
+    margin-bottom: 1rem;
+  }
+  .result-breakdown {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 1rem;
+    margin-top: 1rem;
+  }
+  .breakdown-item {
+    background: rgba(255,255,255,0.02);
+    padding: 1rem;
+    border-radius: 8px;
+    text-align: center;
+  }
+  .breakdown-label {
+    color: #94a3b8;
+    font-size: 0.8rem;
+    margin-bottom: 0.25rem;
+  }
+  .breakdown-value {
+    color: #e2e8f0;
+    font-weight: 600;
+    font-size: 0.9rem;
+  }
+  .breakdown-status {
+    color: #818cf8;
+    font-size: 0.75rem;
+    margin-top: 0.25rem;
+  }
+  .practice-cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 1.5rem;
+    margin: 2rem 0;
+  }
+  .practice-card {
+    background: #12121a;
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 14px;
+    padding: 1.5rem;
+  }
+  .practice-card h4 {
+    color: #ffffff;
+    font-size: 1.1rem;
+    font-weight: 600;
+    margin-bottom: 1rem;
+  }
+  .framework-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1.5rem;
+    margin: 2rem 0;
+  }
+  .framework-card {
+    background: #12121a;
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 12px;
+    padding: 1.5rem;
+    text-align: center;
+  }
+  .framework-card h5 {
+    color: #ffffff;
+    margin-bottom: 0.5rem;
+    font-size: 1rem;
+  }
+  .framework-description {
+    font-size: 0.9rem;
+    color: #94a3b8;
+    margin-bottom: 1rem;
+  }
+  .framework-rating {
+    font-size: 0.8rem;
+    color: #818cf8;
+    font-weight: 600;
+  }
+  .faq-section {
+    margin: 4rem 0;
+  }
+  .faq-item {
+    background: #12121a;
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 14px;
+    margin-bottom: 1rem;
+    overflow: hidden;
+  }
+  .faq-question {
+    padding: 1.5rem;
+    color: #ffffff;
+    font-weight: 600;
+    cursor: pointer;
+    border-bottom: 1px solid rgba(255,255,255,0.05);
+  }
+  .faq-answer {
+    padding: 1.5rem;
+    color: #94a3b8;
+  }
+  .cta-cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1.5rem;
+    margin: 3rem 0;
+  }
+  .cta-card {
+    background: linear-gradient(135deg, #1e293b, #334155);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 16px;
+    padding: 2rem;
+    text-align: center;
+  }
+  .cta-card h4 {
+    color: #ffffff;
+    font-size: 1.1rem;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+  }
+  .cta-card p {
+    color: #94a3b8;
+    font-size: 0.9rem;
+    margin-bottom: 1.5rem;
+  }
+  .cta-button {
+    display: inline-block;
+    background: #818cf8;
+    color: #ffffff;
+    padding: 0.7rem 1.5rem;
+    border-radius: 8px;
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 0.9rem;
+    transition: background 0.2s;
+  }
+  .cta-button:hover {
+    background: #6366f1;
+  }
+  
+  @media (max-width: 1024px) {
+    .content-wrapper {
+      grid-template-columns: 1fr;
+      gap: 2rem;
+    }
+    .sidebar {
+      position: relative;
+      top: 0;
+      order: -1;
+    }
+  }
+  
+  @media (max-width: 768px) {
+    .sbp-container {
+      padding: 1rem;
+    }
+    .breadcrumb {
+      flex-wrap: wrap;
+    }
+    .stats-grid {
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    }
+    .sustainability-grid {
+      grid-template-columns: 1fr;
+    }
+    .practice-cards {
+      grid-template-columns: 1fr;
+    }
+    .framework-grid {
+      grid-template-columns: 1fr;
+    }
+    .cta-cards {
+      grid-template-columns: 1fr;
+    }
+    .calc-inputs {
+      grid-template-columns: 1fr;
+    }
+    .result-breakdown {
+      grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+    }
+  }
+</style>
+
+<div class="sbp-container">
+  <div class="sbp-header">
+    <div class="breadcrumb">
+      <a href="/apex-guides">Apex Guides</a>
+      <span>→</span>
+      <a href="/renewable-energy-sustainability">Renewable Energy</a>
+      <span>→</span>
+      <span>Sustainable Business Practices</span>
+    </div>
+    
+    <div class="updated-badge">
+      🌱 Updated April 2026
+    </div>
+    
+    <h1 class="gradient-h1">Sustainable Business Practices</h1>
+    <p class="sbp-subtitle">Master sustainable business transformation through ESG frameworks, circular economy principles, carbon management, stakeholder capitalism, and sustainable innovation for long-term value creation and competitive advantage.</p>
+  </div>
+
+  <div class="content-wrapper">
+    <main class="main-content">
+      <div class="stats-grid">
+        <div class="stat-card">
+          <span class="stat-number">83%</span>
+          <div class="stat-label">Of executives believe sustainability is essential for success</div>
+        </div>
+        <div class="stat-card">
+          <span class="stat-number">$30.7T</span>
+          <div class="stat-label">Global sustainable investment assets in 2022</div>
+        </div>
+        <div class="stat-card">
+          <span class="stat-number">73%</span>
+          <div class="stat-label">Of Gen Z willing to pay more for sustainable products</div>
+        </div>
+        <div class="stat-card">
+          <span class="stat-number">90%</span>
+          <div class="stat-label">Of S&P 500 companies publish sustainability reports</div>
+        </div>
+      </div>
+
+      <section id="sustainability-fundamentals" class="section">
+        <h2>Sustainable Business Fundamentals</h2>
+        <p>Sustainable business practices integrate environmental protection, social responsibility, and economic viability into core business strategy, creating long-term value for shareholders, stakeholders, and society while addressing climate change, resource scarcity, and social inequality challenges.</p>
+
+        <div class="callout">
+          <h4>🌍 Business Sustainability Imperative</h4>
+          <p>Sustainable business practices are no longer optional but essential for competitiveness, regulatory compliance, stakeholder expectations, and long-term viability. Success requires embedding sustainability into strategy, operations, culture, and value creation processes.</p>
+        </div>
+
+        <h3>Core Sustainability Frameworks</h3>
+        <div class="sustainability-grid">
+          <div class="sustainability-card">
+            <div class="sustainability-badge environmental">Environmental</div>
+            <h4>🌱 Environmental Stewardship</h4>
+            <p><strong>Climate Action:</strong> Carbon neutrality and net-zero commitments</p>
+            <p><strong>Resource Efficiency:**</strong> Waste reduction and circular economy</p>
+            <p><strong>Biodiversity:**</strong> Ecosystem protection and restoration</p>
+            <p><strong>Pollution Prevention:**</strong> Air, water, and soil protection</p>
+            <p><strong>Examples:**</strong> Patagonia, Interface, Unilever climate initiatives</p>
+          </div>
+
+          <div class="sustainability-card">
+            <div class="sustainability-badge social">Social Responsibility</div>
+            <h4>👥 Social Impact & Equity</h4>
+            <p><strong>Employee Wellbeing:</strong> Fair wages, diversity, health & safety</p>
+            <p><strong>Community Investment:**</strong> Local economic development</p>
+            <p><strong>Human Rights:**</strong> Supply chain labor standards</p>
+            <p><strong>Product Safety:**</strong> Consumer protection and accessibility</p>
+            <p><strong>Examples:**</strong> Ben & Jerry's, The Body Shop, Costco policies</p>
+          </div>
+
+          <div class="sustainability-card">
+            <div class="sustainability-badge governance">Corporate Governance</div>
+            <h4>⚖️ Ethical Governance</h4>
+            <p><strong>Board Diversity:</strong> Inclusive leadership and oversight</p>
+            <p><strong>Executive Compensation:**</strong> Performance and sustainability linkage</p>
+            <p><strong>Transparency:**</strong> Stakeholder reporting and disclosure</p>
+            <p><strong>Ethics & Compliance:**</strong> Anti-corruption and integrity</p>
+            <p><strong>Examples:**</strong> Johnson & Johnson, Microsoft governance practices</p>
+          </div>
+
+          <div class="sustainability-card">
+            <div class="sustainability-badge circular">Circular Economy</div>
+            <h4>🔄 Circular Business Models</h4>
+            <p><strong>Design for Circularity:</strong> Product lifecycle optimization</p>
+            <p><strong>Sharing Economy:**</strong> Asset utilization and access models</p>
+            <p><strong>Product as a Service:**</strong> Performance-based offerings</p>
+            <p><strong>Industrial Symbiosis:**</strong> Waste-to-resource exchanges</p>
+            <p><strong>Examples:**</strong> IKEA circular initiatives, Dell recycling programs</p>
+          </div>
+
+          <div class="sustainability-card">
+            <div class="sustainability-badge climate">Climate Strategy</div>
+            <h4>🌡️ Climate Action & Resilience</h4>
+            <p><strong>Science-Based Targets:</strong> Emissions reduction aligned with climate science</p>
+            <p><strong>Renewable Energy:**</strong> Clean energy procurement and generation</p>
+            <p><strong>Climate Adaptation:**</strong> Business resilience and risk management</p>
+            <p><strong>Carbon Markets:**</strong> Offsetting and carbon trading participation</p>
+            <p><strong>Examples:**</strong> Google carbon negative, Apple carbon neutral</p>
+          </div>
+
+          <div class="sustainability-card">
+            <div class="sustainability-badge">Stakeholder Capitalism</div>
+            <h4>🤝 Stakeholder Value Creation</h4>
+            <p><strong>Purpose-Driven Business:</strong> Mission beyond profit maximization</p>
+            <p><strong>Stakeholder Engagement:**</strong> Multi-stakeholder value creation</p>
+            <p><strong>Impact Measurement:**</strong> Social and environmental value metrics</p>
+            <p><strong>Regenerative Business:**</strong> Net positive impact creation</p>
+            <p><strong>Examples:**</strong> B Corporation movement, Benefit Corporation structure</p>
+          </div>
+        </sustainability-grid>
+
+        <div class="callout warning">
+          <h4>⚠️ Sustainability Implementation Challenges</h4>
+          <p><strong>Greenwashing Risk:</strong> Superficial commitments without substantive change<br>
+          <strong>Short-term Pressure:</strong> Quarterly earnings vs. long-term investments<br>
+          <strong>Measurement Complexity:</strong> Standardized metrics and reporting frameworks<br>
+          <strong>Supply Chain Visibility:</strong> Tier 2/3 supplier monitoring and control<br>
+          <strong>Cost Competitiveness:</strong> Sustainable practices vs. cost optimization<br>
+          <strong>Regulatory Complexity:</strong> Evolving ESG regulations and compliance requirements</p>
+        </div>
+
+        <div class="callout success">
+          <h4>✅ Sustainable Business Success Factors</h4>
+          <p><strong>Leadership Commitment:</strong> CEO and board champion sustainability integration<br>
+          <strong>Materiality Assessment:</strong> Focus on issues most relevant to business<br>
+          <strong>Stakeholder Engagement:</strong> Multi-stakeholder input and collaboration<br>
+          <strong>Innovation Culture:</strong> Sustainability-driven product and service innovation<br>
+          <strong>Transparent Reporting:</strong> Regular disclosure of progress and challenges<br>
+          <strong>Employee Engagement:</strong> Workforce mobilization around sustainability goals</p>
+        </div>
+      </section>
+
+      <section id="implementation-strategy" class="section">
+        <h2>Sustainability Implementation Strategy</h2>
+
+        <div class="callout">
+          <h4>📊 Strategic Sustainability Integration</h4>
+          <p>Effective sustainability implementation requires systematic integration into business strategy, operations, culture, and performance management. Success depends on materiality assessment, stakeholder engagement, target setting, and continuous improvement processes.</p>
+        </div>
+
+        <div class="maturity-calculator">
+          <h3>🎯 Sustainability Maturity Assessment</h3>
+          <p>Evaluate your organization's sustainability maturity and get personalized improvement recommendations.</p>
+          
+          <div class="calc-inputs">
+            <div class="calc-input">
+              <label for="companySize">Company Size</label>
+              <select id="companySize">
+                <option value="startup">Startup (< 50 employees)</option>
+                <option value="small">Small Business (50-500)</option>
+                <option value="medium">Medium Enterprise (500-5000)</option>
+                <option value="large">Large Corporation (5000+)</option>
+              </select>
+            </div>
+            
+            <div class="calc-input">
+              <label for="industry">Industry Sector</label>
+              <select id="industry">
+                <option value="technology">Technology</option>
+                <option value="manufacturing">Manufacturing</option>
+                <option value="retail">Retail & Consumer</option>
+                <option value="financial">Financial Services</option>
+                <option value="energy">Energy & Utilities</option>
+                <option value="healthcare">Healthcare</option>
+              </select>
+            </div>
+            
+            <div class="calc-input">
+              <label for="currentLevel">Current Sustainability Level</label>
+              <select id="currentLevel">
+                <option value="none">No formal sustainability program</option>
+                <option value="basic">Basic environmental compliance</option>
+                <option value="developing">Developing sustainability initiatives</option>
+                <option value="mature">Comprehensive sustainability program</option>
+                <option value="leading">Industry sustainability leader</option>
+              </select>
+            </div>
+            
+            <div class="calc-input">
+              <label for="stakeholderPressure">Stakeholder Pressure</label>
+              <select id="stakeholderPressure">
+                <option value="low">Low (minimal stakeholder demands)</option>
+                <option value="moderate">Moderate (some investor/customer interest)</option>
+                <option value="high">High (strong stakeholder expectations)</option>
+                <option value="very-high">Very High (regulatory requirements)</option>
+              </select>
+            </div>
+            
+            <div class="calc-input">
+              <label for="resources">Available Resources</label>
+              <select id="resources">
+                <option value="minimal">Minimal (< $100k budget)</option>
+                <option value="moderate">Moderate ($100k-$1M)</option>
+                <option value="substantial">Substantial ($1M-$10M)</option>
+                <option value="major">Major ($10M+ budget)</option>
+              </select>
+            </div>
+            
+            <div class="calc-input">
+              <label for="timeline">Implementation Timeline</label>
+              <select id="timeline">
+                <option value="immediate">Immediate (< 1 year)</option>
+                <option value="short">Short-term (1-3 years)</option>
+                <option value="medium">Medium-term (3-5 years)</option>
+                <option value="long">Long-term (5+ years)</option>
+              </select>
+            </div>
+          </div>
+          
+          <button class="calc-button" onclick="assessSustainabilityMaturity()">Assess Sustainability Maturity</button>
+          
+          <div class="calc-results" id="maturityResults">
+            <h4>Your Sustainability Maturity Assessment</h4>
+            <div class="result-breakdown" id="maturityBreakdown">
+              <!-- Results will be populated here -->
+            </div>
+          </div>
+        </div>
+
+        <h3>Sustainability Implementation Roadmap</h3>
+        <div class="comparison-table">
+          <table>
+            <thead>
+              <tr>
+                <th>Phase</th>
+                <th>Timeline</th>
+                <th>Key Activities</th>
+                <th>Focus Areas</th>
+                <th>Success Metrics</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>Foundation (Phase 1)</strong></td>
+                <td>0-6 months</td>
+                <td>Commitment, assessment, strategy</td>
+                <td>Leadership alignment, materiality</td>
+                <td>Strategy approval, baseline metrics</td>
+              </tr>
+              <tr>
+                <td><strong>Integration (Phase 2)</strong></td>
+                <td>6-18 months</td>
+                <td>Policy development, pilot programs</td>
+                <td>Operations integration, training</td>
+                <td>Policy deployment, pilot results</td>
+              </tr>
+              <tr>
+                <td><strong>Scaling (Phase 3)</strong></td>
+                <td>1-3 years</td>
+                <td>Full implementation, reporting</td>
+                <td>Systematic rollout, measurement</td>
+                <td>Target achievement, stakeholder satisfaction</td>
+              </tr>
+              <tr>
+                <td><strong>Innovation (Phase 4)</strong></td>
+                <td>2-5 years</td>
+                <td>Advanced practices, leadership</td>
+                <td>Innovation, circular economy</td>
+                <td>Industry recognition, competitive advantage</td>
+              </tr>
+              <tr>
+                <td><strong>Regenerative (Phase 5)</strong></td>
+                <td>3+ years</td>
+                <td>Net positive impact, ecosystem leadership</td>
+                <td>Regenerative business models</td>
+                <td>Net positive outcomes, system transformation</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <h3>Sustainability Framework Implementation</h3>
+        <div class="practice-cards">
+          <div class="practice-card">
+            <h4>📋 Strategy & Governance</h4>
+            <p><strong>Materiality Assessment:</strong> Identify priority sustainability issues</p>
+            <p><strong>Sustainability Strategy:</strong> Integrate into core business strategy</p>
+            <p><strong>Board Oversight:**</strong> Governance and risk management integration</p>
+            <p><strong>Stakeholder Engagement:**</strong> Multi-stakeholder consultation process</p>
+            <p><strong>Target Setting:**</strong> Science-based targets and commitments</p>
+          </div>
+
+          <div class="practice-card">
+            <h4>🎯 Operations & Management</h4>
+            <p><strong>Policy Development:</strong> Environmental and social policies</p>
+            <p><strong>Management Systems:**</strong> ISO 14001, SA8000 certification</p>
+            <p><strong>Supply Chain:**</strong> Supplier assessment and engagement</p>
+            <p><strong>Employee Engagement:**</strong> Training and culture change</p>
+            <p><strong>Performance Management:**</strong> Sustainability KPI integration</p>
+          </div>
+
+          <div class="practice-card">
+            <h4>💡 Innovation & Development</h4>
+            <p><strong>Sustainable Innovation:</strong> R&D for sustainability solutions</p>
+            <p><strong>Product Design:**</strong> Life cycle assessment and eco-design</p>
+            <p><strong>Business Model Innovation:**</strong> Circular and sharing economy</p>
+            <p><strong>Digital Transformation:**</strong> Technology for sustainability</p>
+            <p><strong>Partnership & Collaboration:**</strong> Ecosystem innovation</p>
+          </div>
+
+          <div class="practice-card">
+            <h4>📊 Measurement & Reporting</h4>
+            <p><strong>Data Collection:**</strong> ESG data management systems</p>
+            <p><strong>Impact Measurement:**</strong> Social and environmental metrics</p>
+            <p><strong>Sustainability Reporting:**</strong> GRI, SASB, TCFD frameworks</p>
+            <p><strong>Third-party Verification:**</strong> Independent assurance</p>
+            <p><strong>Continuous Improvement:**</strong> Regular assessment and optimization</p>
+          </div>
+        </practice-cards>
+      </section>
+
+      <section id="frameworks-tools" class="section">
+        <h2>Sustainability Frameworks & Tools</h2>
+
+        <div class="callout success">
+          <h4>🛠️ Sustainability Framework Ecosystem</h4>
+          <p>Multiple frameworks, standards, and tools support sustainability implementation including GRI, SASB, TCFD, UN Global Compact, Science Based Targets, B Corp certification, and industry-specific guidelines. Choose frameworks aligned with stakeholder needs and business objectives.</p>
+        </div>
+
+        <h3>Key Sustainability Frameworks</h3>
+        <div class="framework-grid">
+          <div class="framework-card">
+            <h5>📊 GRI Standards</h5>
+            <div class="framework-description">
+              Global Reporting Initiative sustainability reporting standards
+            </div>
+            <div class="framework-rating">Adoption: Widespread | Focus: Comprehensive | Application: All Industries</div>
+          </div>
+
+          <div class="framework-card">
+            <h5>💼 SASB Standards</h5>
+            <div class="framework-description">
+              Sustainability Accounting Standards Board industry-specific metrics
+            </div>
+            <div class="framework-rating">Focus: Materiality | Users: Investors | Coverage: Industry-specific</div>
+          </div>
+
+          <div class="framework-card">
+            <h5>🌡️ TCFD Recommendations</h5>
+            <div class="framework-description">
+              Task Force on Climate-related Financial Disclosures
+            </div>
+            <div class="framework-rating">Focus: Climate Risk | Mandatory: Increasing | Application: Financial Disclosure</div>
+          </div>
+
+          <div class="framework-card">
+            <h5>🎯 Science Based Targets</h5>
+            <div class="framework-description">
+              Science-aligned emissions reduction targets
+            </div>
+            <div class="framework-rating">Rigor: High | Credibility: Strong | Adoption: Growing | Focus: Climate</div>
+          </div>
+
+          <div class="framework-card">
+            <h5>🅱️ B Corp Certification</h5>
+            <div class="framework-description">
+              Benefit Corporation stakeholder governance certification
+            </div>
+            <div class="framework-rating">Assessment: Comprehensive | Legal: Binding | Community: Strong | Cost: Moderate</div>
+          </div>
+
+          <div class="framework-card">
+            <h5>🌍 UN Global Compact</h5>
+            <div class="framework-description">
+              Ten principles for responsible business practices
+            </div>
+            <div class="framework-rating">Scope: Broad | Commitment: Voluntary | Network: Global | Cost: Low</div>
+          </div>
+        </framework-grid>
+
+        <h3>Industry-Specific Sustainability Applications</h3>
+        <div class="practice-cards">
+          <div class="practice-card">
+            <h4>💻 Technology Sector</h4>
+            <p><strong>Carbon Neutrality:</strong> Data center renewable energy and efficiency</p>
+            <p><strong>Responsible AI:**</strong> Ethical AI development and deployment</p>
+            <p><strong>Digital Inclusion:**</strong> Technology access and digital equity</p>
+            <p><strong>Circular Design:**</strong> Product lifecycle and e-waste management</p>
+            <p><strong>Examples:**</strong> Microsoft carbon negative, Google AI principles</p>
+          </div>
+
+          <div class="practice-card">
+            <h4>🏭 Manufacturing</h4>
+            <p><strong>Industrial Ecology:**</strong> Waste-to-energy and material loops</p>
+            <p><strong>Water Stewardship:**</strong> Water efficiency and quality protection</p>
+            <p><strong>Supply Chain Transparency:**</strong> Traceability and supplier standards</p>
+            <p><strong>Worker Safety:**</strong> Health and safety management systems</p>
+            <p><strong>Examples:**</strong> 3M sustainability goals, Siemens environmental portfolio</p>
+          </div>
+
+          <div class="practice-card">
+            <h4>🛍️ Retail & Consumer</h4>
+            <p><strong>Sustainable Sourcing:**</strong> Responsible procurement practices</p>
+            <p><strong>Packaging Innovation:**</strong> Circular packaging and waste reduction</p>
+            <p><strong>Consumer Education:**</strong> Sustainable consumption promotion</p>
+            <p><strong>Fair Trade:**</strong> Ethical sourcing and community development</p>
+            <p><strong>Examples:**</strong> Walmart Project Gigaton, IKEA circular business</p>
+          </div>
+
+          <div class="practice-card">
+            <h4>🏦 Financial Services</h4>
+            <p><strong>Sustainable Finance:**</strong> ESG integration in investment decisions</p>
+            <p><strong>Climate Risk Management:**</strong> Physical and transition risk assessment</p>
+            <p><strong>Financial Inclusion:**</strong> Underserved community access</p>
+            <p><strong>Green Banking:**</strong> Sustainable lending and investment products</p>
+            <p><strong>Examples:**</strong> BlackRock ESG integration, Bank of America carbon neutral</p>
+          </div>
+        </practice-cards>
+
+        <h3>Sustainability Tools & Platforms</h3>
+        <div class="comparison-table">
+          <table>
+            <thead>
+              <tr>
+                <th>Tool Category</th>
+                <th>Primary Function</th>
+                <th>Target Users</th>
+                <th>Implementation Complexity</th>
+                <th>Cost Range</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>Carbon Management</strong></td>
+                <td>Emissions tracking & reporting</td>
+                <td>All organizations</td>
+                <td class="tier-medium">Medium</td>
+                <td class="tier-medium">$10-100k/year</td>
+              </tr>
+              <tr>
+                <td><strong>ESG Data Platforms</strong></td>
+                <td>Comprehensive ESG management</td>
+                <td>Large enterprises</td>
+                <td class="tier-high">High</td>
+                <td class="tier-high">$100k+/year</td>
+              </tr>
+              <tr>
+                <td><strong>Life Cycle Assessment</strong></td>
+                <td>Product impact analysis</td>
+                <td>Manufacturing</td>
+                <td class="tier-high">High</td>
+                <td class="tier-medium">$50-500k</td>
+              </tr>
+              <tr>
+                <td><strong>Supply Chain Mapping</strong></td>
+                <td>Supplier risk assessment</td>
+                <td>Global companies</td>
+                <td class="tier-high">High</td>
+                <td class="tier-high">$100k+/year</td>
+              </tr>
+              <tr>
+                <td><strong>Sustainability Reporting</strong></td>
+                <td>Report automation</td>
+                <td>Public companies</td>
+                <td class="tier-medium">Medium</td>
+                <td class="tier-medium">$25-250k/year</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="callout danger">
+          <h4>🚨 Sustainability Implementation Pitfalls</h4>
+          <p><strong>Greenwashing:</strong> Marketing sustainability without substantive action<br>
+          <strong>Overwhelming Scope:</strong> Trying to address all issues simultaneously<br>
+          <strong>Lack of Integration:</strong> Treating sustainability as separate from core business<br>
+          <strong>Poor Stakeholder Engagement:</strong> Insufficient consultation and buy-in<br>
+          <strong>Inadequate Measurement:</strong> Weak metrics and monitoring systems<br>
+          <strong>Short-term Focus:</strong> Prioritizing quarterly results over long-term value</p>
+        </div>
+      </section>
+
+      <section id="faq" class="faq-section">
+        <h2>Frequently Asked Questions</h2>
+
+        <div class="faq-item">
+          <div class="faq-question">How do I start implementing sustainability practices in my business?</div>
+          <div class="faq-answer">Begin with a materiality assessment to identify key sustainability issues for your industry and stakeholders. Conduct a baseline assessment of current practices, set initial targets, develop policies, and implement pilot programs. Focus on quick wins while building long-term capabilities.</div>
+        </div>
+
+        <div class="faq-item">
+          <div class="faq-question">What's the business case for sustainability investments?</div>
+          <div class="faq-answer">Sustainability delivers value through risk mitigation, cost reduction (energy, materials, waste), revenue growth (sustainable products, new markets), talent attraction/retention, brand value, investor access, regulatory compliance, and operational efficiency. ROI varies but typically shows positive returns within 3-7 years.</div>
+        </div>
+
+        <div class="faq-item">
+          <div class="faq-question">How do I measure and report on sustainability performance?</div>
+          <div class="faq-answer">Use established frameworks like GRI, SASB, or TCFD. Implement data collection systems for environmental (energy, waste, water, emissions) and social metrics (diversity, safety, community impact). Regular third-party verification enhances credibility. Start simple and expand over time.</div>
+        </div>
+
+        <div class="faq-item">
+          <div class="faq-question">What are science-based targets and why are they important?</div>
+          <div class="faq-answer">Science-Based Targets (SBTs) are emissions reduction targets aligned with climate science to limit global warming to 1.5°C. They provide credible, transparent pathways for decarbonization, enhance stakeholder confidence, and are increasingly required by investors, customers, and regulations.</div>
+        </div>
+
+        <div class="faq-item">
+          <div class="faq-question">How can small businesses implement sustainability practices?</div>
+          <div class="faq-answer">Start with energy efficiency, waste reduction, and local sourcing. Use free tools and frameworks, join industry sustainability networks, focus on material issues, communicate transparently about efforts, and engage employees. Many sustainability practices reduce costs and improve efficiency.</div>
+        </div>
+
+        <div class="faq-item">
+          <div class="faq-question">What's the difference between ESG and sustainability?</div>
+          <div class="faq-answer">Sustainability is the broader concept of meeting current needs without compromising future generations. ESG (Environmental, Social, Governance) is a framework for measuring and reporting sustainability performance, primarily used by investors to assess risks and opportunities.</div>
+        </div>
+
+        <div class="faq-item">
+          <div class="faq-question">How do I avoid greenwashing accusations?</div>
+          <div class="faq-answer">Ensure substance matches claims through transparent reporting, third-party verification, science-based targets, comprehensive strategies (not just marketing), stakeholder engagement, continuous improvement, and honest communication about challenges and progress.</div>
+        </div>
+
+        <div class="faq-item">
+          <div class="faq-question">What role does employee engagement play in sustainability?</div>
+          <div class="faq-answer">Employee engagement is critical for sustainability success. Employees drive innovation, behavior change, and implementation. Provide training, create sustainability champions, link to performance reviews, communicate purpose and impact, and empower employee-led initiatives.</div>
+        </div>
+      </section>
+
+      <div class="cta-cards">
+        <div class="cta-card">
+          <h4>🌱 Renewable Energy</h4>
+          <p>Explore renewable energy solutions and sustainable technology implementation for business transformation.</p>
+          <a href="/renewable-energy-sustainability" class="cta-button">Clean Energy</a>
+        </div>
+
+        <div class="cta-card">
+          <h4>📊 Data Visualization</h4>
+          <p>Apply data analytics and visualization to sustainability metrics and ESG reporting.</p>
+          <a href="/data-visualization-analytics" class="cta-button">Sustainability Data</a>
+        </div>
+
+        <div class="cta-card">
+          <h4>🏭 Supply Chain</h4>
+          <p>Optimize supply chain operations for sustainability, transparency, and responsible sourcing.</p>
+          <a href="/supply-chain-optimization" class="cta-button">Sustainable Supply</a>
+        </div>
+      </div>
+    </main>
+
+    <aside class="sidebar">
+      <h3>Contents</h3>
+      <ul>
+        <li><a href="#sustainability-fundamentals">Sustainability Fundamentals</a></li>
+        <li><a href="#implementation-strategy">Implementation Strategy</a></li>
+        <li><a href="#frameworks-tools">Frameworks & Tools</a></li>
+        <li><a href="#faq">FAQ</a></li>
+      </ul>
+    </aside>
+  </div>
+</div>
+
+<script>
+function assessSustainabilityMaturity() {
+  const companySize = document.getElementById('companySize').value;
+  const industry = document.getElementById('industry').value;
+  const currentLevel = document.getElementById('currentLevel').value;
+  const stakeholderPressure = document.getElementById('stakeholderPressure').value;
+  const resources = document.getElementById('resources').value;
+  const timeline = document.getElementById('timeline').value;
+  
+  // Calculate maturity score
+  let maturityScore = 0;
+  
+  // Current level impact (most important factor)
+  const levelScores = {
+    'none': 10,
+    'basic': 30,
+    'developing': 60,
+    'mature': 85,
+    'leading': 95
+  };
+  maturityScore += levelScores[currentLevel] * 0.4;
+  
+  // Company size impact (resources and complexity)
+  const sizeScores = {
+    'startup': 40,
+    'small': 60,
+    'medium': 80,
+    'large': 95
+  };
+  maturityScore += sizeScores[companySize] * 0.2;
+  
+  // Industry pressure and expectations
+  const industryScores = {
+    'technology': 70,
+    'manufacturing': 85,
+    'retail': 75,
+    'financial': 80,
+    'energy': 95,
+    'healthcare': 65
+  };
+  maturityScore += industryScores[industry] * 0.15;
+  
+  // Stakeholder pressure level
+  const pressureScores = {
+    'low': 20,
+    'moderate': 50,
+    'high': 80,
+    'very-high': 100
+  };
+  maturityScore += pressureScores[stakeholderPressure] * 0.15;
+  
+  // Resource availability
+  const resourceScores = {
+    'minimal': 30,
+    'moderate': 60,
+    'substantial': 85,
+    'major': 100
+  };
+  maturityScore += resourceScores[resources] * 0.1;
+  
+  // Determine maturity level
+  let maturityLevel = '';
+  let maturityColor = '';
+  if (maturityScore >= 85) {
+    maturityLevel = 'Sustainability Leader';
+    maturityColor = '#4ade80';
+  } else if (maturityScore >= 70) {
+    maturityLevel = 'Advanced Performer';
+    maturityColor = '#22d3ee';
+  } else if (maturityScore >= 50) {
+    maturityLevel = 'Developing Program';
+    maturityColor = '#fbbf24';
+  } else if (maturityScore >= 30) {
+    maturityLevel = 'Early Stage';
+    maturityColor = '#f97316';
+  } else {
+    maturityLevel = 'Getting Started';
+    maturityColor = '#ef4444';
+  }
+  
+  // Primary focus area recommendation
+  const getFocusArea = () => {
+    if (currentLevel === 'none') return 'Foundation Building';
+    if (stakeholderPressure === 'very-high') return 'Compliance & Reporting';
+    if (industry === 'energy') return 'Carbon Management';
+    if (industry === 'manufacturing') return 'Circular Economy';
+    if (resources === 'major') return 'Innovation & Leadership';
+    return 'Operations Integration';
+  };
+  
+  const focusArea = getFocusArea();
+  
+  // Implementation approach
+  const getApproach = () => {
+    if (maturityScore >= 85) return 'Innovation & Leadership';
+    if (maturityScore >= 70) return 'Scaling & Optimization';
+    if (maturityScore >= 50) return 'Systematic Implementation';
+    if (maturityScore >= 30) return 'Pilot Programs';
+    return 'Foundation & Strategy';
+  };
+  
+  const approach = getApproach();
+  
+  // Key challenge
+  const getKeyChallenge = () => {
+    if (resources === 'minimal') return 'Resource Constraints';
+    if (currentLevel === 'none') return 'Organizational Buy-in';
+    if (stakeholderPressure === 'low') return 'Building Business Case';
+    if (companySize === 'large') return 'Change Management';
+    return 'Integration Complexity';
+  };
+  
+  const keyChallenge = getKeyChallenge();
+  
+  // Quick win opportunity
+  const getQuickWin = () => {
+    if (industry === 'technology') return 'Energy Efficiency';
+    if (industry === 'retail') return 'Waste Reduction';
+    if (industry === 'financial') return 'Digital Transformation';
+    if (companySize === 'startup') return 'Sustainable Culture';
+    return 'Employee Engagement';
+  };
+  
+  const quickWin = getQuickWin();
+  
+  // Timeline adjustment based on current level and resources
+  const getRealisticTimeline = () => {
+    if (currentLevel === 'none' && timeline === 'immediate') return 'Extended to 2-3 years';
+    if (maturityScore >= 70 && timeline === 'long') return 'Accelerated to 2-3 years';
+    if (resources === 'minimal') return 'Extended by 1-2 years';
+    return 'Timeline realistic';
+  };
+  
+  const realisticTimeline = getRealisticTimeline();
+  
+  // Next step recommendation
+  const getNextStep = () => {
+    if (currentLevel === 'none') return 'Materiality Assessment';
+    if (currentLevel === 'basic') return 'Strategy Development';
+    if (currentLevel === 'developing') return 'Program Scaling';
+    if (currentLevel === 'mature') return 'Innovation Integration';
+    return 'Industry Leadership';
+  };
+  
+  const nextStep = getNextStep();
+  
+  // Display results
+  const breakdown = document.getElementById('maturityBreakdown');
+  breakdown.innerHTML = `
+    <div class="breakdown-item">
+      <div class="breakdown-label">Maturity Level</div>
+      <div class="breakdown-value" style="color: ${maturityColor}">${maturityLevel}</div>
+      <div class="breakdown-status">Current capability</div>
+    </div>
+    <div class="breakdown-item">
+      <div class="breakdown-label">Focus Area</div>
+      <div class="breakdown-value">${focusArea}</div>
+      <div class="breakdown-status">Primary priority</div>
+    </div>
+    <div class="breakdown-item">
+      <div class="breakdown-label">Implementation Approach</div>
+      <div class="breakdown-value">${approach}</div>
+      <div class="breakdown-status">Recommended strategy</div>
+    </div>
+    <div class="breakdown-item">
+      <div class="breakdown-label">Key Challenge</div>
+      <div class="breakdown-value">${keyChallenge}</div>
+      <div class="breakdown-status">Main obstacle</div>
+    </div>
+    <div class="breakdown-item">
+      <div class="breakdown-label">Quick Win</div>
+      <div class="breakdown-value">${quickWin}</div>
+      <div class="breakdown-status">Immediate opportunity</div>
+    </div>
+    <div class="breakdown-item">
+      <div class="breakdown-label">Timeline Assessment</div>
+      <div class="breakdown-value">${realisticTimeline}</div>
+      <div class="breakdown-status">Implementation schedule</div>
+    </div>
+  `;
+  
+  document.getElementById('maturityResults').style.display = 'block';
+}
+</script>

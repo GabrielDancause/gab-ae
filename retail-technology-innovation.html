@@ -1,0 +1,903 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Retail Technology Innovation Guide - RetailTech Solutions</title>
+    <meta name="description" content="Comprehensive guide to retail technology, omnichannel commerce, AI personalization, smart stores, inventory automation, and retail innovation trends.">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            line-height: 1.6;
+            color: #e0e0e0;
+            background: #0a0a0a;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+        
+        header {
+            background: #111;
+            border-bottom: 1px solid #333;
+            padding: 2rem 0;
+        }
+        
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+        
+        .logo {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #fff;
+        }
+        
+        .tagline {
+            color: #888;
+            font-size: 0.9rem;
+        }
+        
+        .hero {
+            background: linear-gradient(135deg, #1a1a1a 0%, #f59e0b 100%);
+            padding: 4rem 0;
+            text-align: center;
+        }
+        
+        .hero h1 {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            color: #fff;
+            font-weight: 700;
+        }
+        
+        .hero p {
+            font-size: 1.25rem;
+            color: #ccc;
+            max-width: 800px;
+            margin: 0 auto 2rem;
+        }
+        
+        .section {
+            padding: 4rem 0;
+        }
+        
+        .section h2 {
+            font-size: 2.5rem;
+            margin-bottom: 2rem;
+            color: #fff;
+            text-align: center;
+        }
+        
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-top: 2rem;
+        }
+        
+        .card {
+            background: #1a1a1a;
+            border: 1px solid #333;
+            border-radius: 8px;
+            padding: 2rem;
+            transition: transform 0.2s, border-color 0.2s;
+        }
+        
+        .card:hover {
+            transform: translateY(-5px);
+            border-color: #666;
+        }
+        
+        .card h3 {
+            color: #fff;
+            margin-bottom: 1rem;
+            font-size: 1.5rem;
+        }
+        
+        .card p {
+            color: #ccc;
+            margin-bottom: 1rem;
+        }
+        
+        .card ul {
+            color: #aaa;
+            padding-left: 1.5rem;
+        }
+        
+        .card ul li {
+            margin-bottom: 0.5rem;
+        }
+        
+        .highlight {
+            background: #2a1810;
+            border: 1px solid #8B4513;
+            border-radius: 8px;
+            padding: 2rem;
+            margin: 2rem 0;
+        }
+        
+        .highlight h3 {
+            color: #DEB887;
+            margin-bottom: 1rem;
+        }
+        
+        .highlight p {
+            color: #ccc;
+        }
+        
+        .two-column {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 3rem;
+            margin: 2rem 0;
+        }
+        
+        .comparison-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 2rem 0;
+            background: #1a1a1a;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+        
+        .comparison-table th,
+        .comparison-table td {
+            padding: 1rem;
+            text-align: left;
+            border-bottom: 1px solid #333;
+        }
+        
+        .comparison-table th {
+            background: #2a2a2a;
+            color: #fff;
+            font-weight: 600;
+        }
+        
+        .comparison-table td {
+            color: #ccc;
+        }
+        
+        .pros-cons {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+        }
+        
+        .pros, .cons {
+            background: #1a1a1a;
+            border-radius: 8px;
+            padding: 1.5rem;
+        }
+        
+        .pros {
+            border-left: 4px solid #4CAF50;
+        }
+        
+        .cons {
+            border-left: 4px solid #F44336;
+        }
+        
+        .pros h4 {
+            color: #4CAF50;
+            margin-bottom: 1rem;
+        }
+        
+        .cons h4 {
+            color: #F44336;
+            margin-bottom: 1rem;
+        }
+        
+        .cta {
+            background: #2a1810;
+            padding: 3rem 0;
+            text-align: center;
+            margin: 4rem 0;
+            border-radius: 12px;
+        }
+        
+        .cta h2 {
+            margin-bottom: 1rem;
+            color: #DEB887;
+        }
+        
+        .cta p {
+            margin-bottom: 2rem;
+            color: #ccc;
+            font-size: 1.1rem;
+        }
+        
+        .btn {
+            display: inline-block;
+            padding: 12px 30px;
+            background: #8B4513;
+            color: white;
+            text-decoration: none;
+            border-radius: 6px;
+            font-weight: 600;
+            transition: background 0.3s;
+        }
+        
+        .btn:hover {
+            background: #A0522D;
+        }
+        
+        footer {
+            background: #111;
+            border-top: 1px solid #333;
+            padding: 2rem 0;
+            text-align: center;
+        }
+        
+        footer p {
+            color: #888;
+        }
+        
+        @media (max-width: 768px) {
+            .hero h1 {
+                font-size: 2rem;
+            }
+            
+            .two-column {
+                grid-template-columns: 1fr;
+                gap: 2rem;
+            }
+            
+            .pros-cons {
+                grid-template-columns: 1fr;
+            }
+            
+            .header-content {
+                text-align: center;
+            }
+        }
+        
+        .feature-highlight {
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            color: white;
+            padding: 2rem;
+            border-radius: 8px;
+            margin: 2rem 0;
+        }
+        
+        .technologies-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 2rem;
+            margin: 3rem 0;
+        }
+        
+        .technology-card {
+            background: #1a1a1a;
+            border: 1px solid #333;
+            border-radius: 8px;
+            padding: 2rem;
+            text-align: center;
+            transition: transform 0.2s;
+        }
+        
+        .technology-card:hover {
+            transform: translateY(-3px);
+            border-color: #666;
+        }
+        
+        .technology-card .icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 2rem;
+            margin: 3rem 0;
+        }
+        
+        .stat-card {
+            background: #1a1a1a;
+            border: 1px solid #333;
+            border-radius: 8px;
+            padding: 2rem;
+            text-align: center;
+        }
+        
+        .stat-card .number {
+            font-size: 3rem;
+            color: #f59e0b;
+            font-weight: bold;
+            display: block;
+        }
+        
+        .stat-card .label {
+            color: #ccc;
+            margin-top: 0.5rem;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <div class="header-content">
+                <div class="logo">GAB</div>
+                <div class="tagline">Retail Technology Guide</div>
+            </div>
+        </div>
+    </header>
+
+    <section class="hero">
+        <div class="container">
+            <h1>Retail Technology Innovation</h1>
+            <p>Explore cutting-edge retail technologies transforming shopping experiences through omnichannel commerce, AI personalization, smart stores, automated fulfillment, and innovative customer engagement.</p>
+        </div>
+    </section>
+
+    <section class="section">
+        <div class="container">
+            <h2>Retail Tech Market Overview</h2>
+            
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <span class="number">$28B</span>
+                    <div class="label">Global RetailTech Market (2025)</div>
+                </div>
+                <div class="stat-card">
+                    <span class="number">19%</span>
+                    <div class="label">Annual Growth Rate</div>
+                </div>
+                <div class="stat-card">
+                    <span class="number">$26T</span>
+                    <div class="label">Global Retail Market Size</div>
+                </div>
+                <div class="stat-card">
+                    <span class="number">73%</span>
+                    <div class="label">Customers Want Omnichannel Experience</div>
+                </div>
+            </div>
+
+            <div class="highlight">
+                <h3>The Retail Technology Revolution</h3>
+                <p>Retail technology is transforming the $26 trillion global retail industry through digital innovations that enhance customer experiences, optimize operations, and create new business models. From AI-powered personalization to autonomous stores, technology is reshaping how people shop and brands connect with customers.</p>
+            </div>
+        </div>
+    </section>
+
+    <section class="section">
+        <div class="container">
+            <h2>Core Retail Technology Areas</h2>
+            
+            <div class="grid">
+                <div class="card">
+                    <h3>Omnichannel Commerce</h3>
+                    <p>Integrated shopping experiences seamlessly connecting online, mobile, and physical retail touchpoints.</p>
+                    <ul>
+                        <li>Unified customer profiles and data</li>
+                        <li>Cross-channel inventory management</li>
+                        <li>Buy online, pick up in store (BOPIS)</li>
+                        <li>Mobile point-of-sale systems</li>
+                        <li>Consistent pricing and promotions</li>
+                    </ul>
+                </div>
+                
+                <div class="card">
+                    <h3>AI & Personalization</h3>
+                    <p>Machine learning systems delivering personalized shopping experiences and product recommendations.</p>
+                    <ul>
+                        <li>Personalized product recommendations</li>
+                        <li>Dynamic pricing optimization</li>
+                        <li>Customer behavior prediction</li>
+                        <li>Chatbots and virtual shopping assistants</li>
+                        <li>Visual search and recognition</li>
+                    </ul>
+                </div>
+                
+                <div class="card">
+                    <h3>Smart Store Technology</h3>
+                    <p>IoT-enabled retail environments providing intelligent shopping experiences and operational insights.</p>
+                    <ul>
+                        <li>Smart shelves and inventory tracking</li>
+                        <li>Automated checkout and payments</li>
+                        <li>Digital signage and displays</li>
+                        <li>Beacon technology and location services</li>
+                        <li>Environmental monitoring and control</li>
+                    </ul>
+                </div>
+                
+                <div class="card">
+                    <h3>Augmented & Virtual Reality</h3>
+                    <p>Immersive technologies enabling virtual try-ons, product visualization, and enhanced shopping experiences.</p>
+                    <ul>
+                        <li>Virtual try-on for clothing and accessories</li>
+                        <li>AR product visualization at home</li>
+                        <li>Virtual showrooms and stores</li>
+                        <li>Interactive product demonstrations</li>
+                        <li>Social shopping experiences</li>
+                    </ul>
+                </div>
+                
+                <div class="card">
+                    <h3>Supply Chain Automation</h3>
+                    <p>Advanced systems optimizing inventory management, fulfillment, and logistics operations.</p>
+                    <ul>
+                        <li>Automated warehousing and robotics</li>
+                        <li>Predictive demand forecasting</li>
+                        <li>Real-time inventory optimization</li>
+                        <li>Last-mile delivery automation</li>
+                        <li>Supplier relationship management</li>
+                    </ul>
+                </div>
+                
+                <div class="card">
+                    <h3>Customer Analytics & Insights</h3>
+                    <p>Data analytics platforms providing deep understanding of customer behavior and market trends.</p>
+                    <ul>
+                        <li>Customer journey analytics</li>
+                        <li>Heat mapping and foot traffic analysis</li>
+                        <li>Purchase behavior prediction</li>
+                        <li>Market trend analysis</li>
+                        <li>ROI and performance measurement</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="section">
+        <div class="container">
+            <h2>Leading Retail Technology Solutions</h2>
+            
+            <div class="technologies-grid">
+                <div class="technology-card">
+                    <div class="icon">🛒</div>
+                    <h3>E-commerce Platforms</h3>
+                    <p>Shopify, Magento, and WooCommerce provide comprehensive online retail solutions with AI-powered features.</p>
+                </div>
+                
+                <div class="technology-card">
+                    <div class="icon">🤖</div>
+                    <h3>AI Personalization</h3>
+                    <p>Dynamic Yield, Yotpo, and Klaviyo deliver personalized shopping experiences and marketing automation.</p>
+                </div>
+                
+                <div class="technology-card">
+                    <div class="icon">📱</div>
+                    <h3>Mobile Commerce</h3>
+                    <p>Square, Stripe, and PayPal enable seamless mobile payments and shopping experiences across all devices.</p>
+                </div>
+                
+                <div class="technology-card">
+                    <div class="icon">🏪</div>
+                    <h3>Smart Store Systems</h3>
+                    <p>Amazon Go, Zippin, and AiFi create autonomous shopping experiences with computer vision and AI.</p>
+                </div>
+                
+                <div class="technology-card">
+                    <div class="icon">📊</div>
+                    <h3>Retail Analytics</h3>
+                    <p>Google Analytics, Adobe Analytics, and Salesforce Commerce Cloud provide comprehensive retail data insights.</p>
+                </div>
+                
+                <div class="technology-card">
+                    <div class="icon">🚚</div>
+                    <h3>Fulfillment Technology</h3>
+                    <p>6 River Systems, Locus Robotics, and GreyOrange automate warehouse operations and order fulfillment.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="section">
+        <div class="container">
+            <h2>Omnichannel Retail Strategy</h2>
+            
+            <div class="two-column">
+                <div>
+                    <h3>Channel Integration</h3>
+                    <ul style="color: #ccc; padding-left: 1.5rem;">
+                        <li><strong>Unified Commerce:</strong> Single platform managing all channels</li>
+                        <li><strong>Inventory Visibility:</strong> Real-time stock across all locations</li>
+                        <li><strong>Customer Data:</strong> 360-degree view of customer interactions</li>
+                        <li><strong>Order Management:</strong> Seamless fulfillment across channels</li>
+                        <li><strong>Consistent Experience:</strong> Unified brand experience everywhere</li>
+                        <li><strong>Cross-Channel Analytics:</strong> Holistic performance measurement</li>
+                    </ul>
+                </div>
+                
+                <div>
+                    <h3>Customer Journey Optimization</h3>
+                    <ul style="color: #ccc; padding-left: 1.5rem;">
+                        <li><strong>Discovery:</strong> AI-powered product recommendations</li>
+                        <li><strong>Research:</strong> AR/VR product visualization</li>
+                        <li><strong>Purchase:</strong> Flexible payment and fulfillment options</li>
+                        <li><strong>Delivery:</strong> Real-time tracking and notifications</li>
+                        <li><strong>Support:</strong> Omnichannel customer service</li>
+                        <li><strong>Retention:</strong> Personalized loyalty and engagement</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="feature-highlight">
+                <h3>Performance Impact</h3>
+                <p>Omnichannel retail strategies increase customer lifetime value by 30%, improve customer retention rates by 89%, and drive 23x higher customer engagement compared to single-channel approaches. Companies with strong omnichannel strategies see 9.5% annual revenue growth.</p>
+            </div>
+        </div>
+    </section>
+
+    <section class="section">
+        <div class="container">
+            <h2>Retail Technology Comparison</h2>
+            
+            <table class="comparison-table">
+                <thead>
+                    <tr>
+                        <th>Technology</th>
+                        <th>Primary Benefit</th>
+                        <th>Implementation Cost</th>
+                        <th>ROI Timeline</th>
+                        <th>Best For</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>E-commerce Platform</td>
+                        <td>Online Sales Growth</td>
+                        <td>Low-Medium</td>
+                        <td>3-6 months</td>
+                        <td>All retailers</td>
+                    </tr>
+                    <tr>
+                        <td>AI Personalization</td>
+                        <td>Conversion Rate</td>
+                        <td>Medium</td>
+                        <td>6-12 months</td>
+                        <td>Large online retailers</td>
+                    </tr>
+                    <tr>
+                        <td>Mobile POS</td>
+                        <td>Customer Experience</td>
+                        <td>Low</td>
+                        <td>1-3 months</td>
+                        <td>Physical stores</td>
+                    </tr>
+                    <tr>
+                        <td>Smart Store Systems</td>
+                        <td>Operational Efficiency</td>
+                        <td>Very High</td>
+                        <td>18-24 months</td>
+                        <td>Large format stores</td>
+                    </tr>
+                    <tr>
+                        <td>AR/VR Shopping</td>
+                        <td>Engagement</td>
+                        <td>Medium-High</td>
+                        <td>12-18 months</td>
+                        <td>Fashion, furniture</td>
+                    </tr>
+                    <tr>
+                        <td>Warehouse Automation</td>
+                        <td>Fulfillment Speed</td>
+                        <td>Very High</td>
+                        <td>24-36 months</td>
+                        <td>High-volume retailers</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </section>
+
+    <section class="section">
+        <div class="container">
+            <h2>Implementation Strategies</h2>
+            
+            <div class="grid">
+                <div class="card">
+                    <h3>For Small Retailers</h3>
+                    <p>Technology adoption strategies for small and medium-sized retail businesses.</p>
+                    <ul>
+                        <li>Cloud-based e-commerce platforms</li>
+                        <li>Mobile payment solutions</li>
+                        <li>Social media integration</li>
+                        <li>Customer data collection and analysis</li>
+                        <li>Basic inventory management systems</li>
+                    </ul>
+                </div>
+                
+                <div class="card">
+                    <h3>For Enterprise Retailers</h3>
+                    <p>Large-scale technology transformation for major retail organizations.</p>
+                    <ul>
+                        <li>Omnichannel platform integration</li>
+                        <li>Advanced AI and machine learning</li>
+                        <li>Supply chain automation</li>
+                        <li>Customer analytics and personalization</li>
+                        <li>Smart store and IoT implementation</li>
+                    </ul>
+                </div>
+                
+                <div class="card">
+                    <h3>For E-commerce Brands</h3>
+                    <p>Digital-first strategies for online retail companies.</p>
+                    <ul>
+                        <li>Conversion rate optimization</li>
+                        <li>Marketing automation and personalization</li>
+                        <li>Mobile and progressive web apps</li>
+                        <li>Advanced analytics and testing</li>
+                        <li>Supply chain and fulfillment optimization</li>
+                    </ul>
+                </div>
+                
+                <div class="card">
+                    <h3>For Brick & Mortar Stores</h3>
+                    <p>Physical retail transformation through technology integration.</p>
+                    <ul>
+                        <li>Digital signage and interactive displays</li>
+                        <li>Mobile POS and clienteling tools</li>
+                        <li>Foot traffic and heat mapping analytics</li>
+                        <li>BOPIS and curbside pickup</li>
+                        <li>Staff productivity and training tools</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="section">
+        <div class="container">
+            <h2>Future of Retail Technology</h2>
+            
+            <div class="two-column">
+                <div>
+                    <h3>Emerging Technologies</h3>
+                    <ul style="color: #ccc; padding-left: 1.5rem;">
+                        <li><strong>Voice Commerce:</strong> Shopping through smart speakers and voice assistants</li>
+                        <li><strong>Autonomous Delivery:</strong> Drones and robots for last-mile delivery</li>
+                        <li><strong>Biometric Payments:</strong> Facial recognition and fingerprint checkout</li>
+                        <li><strong>Holographic Displays:</strong> 3D product visualization</li>
+                        <li><strong>Brain-Computer Interfaces:</strong> Thought-based shopping</li>
+                        <li><strong>Quantum Computing:</strong> Advanced optimization and analytics</li>
+                    </ul>
+                </div>
+                
+                <div>
+                    <h3>Industry Trends</h3>
+                    <ul style="color: #ccc; padding-left: 1.5rem;">
+                        <li><strong>Sustainability Focus:</strong> Green technology and circular economy</li>
+                        <li><strong>Social Commerce:</strong> Shopping within social media platforms</li>
+                        <li><strong>Hyper-Personalization:</strong> Individual-specific experiences</li>
+                        <li><strong>Flexible Fulfillment:</strong> Multiple delivery and pickup options</li>
+                        <li><strong>Data Privacy:</strong> Transparent and secure customer data handling</li>
+                        <li><strong>Augmented Workforce:</strong> Human-AI collaboration in retail</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="section">
+        <div class="container">
+            <h2>Opportunities & Challenges</h2>
+            
+            <div class="pros-cons">
+                <div class="pros">
+                    <h4>✅ Opportunities</h4>
+                    <ul style="color: #ccc; padding-left: 1.5rem; margin-top: 1rem;">
+                        <li>$26 trillion global retail market</li>
+                        <li>Growing demand for digital experiences</li>
+                        <li>Mobile commerce expansion</li>
+                        <li>AI and automation cost benefits</li>
+                        <li>Emerging markets digitization</li>
+                        <li>New business models and revenue streams</li>
+                        <li>Enhanced customer insights and engagement</li>
+                    </ul>
+                </div>
+                
+                <div class="cons">
+                    <h4>⚠️ Challenges</h4>
+                    <ul style="color: #ccc; padding-left: 1.5rem; margin-top: 1rem;">
+                        <li>High technology implementation costs</li>
+                        <li>Legacy system integration complexity</li>
+                        <li>Data privacy and security concerns</li>
+                        <li>Staff training and change management</li>
+                        <li>Rapidly evolving customer expectations</li>
+                        <li>Intense competition and market saturation</li>
+                        <li>Economic sensitivity and market cycles</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="highlight" style="margin-top: 3rem;">
+                <h3>Success Factors</h3>
+                <p>Retail technology success requires customer-centric design, seamless integration across channels, data-driven decision making, staff training and buy-in, scalable technology architecture, and continuous adaptation to changing consumer behaviors and market trends.</p>
+            </div>
+        </div>
+    </section>
+
+    <div class="cta">
+        <div class="container">
+            <h2>Ready to Transform Retail?</h2>
+            <p>Explore the innovative world of retail technology and discover how digital solutions are creating superior shopping experiences, operational efficiency, and business growth opportunities.</p>
+            <a href="https://gab.ae" class="btn">Explore More RetailTech Resources</a>
+        </div>
+    </div>
+
+    <footer>
+        <div class="container">
+            <p>&copy; 2026 GAB Ventures. Retail Technology Innovation Guide.</p>
+        </div>
+    </footer>
+
+    <script>
+        // Add smooth scrolling for anchor links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                document.querySelector(this.getAttribute('href')).scrollIntoView({
+                    behavior: 'smooth'
+                });
+            });
+        });
+
+        // Add intersection observer for animations
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -50px 0px'
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.style.opacity = '1';
+                    entry.target.style.transform = 'translateY(0)';
+                }
+            });
+        }, observerOptions);
+
+        // Observe all cards and sections
+        document.querySelectorAll('.card, .technology-card, .stat-card').forEach(el => {
+            el.style.opacity = '0';
+            el.style.transform = 'translateY(20px)';
+            el.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
+            observer.observe(el);
+        });
+
+        // Interactive technology showcase
+        document.querySelectorAll('.technology-card').forEach(card => {
+            card.addEventListener('click', function() {
+                this.style.transform = 'translateY(-5px) scale(1.02)';
+                setTimeout(() => {
+                    this.style.transform = 'translateY(-3px)';
+                }, 200);
+            });
+        });
+
+        // Stats counter animation
+        function animateCounter(element, target, suffix = '', duration = 2000) {
+            const start = 0;
+            const increment = target / (duration / 16);
+            let current = start;
+            
+            const timer = setInterval(() => {
+                current += increment;
+                if (current >= target) {
+                    current = target;
+                    clearInterval(timer);
+                }
+                
+                if (suffix === 'B') {
+                    element.textContent = '$' + Math.floor(current) + 'B';
+                } else if (suffix === '%') {
+                    element.textContent = Math.floor(current) + '%';
+                } else if (suffix === 'T') {
+                    element.textContent = '$' + Math.floor(current) + 'T';
+                } else {
+                    element.textContent = Math.floor(current) + suffix;
+                }
+            }, 16);
+        }
+
+        // Trigger counter animations when stats come into view
+        const statsObserver = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting && !entry.target.classList.contains('animated')) {
+                    entry.target.classList.add('animated');
+                    const number = entry.target.querySelector('.number');
+                    const text = number.textContent;
+                    
+                    if (text.includes('$28B')) animateCounter(number, 28, 'B', 2000);
+                    else if (text.includes('19%')) animateCounter(number, 19, '%', 2000);
+                    else if (text.includes('$26T')) animateCounter(number, 26, 'T', 2000);
+                    else if (text.includes('73%')) animateCounter(number, 73, '%', 2000);
+                }
+            });
+        }, { threshold: 0.5 });
+
+        document.querySelectorAll('.stat-card').forEach(card => {
+            statsObserver.observe(card);
+        });
+
+        // Interactive table highlighting
+        document.querySelectorAll('.comparison-table tbody tr').forEach(row => {
+            row.addEventListener('mouseenter', function() {
+                this.style.backgroundColor = '#2a2a2a';
+            });
+            
+            row.addEventListener('mouseleave', function() {
+                this.style.backgroundColor = 'transparent';
+            });
+        });
+
+        // Retail technology interaction tracking
+        document.querySelectorAll('.technology-card').forEach((card, index) => {
+            card.addEventListener('click', function() {
+                const technologies = ['E-commerce', 'AI Personalization', 'Mobile Commerce', 'Smart Stores', 'Analytics', 'Fulfillment'];
+                console.log(`Exploring ${technologies[index]} retail technology`);
+            });
+        });
+
+        // Shopping experience visualization
+        function createShoppingEffect() {
+            const cards = document.querySelectorAll('.technology-card');
+            
+            cards.forEach((card, index) => {
+                card.addEventListener('mouseenter', function() {
+                    // Shopping-themed glow effect
+                    this.style.boxShadow = '0 8px 32px rgba(245, 158, 11, 0.3)';
+                    
+                    // Add retail animation
+                    setTimeout(() => {
+                        this.style.transform = 'translateY(-3px) scale(1.01)';
+                    }, 100);
+                });
+                
+                card.addEventListener('mouseleave', function() {
+                    this.style.boxShadow = '';
+                    this.style.transform = 'translateY(0) scale(1)';
+                });
+            });
+        }
+
+        // Initialize shopping effect
+        document.addEventListener('DOMContentLoaded', createShoppingEffect);
+
+        // Dynamic shopping cart simulation
+        let cartItems = 0;
+        
+        document.querySelectorAll('.technology-card').forEach(card => {
+            card.addEventListener('click', function() {
+                cartItems++;
+                
+                // Create floating cart animation
+                const icon = this.querySelector('.icon');
+                const cartIndicator = document.createElement('div');
+                cartIndicator.innerHTML = '🛒';
+                cartIndicator.style.cssText = `
+                    position: fixed;
+                    top: 20px;
+                    right: 20px;
+                    font-size: 2rem;
+                    z-index: 1000;
+                    animation: bounce 0.5s ease;
+                `;
+                
+                document.body.appendChild(cartIndicator);
+                
+                setTimeout(() => {
+                    cartIndicator.remove();
+                }, 500);
+            });
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,855 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Transportation & Logistics Optimization Guide</title>
+    <meta name="description" content="Comprehensive guide to transportation and logistics optimization, supply chain management, fleet optimization, last-mile delivery, and logistics technology.">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            line-height: 1.6;
+            color: #e0e0e0;
+            background: #0a0a0a;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+        
+        header {
+            background: #111;
+            border-bottom: 1px solid #333;
+            padding: 2rem 0;
+        }
+        
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+        
+        .logo {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #fff;
+        }
+        
+        .tagline {
+            color: #888;
+            font-size: 0.9rem;
+        }
+        
+        .hero {
+            background: linear-gradient(135deg, #1a1a1a 0%, #1e40af 100%);
+            padding: 4rem 0;
+            text-align: center;
+        }
+        
+        .hero h1 {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            color: #fff;
+            font-weight: 700;
+        }
+        
+        .hero p {
+            font-size: 1.25rem;
+            color: #ccc;
+            max-width: 800px;
+            margin: 0 auto 2rem;
+        }
+        
+        .section {
+            padding: 4rem 0;
+        }
+        
+        .section h2 {
+            font-size: 2.5rem;
+            margin-bottom: 2rem;
+            color: #fff;
+            text-align: center;
+        }
+        
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-top: 2rem;
+        }
+        
+        .card {
+            background: #1a1a1a;
+            border: 1px solid #333;
+            border-radius: 8px;
+            padding: 2rem;
+            transition: transform 0.2s, border-color 0.2s;
+        }
+        
+        .card:hover {
+            transform: translateY(-5px);
+            border-color: #666;
+        }
+        
+        .card h3 {
+            color: #fff;
+            margin-bottom: 1rem;
+            font-size: 1.5rem;
+        }
+        
+        .card p {
+            color: #ccc;
+            margin-bottom: 1rem;
+        }
+        
+        .card ul {
+            color: #aaa;
+            padding-left: 1.5rem;
+        }
+        
+        .card ul li {
+            margin-bottom: 0.5rem;
+        }
+        
+        .highlight {
+            background: #2a1810;
+            border: 1px solid #8B4513;
+            border-radius: 8px;
+            padding: 2rem;
+            margin: 2rem 0;
+        }
+        
+        .highlight h3 {
+            color: #DEB887;
+            margin-bottom: 1rem;
+        }
+        
+        .highlight p {
+            color: #ccc;
+        }
+        
+        .two-column {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 3rem;
+            margin: 2rem 0;
+        }
+        
+        .comparison-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 2rem 0;
+            background: #1a1a1a;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+        
+        .comparison-table th,
+        .comparison-table td {
+            padding: 1rem;
+            text-align: left;
+            border-bottom: 1px solid #333;
+        }
+        
+        .comparison-table th {
+            background: #2a2a2a;
+            color: #fff;
+            font-weight: 600;
+        }
+        
+        .comparison-table td {
+            color: #ccc;
+        }
+        
+        .pros-cons {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+        }
+        
+        .pros, .cons {
+            background: #1a1a1a;
+            border-radius: 8px;
+            padding: 1.5rem;
+        }
+        
+        .pros {
+            border-left: 4px solid #4CAF50;
+        }
+        
+        .cons {
+            border-left: 4px solid #F44336;
+        }
+        
+        .pros h4 {
+            color: #4CAF50;
+            margin-bottom: 1rem;
+        }
+        
+        .cons h4 {
+            color: #F44336;
+            margin-bottom: 1rem;
+        }
+        
+        .cta {
+            background: #2a1810;
+            padding: 3rem 0;
+            text-align: center;
+            margin: 4rem 0;
+            border-radius: 12px;
+        }
+        
+        .cta h2 {
+            margin-bottom: 1rem;
+            color: #DEB887;
+        }
+        
+        .cta p {
+            margin-bottom: 2rem;
+            color: #ccc;
+            font-size: 1.1rem;
+        }
+        
+        .btn {
+            display: inline-block;
+            padding: 12px 30px;
+            background: #8B4513;
+            color: white;
+            text-decoration: none;
+            border-radius: 6px;
+            font-weight: 600;
+            transition: background 0.3s;
+        }
+        
+        .btn:hover {
+            background: #A0522D;
+        }
+        
+        footer {
+            background: #111;
+            border-top: 1px solid #333;
+            padding: 2rem 0;
+            text-align: center;
+        }
+        
+        footer p {
+            color: #888;
+        }
+        
+        @media (max-width: 768px) {
+            .hero h1 {
+                font-size: 2rem;
+            }
+            
+            .two-column {
+                grid-template-columns: 1fr;
+                gap: 2rem;
+            }
+            
+            .pros-cons {
+                grid-template-columns: 1fr;
+            }
+            
+            .header-content {
+                text-align: center;
+            }
+        }
+        
+        .feature-highlight {
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            color: white;
+            padding: 2rem;
+            border-radius: 8px;
+            margin: 2rem 0;
+        }
+        
+        .solutions-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 2rem;
+            margin: 3rem 0;
+        }
+        
+        .solution-card {
+            background: #1a1a1a;
+            border: 1px solid #333;
+            border-radius: 8px;
+            padding: 2rem;
+            text-align: center;
+            transition: transform 0.2s;
+        }
+        
+        .solution-card:hover {
+            transform: translateY(-3px);
+            border-color: #666;
+        }
+        
+        .solution-card .icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 2rem;
+            margin: 3rem 0;
+        }
+        
+        .stat-card {
+            background: #1a1a1a;
+            border: 1px solid #333;
+            border-radius: 8px;
+            padding: 2rem;
+            text-align: center;
+        }
+        
+        .stat-card .number {
+            font-size: 3rem;
+            color: #1e40af;
+            font-weight: bold;
+            display: block;
+        }
+        
+        .stat-card .label {
+            color: #ccc;
+            margin-top: 0.5rem;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <div class="header-content">
+                <div class="logo">GAB</div>
+                <div class="tagline">Transportation & Logistics Guide</div>
+            </div>
+        </div>
+    </header>
+
+    <section class="hero">
+        <div class="container">
+            <h1>Transportation & Logistics Optimization</h1>
+            <p>Master supply chain efficiency with cutting-edge logistics optimization strategies, fleet management solutions, and emerging transportation technologies.</p>
+        </div>
+    </section>
+
+    <section class="section">
+        <div class="container">
+            <h2>Logistics Market Overview</h2>
+            
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <span class="number">$12.7T</span>
+                    <div class="label">Global Logistics Market (2025)</div>
+                </div>
+                <div class="stat-card">
+                    <span class="number">7.5%</span>
+                    <div class="label">Annual Growth Rate</div>
+                </div>
+                <div class="stat-card">
+                    <span class="number">30%</span>
+                    <div class="label">Cost Savings from Optimization</div>
+                </div>
+                <div class="stat-card">
+                    <span class="number">$1.6T</span>
+                    <div class="label">Last-Mile Delivery Market</div>
+                </div>
+            </div>
+
+            <div class="highlight">
+                <h3>The Logistics Revolution</h3>
+                <p>Transportation and logistics optimization is critical for business competitiveness. Advanced analytics, automation, and AI-driven solutions are transforming supply chains, reducing costs by up to 30%, and enabling faster, more sustainable delivery models.</p>
+            </div>
+        </div>
+    </section>
+
+    <section class="section">
+        <div class="container">
+            <h2>Core Optimization Areas</h2>
+            
+            <div class="grid">
+                <div class="card">
+                    <h3>Route Optimization</h3>
+                    <p>AI-powered route planning minimizing distance, time, and fuel consumption across delivery networks.</p>
+                    <ul>
+                        <li>Dynamic routing algorithms</li>
+                        <li>Real-time traffic integration</li>
+                        <li>Multi-stop optimization</li>
+                        <li>Vehicle capacity constraints</li>
+                        <li>Time window compliance</li>
+                    </ul>
+                </div>
+                
+                <div class="card">
+                    <h3>Fleet Management</h3>
+                    <p>Comprehensive vehicle tracking, maintenance, and utilization optimization for maximum efficiency.</p>
+                    <ul>
+                        <li>Vehicle telematics and GPS</li>
+                        <li>Predictive maintenance</li>
+                        <li>Fuel efficiency monitoring</li>
+                        <li>Driver behavior analysis</li>
+                        <li>Fleet utilization optimization</li>
+                    </ul>
+                </div>
+                
+                <div class="card">
+                    <h3>Warehouse Automation</h3>
+                    <p>Robotic systems and AI optimizing storage, picking, and fulfillment operations.</p>
+                    <ul>
+                        <li>Automated storage systems</li>
+                        <li>Robotic picking solutions</li>
+                        <li>Inventory optimization</li>
+                        <li>WMS integration</li>
+                        <li>Order fulfillment automation</li>
+                    </ul>
+                </div>
+                
+                <div class="card">
+                    <h3>Supply Chain Visibility</h3>
+                    <p>End-to-end tracking and transparency across complex global supply networks.</p>
+                    <ul>
+                        <li>Real-time shipment tracking</li>
+                        <li>IoT sensor integration</li>
+                        <li>Blockchain transparency</li>
+                        <li>Predictive analytics</li>
+                        <li>Exception management</li>
+                    </ul>
+                </div>
+                
+                <div class="card">
+                    <h3>Last-Mile Delivery</h3>
+                    <p>Innovative solutions for the most expensive and complex part of logistics operations.</p>
+                    <ul>
+                        <li>Autonomous delivery vehicles</li>
+                        <li>Drone delivery networks</li>
+                        <li>Smart locker systems</li>
+                        <li>Crowdsourced delivery</li>
+                        <li>Micro-fulfillment centers</li>
+                    </ul>
+                </div>
+                
+                <div class="card">
+                    <h3>Demand Forecasting</h3>
+                    <p>ML-powered demand prediction optimizing inventory levels and transportation capacity.</p>
+                    <ul>
+                        <li>Machine learning algorithms</li>
+                        <li>Historical data analysis</li>
+                        <li>Market trend integration</li>
+                        <li>Seasonal adjustment</li>
+                        <li>Collaborative forecasting</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="section">
+        <div class="container">
+            <h2>Logistics Technology Solutions</h2>
+            
+            <div class="solutions-grid">
+                <div class="solution-card">
+                    <div class="icon">📊</div>
+                    <h3>Transportation Management</h3>
+                    <p>TMS platforms optimizing carrier selection, load planning, and freight cost management.</p>
+                </div>
+                
+                <div class="solution-card">
+                    <div class="icon">📦</div>
+                    <h3>Warehouse Management</h3>
+                    <p>WMS solutions streamlining inventory, picking, packing, and shipping operations.</p>
+                </div>
+                
+                <div class="solution-card">
+                    <div class="icon">🤖</div>
+                    <h3>Process Automation</h3>
+                    <p>RPA and AI automating repetitive logistics processes and decision-making.</p>
+                </div>
+                
+                <div class="solution-card">
+                    <div class="icon">🔍</div>
+                    <h3>Analytics & BI</h3>
+                    <p>Advanced analytics providing insights for continuous logistics optimization.</p>
+                </div>
+                
+                <div class="solution-card">
+                    <div class="icon">📱</div>
+                    <h3>Mobile Solutions</h3>
+                    <p>Driver apps, customer portals, and mobile workforce management tools.</p>
+                </div>
+                
+                <div class="solution-card">
+                    <div class="icon">☁️</div>
+                    <h3>Cloud Platforms</h3>
+                    <p>Scalable cloud infrastructure supporting global logistics operations.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="section">
+        <div class="container">
+            <h2>Optimization Strategies</h2>
+            
+            <div class="two-column">
+                <div>
+                    <h3>Cost Reduction Tactics</h3>
+                    <ul style="color: #ccc; padding-left: 1.5rem;">
+                        <li><strong>Consolidation:</strong> Combine shipments to reduce transportation costs</li>
+                        <li><strong>Backhauling:</strong> Optimize return trips to minimize empty miles</li>
+                        <li><strong>Modal Shift:</strong> Choose optimal transport modes for cost efficiency</li>
+                        <li><strong>Network Design:</strong> Strategic facility placement and routing</li>
+                        <li><strong>Carrier Negotiation:</strong> Leverage volume for better rates</li>
+                        <li><strong>Fuel Optimization:</strong> Route and speed optimization for fuel savings</li>
+                    </ul>
+                </div>
+                
+                <div>
+                    <h3>Service Improvement</h3>
+                    <ul style="color: #ccc; padding-left: 1.5rem;">
+                        <li><strong>Real-time Tracking:</strong> Enhanced visibility for customers</li>
+                        <li><strong>Predictive ETAs:</strong> Accurate delivery time estimates</li>
+                        <li><strong>Exception Handling:</strong> Proactive issue resolution</li>
+                        <li><strong>Flexible Delivery:</strong> Multiple delivery options and time slots</li>
+                        <li><strong>Communication:</strong> Automated updates and notifications</li>
+                        <li><strong>Returns Management:</strong> Streamlined reverse logistics</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="feature-highlight">
+                <h3>Key Performance Indicators</h3>
+                <p>Measure logistics performance through on-time delivery rates (95%+ target), cost per shipment, inventory turnover (12+ times annually), order accuracy (99.5%+ target), and customer satisfaction scores. Monitor fuel efficiency and asset utilization for comprehensive optimization.</p>
+            </div>
+        </div>
+    </section>
+
+    <section class="section">
+        <div class="container">
+            <h2>Transportation Mode Comparison</h2>
+            
+            <table class="comparison-table">
+                <thead>
+                    <tr>
+                        <th>Mode</th>
+                        <th>Cost</th>
+                        <th>Speed</th>
+                        <th>Capacity</th>
+                        <th>Environmental Impact</th>
+                        <th>Best Use Case</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Ground (Truck)</td>
+                        <td>Moderate</td>
+                        <td>Fast</td>
+                        <td>Medium</td>
+                        <td>Medium</td>
+                        <td>Regional, last-mile</td>
+                    </tr>
+                    <tr>
+                        <td>Rail</td>
+                        <td>Low</td>
+                        <td>Moderate</td>
+                        <td>Very High</td>
+                        <td>Low</td>
+                        <td>Long-distance, bulk goods</td>
+                    </tr>
+                    <tr>
+                        <td>Ocean</td>
+                        <td>Very Low</td>
+                        <td>Slow</td>
+                        <td>Very High</td>
+                        <td>Very Low</td>
+                        <td>International, non-urgent</td>
+                    </tr>
+                    <tr>
+                        <td>Air</td>
+                        <td>High</td>
+                        <td>Very Fast</td>
+                        <td>Low</td>
+                        <td>High</td>
+                        <td>Urgent, high-value</td>
+                    </tr>
+                    <tr>
+                        <td>Pipeline</td>
+                        <td>Low</td>
+                        <td>Continuous</td>
+                        <td>High</td>
+                        <td>Very Low</td>
+                        <td>Liquids, gases</td>
+                    </tr>
+                    <tr>
+                        <td>Drone</td>
+                        <td>Moderate</td>
+                        <td>Fast</td>
+                        <td>Very Low</td>
+                        <td>Low</td>
+                        <td>Last-mile, rural areas</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </section>
+
+    <section class="section">
+        <div class="container">
+            <h2>Implementation Framework</h2>
+            
+            <div class="grid">
+                <div class="card">
+                    <h3>Assessment Phase</h3>
+                    <p>Comprehensive analysis of current logistics operations and optimization opportunities.</p>
+                    <ul>
+                        <li>Current state analysis</li>
+                        <li>Cost structure breakdown</li>
+                        <li>Performance benchmarking</li>
+                        <li>Technology gap assessment</li>
+                        <li>Stakeholder requirement gathering</li>
+                    </ul>
+                </div>
+                
+                <div class="card">
+                    <h3>Solution Design</h3>
+                    <p>Developing optimal logistics strategies and technology solutions for specific needs.</p>
+                    <ul>
+                        <li>Network optimization modeling</li>
+                        <li>Technology solution selection</li>
+                        <li>ROI analysis and business case</li>
+                        <li>Implementation roadmap</li>
+                        <li>Change management planning</li>
+                    </ul>
+                </div>
+                
+                <div class="card">
+                    <h3>Pilot Testing</h3>
+                    <p>Small-scale implementation to validate solutions before full-scale rollout.</p>
+                    <ul>
+                        <li>Limited scope pilot projects</li>
+                        <li>Performance measurement</li>
+                        <li>User feedback collection</li>
+                        <li>Process refinement</li>
+                        <li>Scalability validation</li>
+                    </ul>
+                </div>
+                
+                <div class="card">
+                    <h3>Full Deployment</h3>
+                    <p>Systematic rollout of optimized logistics solutions across entire operations.</p>
+                    <ul>
+                        <li>Phased implementation</li>
+                        <li>Training and adoption</li>
+                        <li>System integration</li>
+                        <li>Performance monitoring</li>
+                        <li>Continuous improvement</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="section">
+        <div class="container">
+            <h2>Emerging Technologies</h2>
+            
+            <div class="two-column">
+                <div>
+                    <h3>Autonomous Vehicles</h3>
+                    <ul style="color: #ccc; padding-left: 1.5rem;">
+                        <li><strong>Self-driving trucks:</strong> Long-haul transportation automation</li>
+                        <li><strong>Delivery robots:</strong> Last-mile autonomous delivery</li>
+                        <li><strong>Warehouse AGVs:</strong> Automated guided vehicles</li>
+                        <li><strong>Yard management:</strong> Autonomous container handling</li>
+                        <li><strong>Safety improvements:</strong> Reduced human error</li>
+                        <li><strong>24/7 operations:</strong> Continuous operation capability</li>
+                    </ul>
+                </div>
+                
+                <div>
+                    <h3>AI & Machine Learning</h3>
+                    <ul style="color: #ccc; padding-left: 1.5rem;">
+                        <li><strong>Predictive analytics:</strong> Demand and capacity forecasting</li>
+                        <li><strong>Dynamic optimization:</strong> Real-time route adjustments</li>
+                        <li><strong>Anomaly detection:</strong> Automated issue identification</li>
+                        <li><strong>Computer vision:</strong> Automated quality inspection</li>
+                        <li><strong>Natural language:</strong> Conversational logistics interfaces</li>
+                        <li><strong>Decision support:</strong> AI-powered recommendations</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="section">
+        <div class="container">
+            <h2>Benefits & Challenges</h2>
+            
+            <div class="pros-cons">
+                <div class="pros">
+                    <h4>✅ Benefits</h4>
+                    <ul style="color: #ccc; padding-left: 1.5rem; margin-top: 1rem;">
+                        <li>20-30% cost reduction potential</li>
+                        <li>Improved delivery times and reliability</li>
+                        <li>Enhanced customer satisfaction</li>
+                        <li>Better resource utilization</li>
+                        <li>Reduced environmental impact</li>
+                        <li>Data-driven decision making</li>
+                        <li>Competitive advantage</li>
+                    </ul>
+                </div>
+                
+                <div class="cons">
+                    <h4>⚠️ Challenges</h4>
+                    <ul style="color: #ccc; padding-left: 1.5rem; margin-top: 1rem;">
+                        <li>High initial technology investment</li>
+                        <li>Complex system integration</li>
+                        <li>Change management resistance</li>
+                        <li>Data quality and availability</li>
+                        <li>Skill gaps and training needs</li>
+                        <li>Vendor dependency risks</li>
+                        <li>Regulatory compliance complexity</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="highlight" style="margin-top: 3rem;">
+                <h3>Success Factors</h3>
+                <p>Successful logistics optimization requires executive commitment, data-driven decision making, stakeholder collaboration, phased implementation approaches, continuous performance monitoring, and investment in employee training and change management.</p>
+            </div>
+        </div>
+    </section>
+
+    <div class="cta">
+        <div class="container">
+            <h2>Ready to Optimize Your Logistics?</h2>
+            <p>Transform your transportation and logistics operations with cutting-edge optimization strategies and technologies.</p>
+            <a href="https://gab.ae" class="btn">Explore More Logistics Resources</a>
+        </div>
+    </div>
+
+    <footer>
+        <div class="container">
+            <p>&copy; 2026 GAB Ventures. Transportation & Logistics Optimization Guide.</p>
+        </div>
+    </footer>
+
+    <script>
+        // Add smooth scrolling for anchor links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                document.querySelector(this.getAttribute('href')).scrollIntoView({
+                    behavior: 'smooth'
+                });
+            });
+        });
+
+        // Add intersection observer for animations
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -50px 0px'
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.style.opacity = '1';
+                    entry.target.style.transform = 'translateY(0)';
+                }
+            });
+        }, observerOptions);
+
+        // Observe all cards and sections
+        document.querySelectorAll('.card, .solution-card, .stat-card').forEach(el => {
+            el.style.opacity = '0';
+            el.style.transform = 'translateY(20px)';
+            el.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
+            observer.observe(el);
+        });
+
+        // Interactive solution showcase
+        document.querySelectorAll('.solution-card').forEach(card => {
+            card.addEventListener('click', function() {
+                this.style.transform = 'translateY(-5px) scale(1.02)';
+                setTimeout(() => {
+                    this.style.transform = 'translateY(-3px)';
+                }, 200);
+            });
+        });
+
+        // Stats counter animation
+        function animateCounter(element, target, suffix = '', duration = 2000) {
+            const start = 0;
+            const increment = target / (duration / 16);
+            let current = start;
+            
+            const timer = setInterval(() => {
+                current += increment;
+                if (current >= target) {
+                    current = target;
+                    clearInterval(timer);
+                }
+                
+                if (suffix === 'T') {
+                    element.textContent = '$' + current.toFixed(1) + 'T';
+                } else if (suffix === '%') {
+                    element.textContent = Math.floor(current) + '%';
+                } else {
+                    element.textContent = Math.floor(current) + suffix;
+                }
+            }, 16);
+        }
+
+        // Trigger counter animations when stats come into view
+        const statsObserver = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting && !entry.target.classList.contains('animated')) {
+                    entry.target.classList.add('animated');
+                    const number = entry.target.querySelector('.number');
+                    const text = number.textContent;
+                    
+                    if (text.includes('$12.7T')) animateCounter(number, 12.7, 'T', 2000);
+                    else if (text.includes('7.5%')) animateCounter(number, 7.5, '%', 2000);
+                    else if (text.includes('30%')) animateCounter(number, 30, '%', 2000);
+                    else if (text.includes('$1.6T')) animateCounter(number, 1.6, 'T', 2000);
+                }
+            });
+        }, { threshold: 0.5 });
+
+        document.querySelectorAll('.stat-card').forEach(card => {
+            statsObserver.observe(card);
+        });
+
+        // Interactive table highlighting
+        document.querySelectorAll('.comparison-table tbody tr').forEach(row => {
+            row.addEventListener('mouseenter', function() {
+                this.style.backgroundColor = '#2a2a2a';
+            });
+            
+            row.addEventListener('mouseleave', function() {
+                this.style.backgroundColor = 'transparent';
+            });
+        });
+
+        // Logistics solution interaction tracking
+        document.querySelectorAll('.solution-card').forEach((card, index) => {
+            card.addEventListener('click', function() {
+                const solutions = ['TMS', 'WMS', 'Automation', 'Analytics', 'Mobile', 'Cloud'];
+                console.log(`Exploring ${solutions[index]} logistics solution`);
+            });
+        });
+    </script>
+</body>
+</html>

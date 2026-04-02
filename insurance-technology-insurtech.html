@@ -1,0 +1,875 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Insurance Technology & InsurTech Guide - Digital Insurance Innovation</title>
+    <meta name="description" content="Comprehensive guide to insurance technology, digital insurance platforms, AI underwriting, IoT claims, blockchain insurance, and InsurTech innovations.">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            line-height: 1.6;
+            color: #e0e0e0;
+            background: #0a0a0a;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+        
+        header {
+            background: #111;
+            border-bottom: 1px solid #333;
+            padding: 2rem 0;
+        }
+        
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+        
+        .logo {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #fff;
+        }
+        
+        .tagline {
+            color: #888;
+            font-size: 0.9rem;
+        }
+        
+        .hero {
+            background: linear-gradient(135deg, #1a1a1a 0%, #1e40af 100%);
+            padding: 4rem 0;
+            text-align: center;
+        }
+        
+        .hero h1 {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            color: #fff;
+            font-weight: 700;
+        }
+        
+        .hero p {
+            font-size: 1.25rem;
+            color: #ccc;
+            max-width: 800px;
+            margin: 0 auto 2rem;
+        }
+        
+        .section {
+            padding: 4rem 0;
+        }
+        
+        .section h2 {
+            font-size: 2.5rem;
+            margin-bottom: 2rem;
+            color: #fff;
+            text-align: center;
+        }
+        
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-top: 2rem;
+        }
+        
+        .card {
+            background: #1a1a1a;
+            border: 1px solid #333;
+            border-radius: 8px;
+            padding: 2rem;
+            transition: transform 0.2s, border-color 0.2s;
+        }
+        
+        .card:hover {
+            transform: translateY(-5px);
+            border-color: #666;
+        }
+        
+        .card h3 {
+            color: #fff;
+            margin-bottom: 1rem;
+            font-size: 1.5rem;
+        }
+        
+        .card p {
+            color: #ccc;
+            margin-bottom: 1rem;
+        }
+        
+        .card ul {
+            color: #aaa;
+            padding-left: 1.5rem;
+        }
+        
+        .card ul li {
+            margin-bottom: 0.5rem;
+        }
+        
+        .highlight {
+            background: #2a1810;
+            border: 1px solid #8B4513;
+            border-radius: 8px;
+            padding: 2rem;
+            margin: 2rem 0;
+        }
+        
+        .highlight h3 {
+            color: #DEB887;
+            margin-bottom: 1rem;
+        }
+        
+        .highlight p {
+            color: #ccc;
+        }
+        
+        .two-column {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 3rem;
+            margin: 2rem 0;
+        }
+        
+        .comparison-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 2rem 0;
+            background: #1a1a1a;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+        
+        .comparison-table th,
+        .comparison-table td {
+            padding: 1rem;
+            text-align: left;
+            border-bottom: 1px solid #333;
+        }
+        
+        .comparison-table th {
+            background: #2a2a2a;
+            color: #fff;
+            font-weight: 600;
+        }
+        
+        .comparison-table td {
+            color: #ccc;
+        }
+        
+        .pros-cons {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+        }
+        
+        .pros, .cons {
+            background: #1a1a1a;
+            border-radius: 8px;
+            padding: 1.5rem;
+        }
+        
+        .pros {
+            border-left: 4px solid #4CAF50;
+        }
+        
+        .cons {
+            border-left: 4px solid #F44336;
+        }
+        
+        .pros h4 {
+            color: #4CAF50;
+            margin-bottom: 1rem;
+        }
+        
+        .cons h4 {
+            color: #F44336;
+            margin-bottom: 1rem;
+        }
+        
+        .cta {
+            background: #2a1810;
+            padding: 3rem 0;
+            text-align: center;
+            margin: 4rem 0;
+            border-radius: 12px;
+        }
+        
+        .cta h2 {
+            margin-bottom: 1rem;
+            color: #DEB887;
+        }
+        
+        .cta p {
+            margin-bottom: 2rem;
+            color: #ccc;
+            font-size: 1.1rem;
+        }
+        
+        .btn {
+            display: inline-block;
+            padding: 12px 30px;
+            background: #8B4513;
+            color: white;
+            text-decoration: none;
+            border-radius: 6px;
+            font-weight: 600;
+            transition: background 0.3s;
+        }
+        
+        .btn:hover {
+            background: #A0522D;
+        }
+        
+        footer {
+            background: #111;
+            border-top: 1px solid #333;
+            padding: 2rem 0;
+            text-align: center;
+        }
+        
+        footer p {
+            color: #888;
+        }
+        
+        @media (max-width: 768px) {
+            .hero h1 {
+                font-size: 2rem;
+            }
+            
+            .two-column {
+                grid-template-columns: 1fr;
+                gap: 2rem;
+            }
+            
+            .pros-cons {
+                grid-template-columns: 1fr;
+            }
+            
+            .header-content {
+                text-align: center;
+            }
+        }
+        
+        .feature-highlight {
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            color: white;
+            padding: 2rem;
+            border-radius: 8px;
+            margin: 2rem 0;
+        }
+        
+        .technologies-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 2rem;
+            margin: 3rem 0;
+        }
+        
+        .technology-card {
+            background: #1a1a1a;
+            border: 1px solid #333;
+            border-radius: 8px;
+            padding: 2rem;
+            text-align: center;
+            transition: transform 0.2s;
+        }
+        
+        .technology-card:hover {
+            transform: translateY(-3px);
+            border-color: #666;
+        }
+        
+        .technology-card .icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 2rem;
+            margin: 3rem 0;
+        }
+        
+        .stat-card {
+            background: #1a1a1a;
+            border: 1px solid #333;
+            border-radius: 8px;
+            padding: 2rem;
+            text-align: center;
+        }
+        
+        .stat-card .number {
+            font-size: 3rem;
+            color: #1e40af;
+            font-weight: bold;
+            display: block;
+        }
+        
+        .stat-card .label {
+            color: #ccc;
+            margin-top: 0.5rem;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <div class="header-content">
+                <div class="logo">GAB</div>
+                <div class="tagline">Insurance Technology Guide</div>
+            </div>
+        </div>
+    </header>
+
+    <section class="hero">
+        <div class="container">
+            <h1>Insurance Technology & InsurTech</h1>
+            <p>Discover cutting-edge insurance technologies transforming risk assessment, underwriting, claims processing, and customer experience through AI, IoT, blockchain, and digital platforms.</p>
+        </div>
+    </section>
+
+    <section class="section">
+        <div class="container">
+            <h2>InsurTech Market Overview</h2>
+            
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <span class="number">$7.2B</span>
+                    <div class="label">Global InsurTech Investment (2024)</div>
+                </div>
+                <div class="stat-card">
+                    <span class="number">13%</span>
+                    <div class="label">Annual Growth Rate</div>
+                </div>
+                <div class="stat-card">
+                    <span class="number">$5.4T</span>
+                    <div class="label">Global Insurance Premiums</div>
+                </div>
+                <div class="stat-card">
+                    <span class="number">72%</span>
+                    <div class="label">Customers Prefer Digital Experience</div>
+                </div>
+            </div>
+
+            <div class="highlight">
+                <h3>The InsurTech Revolution</h3>
+                <p>Insurance technology is modernizing the $5.4 trillion insurance industry through digital transformation, AI-powered underwriting, IoT risk monitoring, and customer-centric platforms. InsurTech is making insurance more accessible, accurate, and efficient for both insurers and policyholders.</p>
+            </div>
+        </div>
+    </section>
+
+    <section class="section">
+        <div class="container">
+            <h2>Core InsurTech Categories</h2>
+            
+            <div class="grid">
+                <div class="card">
+                    <h3>Digital Insurance Platforms</h3>
+                    <p>End-to-end digital insurance solutions simplifying policy purchase, management, and claims.</p>
+                    <ul>
+                        <li>Online policy comparison and purchase</li>
+                        <li>Mobile insurance applications</li>
+                        <li>Self-service customer portals</li>
+                        <li>Digital policy management</li>
+                        <li>Automated renewal and billing</li>
+                    </ul>
+                </div>
+                
+                <div class="card">
+                    <h3>AI & Machine Learning</h3>
+                    <p>Artificial intelligence systems enhancing underwriting, pricing, fraud detection, and customer service.</p>
+                    <ul>
+                        <li>Automated underwriting and risk assessment</li>
+                        <li>Predictive pricing models</li>
+                        <li>Fraud detection and prevention</li>
+                        <li>Claims automation and processing</li>
+                        <li>Chatbots and virtual assistants</li>
+                    </ul>
+                </div>
+                
+                <div class="card">
+                    <h3>IoT & Telematics</h3>
+                    <p>Connected devices providing real-time data for risk monitoring and prevention.</p>
+                    <ul>
+                        <li>Usage-based insurance (UBI)</li>
+                        <li>Smart home monitoring systems</li>
+                        <li>Wearable health devices</li>
+                        <li>Vehicle telematics and tracking</li>
+                        <li>Industrial IoT risk monitoring</li>
+                    </ul>
+                </div>
+                
+                <div class="card">
+                    <h3>Blockchain & Smart Contracts</h3>
+                    <p>Distributed ledger technology enabling transparent and automated insurance processes.</p>
+                    <ul>
+                        <li>Smart contract automation</li>
+                        <li>Parametric insurance products</li>
+                        <li>Claims transparency and verification</li>
+                        <li>Reinsurance and risk sharing</li>
+                        <li>Identity verification and KYC</li>
+                    </ul>
+                </div>
+                
+                <div class="card">
+                    <h3>On-Demand & Micro Insurance</h3>
+                    <p>Flexible insurance products providing coverage exactly when and where needed.</p>
+                    <ul>
+                        <li>Pay-per-use insurance models</li>
+                        <li>Micro-duration coverage</li>
+                        <li>Event-based insurance</li>
+                        <li>Gig economy worker coverage</li>
+                        <li>Travel and activity-specific policies</li>
+                    </ul>
+                </div>
+                
+                <div class="card">
+                    <h3>Data Analytics & Risk Modeling</h3>
+                    <p>Advanced analytics platforms providing deeper risk insights and personalized pricing.</p>
+                    <ul>
+                        <li>Alternative data sources</li>
+                        <li>Predictive risk modeling</li>
+                        <li>Customer behavior analysis</li>
+                        <li>Climate and catastrophe modeling</li>
+                        <li>Real-time risk assessment</li>
+                    </ul>
+                </div>
+            </grid>
+        </div>
+    </section>
+
+    <section class="section">
+        <div class="container">
+            <h2>Leading InsurTech Solutions</h2>
+            
+            <div class="technologies-grid">
+                <div class="technology-card">
+                    <div class="icon">🏠</div>
+                    <h3>Digital Insurance Brokers</h3>
+                    <p>Lemonade, Root, and Oscar use AI and digital platforms to simplify insurance buying and claims processing.</p>
+                </div>
+                
+                <div class="technology-card">
+                    <div class="icon">🚗</div>
+                    <h3>Usage-Based Insurance</h3>
+                    <p>Progressive Snapshot, Metromile, and Cambridge Mobile Telematics provide pay-per-mile and behavior-based auto insurance.</p>
+                </div>
+                
+                <div class="technology-card">
+                    <div class="icon">🤖</div>
+                    <h3>AI Underwriting</h3>
+                    <p>Shift Technology, DataCubes, and Earnix use machine learning for automated underwriting and pricing optimization.</p>
+                </div>
+                
+                <div class="technology-card">
+                    <div class="icon">⛈️</div>
+                    <h3>Parametric Insurance</h3>
+                    <p>Arbol, Descartes Underwriting, and FloodFlash offer weather and catastrophe-triggered automatic payouts.</p>
+                </div>
+                
+                <div class="technology-card">
+                    <div class="icon">📱</div>
+                    <h3>On-Demand Coverage</h3>
+                    <p>Slice, Trov, and Zego provide flexible, app-based insurance for gig workers and short-term needs.</p>
+                </div>
+                
+                <div class="technology-card">
+                    <div class="icon">🔍</div>
+                    <h3>Fraud Detection</h3>
+                    <p>FRISS, Shift Technology, and DataSeer use AI to detect and prevent insurance fraud across all lines.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="section">
+        <div class="container">
+            <h2>InsurTech Innovation Areas</h2>
+            
+            <div class="two-column">
+                <div>
+                    <h3>Traditional Insurance Challenges</h3>
+                    <ul style="color: #ccc; padding-left: 1.5rem;">
+                        <li><strong>Complex Processes:</strong> Lengthy underwriting and claims procedures</li>
+                        <li><strong>Poor User Experience:</strong> Outdated interfaces and interactions</li>
+                        <li><strong>Limited Personalization:</strong> One-size-fits-all pricing models</li>
+                        <li><strong>Fraud Losses:</strong> Manual detection and high claim costs</li>
+                        <li><strong>Inefficient Operations:</strong> Paper-based and manual processes</li>
+                        <li><strong>Limited Data:</strong> Reliance on historical and demographic data</li>
+                    </ul>
+                </div>
+                
+                <div>
+                    <h3>Technology Solutions</h3>
+                    <ul style="color: #ccc; padding-left: 1.5rem;">
+                        <li><strong>AI Automation:</strong> Instant underwriting and claims processing</li>
+                        <li><strong>Digital Platforms:</strong> Mobile-first customer experiences</li>
+                        <li><strong>IoT Monitoring:</strong> Real-time risk data and prevention</li>
+                        <li><strong>Machine Learning:</strong> Advanced fraud detection algorithms</li>
+                        <li><strong>Cloud Infrastructure:</strong> Scalable and efficient operations</li>
+                        <li><strong>Alternative Data:</strong> Social, behavioral, and satellite data</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="feature-highlight">
+                <h3>Efficiency Improvements</h3>
+                <p>InsurTech solutions reduce underwriting time from weeks to minutes, decrease claims processing costs by 30-50%, improve fraud detection accuracy by 60-80%, and increase customer satisfaction scores by 40-60% through digital experiences.</p>
+            </div>
+        </div>
+    </section>
+
+    <section class="section">
+        <div class="container">
+            <h2>Insurance Technology Comparison</h2>
+            
+            <table class="comparison-table">
+                <thead>
+                    <tr>
+                        <th>Technology</th>
+                        <th>Primary Use Case</th>
+                        <th>Implementation Complexity</th>
+                        <th>ROI Timeline</th>
+                        <th>Adoption Stage</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Digital Platforms</td>
+                        <td>Customer Experience</td>
+                        <td>Medium</td>
+                        <td>6-12 months</td>
+                        <td>Mainstream</td>
+                    </tr>
+                    <tr>
+                        <td>AI Underwriting</td>
+                        <td>Risk Assessment</td>
+                        <td>High</td>
+                        <td>12-18 months</td>
+                        <td>Growing</td>
+                    </tr>
+                    <tr>
+                        <td>IoT/Telematics</td>
+                        <td>Risk Monitoring</td>
+                        <td>Medium</td>
+                        <td>18-24 months</td>
+                        <td>Growing</td>
+                    </tr>
+                    <tr>
+                        <td>Blockchain</td>
+                        <td>Claims Automation</td>
+                        <td>Very High</td>
+                        <td>24-36 months</td>
+                        <td>Emerging</td>
+                    </tr>
+                    <tr>
+                        <td>Chatbots/AI</td>
+                        <td>Customer Service</td>
+                        <td>Low</td>
+                        <td>3-6 months</td>
+                        <td>Mainstream</td>
+                    </tr>
+                    <tr>
+                        <td>Predictive Analytics</td>
+                        <td>Pricing/Risk</td>
+                        <td>High</td>
+                        <td>12-24 months</td>
+                        <td>Growing</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </section>
+
+    <section class="section">
+        <div class="container">
+            <h2>Implementation Strategies</h2>
+            
+            <div class="grid">
+                <div class="card">
+                    <h3>For Traditional Insurers</h3>
+                    <p>Digital transformation strategies for established insurance companies.</p>
+                    <ul>
+                        <li>Legacy system modernization and integration</li>
+                        <li>Customer experience digitalization</li>
+                        <li>AI and automation implementation</li>
+                        <li>Data analytics and insights platforms</li>
+                        <li>Cultural change and employee training</li>
+                    </ul>
+                </div>
+                
+                <div class="card">
+                    <h3>For InsurTech Startups</h3>
+                    <p>Market entry and growth strategies for insurance technology companies.</p>
+                    <ul>
+                        <li>Regulatory compliance and licensing</li>
+                        <li>Technology platform development</li>
+                        <li>Partnership and distribution strategies</li>
+                        <li>Capital raising and funding</li>
+                        <li>Customer acquisition and retention</li>
+                    </ul>
+                </div>
+                
+                <div class="card">
+                    <h3>For Insurance Brokers</h3>
+                    <p>Technology adoption strategies for insurance intermediaries and agents.</p>
+                    <ul>
+                        <li>Digital customer relationship management</li>
+                        <li>Automated quoting and comparison tools</li>
+                        <li>Client portal and self-service options</li>
+                        <li>Data analytics for client insights</li>
+                        <li>Mobile apps and digital communication</li>
+                    </ul>
+                </div>
+                
+                <div class="card">
+                    <h3>For Enterprise Customers</h3>
+                    <p>Technology integration for corporate and commercial insurance buyers.</p>
+                    <ul>
+                        <li>Risk management platform integration</li>
+                        <li>IoT and sensor deployment</li>
+                        <li>Claims management automation</li>
+                        <li>Data sharing and analytics</li>
+                        <li>Parametric and alternative products</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="section">
+        <div class="container">
+            <h2>Future of Insurance Technology</h2>
+            
+            <div class="two-column">
+                <div>
+                    <h3>Emerging Technologies</h3>
+                    <ul style="color: #ccc; padding-left: 1.5rem;">
+                        <li><strong>Quantum Computing:</strong> Advanced risk modeling and encryption</li>
+                        <li><strong>Computer Vision:</strong> Automated damage assessment and inspection</li>
+                        <li><strong>Digital Twins:</strong> Virtual risk modeling and simulation</li>
+                        <li><strong>5G Networks:</strong> Real-time IoT data and monitoring</li>
+                        <li><strong>Augmented Reality:</strong> Enhanced claims adjustment and training</li>
+                        <li><strong>Biometric Authentication:</strong> Secure identity verification</li>
+                    </ul>
+                </div>
+                
+                <div>
+                    <h3>Industry Trends</h3>
+                    <ul style="color: #ccc; padding-left: 1.5rem;">
+                        <li><strong>Ecosystem Platforms:</strong> Integrated financial services</li>
+                        <li><strong>Climate Adaptation:</strong> Climate change risk modeling</li>
+                        <li><strong>Cyber Insurance:</strong> Growing digital risk coverage</li>
+                        <li><strong>Health Integration:</strong> Wellness and prevention focus</li>
+                        <li><strong>Embedded Insurance:</strong> Invisible, contextual coverage</li>
+                        <li><strong>Regulatory Technology:</strong> Automated compliance</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="section">
+        <div class="container">
+            <h2>Opportunities & Challenges</h2>
+            
+            <div class="pros-cons">
+                <div class="pros">
+                    <h4>✅ Opportunities</h4>
+                    <ul style="color: #ccc; padding-left: 1.5rem; margin-top: 1rem;">
+                        <li>$5.4 trillion global insurance market</li>
+                        <li>Increasing demand for digital experiences</li>
+                        <li>Growing climate and cyber risk coverage needs</li>
+                        <li>Emerging markets and underinsured populations</li>
+                        <li>Gig economy and flexible work trends</li>
+                        <li>IoT and data availability expansion</li>
+                        <li>Regulatory support for innovation</li>
+                    </ul>
+                </div>
+                
+                <div class="cons">
+                    <h4>⚠️ Challenges</h4>
+                    <ul style="color: #ccc; padding-left: 1.5rem; margin-top: 1rem;">
+                        <li>Heavy regulatory compliance requirements</li>
+                        <li>Legacy system integration complexity</li>
+                        <li>Capital intensity and funding needs</li>
+                        <li>Data privacy and security concerns</li>
+                        <li>Customer trust and brand building</li>
+                        <li>Actuarial expertise and risk modeling</li>
+                        <li>Economic cycles and market volatility</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="highlight" style="margin-top: 3rem;">
+                <h3>Success Factors</h3>
+                <p>InsurTech success requires deep insurance industry knowledge, regulatory compliance expertise, strong technology platforms, customer-centric design, robust data and analytics capabilities, and strategic partnerships with traditional insurance players.</p>
+            </div>
+        </div>
+    </section>
+
+    <div class="cta">
+        <div class="container">
+            <h2>Ready to Transform Insurance?</h2>
+            <p>Explore the innovative world of insurance technology and discover how digital solutions are creating more efficient, accessible, and customer-friendly insurance experiences.</p>
+            <a href="https://gab.ae" class="btn">Explore More InsurTech Resources</a>
+        </div>
+    </div>
+
+    <footer>
+        <div class="container">
+            <p>&copy; 2026 GAB Ventures. Insurance Technology & InsurTech Guide.</p>
+        </div>
+    </footer>
+
+    <script>
+        // Add smooth scrolling for anchor links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                document.querySelector(this.getAttribute('href')).scrollIntoView({
+                    behavior: 'smooth'
+                });
+            });
+        });
+
+        // Add intersection observer for animations
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -50px 0px'
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.style.opacity = '1';
+                    entry.target.style.transform = 'translateY(0)';
+                }
+            });
+        }, observerOptions);
+
+        // Observe all cards and sections
+        document.querySelectorAll('.card, .technology-card, .stat-card').forEach(el => {
+            el.style.opacity = '0';
+            el.style.transform = 'translateY(20px)';
+            el.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
+            observer.observe(el);
+        });
+
+        // Interactive technology showcase
+        document.querySelectorAll('.technology-card').forEach(card => {
+            card.addEventListener('click', function() {
+                this.style.transform = 'translateY(-5px) scale(1.02)';
+                setTimeout(() => {
+                    this.style.transform = 'translateY(-3px)';
+                }, 200);
+            });
+        });
+
+        // Stats counter animation
+        function animateCounter(element, target, suffix = '', duration = 2000) {
+            const start = 0;
+            const increment = target / (duration / 16);
+            let current = start;
+            
+            const timer = setInterval(() => {
+                current += increment;
+                if (current >= target) {
+                    current = target;
+                    clearInterval(timer);
+                }
+                
+                if (suffix === 'B') {
+                    element.textContent = '$' + current.toFixed(1) + 'B';
+                } else if (suffix === '%') {
+                    element.textContent = Math.floor(current) + '%';
+                } else if (suffix === 'T') {
+                    element.textContent = '$' + current.toFixed(1) + 'T';
+                } else {
+                    element.textContent = Math.floor(current) + suffix;
+                }
+            }, 16);
+        }
+
+        // Trigger counter animations when stats come into view
+        const statsObserver = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting && !entry.target.classList.contains('animated')) {
+                    entry.target.classList.add('animated');
+                    const number = entry.target.querySelector('.number');
+                    const text = number.textContent;
+                    
+                    if (text.includes('$7.2B')) animateCounter(number, 7.2, 'B', 2000);
+                    else if (text.includes('13%')) animateCounter(number, 13, '%', 2000);
+                    else if (text.includes('$5.4T')) animateCounter(number, 5.4, 'T', 2000);
+                    else if (text.includes('72%')) animateCounter(number, 72, '%', 2000);
+                }
+            });
+        }, { threshold: 0.5 });
+
+        document.querySelectorAll('.stat-card').forEach(card => {
+            statsObserver.observe(card);
+        });
+
+        // Interactive table highlighting
+        document.querySelectorAll('.comparison-table tbody tr').forEach(row => {
+            row.addEventListener('mouseenter', function() {
+                this.style.backgroundColor = '#2a2a2a';
+            });
+            
+            row.addEventListener('mouseleave', function() {
+                this.style.backgroundColor = 'transparent';
+            });
+        });
+
+        // InsurTech interaction tracking
+        document.querySelectorAll('.technology-card').forEach((card, index) => {
+            card.addEventListener('click', function() {
+                const technologies = ['Digital Brokers', 'Usage-Based', 'AI Underwriting', 'Parametric', 'On-Demand', 'Fraud Detection'];
+                console.log(`Exploring ${technologies[index]} InsurTech solution`);
+            });
+        });
+
+        // Risk protection visualization effect
+        function createProtectionEffect() {
+            const cards = document.querySelectorAll('.technology-card');
+            
+            cards.forEach((card, index) => {
+                card.addEventListener('mouseenter', function() {
+                    // Protection-themed glow effect
+                    this.style.boxShadow = '0 8px 32px rgba(30, 64, 175, 0.3)';
+                    
+                    // Add shield-like animation
+                    setTimeout(() => {
+                        this.style.transform = 'translateY(-3px) scale(1.01)';
+                    }, 100);
+                });
+                
+                card.addEventListener('mouseleave', function() {
+                    this.style.boxShadow = '';
+                    this.style.transform = 'translateY(0) scale(1)';
+                });
+            });
+        }
+
+        // Initialize protection effect
+        document.addEventListener('DOMContentLoaded', createProtectionEffect);
+    </script>
+</body>
+</html>

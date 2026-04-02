@@ -1,0 +1,915 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Defense & Aerospace Technology Guide - Military Innovation</title>
+    <meta name="description" content="Comprehensive guide to defense and aerospace technology, military innovation, unmanned systems, space technology, cybersecurity, and defense industry trends.">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            line-height: 1.6;
+            color: #e0e0e0;
+            background: #0a0a0a;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+        
+        header {
+            background: #111;
+            border-bottom: 1px solid #333;
+            padding: 2rem 0;
+        }
+        
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+        
+        .logo {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #fff;
+        }
+        
+        .tagline {
+            color: #888;
+            font-size: 0.9rem;
+        }
+        
+        .hero {
+            background: linear-gradient(135deg, #1a1a1a 0%, #1f2937 100%);
+            padding: 4rem 0;
+            text-align: center;
+        }
+        
+        .hero h1 {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            color: #fff;
+            font-weight: 700;
+        }
+        
+        .hero p {
+            font-size: 1.25rem;
+            color: #ccc;
+            max-width: 800px;
+            margin: 0 auto 2rem;
+        }
+        
+        .section {
+            padding: 4rem 0;
+        }
+        
+        .section h2 {
+            font-size: 2.5rem;
+            margin-bottom: 2rem;
+            color: #fff;
+            text-align: center;
+        }
+        
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-top: 2rem;
+        }
+        
+        .card {
+            background: #1a1a1a;
+            border: 1px solid #333;
+            border-radius: 8px;
+            padding: 2rem;
+            transition: transform 0.2s, border-color 0.2s;
+        }
+        
+        .card:hover {
+            transform: translateY(-5px);
+            border-color: #666;
+        }
+        
+        .card h3 {
+            color: #fff;
+            margin-bottom: 1rem;
+            font-size: 1.5rem;
+        }
+        
+        .card p {
+            color: #ccc;
+            margin-bottom: 1rem;
+        }
+        
+        .card ul {
+            color: #aaa;
+            padding-left: 1.5rem;
+        }
+        
+        .card ul li {
+            margin-bottom: 0.5rem;
+        }
+        
+        .highlight {
+            background: #2a1810;
+            border: 1px solid #8B4513;
+            border-radius: 8px;
+            padding: 2rem;
+            margin: 2rem 0;
+        }
+        
+        .highlight h3 {
+            color: #DEB887;
+            margin-bottom: 1rem;
+        }
+        
+        .highlight p {
+            color: #ccc;
+        }
+        
+        .two-column {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 3rem;
+            margin: 2rem 0;
+        }
+        
+        .comparison-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 2rem 0;
+            background: #1a1a1a;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+        
+        .comparison-table th,
+        .comparison-table td {
+            padding: 1rem;
+            text-align: left;
+            border-bottom: 1px solid #333;
+        }
+        
+        .comparison-table th {
+            background: #2a2a2a;
+            color: #fff;
+            font-weight: 600;
+        }
+        
+        .comparison-table td {
+            color: #ccc;
+        }
+        
+        .pros-cons {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+        }
+        
+        .pros, .cons {
+            background: #1a1a1a;
+            border-radius: 8px;
+            padding: 1.5rem;
+        }
+        
+        .pros {
+            border-left: 4px solid #4CAF50;
+        }
+        
+        .cons {
+            border-left: 4px solid #F44336;
+        }
+        
+        .pros h4 {
+            color: #4CAF50;
+            margin-bottom: 1rem;
+        }
+        
+        .cons h4 {
+            color: #F44336;
+            margin-bottom: 1rem;
+        }
+        
+        .cta {
+            background: #2a1810;
+            padding: 3rem 0;
+            text-align: center;
+            margin: 4rem 0;
+            border-radius: 12px;
+        }
+        
+        .cta h2 {
+            margin-bottom: 1rem;
+            color: #DEB887;
+        }
+        
+        .cta p {
+            margin-bottom: 2rem;
+            color: #ccc;
+            font-size: 1.1rem;
+        }
+        
+        .btn {
+            display: inline-block;
+            padding: 12px 30px;
+            background: #8B4513;
+            color: white;
+            text-decoration: none;
+            border-radius: 6px;
+            font-weight: 600;
+            transition: background 0.3s;
+        }
+        
+        .btn:hover {
+            background: #A0522D;
+        }
+        
+        footer {
+            background: #111;
+            border-top: 1px solid #333;
+            padding: 2rem 0;
+            text-align: center;
+        }
+        
+        footer p {
+            color: #888;
+        }
+        
+        @media (max-width: 768px) {
+            .hero h1 {
+                font-size: 2rem;
+            }
+            
+            .two-column {
+                grid-template-columns: 1fr;
+                gap: 2rem;
+            }
+            
+            .pros-cons {
+                grid-template-columns: 1fr;
+            }
+            
+            .header-content {
+                text-align: center;
+            }
+        }
+        
+        .feature-highlight {
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            color: white;
+            padding: 2rem;
+            border-radius: 8px;
+            margin: 2rem 0;
+        }
+        
+        .technologies-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 2rem;
+            margin: 3rem 0;
+        }
+        
+        .technology-card {
+            background: #1a1a1a;
+            border: 1px solid #333;
+            border-radius: 8px;
+            padding: 2rem;
+            text-align: center;
+            transition: transform 0.2s;
+        }
+        
+        .technology-card:hover {
+            transform: translateY(-3px);
+            border-color: #666;
+        }
+        
+        .technology-card .icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 2rem;
+            margin: 3rem 0;
+        }
+        
+        .stat-card {
+            background: #1a1a1a;
+            border: 1px solid #333;
+            border-radius: 8px;
+            padding: 2rem;
+            text-align: center;
+        }
+        
+        .stat-card .number {
+            font-size: 3rem;
+            color: #1f2937;
+            font-weight: bold;
+            display: block;
+        }
+        
+        .stat-card .label {
+            color: #ccc;
+            margin-top: 0.5rem;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <div class="header-content">
+                <div class="logo">GAB</div>
+                <div class="tagline">Defense & Aerospace Technology Guide</div>
+            </div>
+        </div>
+    </header>
+
+    <section class="hero">
+        <div class="container">
+            <h1>Defense & Aerospace Technology</h1>
+            <p>Explore advanced defense and aerospace technologies including unmanned systems, space technology, cybersecurity, military AI, and next-generation aerospace innovation.</p>
+        </div>
+    </section>
+
+    <section class="section">
+        <div class="container">
+            <h2>Defense Tech Market Overview</h2>
+            
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <span class="number">$548B</span>
+                    <div class="label">Global Defense Spending (2025)</div>
+                </div>
+                <div class="stat-card">
+                    <span class="number">3.2%</span>
+                    <div class="label">Annual Market Growth</div>
+                </div>
+                <div class="stat-card">
+                    <span class="number">$469B</span>
+                    <div class="label">Aerospace Market Size</div>
+                </div>
+                <div class="stat-card">
+                    <span class="number">15%</span>
+                    <div class="label">R&D Share of Defense Budget</div>
+                </div>
+            </div>
+
+            <div class="highlight">
+                <h3>Defense Technology Evolution</h3>
+                <p>Defense and aerospace technology is undergoing rapid transformation through artificial intelligence, autonomous systems, hypersonic technologies, space capabilities, and cyber warfare innovations. These advances are reshaping military strategy and national security priorities.</p>
+            </div>
+        </div>
+    </section>
+
+    <section class="section">
+        <div class="container">
+            <h2>Core Defense Technology Areas</h2>
+            
+            <div class="grid">
+                <div class="card">
+                    <h3>Unmanned Systems</h3>
+                    <p>Advanced unmanned aerial, ground, and maritime vehicles for intelligence and operations.</p>
+                    <ul>
+                        <li>Military drones and UAVs</li>
+                        <li>Autonomous ground vehicles</li>
+                        <li>Unmanned underwater vehicles</li>
+                        <li>Swarm robotics systems</li>
+                        <li>Counter-drone technologies</li>
+                    </ul>
+                </div>
+                
+                <div class="card">
+                    <h3>Space Technology</h3>
+                    <p>Military and commercial space systems for communications, surveillance, and navigation.</p>
+                    <ul>
+                        <li>Satellite communications and reconnaissance</li>
+                        <li>Space-based missile defense</li>
+                        <li>Launch vehicles and propulsion</li>
+                        <li>Space situational awareness</li>
+                        <li>Anti-satellite capabilities</li>
+                    </ul>
+                </div>
+                
+                <div class="card">
+                    <h3>Cybersecurity & Electronic Warfare</h3>
+                    <p>Advanced cyber defense and electronic warfare capabilities for modern conflicts.</p>
+                    <ul>
+                        <li>Network security and defense</li>
+                        <li>Electronic jamming and countermeasures</li>
+                        <li>Cyber attack and defense systems</li>
+                        <li>Signal intelligence (SIGINT)</li>
+                        <li>Information warfare platforms</li>
+                    </ul>
+                </div>
+                
+                <div class="card">
+                    <h3>Artificial Intelligence & Analytics</h3>
+                    <p>AI systems for decision support, autonomous operations, and intelligence analysis.</p>
+                    <ul>
+                        <li>Autonomous weapon systems</li>
+                        <li>Intelligence analysis and fusion</li>
+                        <li>Predictive maintenance systems</li>
+                        <li>Battle management systems</li>
+                        <li>Computer vision and pattern recognition</li>
+                    </ul>
+                </div>
+                
+                <div class="card">
+                    <h3>Advanced Materials & Propulsion</h3>
+                    <p>Next-generation materials and propulsion technologies for aerospace applications.</p>
+                    <ul>
+                        <li>Hypersonic propulsion systems</li>
+                        <li>Advanced composite materials</li>
+                        <li>Stealth technology and coatings</li>
+                        <li>Electric and hybrid propulsion</li>
+                        <li>Additive manufacturing for aerospace</li>
+                    </ul>
+                </div>
+                
+                <div class="card">
+                    <h3>Command & Control Systems</h3>
+                    <p>Integrated command, control, communications, and intelligence systems.</p>
+                    <ul>
+                        <li>Network-centric warfare platforms</li>
+                        <li>Tactical communications systems</li>
+                        <li>Joint all-domain operations</li>
+                        <li>Real-time data fusion and sharing</li>
+                        <li>Mobile command centers</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="section">
+        <div class="container">
+            <h2>Leading Defense Technology Companies</h2>
+            
+            <div class="technologies-grid">
+                <div class="technology-card">
+                    <div class="icon">✈️</div>
+                    <h3>Aerospace Primes</h3>
+                    <p>Lockheed Martin, Boeing, and Northrop Grumman develop advanced aircraft, missiles, and space systems.</p>
+                </div>
+                
+                <div class="technology-card">
+                    <div class="icon">🚁</div>
+                    <h3>Unmanned Systems</h3>
+                    <p>General Atomics, AeroVironment, and Kratos provide military drones and autonomous systems.</p>
+                </div>
+                
+                <div class="technology-card">
+                    <div class="icon">🛰️</div>
+                    <h3>Space Technology</h3>
+                    <p>SpaceX, Relativity Space, and Rocket Lab deliver commercial and military space capabilities.</p>
+                </div>
+                
+                <div class="technology-card">
+                    <div class="icon">🛡️</div>
+                    <h3>Cyber Defense</h3>
+                    <p>Raytheon, Palantir, and CrowdStrike provide cybersecurity and electronic warfare solutions.</p>
+                </div>
+                
+                <div class="technology-card">
+                    <div class="icon">🤖</div>
+                    <h3>AI & Robotics</h3>
+                    <p>Anduril, Shield AI, and Sarcos create AI-powered defense systems and robotic platforms.</p>
+                </div>
+                
+                <div class="technology-card">
+                    <div class="icon">⚡</div>
+                    <h3>Advanced Weapons</h3>
+                    <p>Raytheon Missiles, L3Harris, and BAE Systems develop directed energy and hypersonic weapons.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="section">
+        <div class="container">
+            <h2>Military Technology Trends</h2>
+            
+            <div class="two-column">
+                <div>
+                    <h3>Emerging Capabilities</h3>
+                    <ul style="color: #ccc; padding-left: 1.5rem;">
+                        <li><strong>Hypersonic Weapons:</strong> Mach 5+ missile systems</li>
+                        <li><strong>Directed Energy:</strong> Laser and microwave weapons</li>
+                        <li><strong>Autonomous Swarms:</strong> Coordinated unmanned systems</li>
+                        <li><strong>Space Warfare:</strong> Anti-satellite and space control</li>
+                        <li><strong>Quantum Technologies:</strong> Quantum radar and communications</li>
+                        <li><strong>Biotechnology:</strong> Human performance enhancement</li>
+                    </ul>
+                </div>
+                
+                <div>
+                    <h3>Operational Priorities</h3>
+                    <ul style="color: #ccc; padding-left: 1.5rem;">
+                        <li><strong>Multi-Domain Operations:</strong> Land, sea, air, space, cyber integration</li>
+                        <li><strong>Distributed Lethality:</strong> Networked weapons systems</li>
+                        <li><strong>Counter-A2/AD:</strong> Anti-access area denial countermeasures</li>
+                        <li><strong>Force Protection:</strong> Active and passive defense systems</li>
+                        <li><strong>Rapid Deployment:</strong> Expeditionary capabilities</li>
+                        <li><strong>Logistics Innovation:</strong> Autonomous resupply and maintenance</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="feature-highlight">
+                <h3>Defense Innovation Acceleration</h3>
+                <p>Military technology development is accelerating through public-private partnerships, defense innovation units, and rapid prototyping. The U.S. invests $112 billion annually in defense R&D, while China increases military spending by 7.2% annually.</p>
+            </div>
+        </div>
+    </section>
+
+    <section class="section">
+        <div class="container">
+            <h2>Technology Readiness Assessment</h2>
+            
+            <table class="comparison-table">
+                <thead>
+                    <tr>
+                        <th>Technology</th>
+                        <th>Readiness Level</th>
+                        <th>Deployment Status</th>
+                        <th>Investment Priority</th>
+                        <th>Strategic Impact</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Military Drones</td>
+                        <td>Mature</td>
+                        <td>Operational</td>
+                        <td>Sustaining</td>
+                        <td>High</td>
+                    </tr>
+                    <tr>
+                        <td>Hypersonic Missiles</td>
+                        <td>Development</td>
+                        <td>Testing</td>
+                        <td>Critical</td>
+                        <td>Very High</td>
+                    </tr>
+                    <tr>
+                        <td>Laser Weapons</td>
+                        <td>Demonstration</td>
+                        <td>Limited Deployment</td>
+                        <td>High</td>
+                        <td>High</td>
+                    </tr>
+                    <tr>
+                        <td>Autonomous Swarms</td>
+                        <td>Prototype</td>
+                        <td>Research</td>
+                        <td>High</td>
+                        <td>Very High</td>
+                    </tr>
+                    <tr>
+                        <td>Quantum Radar</td>
+                        <td>Research</td>
+                        <td>Laboratory</td>
+                        <td>Medium</td>
+                        <td>High</td>
+                    </tr>
+                    <tr>
+                        <td>Space Weapons</td>
+                        <td>Development</td>
+                        <td>Testing</td>
+                        <td>Critical</td>
+                        <td>Very High</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </section>
+
+    <section class="section">
+        <div class="container">
+            <h2>Implementation Strategies</h2>
+            
+            <div class="grid">
+                <div class="card">
+                    <h3>For Defense Contractors</h3>
+                    <p>Innovation strategies for established defense and aerospace companies.</p>
+                    <ul>
+                        <li>R&D investment and capability development</li>
+                        <li>Acquisition of innovative startups</li>
+                        <li>Partnership with tech companies</li>
+                        <li>Agile development and prototyping</li>
+                        <li>Talent acquisition and retention</li>
+                    </ul>
+                </div>
+                
+                <div class="card">
+                    <h3>For Technology Startups</h3>
+                    <p>Market entry strategies for defense technology entrepreneurs.</p>
+                    <ul>
+                        <li>SBIR and government funding programs</li>
+                        <li>Dual-use technology development</li>
+                        <li>Security clearance and compliance</li>
+                        <li>Customer validation and pilots</li>
+                        <li>Scale and manufacturing planning</li>
+                    </ul>
+                </div>
+                
+                <div class="card">
+                    <h3>For Military Organizations</h3>
+                    <p>Technology adoption strategies for military services and agencies.</p>
+                    <ul>
+                        <li>Requirements definition and specification</li>
+                        <li>Rapid prototyping and experimentation</li>
+                        <li>Operational testing and evaluation</li>
+                        <li>Training and doctrine development</li>
+                        <li>Lifecycle support and sustainment</li>
+                    </ul>
+                </div>
+                
+                <div class="card">
+                    <h3>For International Partners</h3>
+                    <p>Collaboration strategies for allied defense cooperation.</p>
+                    <ul>
+                        <li>Technology sharing agreements</li>
+                        <li>Joint development programs</li>
+                        <li>Interoperability standards</li>
+                        <li>Export control compliance</li>
+                        <li>Industrial cooperation arrangements</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="section">
+        <div class="container">
+            <h2>Future of Defense Technology</h2>
+            
+            <div class="two-column">
+                <div>
+                    <h3>Next-Generation Capabilities</h3>
+                    <ul style="color: #ccc; padding-left: 1.5rem;">
+                        <li><strong>Brain-Computer Interfaces:</strong> Enhanced human-machine teaming</li>
+                        <li><strong>Molecular Manufacturing:</strong> Programmable matter and materials</li>
+                        <li><strong>Fusion Propulsion:</strong> Revolutionary space and atmospheric flight</li>
+                        <li><strong>Synthetic Biology:</strong> Engineered organisms for defense</li>
+                        <li><strong>Metamaterials:</strong> Advanced stealth and protection</li>
+                        <li><strong>Digital Twins:</strong> Virtual warfare simulation and planning</li>
+                    </ul>
+                </div>
+                
+                <div>
+                    <h3>Strategic Implications</h3>
+                    <ul style="color: #ccc; padding-left: 1.5rem;">
+                        <li><strong>Warfare Transformation:</strong> Autonomous and hybrid conflict</li>
+                        <li><strong>Deterrence Evolution:</strong> New escalation dynamics</li>
+                        <li><strong>Alliance Adaptation:</strong> Technology-based partnerships</li>
+                        <li><strong>Ethics and Law:</strong> Rules for autonomous weapons</li>
+                        <li><strong>Industrial Base:</strong> Technology sovereignty concerns</li>
+                        <li><strong>Human Factors:</strong> Human-machine collaboration</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="section">
+        <div class="container">
+            <h2>Opportunities & Challenges</h2>
+            
+            <div class="pros-cons">
+                <div class="pros">
+                    <h4>✅ Opportunities</h4>
+                    <ul style="color: #ccc; padding-left: 1.5rem; margin-top: 1rem;">
+                        <li>$548 billion global defense market</li>
+                        <li>Technology superiority advantages</li>
+                        <li>Dual-use commercial applications</li>
+                        <li>Innovation ecosystem development</li>
+                        <li>National security capabilities</li>
+                        <li>High-tech job creation</li>
+                        <li>Export and partnership opportunities</li>
+                    </ul>
+                </div>
+                
+                <div class="cons">
+                    <h4>⚠️ Challenges</h4>
+                    <ul style="color: #ccc; padding-left: 1.5rem; margin-top: 1rem;">
+                        <li>High development costs and risks</li>
+                        <li>Long acquisition timelines</li>
+                        <li>Export control restrictions</li>
+                        <li>Security clearance requirements</li>
+                        <li>Ethical and legal considerations</li>
+                        <li>Technology obsolescence risks</li>
+                        <li>Adversary countermeasure development</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="highlight" style="margin-top: 3rem;">
+                <h3>Success Factors</h3>
+                <p>Defense technology success requires deep understanding of military requirements, strong relationships with government customers, robust security practices, agile development capabilities, and the ability to navigate complex regulatory and export environments.</p>
+            </div>
+        </div>
+    </section>
+
+    <div class="cta">
+        <div class="container">
+            <h2>Ready to Explore Defense Innovation?</h2>
+            <p>Discover the cutting-edge world of defense and aerospace technology and learn how military innovation is shaping the future of national security and global stability.</p>
+            <a href="https://gab.ae" class="btn">Explore More Defense Tech Resources</a>
+        </div>
+    </div>
+
+    <footer>
+        <div class="container">
+            <p>&copy; 2026 GAB Ventures. Defense & Aerospace Technology Guide.</p>
+        </div>
+    </footer>
+
+    <script>
+        // Add smooth scrolling for anchor links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                document.querySelector(this.getAttribute('href')).scrollIntoView({
+                    behavior: 'smooth'
+                });
+            });
+        });
+
+        // Add intersection observer for animations
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -50px 0px'
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.style.opacity = '1';
+                    entry.target.style.transform = 'translateY(0)';
+                }
+            });
+        }, observerOptions);
+
+        // Observe all cards and sections
+        document.querySelectorAll('.card, .technology-card, .stat-card').forEach(el => {
+            el.style.opacity = '0';
+            el.style.transform = 'translateY(20px)';
+            el.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
+            observer.observe(el);
+        });
+
+        // Interactive technology showcase
+        document.querySelectorAll('.technology-card').forEach(card => {
+            card.addEventListener('click', function() {
+                this.style.transform = 'translateY(-5px) scale(1.02)';
+                setTimeout(() => {
+                    this.style.transform = 'translateY(-3px)';
+                }, 200);
+            });
+        });
+
+        // Stats counter animation
+        function animateCounter(element, target, suffix = '', duration = 2000) {
+            const start = 0;
+            const increment = target / (duration / 16);
+            let current = start;
+            
+            const timer = setInterval(() => {
+                current += increment;
+                if (current >= target) {
+                    current = target;
+                    clearInterval(timer);
+                }
+                
+                if (suffix === 'B') {
+                    element.textContent = '$' + Math.floor(current) + 'B';
+                } else if (suffix === '%') {
+                    element.textContent = current.toFixed(1) + '%';
+                } else {
+                    element.textContent = Math.floor(current) + suffix;
+                }
+            }, 16);
+        }
+
+        // Trigger counter animations when stats come into view
+        const statsObserver = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting && !entry.target.classList.contains('animated')) {
+                    entry.target.classList.add('animated');
+                    const number = entry.target.querySelector('.number');
+                    const text = number.textContent;
+                    
+                    if (text.includes('$548B')) animateCounter(number, 548, 'B', 2000);
+                    else if (text.includes('3.2%')) animateCounter(number, 3.2, '%', 2000);
+                    else if (text.includes('$469B')) animateCounter(number, 469, 'B', 2000);
+                    else if (text.includes('15%')) animateCounter(number, 15, '%', 2000);
+                }
+            });
+        }, { threshold: 0.5 });
+
+        document.querySelectorAll('.stat-card').forEach(card => {
+            statsObserver.observe(card);
+        });
+
+        // Interactive table highlighting
+        document.querySelectorAll('.comparison-table tbody tr').forEach(row => {
+            row.addEventListener('mouseenter', function() {
+                this.style.backgroundColor = '#2a2a2a';
+            });
+            
+            row.addEventListener('mouseleave', function() {
+                this.style.backgroundColor = 'transparent';
+            });
+        });
+
+        // Defense technology interaction tracking
+        document.querySelectorAll('.technology-card').forEach((card, index) => {
+            card.addEventListener('click', function() {
+                const technologies = ['Aerospace', 'Unmanned Systems', 'Space Tech', 'Cyber Defense', 'AI & Robotics', 'Advanced Weapons'];
+                console.log(`Exploring ${technologies[index]} defense technology`);
+            });
+        });
+
+        // Military-themed effects
+        function createDefenseEffect() {
+            const cards = document.querySelectorAll('.technology-card');
+            
+            cards.forEach((card, index) => {
+                card.addEventListener('mouseenter', function() {
+                    // Military-themed glow effect
+                    this.style.boxShadow = '0 8px 32px rgba(31, 41, 55, 0.4)';
+                    
+                    // Add tactical animation
+                    setTimeout(() => {
+                        this.style.transform = 'translateY(-3px) scale(1.01)';
+                    }, 100);
+                });
+                
+                card.addEventListener('mouseleave', function() {
+                    this.style.boxShadow = '';
+                    this.style.transform = 'translateY(0) scale(1)';
+                });
+            });
+        }
+
+        // Initialize defense effect
+        document.addEventListener('DOMContentLoaded', createDefenseEffect);
+
+        // Mission counter simulation
+        let missionsCompleted = 0;
+        
+        document.querySelectorAll('.technology-card').forEach(card => {
+            card.addEventListener('click', function() {
+                missionsCompleted++;
+                
+                // Create mission indicator
+                const missionIndicator = document.createElement('div');
+                missionIndicator.innerHTML = `🎯 Mission ${missionsCompleted} Complete`;
+                missionIndicator.style.cssText = `
+                    position: fixed;
+                    top: 20px;
+                    right: 20px;
+                    background: linear-gradient(135deg, #1f2937, #374151);
+                    color: white;
+                    padding: 10px 20px;
+                    border-radius: 20px;
+                    font-weight: bold;
+                    z-index: 1000;
+                    animation: militaryPulse 1s ease;
+                `;
+                
+                document.body.appendChild(missionIndicator);
+                
+                setTimeout(() => {
+                    missionIndicator.remove();
+                }, 2000);
+            });
+        });
+
+        // Add military pulse animation
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes militaryPulse {
+                0% { transform: scale(0.8) skewX(-5deg); opacity: 0; }
+                50% { transform: scale(1.1) skewX(0deg); opacity: 1; }
+                100% { transform: scale(1) skewX(0deg); opacity: 1; }
+            }
+        `;
+        document.head.appendChild(style);
+    </script>
+</body>
+</html>

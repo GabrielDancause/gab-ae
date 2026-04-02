@@ -1,0 +1,917 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Biotechnology Innovation Guide - BioTech Solutions & Advances</title>
+    <meta name="description" content="Comprehensive guide to biotechnology innovation, gene therapy, synthetic biology, bioengineering, pharmaceutical development, and biotech industry trends.">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            line-height: 1.6;
+            color: #e0e0e0;
+            background: #0a0a0a;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+        
+        header {
+            background: #111;
+            border-bottom: 1px solid #333;
+            padding: 2rem 0;
+        }
+        
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+        
+        .logo {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #fff;
+        }
+        
+        .tagline {
+            color: #888;
+            font-size: 0.9rem;
+        }
+        
+        .hero {
+            background: linear-gradient(135deg, #1a1a1a 0%, #10b981 100%);
+            padding: 4rem 0;
+            text-align: center;
+        }
+        
+        .hero h1 {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            color: #fff;
+            font-weight: 700;
+        }
+        
+        .hero p {
+            font-size: 1.25rem;
+            color: #ccc;
+            max-width: 800px;
+            margin: 0 auto 2rem;
+        }
+        
+        .section {
+            padding: 4rem 0;
+        }
+        
+        .section h2 {
+            font-size: 2.5rem;
+            margin-bottom: 2rem;
+            color: #fff;
+            text-align: center;
+        }
+        
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-top: 2rem;
+        }
+        
+        .card {
+            background: #1a1a1a;
+            border: 1px solid #333;
+            border-radius: 8px;
+            padding: 2rem;
+            transition: transform 0.2s, border-color 0.2s;
+        }
+        
+        .card:hover {
+            transform: translateY(-5px);
+            border-color: #666;
+        }
+        
+        .card h3 {
+            color: #fff;
+            margin-bottom: 1rem;
+            font-size: 1.5rem;
+        }
+        
+        .card p {
+            color: #ccc;
+            margin-bottom: 1rem;
+        }
+        
+        .card ul {
+            color: #aaa;
+            padding-left: 1.5rem;
+        }
+        
+        .card ul li {
+            margin-bottom: 0.5rem;
+        }
+        
+        .highlight {
+            background: #2a1810;
+            border: 1px solid #8B4513;
+            border-radius: 8px;
+            padding: 2rem;
+            margin: 2rem 0;
+        }
+        
+        .highlight h3 {
+            color: #DEB887;
+            margin-bottom: 1rem;
+        }
+        
+        .highlight p {
+            color: #ccc;
+        }
+        
+        .two-column {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 3rem;
+            margin: 2rem 0;
+        }
+        
+        .comparison-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 2rem 0;
+            background: #1a1a1a;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+        
+        .comparison-table th,
+        .comparison-table td {
+            padding: 1rem;
+            text-align: left;
+            border-bottom: 1px solid #333;
+        }
+        
+        .comparison-table th {
+            background: #2a2a2a;
+            color: #fff;
+            font-weight: 600;
+        }
+        
+        .comparison-table td {
+            color: #ccc;
+        }
+        
+        .pros-cons {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+        }
+        
+        .pros, .cons {
+            background: #1a1a1a;
+            border-radius: 8px;
+            padding: 1.5rem;
+        }
+        
+        .pros {
+            border-left: 4px solid #4CAF50;
+        }
+        
+        .cons {
+            border-left: 4px solid #F44336;
+        }
+        
+        .pros h4 {
+            color: #4CAF50;
+            margin-bottom: 1rem;
+        }
+        
+        .cons h4 {
+            color: #F44336;
+            margin-bottom: 1rem;
+        }
+        
+        .cta {
+            background: #2a1810;
+            padding: 3rem 0;
+            text-align: center;
+            margin: 4rem 0;
+            border-radius: 12px;
+        }
+        
+        .cta h2 {
+            margin-bottom: 1rem;
+            color: #DEB887;
+        }
+        
+        .cta p {
+            margin-bottom: 2rem;
+            color: #ccc;
+            font-size: 1.1rem;
+        }
+        
+        .btn {
+            display: inline-block;
+            padding: 12px 30px;
+            background: #8B4513;
+            color: white;
+            text-decoration: none;
+            border-radius: 6px;
+            font-weight: 600;
+            transition: background 0.3s;
+        }
+        
+        .btn:hover {
+            background: #A0522D;
+        }
+        
+        footer {
+            background: #111;
+            border-top: 1px solid #333;
+            padding: 2rem 0;
+            text-align: center;
+        }
+        
+        footer p {
+            color: #888;
+        }
+        
+        @media (max-width: 768px) {
+            .hero h1 {
+                font-size: 2rem;
+            }
+            
+            .two-column {
+                grid-template-columns: 1fr;
+                gap: 2rem;
+            }
+            
+            .pros-cons {
+                grid-template-columns: 1fr;
+            }
+            
+            .header-content {
+                text-align: center;
+            }
+        }
+        
+        .feature-highlight {
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            color: white;
+            padding: 2rem;
+            border-radius: 8px;
+            margin: 2rem 0;
+        }
+        
+        .technologies-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 2rem;
+            margin: 3rem 0;
+        }
+        
+        .technology-card {
+            background: #1a1a1a;
+            border: 1px solid #333;
+            border-radius: 8px;
+            padding: 2rem;
+            text-align: center;
+            transition: transform 0.2s;
+        }
+        
+        .technology-card:hover {
+            transform: translateY(-3px);
+            border-color: #666;
+        }
+        
+        .technology-card .icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 2rem;
+            margin: 3rem 0;
+        }
+        
+        .stat-card {
+            background: #1a1a1a;
+            border: 1px solid #333;
+            border-radius: 8px;
+            padding: 2rem;
+            text-align: center;
+        }
+        
+        .stat-card .number {
+            font-size: 3rem;
+            color: #10b981;
+            font-weight: bold;
+            display: block;
+        }
+        
+        .stat-card .label {
+            color: #ccc;
+            margin-top: 0.5rem;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <div class="header-content">
+                <div class="logo">GAB</div>
+                <div class="tagline">Biotechnology Innovation Guide</div>
+            </div>
+        </div>
+    </header>
+
+    <section class="hero">
+        <div class="container">
+            <h1>Biotechnology Innovation</h1>
+            <p>Discover groundbreaking biotechnology advances transforming medicine, agriculture, and industry through gene therapy, synthetic biology, bioengineering, and cutting-edge life sciences.</p>
+        </div>
+    </section>
+
+    <section class="section">
+        <div class="container">
+            <h2>Biotech Market Overview</h2>
+            
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <span class="number">$774B</span>
+                    <div class="label">Global Biotechnology Market (2025)</div>
+                </div>
+                <div class="stat-card">
+                    <span class="number">14%</span>
+                    <div class="label">Annual Growth Rate</div>
+                </div>
+                <div class="stat-card">
+                    <span class="number">$143B</span>
+                    <div class="label">Gene Therapy Market by 2030</div>
+                </div>
+                <div class="stat-card">
+                    <span class="number">4,000+</span>
+                    <div class="label">Biotech Companies Globally</div>
+                </div>
+            </div>
+
+            <div class="highlight">
+                <h3>The Biotechnology Revolution</h3>
+                <p>Biotechnology is revolutionizing human health, agriculture, and environmental sustainability through breakthrough innovations in gene editing, synthetic biology, personalized medicine, and bioengineering. These technologies are addressing global challenges while creating new therapeutic possibilities.</p>
+            </div>
+        </div>
+    </section>
+
+    <section class="section">
+        <div class="container">
+            <h2>Core Biotechnology Areas</h2>
+            
+            <div class="grid">
+                <div class="card">
+                    <h3>Gene & Cell Therapy</h3>
+                    <p>Advanced therapies using genetic modification and cellular engineering to treat diseases.</p>
+                    <ul>
+                        <li>CRISPR and gene editing technologies</li>
+                        <li>CAR-T cell and immunotherapies</li>
+                        <li>Gene replacement and correction</li>
+                        <li>Regenerative medicine approaches</li>
+                        <li>Stem cell therapies</li>
+                    </ul>
+                </div>
+                
+                <div class="card">
+                    <h3>Synthetic Biology</h3>
+                    <p>Engineering biological systems to design and construct new biological parts and systems.</p>
+                    <ul>
+                        <li>Engineered microorganisms</li>
+                        <li>Biosynthetic production platforms</li>
+                        <li>Metabolic engineering</li>
+                        <li>Biofuels and biomaterials</li>
+                        <li>Programmable biological circuits</li>
+                    </ul>
+                </div>
+                
+                <div class="card">
+                    <h3>Personalized Medicine</h3>
+                    <p>Tailored medical treatments based on individual genetic and molecular profiles.</p>
+                    <ul>
+                        <li>Pharmacogenomics and drug selection</li>
+                        <li>Precision oncology treatments</li>
+                        <li>Biomarker-based diagnostics</li>
+                        <li>Companion diagnostics</li>
+                        <li>Individualized dosing strategies</li>
+                    </ul>
+                </div>
+                
+                <div class="card">
+                    <h3>Protein Engineering</h3>
+                    <p>Designing and modifying proteins for therapeutic and industrial applications.</p>
+                    <ul>
+                        <li>Antibody engineering and optimization</li>
+                        <li>Enzyme design and improvement</li>
+                        <li>Protein-based therapeutics</li>
+                        <li>Directed evolution techniques</li>
+                        <li>Computational protein design</li>
+                    </ul>
+                </div>
+                
+                <div class="card">
+                    <h3>Agricultural Biotechnology</h3>
+                    <p>Biotechnological solutions improving crop yields, resistance, and nutritional content.</p>
+                    <ul>
+                        <li>Genetically modified crops</li>
+                        <li>Disease and pest resistance</li>
+                        <li>Nutritional enhancement</li>
+                        <li>Climate resilience traits</li>
+                        <li>Sustainable agriculture practices</li>
+                    </ul>
+                </div>
+                
+                <div class="card">
+                    <h3>Industrial Biotechnology</h3>
+                    <p>Using biological systems for sustainable manufacturing and environmental solutions.</p>
+                    <ul>
+                        <li>Biomanufacturing processes</li>
+                        <li>Environmental bioremediation</li>
+                        <li>Bioplastics and green chemistry</li>
+                        <li>Waste treatment and recycling</li>
+                        <li>Renewable chemical production</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="section">
+        <div class="container">
+            <h2>Leading Biotechnology Solutions</h2>
+            
+            <div class="technologies-grid">
+                <div class="technology-card">
+                    <div class="icon">🧬</div>
+                    <h3>Gene Editing</h3>
+                    <p>Editas Medicine, CRISPR Therapeutics, and Intellia develop CRISPR-based gene editing therapies for genetic diseases.</p>
+                </div>
+                
+                <div class="technology-card">
+                    <div class="icon">🔬</div>
+                    <h3>Synthetic Biology</h3>
+                    <p>Ginkgo Bioworks, Twist Bioscience, and Synthetic Genomics create engineered biological systems and organisms.</p>
+                </div>
+                
+                <div class="technology-card">
+                    <div class="icon">🧪</div>
+                    <h3>Cell Therapy</h3>
+                    <p>Kite Pharma, Novartis, and Gilead develop CAR-T cell therapies for cancer and autoimmune diseases.</p>
+                </div>
+                
+                <div class="technology-card">
+                    <div class="icon">🌱</div>
+                    <h3>Agricultural Biotech</h3>
+                    <p>Corteva, Bayer Crop Science, and Syngenta create biotechnology solutions for sustainable agriculture.</p>
+                </div>
+                
+                <div class="technology-card">
+                    <div class="icon">💊</div>
+                    <h3>Drug Development</h3>
+                    <p>Moderna, BioNTech, and AbCellera use biotechnology platforms for rapid vaccine and therapeutic development.</p>
+                </div>
+                
+                <div class="technology-card">
+                    <div class="icon">♻️</div>
+                    <h3>Industrial Biotech</h3>
+                    <p>Novozymes, DSM, and Zymergen develop biotechnology solutions for sustainable industrial processes.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="section">
+        <div class="container">
+            <h2>Gene Therapy Advances</h2>
+            
+            <div class="two-column">
+                <div>
+                    <h3>CRISPR Technologies</h3>
+                    <ul style="color: #ccc; padding-left: 1.5rem;">
+                        <li><strong>Base Editing:</strong> Precise single nucleotide changes</li>
+                        <li><strong>Prime Editing:</strong> Insertions, deletions, and replacements</li>
+                        <li><strong>Epigenome Editing:</strong> Modifying gene expression without DNA changes</li>
+                        <li><strong>In Vivo Delivery:</strong> Direct therapeutic gene editing</li>
+                        <li><strong>Multiplexed Editing:</strong> Simultaneous multiple gene modifications</li>
+                        <li><strong>Safety Improvements:</strong> Reduced off-target effects</li>
+                    </ul>
+                </div>
+                
+                <div>
+                    <h3>Therapeutic Applications</h3>
+                    <ul style="color: #ccc; padding-left: 1.5rem;">
+                        <li><strong>Inherited Diseases:</strong> Sickle cell, beta-thalassemia</li>
+                        <li><strong>Oncology:</strong> CAR-T cell engineering and tumor targeting</li>
+                        <li><strong>Ophthalmology:</strong> Leber congenital amaurosis treatments</li>
+                        <li><strong>Rare Diseases:</strong> Duchenne muscular dystrophy</li>
+                        <li><strong>Infectious Diseases:</strong> HIV cure research</li>
+                        <li><strong>Neurological Disorders:</strong> Huntington's, ALS therapies</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="feature-highlight">
+                <h3>Clinical Progress</h3>
+                <p>Gene therapy is advancing rapidly with over 2,900 clinical trials worldwide. CRISPR therapies show 85-95% efficacy in treating sickle cell disease and beta-thalassemia. The gene therapy market is projected to reach $143 billion by 2030, driven by breakthrough approvals.</p>
+            </div>
+        </div>
+    </section>
+
+    <section class="section">
+        <div class="container">
+            <h2>Biotechnology Development Stages</h2>
+            
+            <table class="comparison-table">
+                <thead>
+                    <tr>
+                        <th>Technology</th>
+                        <th>Development Stage</th>
+                        <th>Clinical Progress</th>
+                        <th>Commercial Timeline</th>
+                        <th>Key Applications</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>CRISPR Gene Editing</td>
+                        <td>Late Clinical</td>
+                        <td>Phase III trials</td>
+                        <td>2024-2026</td>
+                        <td>Genetic diseases, cancer</td>
+                    </tr>
+                    <tr>
+                        <td>CAR-T Cell Therapy</td>
+                        <td>Commercial</td>
+                        <td>FDA approved</td>
+                        <td>Available now</td>
+                        <td>Blood cancers</td>
+                    </tr>
+                    <tr>
+                        <td>mRNA Vaccines</td>
+                        <td>Commercial</td>
+                        <td>FDA approved</td>
+                        <td>Available now</td>
+                        <td>Infectious diseases</td>
+                    </tr>
+                    <tr>
+                        <td>Base Editing</td>
+                        <td>Early Clinical</td>
+                        <td>Phase I/II trials</td>
+                        <td>2026-2028</td>
+                        <td>Genetic disorders</td>
+                    </tr>
+                    <tr>
+                        <td>Synthetic Biology</td>
+                        <td>Mixed Stages</td>
+                        <td>Preclinical to Commercial</td>
+                        <td>2025-2030</td>
+                        <td>Manufacturing, therapeutics</td>
+                    </tr>
+                    <tr>
+                        <td>Protein Design</td>
+                        <td>Early Clinical</td>
+                        <td>Phase I trials</td>
+                        <td>2027-2030</td>
+                        <td>Novel therapeutics</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </section>
+
+    <section class="section">
+        <div class="container">
+            <h2>Implementation Strategies</h2>
+            
+            <div class="grid">
+                <div class="card">
+                    <h3>For Pharmaceutical Companies</h3>
+                    <p>Biotechnology adoption strategies for established pharmaceutical companies.</p>
+                    <ul>
+                        <li>Platform technology investments and acquisitions</li>
+                        <li>Partnership with biotech innovators</li>
+                        <li>Internal capability building</li>
+                        <li>Regulatory pathway expertise</li>
+                        <li>Manufacturing and scale-up planning</li>
+                    </ul>
+                </div>
+                
+                <div class="card">
+                    <h3>For Biotech Startups</h3>
+                    <p>Development and commercialization strategies for biotech entrepreneurs.</p>
+                    <ul>
+                        <li>Technology validation and proof-of-concept</li>
+                        <li>Intellectual property strategy</li>
+                        <li>Funding and investment strategies</li>
+                        <li>Clinical development planning</li>
+                        <li>Partnership and licensing opportunities</li>
+                    </ul>
+                </div>
+                
+                <div class="card">
+                    <h3>For Healthcare Systems</h3>
+                    <p>Integration strategies for advanced biotechnology therapies.</p>
+                    <ul>
+                        <li>Infrastructure and facility requirements</li>
+                        <li>Staff training and expertise development</li>
+                        <li>Patient selection and screening</li>
+                        <li>Cost management and reimbursement</li>
+                        <li>Quality control and safety monitoring</li>
+                    </ul>
+                </div>
+                
+                <div class="card">
+                    <h3>For Investors</h3>
+                    <p>Investment strategies in biotechnology innovation and development.</p>
+                    <ul>
+                        <li>Technology assessment and due diligence</li>
+                        <li>Portfolio diversification strategies</li>
+                        <li>Risk management and mitigation</li>
+                        <li>Regulatory and market analysis</li>
+                        <li>Long-term value creation</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="section">
+        <div class="container">
+            <h2>Future of Biotechnology</h2>
+            
+            <div class="two-column">
+                <div>
+                    <h3>Emerging Technologies</h3>
+                    <ul style="color: #ccc; padding-left: 1.5rem;">
+                        <li><strong>Xenotransplantation:</strong> Genetically modified pig organs for humans</li>
+                        <li><strong>Longevity Biotechnology:</strong> Therapies targeting aging processes</li>
+                        <li><strong>Brain-Computer Interfaces:</strong> Biotechnology for neural enhancement</li>
+                        <li><strong>Organoids and Organ-on-Chip:</strong> Advanced disease modeling</li>
+                        <li><strong>Digital Biology:</strong> AI-driven biological design</li>
+                        <li><strong>Space Biotechnology:</strong> Life sciences in microgravity</li>
+                    </ul>
+                </div>
+                
+                <div>
+                    <h3>Industry Trends</h3>
+                    <ul style="color: #ccc; padding-left: 1.5rem;">
+                        <li><strong>Convergence Technologies:</strong> AI, robotics, and biotech integration</li>
+                        <li><strong>Democratization:</strong> Accessible biotechnology tools and platforms</li>
+                        <li><strong>Sustainability Focus:</strong> Green biotechnology solutions</li>
+                        <li><strong>Global Health Equity:</strong> Affordable biotechnology access</li>
+                        <li><strong>Regulatory Innovation:</strong> Adaptive regulatory frameworks</li>
+                        <li><strong>Ethical Governance:</strong> Responsible biotechnology development</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="section">
+        <div class="container">
+            <h2>Opportunities & Challenges</h2>
+            
+            <div class="pros-cons">
+                <div class="pros">
+                    <h4>✅ Opportunities</h4>
+                    <ul style="color: #ccc; padding-left: 1.5rem; margin-top: 1rem;">
+                        <li>$774 billion global biotechnology market</li>
+                        <li>Revolutionary therapeutic possibilities</li>
+                        <li>Aging population and unmet medical needs</li>
+                        <li>Sustainable manufacturing and agriculture</li>
+                        <li>Climate change mitigation solutions</li>
+                        <li>Personalized medicine advances</li>
+                        <li>Emerging market expansion</li>
+                    </ul>
+                </div>
+                
+                <div class="cons">
+                    <h4>⚠️ Challenges</h4>
+                    <ul style="color: #ccc; padding-left: 1.5rem; margin-top: 1rem;">
+                        <li>High development costs and risks</li>
+                        <li>Complex regulatory requirements</li>
+                        <li>Ethical and safety concerns</li>
+                        <li>Long development timelines</li>
+                        <li>Manufacturing and scalability challenges</li>
+                        <li>Intellectual property complexity</li>
+                        <li>Public acceptance and education</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="highlight" style="margin-top: 3rem;">
+                <h3>Success Factors</h3>
+                <p>Biotechnology success requires strong scientific foundation, robust intellectual property, regulatory expertise, strategic partnerships, patient capital, ethical governance, and focus on addressing significant unmet medical or environmental needs.</p>
+            </div>
+        </div>
+    </section>
+
+    <div class="cta">
+        <div class="container">
+            <h2>Ready to Explore Biotech Innovation?</h2>
+            <p>Discover the transformative world of biotechnology and learn how biological innovation is solving global challenges while creating new therapeutic possibilities.</p>
+            <a href="https://gab.ae" class="btn">Explore More Biotech Resources</a>
+        </div>
+    </div>
+
+    <footer>
+        <div class="container">
+            <p>&copy; 2026 GAB Ventures. Biotechnology Innovation Guide.</p>
+        </div>
+    </footer>
+
+    <script>
+        // Add smooth scrolling for anchor links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                document.querySelector(this.getAttribute('href')).scrollIntoView({
+                    behavior: 'smooth'
+                });
+            });
+        });
+
+        // Add intersection observer for animations
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -50px 0px'
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.style.opacity = '1';
+                    entry.target.style.transform = 'translateY(0)';
+                }
+            });
+        }, observerOptions);
+
+        // Observe all cards and sections
+        document.querySelectorAll('.card, .technology-card, .stat-card').forEach(el => {
+            el.style.opacity = '0';
+            el.style.transform = 'translateY(20px)';
+            el.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
+            observer.observe(el);
+        });
+
+        // Interactive technology showcase
+        document.querySelectorAll('.technology-card').forEach(card => {
+            card.addEventListener('click', function() {
+                this.style.transform = 'translateY(-5px) scale(1.02)';
+                setTimeout(() => {
+                    this.style.transform = 'translateY(-3px)';
+                }, 200);
+            });
+        });
+
+        // Stats counter animation
+        function animateCounter(element, target, suffix = '', duration = 2000) {
+            const start = 0;
+            const increment = target / (duration / 16);
+            let current = start;
+            
+            const timer = setInterval(() => {
+                current += increment;
+                if (current >= target) {
+                    current = target;
+                    clearInterval(timer);
+                }
+                
+                if (suffix === 'B') {
+                    element.textContent = '$' + Math.floor(current) + 'B';
+                } else if (suffix === '%') {
+                    element.textContent = Math.floor(current) + '%';
+                } else if (suffix === '+') {
+                    element.textContent = Math.floor(current) + '+';
+                } else {
+                    element.textContent = Math.floor(current) + suffix;
+                }
+            }, 16);
+        }
+
+        // Trigger counter animations when stats come into view
+        const statsObserver = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting && !entry.target.classList.contains('animated')) {
+                    entry.target.classList.add('animated');
+                    const number = entry.target.querySelector('.number');
+                    const text = number.textContent;
+                    
+                    if (text.includes('$774B')) animateCounter(number, 774, 'B', 2000);
+                    else if (text.includes('14%')) animateCounter(number, 14, '%', 2000);
+                    else if (text.includes('$143B')) animateCounter(number, 143, 'B', 2000);
+                    else if (text.includes('4,000+')) animateCounter(number, 4000, '+', 2000);
+                }
+            });
+        }, { threshold: 0.5 });
+
+        document.querySelectorAll('.stat-card').forEach(card => {
+            statsObserver.observe(card);
+        });
+
+        // Interactive table highlighting
+        document.querySelectorAll('.comparison-table tbody tr').forEach(row => {
+            row.addEventListener('mouseenter', function() {
+                this.style.backgroundColor = '#2a2a2a';
+            });
+            
+            row.addEventListener('mouseleave', function() {
+                this.style.backgroundColor = 'transparent';
+            });
+        });
+
+        // Biotechnology interaction tracking
+        document.querySelectorAll('.technology-card').forEach((card, index) => {
+            card.addEventListener('click', function() {
+                const technologies = ['Gene Editing', 'Synthetic Biology', 'Cell Therapy', 'Agricultural Biotech', 'Drug Development', 'Industrial Biotech'];
+                console.log(`Exploring ${technologies[index]} biotechnology`);
+            });
+        });
+
+        // DNA helix animation effect
+        function createDNAEffect() {
+            const cards = document.querySelectorAll('.technology-card');
+            
+            cards.forEach((card, index) => {
+                card.addEventListener('mouseenter', function() {
+                    // DNA-themed glow effect
+                    this.style.boxShadow = '0 8px 32px rgba(16, 185, 129, 0.3)';
+                    
+                    // Add biological animation
+                    setTimeout(() => {
+                        this.style.transform = 'translateY(-3px) scale(1.01)';
+                    }, 100);
+                });
+                
+                card.addEventListener('mouseleave', function() {
+                    this.style.boxShadow = '';
+                    this.style.transform = 'translateY(0) scale(1)';
+                });
+            });
+        }
+
+        // Initialize DNA effect
+        document.addEventListener('DOMContentLoaded', createDNAEffect);
+
+        // Gene editing simulation
+        let genesEdited = 0;
+        
+        document.querySelectorAll('.technology-card').forEach(card => {
+            card.addEventListener('click', function() {
+                genesEdited++;
+                
+                // Create gene editing indicator
+                const geneIndicator = document.createElement('div');
+                geneIndicator.innerHTML = `🧬 ${genesEdited} Gene${genesEdited > 1 ? 's' : ''} Edited`;
+                geneIndicator.style.cssText = `
+                    position: fixed;
+                    top: 20px;
+                    right: 20px;
+                    background: linear-gradient(135deg, #10b981, #059669);
+                    color: white;
+                    padding: 10px 20px;
+                    border-radius: 20px;
+                    font-weight: bold;
+                    z-index: 1000;
+                    animation: bioTech 1s ease;
+                `;
+                
+                document.body.appendChild(geneIndicator);
+                
+                setTimeout(() => {
+                    geneIndicator.remove();
+                }, 2000);
+            });
+        });
+
+        // Add biotech animation
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes bioTech {
+                0% { transform: scale(0.8) rotateY(-180deg); opacity: 0; }
+                50% { transform: scale(1.1) rotateY(0deg); opacity: 1; }
+                100% { transform: scale(1) rotateY(0deg); opacity: 1; }
+            }
+        `;
+        document.head.appendChild(style);
+    </script>
+</body>
+</html>
