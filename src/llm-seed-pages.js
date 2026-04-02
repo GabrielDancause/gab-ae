@@ -292,9 +292,9 @@ Return ONLY the raw HTML (no markdown fences, no explanation). The HTML must use
 .seed-calc-output .value { font-size: 1.3rem; font-weight: 700; color: #818cf8; }
 .seed-explore { text-align: center; margin-top: 1.5rem; font-size: 0.85rem; color: #64748b; }
 .seed-explore a { color: #818cf8; text-decoration: underline; }
-.seed-stat { display: flex; align-items: baseline; gap: 0.75rem; padding: 1rem; background: #0a0a14; border-radius: 10px; margin-bottom: 0.75rem; }
-.seed-stat .stat-value { font-size: 1.5rem; font-weight: 800; color: #818cf8; white-space: nowrap; }
-.seed-stat .stat-label { font-size: 0.9rem; color: #94a3b8; }
+.seed-stat { display: flex; align-items: baseline; gap: 0.75rem; padding: 1rem; background: #0a0a14; border-radius: 10px; margin-bottom: 0.75rem; flex-wrap: wrap; }
+.seed-stat .stat-value { font-size: 1.5rem; font-weight: 800; color: #818cf8; flex-shrink: 0; }
+.seed-stat .stat-label { font-size: 0.9rem; color: #94a3b8; min-width: 0; }
 .seed-takeaway { background: linear-gradient(135deg, #1a1a2e, #16213e); border-left: 3px solid #818cf8; border-radius: 8px; padding: 1rem 1.25rem; margin-bottom: 1rem; }
 .seed-takeaway p { color: #e2e8f0; font-weight: 500; margin: 0; }
 .seed-pros { background: #0a1a0a; border: 1px solid #1a3a1a; border-radius: 10px; padding: 1rem 1.25rem; margin-bottom: 0.5rem; }

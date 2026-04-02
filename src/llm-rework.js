@@ -151,9 +151,9 @@ Return ONLY raw HTML (no markdown fences). Use these CSS classes:
 .seed-section h3 { font-size: 1rem; font-weight: 600; color: #e2e8f0; margin-bottom: 0.5rem; }
 .seed-section p { font-size: 0.95rem; line-height: 1.7; color: #94a3b8; margin-bottom: 0.5rem; }
 .seed-section ul, .seed-section ol { padding-left: 1.25rem; color: #94a3b8; font-size: 0.95rem; line-height: 1.8; }
-.seed-stat { display: flex; align-items: baseline; gap: 0.75rem; padding: 1rem; background: #0a0a14; border-radius: 10px; margin-bottom: 0.75rem; }
-.seed-stat .stat-value { font-size: 1.5rem; font-weight: 800; color: #818cf8; white-space: nowrap; }
-.seed-stat .stat-label { font-size: 0.9rem; color: #94a3b8; }
+.seed-stat { display: flex; align-items: baseline; gap: 0.75rem; padding: 1rem; background: #0a0a14; border-radius: 10px; margin-bottom: 0.75rem; flex-wrap: wrap; }
+.seed-stat .stat-value { font-size: 1.5rem; font-weight: 800; color: #818cf8; flex-shrink: 0; }
+.seed-stat .stat-label { font-size: 0.9rem; color: #94a3b8; min-width: 0; }
 .seed-takeaway { background: linear-gradient(135deg, #1a1a2e, #16213e); border-left: 3px solid #818cf8; border-radius: 8px; padding: 1rem 1.25rem; margin-bottom: 1rem; }
 .seed-takeaway p { color: #e2e8f0; font-weight: 500; margin: 0; }
 .seed-pros { background: #0a1a0a; border: 1px solid #1a3a1a; border-radius: 10px; padding: 1rem 1.25rem; margin-bottom: 0.5rem; }
