@@ -153,7 +153,7 @@ export default {
         let onDemandRelated = [];
         try {
           const relResult = await env.DB.prepare(
-            "SELECT slug, title FROM pages WHERE status = 'live' AND slug != ? ORDER BY views DESC LIMIT 5"
+            "SELECT slug, title FROM pages WHERE status = 'live' AND slug != ? ORDER BY published_at DESC LIMIT 5"
           ).bind(slug).all();
           onDemandRelated = relResult?.results || [];
         } catch (e) { /* ignore */ }

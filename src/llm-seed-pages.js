@@ -153,7 +153,7 @@ export async function llmSeedPages(env) {
     const relResult = await env.DB.prepare(
       `SELECT slug, title FROM pages 
        WHERE category = ? AND status = 'live' AND slug != ?
-       ORDER BY views DESC LIMIT 5`
+       ORDER BY published_at DESC LIMIT 5`
     ).bind(category, slug).all();
     relatedPages = relResult?.results || [];
   } catch (e) {
@@ -166,7 +166,7 @@ export async function llmSeedPages(env) {
       const fillResult = await env.DB.prepare(
         `SELECT slug, title FROM pages 
          WHERE status = 'live' AND slug != ?
-         ORDER BY views DESC LIMIT 5`
+         ORDER BY published_at DESC LIMIT 5`
       ).bind(slug).all();
       const fill = (fillResult?.results || []).filter(p => !existingSlugs.includes(p.slug));
       relatedPages = [...relatedPages, ...fill].slice(0, 5);
