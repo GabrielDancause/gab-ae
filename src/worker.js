@@ -488,6 +488,18 @@ Rules:
         body = engine(page);
       }
       
+      // Visible breadcrumb
+      const cat = page.category || 'general';
+      const catLabel = cat.charAt(0).toUpperCase() + cat.slice(1).replace(/-/g, ' ');
+      const breadcrumb = `<nav aria-label="Breadcrumb" class="text-sm text-gray-500 mb-4 flex items-center gap-1.5 flex-wrap">
+        <a href="/" class="hover:text-white transition-colors">Home</a>
+        <span class="text-gray-600">›</span>
+        <a href="/category/${esc(cat)}" class="hover:text-white transition-colors">${esc(catLabel)}</a>
+        <span class="text-gray-600">›</span>
+        <span class="text-gray-400">${esc((page.title || '').replace(' | gab.ae', ''))}</span>
+      </nav>`;
+      body = breadcrumb + body;
+
       const html = layout({
         title: page.title,
         description: page.description,
