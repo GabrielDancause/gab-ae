@@ -352,9 +352,10 @@ Rules:
   <ul>${relatedPages.map(p => `<li><a href="/${p.slug}" style="color:#818cf8;text-decoration:underline;">${p.title.replace(' | gab.ae', '')}</a></li>`).join('\n    ')}</ul>
 </div>`;
       // Insert before the last </div> (the seed-page wrapper close)
-      const lastDiv = html.lastIndexOf('</div>');
-      if (lastDiv > -1) {
-        html = html.slice(0, lastDiv) + relatedHtml + '\n' + html.slice(lastDiv);
+      // Find the closing </div> of seed-page wrapper (last </div> followed only by whitespace/end)
+      const seedPageClose = html.search(/<\/div>\s*$/);
+      if (seedPageClose > -1) {
+        html = html.slice(0, seedPageClose) + relatedHtml + '\n' + html.slice(seedPageClose);
       }
     }
   }

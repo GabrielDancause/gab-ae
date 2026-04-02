@@ -271,8 +271,8 @@ Rules:
   <h2>Related Resources</h2>
   <ul>${onDemandRelated.map(p => `<li><a href="/${p.slug}" style="color:#818cf8;text-decoration:underline;">${(p.title || '').replace(' | gab.ae', '')}</a></li>`).join('\n    ')}</ul>
 </div>`;
-            const lastDiv = html.lastIndexOf('</div>');
-            if (lastDiv > -1) html = html.slice(0, lastDiv) + relHtml + '\n' + html.slice(lastDiv);
+            const seedPageClose = html.search(/<\/div>\s*$/);
+            if (seedPageClose > -1) html = html.slice(0, seedPageClose) + relHtml + '\n' + html.slice(seedPageClose);
           }
         }
 
