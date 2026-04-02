@@ -13,7 +13,7 @@ async function callSonnet(apiKey, prompt) {
       'content-type': 'application/json',
     },
     body: JSON.stringify({
-      model: 'claude-sonnet-4-20250514',
+      model: 'claude-haiku-4-5-20251001',  // using Haiku until Sonnet rate limits resolved
       max_tokens: 8192,
       messages: [{ role: 'user', content: prompt }],
     }),
@@ -29,10 +29,14 @@ export async function llmRework(env) {
 
   // 1. Find the top-traffic page that hasn't been reworked yet
   //    Join view_counts with pages, pick highest views_total, quality still 'llm'
-  let page;
+  // First find the candidate (without html to avoid size issues)
+  let candidate;
   try {
-    page = await env.DB.prepare(
-      `SELECT p.slug, p.title, p.html, p.keyword, p.category, p.page_type, p.description,
+    // Debug: check if tables are accessible
+    const testCount = await env.DB.prepare("SELECT COUNT(*) as c FROM view_counts WHERE views_total > 0").first();
+    console.log(`🔍 Rework: ${testCount?.c || 0} pages with views`);
+    candidate = await env.DB.prepare(
+      `SELECT p.slug, p.title, p.keyword, p.category, p.page_type, p.description,
               vc.views_24h, vc.views_total
        FROM view_counts vc
        JOIN pages p ON vc.slug = p.slug
@@ -48,8 +52,19 @@ export async function llmRework(env) {
     return;
   }
 
-  if (!page) {
+  console.log(`🔍 Rework candidate: ${candidate ? candidate.slug : 'null'}`);
+  if (!candidate) {
     console.log('✅ Rework: No pages need upgrading');
+    return;
+  }
+
+  // Now fetch the html separately
+  let page;
+  try {
+    page = await env.DB.prepare("SELECT html FROM pages WHERE slug = ?").bind(candidate.slug).first();
+    page = { ...candidate, html: page?.html || '' };
+  } catch (e) {
+    console.log(`❌ Rework html fetch error: ${e.message}`);
     return;
   }
 

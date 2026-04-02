@@ -78,6 +78,16 @@ export default {
     const url = new URL(request.url);
     const path = url.pathname.replace(/\/$/, '') || '/';
 
+    // Admin: trigger rework manually (secret path)
+    if (path === '/api/admin/rework' && request.method === 'POST') {
+      try {
+        const result = await llmRework(env);
+        return new Response(JSON.stringify(result || { message: 'No pages to rework' }), { headers: { 'content-type': 'application/json' } });
+      } catch (e) {
+        return new Response(JSON.stringify({ error: e.message }), { status: 500, headers: { 'content-type': 'application/json' } });
+      }
+    }
+
     // Homepage
     if (path === '/') {
       return homepage(env);
