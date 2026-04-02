@@ -138,7 +138,7 @@ export default {
         const slug = keyword.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '').slice(0, 80);
 
         // Check if page already exists
-        const existing = await env.DB.prepare("SELECT slug FROM pages WHERE slug = ? AND status = 'live'").bind(slug).first();
+        const existing = await env.DB.prepare("SELECT slug, status FROM pages WHERE slug = ?").bind(slug).first();
         if (existing) {
           return new Response(JSON.stringify({ slug, existing: true }), { headers: { 'content-type': 'application/json' } });
         }
@@ -640,7 +640,7 @@ async function homepage(env) {
         });
         var data = await resp.json();
         if (data.slug) {
-          status.textContent = '\u2705 Page created! Redirecting...';
+          status.textContent = data.existing ? '\u2705 Page found! Redirecting...' : '\u2705 Page created! Redirecting...';
           status.className = 'mt-3 text-sm text-green-400 text-center';
           setTimeout(function() { window.location.href = '/' + data.slug; }, 500);
         } else {
