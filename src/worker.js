@@ -926,7 +926,7 @@ async function resourcesPage(env) {
     const { results } = await env.DB.prepare(
       `SELECT slug, title, category, page_type, keyword_volume, updated_at as created_at
        FROM pages 
-       WHERE status = 'live'
+       WHERE status = 'live' AND updated_at > created_at
        ORDER BY updated_at DESC LIMIT 10`
     ).all();
     reworkedPages = results || [];
