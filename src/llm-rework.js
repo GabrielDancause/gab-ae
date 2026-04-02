@@ -14,7 +14,7 @@ async function callSonnet(apiKey, prompt) {
     },
     body: JSON.stringify({
       model: 'claude-haiku-4-5-20251001',  // using Haiku until Sonnet rate limits resolved
-      max_tokens: 8192,
+      max_tokens: 16384,
       messages: [{ role: 'user', content: prompt }],
     }),
   });
@@ -130,10 +130,8 @@ CURRENT PAGE KEYWORD: "${page.keyword || page.slug}"
 CURRENT PAGE TYPE: ${page.page_type || 'educational'}
 CATEGORY: ${page.category || 'general'}
 
-HERE IS THE CURRENT HTML:
-${page.html}
+The current page is ${(page.html || '').length} characters long. DO NOT just reword it — create something dramatically better from scratch:
 
-REWRITE this page completely. Make it significantly better:
 - Deeper analysis, more specific insights, better structure
 - More authoritative tone — write like a recognized expert in this field
 - Add concrete examples, case studies, or real-world applications

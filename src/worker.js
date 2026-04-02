@@ -54,7 +54,7 @@ export default {
       await resetDailyViews(env);
     }
 
-    // Rework top-traffic Haiku pages with Sonnet — every 6 hours
+    // Rework top-traffic Haiku pages — every 6 hours
     if (nowHour % 6 === 0 && nowMin < 5) {
       try {
         await llmRework(env);
@@ -78,14 +78,10 @@ export default {
     const url = new URL(request.url);
     const path = url.pathname.replace(/\/$/, '') || '/';
 
-    // Admin: trigger rework manually (secret path)
+    // Admin: trigger rework manually (secret path) — runs in background via waitUntil
     if (path === '/api/admin/rework' && request.method === 'POST') {
-      try {
-        const result = await llmRework(env);
-        return new Response(JSON.stringify(result || { message: 'No pages to rework' }), { headers: { 'content-type': 'application/json' } });
-      } catch (e) {
-        return new Response(JSON.stringify({ error: e.message }), { status: 500, headers: { 'content-type': 'application/json' } });
-      }
+      ctx.waitUntil(llmRework(env).then(r => console.log('✅ Rework result:', JSON.stringify(r))).catch(e => console.log('❌ Rework error:', e.message)));
+      return new Response(JSON.stringify({ message: 'Rework triggered in background — check logs' }), { headers: { 'content-type': 'application/json' } });
     }
 
     // Homepage
