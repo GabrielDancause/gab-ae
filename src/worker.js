@@ -161,6 +161,21 @@ export default {
           ? `\n\nINTERNAL LINKS — Naturally weave these links into your content where relevant. Also include a "Related Resources" section at the bottom:\n${onDemandRelated.map(p => `- <a href="/${p.slug}">${(p.title || '').replace(' | gab.ae', '')}</a>`).join('\n')}`
           : '';
 
+        // Mine related keywords for FAQ section
+        let onDemandKeywords = [];
+        try {
+          const coreWords = keyword.toLowerCase().split(/\s+/).filter(w => w.length > 3 && !['what','how','best','does','with','from','that','this','have','will','your','about','which','where','when'].includes(w));
+          if (coreWords.length > 0) {
+            const rkResult = await env.DB.prepare(
+              "SELECT keyword, volume FROM keywords WHERE keyword LIKE '%' || ? || '%' AND keyword != ? AND volume >= 20 ORDER BY volume DESC LIMIT 5"
+            ).bind(coreWords[0], keyword).all();
+            onDemandKeywords = rkResult?.results || [];
+          }
+        } catch (e) { /* ignore */ }
+        const onDemandKeywordsPrompt = onDemandKeywords.length > 0
+          ? `\n\nFAQ KEYWORDS — Include these as exact questions in your FAQ section (real people search for these):\n${onDemandKeywords.map(rk => `- "${rk.keyword}" (${rk.volume} monthly searches)`).join('\n')}`
+          : '';
+
         // Call Haiku directly
         const resp = await fetch('https://api.anthropic.com/v1/messages', {
           method: 'POST',
@@ -193,6 +208,15 @@ Return ONLY raw HTML (no markdown fences, no explanation). Use these CSS classes
 .seed-section h3 { font-size: 1rem; font-weight: 600; color: #e2e8f0; margin-bottom: 0.5rem; }
 .seed-section p { font-size: 0.95rem; line-height: 1.7; color: #94a3b8; margin-bottom: 0.5rem; }
 .seed-section ul, .seed-section ol { padding-left: 1.25rem; color: #94a3b8; font-size: 0.95rem; line-height: 1.8; }
+.seed-stat { display: flex; align-items: baseline; gap: 0.75rem; padding: 1rem; background: #0a0a14; border-radius: 10px; margin-bottom: 0.75rem; }
+.seed-stat .stat-value { font-size: 1.5rem; font-weight: 800; color: #818cf8; white-space: nowrap; }
+.seed-stat .stat-label { font-size: 0.9rem; color: #94a3b8; }
+.seed-takeaway { background: linear-gradient(135deg, #1a1a2e, #16213e); border-left: 3px solid #818cf8; border-radius: 8px; padding: 1rem 1.25rem; margin-bottom: 1rem; }
+.seed-takeaway p { color: #e2e8f0; font-weight: 500; margin: 0; }
+.seed-pros { background: #0a1a0a; border: 1px solid #1a3a1a; border-radius: 10px; padding: 1rem 1.25rem; margin-bottom: 0.5rem; }
+.seed-pros h3 { color: #4ade80; }
+.seed-cons { background: #1a0a0a; border: 1px solid #3a1a1a; border-radius: 10px; padding: 1rem 1.25rem; margin-bottom: 0.5rem; }
+.seed-cons h3 { color: #f87171; }
 </style>
 <div class="seed-page">
   <h1>Compelling title about ${keyword}</h1>
@@ -201,12 +225,20 @@ Return ONLY raw HTML (no markdown fences, no explanation). Use these CSS classes
   [FAQ section]
 </div>
 
+Visual components (use where appropriate):
+- <div class="seed-stat"><span class="stat-value">78%</span><span class="stat-label">description</span></div> — for key statistics
+- <div class="seed-takeaway"><p>Key insight</p></div> — for important takeaways
+- <div class="seed-pros"><h3>✅ Pros</h3><ul>...</ul></div> and <div class="seed-cons"><h3>❌ Cons</h3><ul>...</ul></div> — for reviews/comparisons
+
 Rules:
 - Write like a human expert — no template filler
 - Do NOT include JavaScript, script tags, or interactive elements
-- Do NOT use HTML tables — use bullet lists, numbered lists, or card-style sections instead
+- Do NOT use HTML tables — use bullet lists or card-style sections instead
 - Minimum 2000 characters of content
-- null over fake data${onDemandRelatedPrompt}`;
+- NEVER cite exact numbers without qualification — use "approximately", "typically", or ranges
+- NEVER invent study names, researcher names, or specific citations
+- Prefer verifiable general knowledge over specific unverifiable claims
+- null over fake data — when uncertain, use ranges with explicit caveats${onDemandRelatedPrompt}${onDemandKeywordsPrompt}`;
             })() }],
           }),
         });
@@ -246,13 +278,42 @@ Rules:
 
         // Extract title from h1
         const h1 = (html.match(/<h1[^>]*>(.*?)<\/h1>/) || [])[1] || keyword;
-        const title = h1.replace(/<[^>]+>/g, '').trim() + ' | gab.ae';
+        const titleClean = h1.replace(/<[^>]+>/g, '').trim();
+        const title = titleClean + ' | gab.ae';
+        // Generate unique description from first paragraph
+        const onDemandFirstP = html.match(/<p[^>]*class="[^"]*"[^>]*>([\s\S]*?)<\/p>/);
+        const onDemandDesc = onDemandFirstP ? onDemandFirstP[1].replace(/<[^>]+>/g, '').trim().slice(0, 155) : '';
+        const description = onDemandDesc.length > 50
+          ? onDemandDesc + (onDemandDesc.length >= 155 ? '…' : '')
+          : `${titleClean}. Expert guide with data, practical tips, and FAQs about ${keyword}.`;
+
+        // JSON-LD structured data
+        const odFaqs = [];
+        const odFaqRegex = /<h3[^>]*>([\s\S]*?)<\/h3>\s*<p[^>]*>([\s\S]*?)<\/p>/gi;
+        let odFaqMatch;
+        while ((odFaqMatch = odFaqRegex.exec(html)) !== null) {
+          const q = odFaqMatch[1].replace(/<[^>]+>/g, '').trim();
+          const a = odFaqMatch[2].replace(/<[^>]+>/g, '').trim();
+          if (q.includes('?') || /^(how|what|why|is|can|do|does|should|which)/i.test(q)) {
+            odFaqs.push({ q, a });
+          }
+        }
+        const odJsonLd = {
+          '@context': 'https://schema.org',
+          '@graph': [
+            { '@type': 'Article', headline: titleClean, description, datePublished: new Date().toISOString(), dateModified: new Date().toISOString(), author: { '@type': 'Organization', name: 'gab.ae' }, publisher: { '@type': 'Organization', name: 'gab.ae', url: 'https://gab.ae' }, mainEntityOfPage: { '@type': 'WebPage', '@id': `https://gab.ae/${slug}` } },
+            ...(odFaqs.length > 0 ? [{ '@type': 'FAQPage', mainEntity: odFaqs.map(f => ({ '@type': 'Question', name: f.q, acceptedAnswer: { '@type': 'Answer', text: f.a } })) }] : []),
+            { '@type': 'BreadcrumbList', itemListElement: [{ '@type': 'ListItem', position: 1, name: 'Home', item: 'https://gab.ae/' }, { '@type': 'ListItem', position: 2, name: titleClean }] },
+          ],
+        };
+        html = `<script type="application/ld+json">${JSON.stringify(odJsonLd)}</script>\n` + html;
+
         const now = new Date().toISOString().replace('T', ' ').slice(0, 19);
 
         // Insert
         await env.DB.prepare(
           "INSERT INTO pages (slug, title, description, category, engine, html, status, quality, keyword, page_type, published_at, updated_at, created_at) VALUES (?, ?, ?, 'on-demand', 'llm-haiku', ?, 'live', 'llm', ?, 'educational', ?, ?, ?)"
-        ).bind(slug, title, "Everything about " + keyword, html, keyword, now, now, now).run();
+        ).bind(slug, title, description, html, keyword, now, now, now).run();
 
         return new Response(JSON.stringify({ slug, title: h1 }), { headers: { 'content-type': 'application/json' } });
       } catch (e) {

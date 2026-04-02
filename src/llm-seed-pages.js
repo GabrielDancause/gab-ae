@@ -173,6 +173,32 @@ export async function llmSeedPages(env) {
     } catch (e) { /* ignore */ }
   }
 
+  // 3c. Mine related keywords from D1 for FAQ section (#44)
+  let relatedKeywords = [];
+  try {
+    // Extract core words from keyword for LIKE matching
+    const coreWords = kw.keyword.toLowerCase().split(/\s+/).filter(w => w.length > 3 && !['what','how','best','does','with','from','that','this','have','will','your','about','which','where','when'].includes(w));
+    if (coreWords.length > 0) {
+      const likeWord = coreWords[0]; // use the most meaningful word
+      const rkResult = await env.DB.prepare(
+        `SELECT keyword, volume FROM keywords 
+         WHERE keyword LIKE '%' || ? || '%' 
+           AND keyword != ?
+           AND volume >= 20
+           AND status = 'new'
+         ORDER BY volume DESC 
+         LIMIT 5`
+      ).bind(likeWord, kw.keyword).all();
+      relatedKeywords = rkResult?.results || [];
+    }
+  } catch (e) {
+    console.log(`⚠️ Related keywords query failed: ${e.message}`);
+  }
+
+  const relatedKeywordsPrompt = relatedKeywords.length > 0
+    ? `\n\nFAQ KEYWORDS — Include these as exact questions in your FAQ section (real people search for these):\n${relatedKeywords.map(rk => `- "${rk.keyword}" (${rk.volume} monthly searches)`).join('\n')}`
+    : '';
+
   const relatedLinksPrompt = relatedPages.length > 0
     ? `\n\nINTERNAL LINKS — Naturally weave these links into your content where relevant (don't force them, only link where it makes sense). Also include a "Related Resources" section at the bottom with all of them:\n${relatedPages.map(p => `- <a href="/${p.slug}">${p.title.replace(' | gab.ae', '')}</a>`).join('\n')}`
     : '';
@@ -266,6 +292,15 @@ Return ONLY the raw HTML (no markdown fences, no explanation). The HTML must use
 .seed-calc-output .value { font-size: 1.3rem; font-weight: 700; color: #818cf8; }
 .seed-explore { text-align: center; margin-top: 1.5rem; font-size: 0.85rem; color: #64748b; }
 .seed-explore a { color: #818cf8; text-decoration: underline; }
+.seed-stat { display: flex; align-items: baseline; gap: 0.75rem; padding: 1rem; background: #0a0a14; border-radius: 10px; margin-bottom: 0.75rem; }
+.seed-stat .stat-value { font-size: 1.5rem; font-weight: 800; color: #818cf8; white-space: nowrap; }
+.seed-stat .stat-label { font-size: 0.9rem; color: #94a3b8; }
+.seed-takeaway { background: linear-gradient(135deg, #1a1a2e, #16213e); border-left: 3px solid #818cf8; border-radius: 8px; padding: 1rem 1.25rem; margin-bottom: 1rem; }
+.seed-takeaway p { color: #e2e8f0; font-weight: 500; margin: 0; }
+.seed-pros { background: #0a1a0a; border: 1px solid #1a3a1a; border-radius: 10px; padding: 1rem 1.25rem; margin-bottom: 0.5rem; }
+.seed-pros h3 { color: #4ade80; }
+.seed-cons { background: #1a0a0a; border: 1px solid #3a1a1a; border-radius: 10px; padding: 1rem 1.25rem; margin-bottom: 0.5rem; }
+.seed-cons h3 { color: #f87171; }
 </style>
 
 Structure:
@@ -276,15 +311,23 @@ Structure:
 5. FAQ section with <h3> questions and <p> answers
 7. <p class="seed-explore"> with link to <a href="/${apexSlug}">${apexName} Guide</a>
 
+Visual components (use where appropriate based on content type):
+- <div class="seed-stat"><span class="stat-value">78%</span><span class="stat-label">of users prefer X</span></div> — for key statistics
+- <div class="seed-takeaway"><p>Key insight here</p></div> — for important takeaways
+- <div class="seed-pros"><h3>✅ Pros</h3><ul>...</ul></div> — for advantages (reviews, comparisons)
+- <div class="seed-cons"><h3>❌ Cons</h3><ul>...</ul></div> — for disadvantages
+
 Rules:
 - Write like a human expert, not a template
-- Use REAL data, stats, and specifics — not placeholder text
-- If it's a calculator, the math MUST be correct
 - Minimum 2000 characters of content
 - Do NOT include any JavaScript, <script> tags, or interactive calculators
-- Do NOT use HTML tables — use bullet lists, numbered lists, or card-style sections instead. Tables look terrible on mobile.
+- Do NOT use HTML tables — use bullet lists, numbered lists, or card-style sections instead
 - No input fields, no forms — content only
-- null over fake data — if you don't know exact numbers, use reasonable ranges with caveats${relatedLinksPrompt}`;
+- NEVER cite exact numbers without qualification — use "approximately", "typically", "industry estimates suggest", or ranges (e.g. "between 2-5%")
+- NEVER invent study names, researcher names, or specific citations
+- If you don't know exact data, say so: "exact figures vary by region" or "data as of [year] suggests..."
+- Prefer verifiable general knowledge over specific unverifiable claims
+- null over fake data — when uncertain, use reasonable ranges with explicit caveats${relatedLinksPrompt}${relatedKeywordsPrompt}`;
 
   let html;
   try {
@@ -327,7 +370,58 @@ Rules:
   const h1Match = html.match(/<h1[^>]*>(.*?)<\/h1>/);
   const title = h1Match ? h1Match[1].replace(/<[^>]+>/g, '').trim() : kw.keyword;
   const fullTitle = `${title} | gab.ae`;
-  const description = `Everything you need to know about ${kw.keyword}. Expert guide with tools, data, and FAQs.`;
+  // Generate unique description from first paragraph of content
+  const firstP = html.match(/<p[^>]*class="[^"]*"[^>]*>([\s\S]*?)<\/p>/);
+  const extractedDesc = firstP ? firstP[1].replace(/<[^>]+>/g, '').trim().slice(0, 155) : '';
+  const description = extractedDesc.length > 50
+    ? extractedDesc + (extractedDesc.length >= 155 ? '…' : '')
+    : `${title}. Expert guide with data, practical tips, and FAQs about ${kw.keyword}.`;
+
+  // 6b. Inject JSON-LD structured data (Article + FAQPage)
+  const faqs = [];
+  const faqRegex = /<h3[^>]*>([\s\S]*?)<\/h3>\s*<p[^>]*>([\s\S]*?)<\/p>/gi;
+  let faqMatch;
+  while ((faqMatch = faqRegex.exec(html)) !== null) {
+    const q = faqMatch[1].replace(/<[^>]+>/g, '').trim();
+    const a = faqMatch[2].replace(/<[^>]+>/g, '').trim();
+    if (q.includes('?') || q.toLowerCase().startsWith('how') || q.toLowerCase().startsWith('what') || q.toLowerCase().startsWith('why') || q.toLowerCase().startsWith('is') || q.toLowerCase().startsWith('can')) {
+      faqs.push({ q, a });
+    }
+  }
+  const jsonLd = {
+    '@context': 'https://schema.org',
+    '@graph': [
+      {
+        '@type': 'Article',
+        headline: title,
+        description: description,
+        datePublished: new Date().toISOString(),
+        dateModified: new Date().toISOString(),
+        author: { '@type': 'Organization', name: 'gab.ae' },
+        publisher: { '@type': 'Organization', name: 'gab.ae', url: 'https://gab.ae' },
+        mainEntityOfPage: { '@type': 'WebPage', '@id': `https://gab.ae/${slug}` },
+      },
+      ...(faqs.length > 0 ? [{
+        '@type': 'FAQPage',
+        mainEntity: faqs.map(f => ({
+          '@type': 'Question',
+          name: f.q,
+          acceptedAnswer: { '@type': 'Answer', text: f.a },
+        })),
+      }] : []),
+      {
+        '@type': 'BreadcrumbList',
+        itemListElement: [
+          { '@type': 'ListItem', position: 1, name: 'Home', item: 'https://gab.ae/' },
+          { '@type': 'ListItem', position: 2, name: category.charAt(0).toUpperCase() + category.slice(1), item: `https://gab.ae/category/${category}` },
+          { '@type': 'ListItem', position: 3, name: title },
+        ],
+      },
+    ],
+  };
+  const jsonLdTag = `<script type="application/ld+json">${JSON.stringify(jsonLd)}</script>`;
+  // Inject JSON-LD at the start of the HTML (before content)
+  html = jsonLdTag + '\n' + html;
   const now = new Date().toISOString().replace('T', ' ').slice(0, 19);
 
   // 7. Insert into pages
