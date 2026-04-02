@@ -924,13 +924,13 @@ async function resourcesPage(env) {
     popularPages = [...popularPages, ...(results || [])].sort((a, b) => b.views_24h - a.views_24h).slice(0, 10);
   } catch {}
 
-  // Get recently reworked pages (Sonnet upgrades)
+  // Get recently updated pages (any update — reworks, edits, etc.)
   let reworkedPages = [];
   try {
     const { results } = await env.DB.prepare(
       `SELECT slug, title, category, page_type, keyword_volume, updated_at as created_at
        FROM pages 
-       WHERE status = 'live' AND quality = 'llm-sonnet' AND updated_at > published_at
+       WHERE status = 'live'
        ORDER BY updated_at DESC LIMIT 10`
     ).all();
     reworkedPages = results || [];
