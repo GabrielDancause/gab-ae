@@ -147,6 +147,36 @@ export async function llmSeedPages(env) {
 
   console.log(`📝 Generating: "${kw.keyword}" (${pageType}, ${category}, vol:${kw.volume}, kd:${kw.kd}, cpc:$${kw.cpc})`);
 
+  // 3b. Find related pages for internal linking
+  let relatedPages = [];
+  try {
+    const relResult = await env.DB.prepare(
+      `SELECT slug, title FROM pages 
+       WHERE category = ? AND status = 'live' AND slug != ?
+       ORDER BY views DESC LIMIT 5`
+    ).bind(category, slug).all();
+    relatedPages = relResult?.results || [];
+  } catch (e) {
+    console.log(`⚠️ Related pages query failed: ${e.message}`);
+  }
+  // If not enough in same category, fill from any category
+  if (relatedPages.length < 3) {
+    try {
+      const existingSlugs = relatedPages.map(p => p.slug);
+      const fillResult = await env.DB.prepare(
+        `SELECT slug, title FROM pages 
+         WHERE status = 'live' AND slug != ?
+         ORDER BY views DESC LIMIT 5`
+      ).bind(slug).all();
+      const fill = (fillResult?.results || []).filter(p => !existingSlugs.includes(p.slug));
+      relatedPages = [...relatedPages, ...fill].slice(0, 5);
+    } catch (e) { /* ignore */ }
+  }
+
+  const relatedLinksPrompt = relatedPages.length > 0
+    ? `\n\nINTERNAL LINKS — Naturally weave these links into your content where relevant (don't force them, only link where it makes sense). Also include a "Related Resources" section at the bottom with all of them:\n${relatedPages.map(p => `- <a href="/${p.slug}">${p.title.replace(' | gab.ae', '')}</a>`).join('\n')}`
+    : '';
+
   // 4. Build the prompt based on page type
   const typeInstructions = {
     calculator: `Create a DATA-DRIVEN reference page about "${kw.keyword}". Include:
@@ -254,7 +284,7 @@ Rules:
 - Do NOT include any JavaScript, <script> tags, or interactive calculators
 - Do NOT use HTML tables — use bullet lists, numbered lists, or card-style sections instead. Tables look terrible on mobile.
 - No input fields, no forms — content only
-- null over fake data — if you don't know exact numbers, use reasonable ranges with caveats`;
+- null over fake data — if you don't know exact numbers, use reasonable ranges with caveats${relatedLinksPrompt}`;
 
   let html;
   try {
@@ -267,6 +297,23 @@ Rules:
   } catch (e) {
     console.log(`❌ Haiku error: ${e.message}`);
     return;
+  }
+
+  // 4b. Ensure related links are present — inject fallback section if Haiku skipped them
+  if (relatedPages.length > 0) {
+    const linkedCount = relatedPages.filter(p => html.includes(`/${p.slug}`)).length;
+    if (linkedCount < 2) {
+      // Haiku didn't link enough — append a Related Resources section before closing </div>
+      const relatedHtml = `<div class="seed-section">
+  <h2>Related Resources</h2>
+  <ul>${relatedPages.map(p => `<li><a href="/${p.slug}" style="color:#818cf8;text-decoration:underline;">${p.title.replace(' | gab.ae', '')}</a></li>`).join('\n    ')}</ul>
+</div>`;
+      // Insert before the last </div> (the seed-page wrapper close)
+      const lastDiv = html.lastIndexOf('</div>');
+      if (lastDiv > -1) {
+        html = html.slice(0, lastDiv) + relatedHtml + '\n' + html.slice(lastDiv);
+      }
+    }
   }
 
   // 5. Validate

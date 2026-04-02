@@ -149,6 +149,18 @@ export default {
           return new Response(JSON.stringify({ error: 'API not configured' }), { status: 500, headers: { 'content-type': 'application/json' } });
         }
 
+        // Find related pages for internal linking
+        let onDemandRelated = [];
+        try {
+          const relResult = await env.DB.prepare(
+            "SELECT slug, title FROM pages WHERE status = 'live' AND slug != ? ORDER BY views DESC LIMIT 5"
+          ).bind(slug).all();
+          onDemandRelated = relResult?.results || [];
+        } catch (e) { /* ignore */ }
+        const onDemandRelatedPrompt = onDemandRelated.length > 0
+          ? `\n\nINTERNAL LINKS — Naturally weave these links into your content where relevant. Also include a "Related Resources" section at the bottom:\n${onDemandRelated.map(p => `- <a href="/${p.slug}">${(p.title || '').replace(' | gab.ae', '')}</a>`).join('\n')}`
+          : '';
+
         // Call Haiku directly
         const resp = await fetch('https://api.anthropic.com/v1/messages', {
           method: 'POST',
@@ -194,7 +206,7 @@ Rules:
 - Do NOT include JavaScript, script tags, or interactive elements
 - Do NOT use HTML tables — use bullet lists, numbered lists, or card-style sections instead
 - Minimum 2000 characters of content
-- null over fake data`;
+- null over fake data${onDemandRelatedPrompt}`;
             })() }],
           }),
         });
@@ -217,6 +229,19 @@ Rules:
 
         if (!html.includes('seed-page') || html.length < 500) {
           return new Response(JSON.stringify({ error: 'Generated content too short or invalid' }), { status: 500, headers: { 'content-type': 'application/json' } });
+        }
+
+        // Ensure related links are present — inject fallback if Haiku skipped them
+        if (onDemandRelated.length > 0) {
+          const linkedCount = onDemandRelated.filter(p => html.includes(`/${p.slug}`)).length;
+          if (linkedCount < 2) {
+            const relHtml = `<div class="seed-section">
+  <h2>Related Resources</h2>
+  <ul>${onDemandRelated.map(p => `<li><a href="/${p.slug}" style="color:#818cf8;text-decoration:underline;">${(p.title || '').replace(' | gab.ae', '')}</a></li>`).join('\n    ')}</ul>
+</div>`;
+            const lastDiv = html.lastIndexOf('</div>');
+            if (lastDiv > -1) html = html.slice(0, lastDiv) + relHtml + '\n' + html.slice(lastDiv);
+          }
         }
 
         // Extract title from h1
