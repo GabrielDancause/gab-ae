@@ -7,6 +7,7 @@ import { seedPages } from './seed-pages.js';
 import { upgradeTrigger } from './upgrade-trigger.js';
 import { llmNews } from './llm-news.js';
 import { llmSeedPages, detectIntent } from './llm-seed-pages.js';
+import { llmRework } from './llm-rework.js';
 
 const ENGINES = {
   calculator: renderCalculator,
@@ -51,6 +52,15 @@ export default {
     const nowMin = new Date().getUTCMinutes();
     if (nowHour === 0 && nowMin < 5) {
       await resetDailyViews(env);
+    }
+
+    // Rework top-traffic Haiku pages with Sonnet — every 6 hours
+    if (nowHour % 6 === 0 && nowMin < 5) {
+      try {
+        await llmRework(env);
+      } catch (e) {
+        console.log(`❌ LLM Rework error: ${e.message}`);
+      }
     }
 
     // Upgrade trigger — check once per hour
@@ -904,6 +914,18 @@ async function resourcesPage(env) {
     popularPages = [...popularPages, ...(results || [])].sort((a, b) => b.views_24h - a.views_24h).slice(0, 10);
   } catch {}
 
+  // Get recently reworked pages (Sonnet upgrades)
+  let reworkedPages = [];
+  try {
+    const { results } = await env.DB.prepare(
+      `SELECT slug, title, category, page_type, keyword_volume, updated_at as created_at
+       FROM pages 
+       WHERE status = 'live' AND quality = 'llm-sonnet' AND updated_at > published_at
+       ORDER BY updated_at DESC LIMIT 10`
+    ).all();
+    reworkedPages = results || [];
+  } catch {}
+
   const guidesHtml = APEX_GUIDES.map(g => {
     const count = pageCounts[g.slug] || 0;
     return `
@@ -937,18 +959,32 @@ async function resourcesPage(env) {
   }
 
   const hasPopular = popularPages.length > 0;
-  const latestHtml = (latestPages.length > 0 || hasPopular) ? `
+  const hasReworked = reworkedPages.length > 0;
+  const latestHtml = (latestPages.length > 0 || hasPopular || hasReworked) ? `
     <div class="mb-8">
-      <div class="flex gap-2 mb-4">
-        <button onclick="document.getElementById('tab-recent').style.display='block';document.getElementById('tab-popular').style.display='none';this.classList.add('bg-accent','text-white');this.classList.remove('bg-surface','text-gray-400');this.nextElementSibling.classList.remove('bg-accent','text-white');this.nextElementSibling.classList.add('bg-surface','text-gray-400')" class="px-4 py-1.5 rounded-full text-sm font-medium bg-accent text-white border border-surface-border transition-all">🆕 Recently Published</button>
-        <button onclick="document.getElementById('tab-popular').style.display='block';document.getElementById('tab-recent').style.display='none';this.classList.add('bg-accent','text-white');this.classList.remove('bg-surface','text-gray-400');this.previousElementSibling.classList.remove('bg-accent','text-white');this.previousElementSibling.classList.add('bg-surface','text-gray-400')" class="px-4 py-1.5 rounded-full text-sm font-medium bg-surface text-gray-400 border border-surface-border transition-all">🔥 Most Popular (24h)</button>
+      <div class="flex gap-2 mb-4 flex-wrap">
+        <button onclick="switchTab('recent',this)" class="tab-btn px-4 py-1.5 rounded-full text-sm font-medium bg-accent text-white border border-surface-border transition-all">🆕 Recently Published</button>
+        <button onclick="switchTab('popular',this)" class="tab-btn px-4 py-1.5 rounded-full text-sm font-medium bg-surface text-gray-400 border border-surface-border transition-all">🔥 Most Popular (24h)</button>
+        ${hasReworked ? '<button onclick="switchTab(\'updated\',this)" class="tab-btn px-4 py-1.5 rounded-full text-sm font-medium bg-surface text-gray-400 border border-surface-border transition-all">✨ Recently Updated</button>' : ''}
       </div>
-      <div id="tab-recent" class="space-y-3">
+      <script>
+      function switchTab(id, btn) {
+        document.querySelectorAll('.tab-content').forEach(el => el.style.display = 'none');
+        document.querySelectorAll('.tab-btn').forEach(b => { b.classList.remove('bg-accent','text-white'); b.classList.add('bg-surface','text-gray-400'); });
+        document.getElementById('tab-' + id).style.display = 'block';
+        btn.classList.add('bg-accent','text-white');
+        btn.classList.remove('bg-surface','text-gray-400');
+      }
+      </script>
+      <div id="tab-recent" class="tab-content space-y-3">
         ${latestPages.length > 0 ? renderPageList(latestPages) : '<p class="text-gray-500 text-sm">No pages yet — check back soon.</p>'}
       </div>
-      <div id="tab-popular" class="space-y-3" style="display:none">
+      <div id="tab-popular" class="tab-content space-y-3" style="display:none">
         ${hasPopular ? renderPageList(popularPages, true) : '<p class="text-gray-500 text-sm">No view data yet — analytics sync coming soon.</p>'}
       </div>
+      ${hasReworked ? `<div id="tab-updated" class="tab-content space-y-3" style="display:none">
+        ${renderPageList(reworkedPages)}
+      </div>` : ''}
     </div>` : '';
 
   const body = `
