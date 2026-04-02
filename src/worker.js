@@ -965,7 +965,7 @@ async function resourcesPage(env) {
       <div class="flex gap-2 mb-4 flex-wrap">
         <button onclick="switchTab('recent',this)" class="tab-btn px-4 py-1.5 rounded-full text-sm font-medium bg-accent text-white border border-surface-border transition-all">🆕 Recently Published</button>
         <button onclick="switchTab('popular',this)" class="tab-btn px-4 py-1.5 rounded-full text-sm font-medium bg-surface text-gray-400 border border-surface-border transition-all">🔥 Most Popular (24h)</button>
-        ${hasReworked ? '<button onclick="switchTab(\'updated\',this)" class="tab-btn px-4 py-1.5 rounded-full text-sm font-medium bg-surface text-gray-400 border border-surface-border transition-all">✨ Recently Updated</button>' : ''}
+        <button onclick="switchTab('updated',this)" class="tab-btn px-4 py-1.5 rounded-full text-sm font-medium bg-surface text-gray-400 border border-surface-border transition-all">✨ Recently Updated</button>
       </div>
       <script>
       function switchTab(id, btn) {
@@ -982,9 +982,9 @@ async function resourcesPage(env) {
       <div id="tab-popular" class="tab-content space-y-3" style="display:none">
         ${hasPopular ? renderPageList(popularPages, true) : '<p class="text-gray-500 text-sm">No view data yet — analytics sync coming soon.</p>'}
       </div>
-      ${hasReworked ? `<div id="tab-updated" class="tab-content space-y-3" style="display:none">
-        ${renderPageList(reworkedPages)}
-      </div>` : ''}
+      <div id="tab-updated" class="tab-content space-y-3" style="display:none">
+        ${hasReworked ? renderPageList(reworkedPages) : '<p class="text-gray-500 text-sm">No reworked pages yet — top-traffic pages are automatically upgraded every 6 hours.</p>'}
+      </div>
     </div>` : '';
 
   const body = `
