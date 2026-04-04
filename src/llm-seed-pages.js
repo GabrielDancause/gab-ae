@@ -410,7 +410,7 @@ Rules:
   // 7. Insert into pages
   await env.DB.prepare(
     `INSERT INTO pages (slug, title, description, category, engine, html, status, quality, keyword, keyword_volume, keyword_kd, page_type, target_site, published_at, updated_at, created_at)
-     VALUES (?, ?, ?, ?, 'llm-haiku', ?, 'live', 'llm', ?, ?, ?, ?, ?, ?, ?, ?)`
+     VALUES (?, ?, ?, ?, 'llm-gemini', ?, 'live', 'llm', ?, ?, ?, ?, ?, ?, ?, ?)`
   ).bind(
     slug, fullTitle, description, category, html,
     kw.keyword, kw.volume || 0, kw.kd || 0, pageType, targetSite,
