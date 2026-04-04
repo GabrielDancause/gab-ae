@@ -58,6 +58,9 @@ export function layout({ title, description, canonical, schemaJson, body }) {
       .no-print { display: none !important; }
       body { background: white; color: black; }
     }
+    /* Links in seed pages */
+    .seed-section a, .seed-page a { color: #818cf8; text-decoration: underline; }
+    .seed-section a:hover, .seed-page a:hover { color: #a5b4fc; }
     /* Mobile table fix — horizontal scroll */
     .seed-section table, .seed-page table, main table {
       display: block;
