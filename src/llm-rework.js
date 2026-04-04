@@ -107,10 +107,15 @@ export async function llmRework(env) {
   // 4. Build the rework prompt — give Sonnet the existing HTML to improve
   const currentDate = new Date().toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
   
-  const prompt = `You are rewriting an existing page on gab.ae to dramatically improve its quality. This page gets real traffic (${page.views_total} views), so quality matters.
+  const pageType = page.page_type || 'educational';
+  const jsAllowed = pageType === 'interactive_tool' || /\b(timer|stopwatch|countdown|generator|picker|converter|counter|checker|tester|builder|maker|encoder|decoder|formatter|validator|sorter)\b/.test((page.keyword || '').toLowerCase());
+
+  const prompt = `You are rewriting an existing page on gab.ae to BEAT the top 5 Google results for this keyword. This page gets real traffic (${page.views_total} views), so quality matters.
+
+Think about what currently ranks for "${page.keyword || page.slug}" — thin content, ads, missing subtopics, poor UX. Your rewrite must be more useful, more complete, and more engaging than anything on page 1.
 
 CURRENT PAGE KEYWORD: "${page.keyword || page.slug}"
-CURRENT PAGE TYPE: ${page.page_type || 'educational'}
+CURRENT PAGE TYPE: ${pageType}
 CATEGORY: ${page.category || 'general'}
 
 The current page is ${(page.html || '').length} characters long. DO NOT just reword it — create something dramatically better from scratch:
@@ -159,7 +164,7 @@ Structure:
 Rules:
 - The rewrite must be SUBSTANTIALLY better than the original — not just reworded
 - Minimum 3000 characters (longer than original)
-- No JavaScript, no script tags, no forms
+- ${jsAllowed ? 'JavaScript IS allowed and REQUIRED for this tool page — include <script> at the end with polished, working interactive logic. Make it delightful.' : 'No JavaScript, no script tags, no forms — content only.'}
 - null over fake data${relatedLinksSection}${relatedKeywordsPrompt}`;
 
   let html;
