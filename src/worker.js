@@ -197,7 +197,9 @@ export default {
         // Call LLM via OpenRouter
         const onDemandPrompt = (() => {
               const intent = detectIntent(keyword);
+              const jsAllowed = intent === 'interactive_tool';
               const intentInstructions = {
+                interactive_tool: `Create a FULLY FUNCTIONAL INTERACTIVE TOOL for "${keyword}". JavaScript IS required. Build a beautiful, working tool — large animated displays for timers, instant output for generators, real-time conversion for converters. Include <script> at end. Add a brief explanation + 3-5 FAQs below the tool. Make it DELIGHTFUL.`,
                 listicle: `Create a TOP LIST about "${keyword}". Include 7-10 items ranked with name, key features, pros/cons, and a one-line verdict. Start with a quick summary of the top 3 picks. Add a "How We Evaluated" section and 3-5 FAQs.`,
                 comparison: `Create a SIDE-BY-SIDE COMPARISON for "${keyword}". Compare 2-4 options across multiple criteria. Lead with a summary verdict (who should pick what). Give each option its own section. End with 3-5 FAQs.`,
                 tutorial: `Create a STEP-BY-STEP TUTORIAL for "${keyword}". Start with what you'll learn and why. Use numbered steps, each in its own section. Include common mistakes to avoid, prerequisites if any, and 3-5 FAQs.`,
@@ -207,7 +209,7 @@ export default {
                 list_query: `Create a COMPREHENSIVE LIST for "${keyword}". Brief intro on scope and selection criteria. Each item gets a short description. Organize by subcategory if applicable. Summarize key patterns and add 3-5 FAQs.`,
                 educational: `Create a comprehensive EDUCATIONAL guide about "${keyword}". Cover what it is, how it works, key facts/data, practical tips, and 3-5 FAQs that real people search for.`,
               };
-              return `You are a content writer for gab.ae. ${intentInstructions[intent] || intentInstructions.educational}
+              return `You are a senior content strategist for gab.ae competing against the top 5 Google results for "${keyword}". Imagine what those pages look like — thin content, ads, missing subtopics. Build something better. ${intentInstructions[intent] || intentInstructions.educational}
 
 Return ONLY raw HTML (no markdown fences, no explanation). Use these CSS classes:
 
@@ -244,7 +246,7 @@ Visual components (use where appropriate):
 
 Rules:
 - Write like a human expert — no template filler
-- Do NOT include JavaScript, script tags, or interactive elements
+- ${jsAllowed ? 'JavaScript IS allowed and REQUIRED — include <script> at the end. Make it polished and delightful.' : 'Do NOT include JavaScript, script tags, or interactive elements.'}
 - Do NOT use HTML tables — use bullet lists or card-style sections instead
 - Minimum 2000 characters of content
 - NEVER cite exact numbers without qualification — use "approximately", "typically", or ranges

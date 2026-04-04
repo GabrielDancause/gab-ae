@@ -60,6 +60,10 @@ export function detectIntent(keyword) {
   // Tutorial/how-to: "how to X", "guide to X", "step by step", "tutorial"
   if (/\b(how to|how do|step by step|tutorial|beginner'?s? guide|walkthrough|setup guide)\b/.test(kw)) return 'tutorial';
 
+  // Interactive tool: timers, generators, pickers, converters, counters — user wants a WORKING tool
+  if (/\b(timer|stopwatch|countdown|generator|picker|randomiz|converter|counter|checker|tester|builder|maker|encoder|decoder|formatter|minifier|beautifier|validator|sorter)\b/.test(kw)) return 'interactive_tool';
+  if (/\b(\d+\s*(minute|min|second|sec|hour|hr)\s*timer)\b/.test(kw)) return 'interactive_tool';
+
   // Calculator/data: "calculator", "formula", "convert", "average", "rate", "cost of"
   if (/\b(calculator|formula|equation|convert|conversion|average|median|rate|cost of|price of|salary|income|roi|yield)\b/.test(kw)) return 'calculator';
 
@@ -187,6 +191,19 @@ export async function llmSeedPages(env) {
 
   // 4. Build the prompt based on page type
   const typeInstructions = {
+    interactive_tool: `Create a FULLY FUNCTIONAL INTERACTIVE TOOL for "${kw.keyword}". This is the ONE type where JavaScript is REQUIRED.
+- Build a beautiful, working tool that does exactly what the user searched for
+- Include ALL JavaScript in a <script> tag at the end
+- The tool must be immediately usable — no setup, no dependencies
+- Use the seed-page CSS classes for layout, but add tool-specific UI (buttons, inputs, displays)
+- For timers/countdowns: large animated display, start/pause/reset, sound alert, progress ring or bar
+- For generators: instant output, copy button, customization options
+- For converters: real-time conversion as you type, swap button, common presets
+- For checkers/validators: paste input, instant feedback with green/red indicators
+- Add a brief explanation section BELOW the tool (what it does, tips)
+- 3-5 FAQs about the tool's topic
+- Make it DELIGHTFUL — smooth animations, satisfying interactions, dark theme matching the site`,
+
     calculator: `Create a DATA-DRIVEN reference page about "${kw.keyword}". Include:
 - A clear explanation of what it measures/calculates and why it matters
 - A reference table with common values, ranges, or benchmarks
@@ -249,9 +266,27 @@ export async function llmSeedPages(env) {
 - 3-5 FAQs related to this topic`,
   };
 
-  const prompt = `You are a content writer for gab.ae. Create a high-quality ${pageType} page about "${kw.keyword}".
+  const jsAllowed = pageType === 'interactive_tool';
 
-This page sits under the "${apexName}" content hub in the ${category} category.
+  const prompt = `You are a senior content strategist for gab.ae competing against the top 5 Google results.
+
+KEYWORD: "${kw.keyword}" (${kw.volume} monthly searches, KD ${kw.kd})
+CATEGORY: ${category} | HUB: ${apexName}
+PAGE TYPE: ${pageType}
+
+## STEP 1: COMPETITIVE ANALYSIS (think silently)
+Imagine the top 5 pages ranking for "${kw.keyword}" on Google right now. They probably:
+- Have thin content, slow load times, or aggressive ads
+- Miss key subtopics or user intent
+- Are either pure text walls OR pure tools with no educational content
+- Lack FAQ sections or structured data
+
+## STEP 2: BUILD SOMETHING BETTER
+Your page must beat them by being:
+- More useful (answers the REAL intent — what does someone actually want when they search this?)
+- More complete (covers angles the top 5 miss)
+- More engaging (visual components, not walls of text)
+- Better structured (scannable, clear hierarchy)
 
 ${typeInstructions[pageType] || typeInstructions.educational}
 
@@ -302,9 +337,9 @@ Visual components (use where appropriate based on content type):
 Rules:
 - Write like a human expert, not a template
 - Minimum 2000 characters of content
-- Do NOT include any JavaScript, <script> tags, or interactive calculators
+- ${jsAllowed ? 'JavaScript IS allowed and REQUIRED — include <script> at the end with all interactive logic. Make it polished and delightful.' : 'Do NOT include any JavaScript, <script> tags, or interactive elements. Content only.'}
 - Do NOT use HTML tables — use bullet lists, numbered lists, or card-style sections instead
-- No input fields, no forms — content only
+- ${jsAllowed ? 'Include inputs, buttons, and interactive UI elements as needed for the tool.' : 'No input fields, no forms — content only.'}
 - NEVER cite exact numbers without qualification — use "approximately", "typically", "industry estimates suggest", or ranges (e.g. "between 2-5%")
 - NEVER invent study names, researcher names, or specific citations
 - If you don't know exact data, say so: "exact figures vary by region" or "data as of [year] suggests..."
