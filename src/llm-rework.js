@@ -4,28 +4,11 @@
  * Runs on CF cron every 6 hours. 1 page per run.
  */
 
-async function callSonnet(apiKey, prompt) {
-  const resp = await fetch('https://api.anthropic.com/v1/messages', {
-    method: 'POST',
-    headers: {
-      'x-api-key': apiKey,
-      'anthropic-version': '2023-06-01',
-      'content-type': 'application/json',
-    },
-    body: JSON.stringify({
-      model: 'claude-haiku-4-5-20251001',  // using Haiku until Sonnet rate limits resolved
-      max_tokens: 16384,
-      messages: [{ role: 'user', content: prompt }],
-    }),
-  });
-  const data = await resp.json();
-  if (data.error) throw new Error(`Sonnet error: ${JSON.stringify(data.error)}`);
-  return data.content?.[0]?.text || '';
-}
+import { callLLM } from './llm-client.js';
 
 export async function llmRework(env) {
-  const apiKey = env.ANTHROPIC_API_KEY;
-  if (!apiKey) { console.log('❌ Rework: No ANTHROPIC_API_KEY'); return; }
+  const apiKey = env.OPENROUTER_API_KEY || env.ANTHROPIC_API_KEY;
+  if (!apiKey) { console.log('❌ Rework: No OPENROUTER_API_KEY or ANTHROPIC_API_KEY'); return; }
 
   // 1. Find the top-traffic page that hasn't been reworked yet
   //    Join view_counts with pages, pick highest views_total, quality still 'llm'
@@ -181,7 +164,7 @@ Rules:
 
   let html;
   try {
-    html = await callSonnet(apiKey, prompt);
+    html = await callLLM(apiKey, prompt, { maxTokens: 16384 });
     html = html.replace(/^```html?\s*\n?/i, '').replace(/\n?```\s*$/i, '').trim();
     html = html.replace(/Updated\s+(?:January|February|March|April|May|June|July|August|September|October|November|December)\s+20\d{2}/gi, 'Updated ' + currentDate);
   } catch (e) {

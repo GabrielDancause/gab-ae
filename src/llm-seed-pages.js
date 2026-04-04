@@ -76,30 +76,12 @@ export function detectIntent(keyword) {
   return 'educational';
 }
 
-// ─── Call Haiku ───
-async function callHaiku(apiKey, prompt) {
-  const resp = await fetch('https://api.anthropic.com/v1/messages', {
-    method: 'POST',
-    headers: {
-      'x-api-key': apiKey,
-      'anthropic-version': '2023-06-01',
-      'content-type': 'application/json',
-    },
-    body: JSON.stringify({
-      model: 'claude-haiku-4-5-20251001',
-      max_tokens: 8192,
-      messages: [{ role: 'user', content: prompt }],
-    }),
-  });
-  const data = await resp.json();
-  if (data.error) throw new Error(`Haiku error: ${JSON.stringify(data.error)}`);
-  return data.content?.[0]?.text || '';
-}
+import { callLLM } from './llm-client.js';
 
 // ─── Main ───
 export async function llmSeedPages(env) {
-  const apiKey = env.ANTHROPIC_API_KEY;
-  if (!apiKey) { console.log('❌ No ANTHROPIC_API_KEY'); return; }
+  const apiKey = env.OPENROUTER_API_KEY || env.ANTHROPIC_API_KEY;
+  if (!apiKey) { console.log('❌ No OPENROUTER_API_KEY or ANTHROPIC_API_KEY'); return; }
 
   // 1. Pick a long-tail keyword: low KD, reasonable volume, has CPC value
   const kw = await env.DB.prepare(
@@ -331,7 +313,7 @@ Rules:
 
   let html;
   try {
-    html = await callHaiku(apiKey, prompt);
+    html = await callLLM(apiKey, prompt, { maxTokens: 8192 });
     // Clean up: remove markdown fences if present
     html = html.replace(/^```html?\s*\n?/i, '').replace(/\n?```\s*$/i, '').trim();
     // Fix wrong dates from Haiku (training data cutoff)

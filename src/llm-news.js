@@ -95,32 +95,12 @@ function findInternalLinks(title, description) {
   return links.slice(0, 3);
 }
 
-// ─── Call Haiku ───
-async function callHaiku(apiKey, systemPrompt, userPrompt) {
-  const resp = await fetch('https://api.anthropic.com/v1/messages', {
-    method: 'POST',
-    headers: {
-      'x-api-key': apiKey,
-      'anthropic-version': '2023-06-01',
-      'content-type': 'application/json',
-    },
-    body: JSON.stringify({
-      model: 'claude-haiku-4-5-20251001',
-      max_tokens: 2048,
-      messages: [
-        { role: 'user', content: `${systemPrompt}\n\n${userPrompt}` },
-      ],
-    }),
-  });
-  const data = await resp.json();
-  if (data.error) throw new Error(`Haiku error: ${JSON.stringify(data.error)}`);
-  return data.content?.[0]?.text || '';
-}
+import { callLLM } from './llm-client.js';
 
 // ─── Main ───
 export async function llmNews(env) {
-  const apiKey = env.ANTHROPIC_API_KEY;
-  if (!apiKey) { console.log('❌ No ANTHROPIC_API_KEY'); return; }
+  const apiKey = env.OPENROUTER_API_KEY || env.ANTHROPIC_API_KEY;
+  if (!apiKey) { console.log('❌ No OPENROUTER_API_KEY or ANTHROPIC_API_KEY'); return; }
 
   // 1. Get existing slugs for dedup
   const existingRows = await env.DB.prepare(
@@ -212,7 +192,7 @@ Rules:
 
   let article;
   try {
-    const raw = await callHaiku(apiKey, systemPrompt, userPrompt);
+    const raw = await callLLM(apiKey, `${systemPrompt}\n\n${userPrompt}`, { maxTokens: 2048 });
     // Extract JSON from response (handle potential markdown fences)
     const jsonStr = raw.replace(/^```json?\s*/, '').replace(/\s*```$/, '').trim();
     article = JSON.parse(jsonStr);

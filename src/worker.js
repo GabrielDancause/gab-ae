@@ -8,6 +8,7 @@ import { upgradeTrigger } from './upgrade-trigger.js';
 import { llmNews } from './llm-news.js';
 import { llmSeedPages, detectIntent } from './llm-seed-pages.js';
 import { llmRework } from './llm-rework.js';
+import { callLLM } from './llm-client.js';
 
 const ENGINES = {
   calculator: renderCalculator,
@@ -31,27 +32,28 @@ function timeAgo(dateStr) {
 
 export default {
   async scheduled(event, env, ctx) {
-    // LLM News — only every 5 minutes (cron fires every 1 min)
+    // LLM News — every 5 minutes (cron fires every 5 min, so every tick)
     const minute = new Date().getUTCMinutes();
-    if (minute % 5 === 0) {
+    try {
+      await llmNews(env);
+    } catch (e) {
+      console.log(`❌ LLM News error: ${e.message}`);
+    }
+
+    // LLM Seed Pages — every 10 minutes
+    if (minute % 10 === 0) {
       try {
-        await llmNews(env);
+        await llmSeedPages(env);
       } catch (e) {
-        console.log(`❌ LLM News error: ${e.message}`);
+        console.log(`❌ LLM Seed Pages error: ${e.message}`);
       }
     }
 
-    try {
-      await llmSeedPages(env);
-    } catch (e) {
-      console.log(`❌ LLM Seed Pages error: ${e.message}`);
-    }
-
-    // Reset daily views at midnight UTC (first cron run of the day)
+    // Prune view events older than 24h (every hour)
     const nowHour = new Date().getUTCHours();
     const nowMin = new Date().getUTCMinutes();
-    if (nowHour === 0 && nowMin < 5) {
-      await resetDailyViews(env);
+    if (nowMin < 5) {
+      await pruneOldViews(env);
     }
 
     // Rework top-traffic Haiku pages — every 6 hours
@@ -160,7 +162,7 @@ export default {
         }
 
         // Import and call the LLM seed page generator
-        const apiKey = env.ANTHROPIC_API_KEY;
+        const apiKey = env.OPENROUTER_API_KEY || env.ANTHROPIC_API_KEY;
         if (!apiKey) {
           return new Response(JSON.stringify({ error: 'API not configured' }), { status: 500, headers: { 'content-type': 'application/json' } });
         }
@@ -192,14 +194,8 @@ export default {
           ? `\n\nFAQ KEYWORDS — Include these as exact questions in your FAQ section (real people search for these):\n${onDemandKeywords.map(rk => `- "${rk.keyword}" (${rk.volume} monthly searches)`).join('\n')}`
           : '';
 
-        // Call Haiku directly
-        const resp = await fetch('https://api.anthropic.com/v1/messages', {
-          method: 'POST',
-          headers: { 'x-api-key': apiKey, 'anthropic-version': '2023-06-01', 'content-type': 'application/json' },
-          body: JSON.stringify({
-            model: 'claude-haiku-4-5-20251001',
-            max_tokens: 8192,
-            messages: [{ role: 'user', content: (() => {
+        // Call LLM via OpenRouter
+        const onDemandPrompt = (() => {
               const intent = detectIntent(keyword);
               const intentInstructions = {
                 listicle: `Create a TOP LIST about "${keyword}". Include 7-10 items ranked with name, key features, pros/cons, and a one-line verdict. Start with a quick summary of the top 3 picks. Add a "How We Evaluated" section and 3-5 FAQs.`,
@@ -255,15 +251,14 @@ Rules:
 - NEVER invent study names, researcher names, or specific citations
 - Prefer verifiable general knowledge over specific unverifiable claims
 - null over fake data — when uncertain, use ranges with explicit caveats${onDemandRelatedPrompt}${onDemandKeywordsPrompt}`;
-            })() }],
-          }),
-        });
-        const aiData = await resp.json();
-        if (aiData.error) {
+            })();
+
+        let html;
+        try {
+          html = await callLLM(apiKey, onDemandPrompt, { maxTokens: 8192 });
+        } catch (e) {
           return new Response(JSON.stringify({ error: 'AI generation failed' }), { status: 500, headers: { 'content-type': 'application/json' } });
         }
-
-        let html = aiData.content?.[0]?.text || '';
         // Strip markdown code fences (```html ... ```)
         html = html.replace(/^```html?\s*\n?/i, '').replace(/\n?```\s*$/i, '').trim();
         // Fix wrong dates from Haiku (training data cutoff)
@@ -877,25 +872,35 @@ async function categoryPage(env, category) {
   }
 }
 
-// ─── View tracking ───
+// ─── View tracking (rolling 24h) ───
 async function trackView(env, slug) {
   try {
-    await env.DB.prepare(
-      `INSERT INTO view_counts (slug, views_24h, views_total, last_reset) 
-       VALUES (?, 1, 1, datetime('now'))
-       ON CONFLICT(slug) DO UPDATE SET views_24h = views_24h + 1, views_total = views_total + 1`
-    ).bind(slug).run();
+    // Bucket by hour: "2026-04-03T00"
+    const bucket = new Date().toISOString().slice(0, 13);
+    await env.DB.batch([
+      // Hourly bucket for rolling 24h
+      env.DB.prepare(
+        `INSERT INTO view_events (slug, hour_bucket, views) VALUES (?, ?, 1)
+         ON CONFLICT(slug, hour_bucket) DO UPDATE SET views = views + 1`
+      ).bind(slug, bucket),
+      // Keep lifetime total
+      env.DB.prepare(
+        `INSERT INTO view_counts (slug, views_24h, views_total, last_reset) VALUES (?, 0, 1, datetime('now'))
+         ON CONFLICT(slug) DO UPDATE SET views_total = views_total + 1`
+      ).bind(slug),
+    ]);
   } catch (e) {
     // Non-critical — don't break page loads
   }
 }
 
-async function resetDailyViews(env) {
+async function pruneOldViews(env) {
   try {
-    await env.DB.prepare("UPDATE view_counts SET views_24h = 0, last_reset = datetime('now')").run();
-    console.log('🔄 Daily view counts reset');
+    const cutoff = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString().slice(0, 13);
+    await env.DB.prepare(`DELETE FROM view_events WHERE hour_bucket < ?`).bind(cutoff).run();
+    console.log('🧹 Pruned old view events');
   } catch (e) {
-    console.log(`❌ View reset error: ${e.message}`);
+    console.log(`❌ View prune error: ${e.message}`);
   }
 }
 
@@ -931,28 +936,31 @@ async function resourcesPage(env) {
     latestPages = results || [];
   } catch {}
 
-  // Get most popular pages (from view_counts, last 24h)
+  // Get most popular pages (rolling 24h from view_events)
+  const cutoff24h = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString().slice(0, 13);
   let popularPages = [];
   try {
     const { results } = await env.DB.prepare(
-      `SELECT vc.slug, vc.views_24h, p.title, p.category, p.page_type, p.keyword_volume, p.created_at
-       FROM view_counts vc 
-       JOIN pages p ON vc.slug = p.slug 
-       WHERE vc.views_24h > 0 AND p.status = 'live'
-       ORDER BY vc.views_24h DESC LIMIT 10`
-    ).all();
+      `SELECT ve.slug, SUM(ve.views) as views_24h, p.title, p.category, p.page_type, p.keyword_volume, p.created_at
+       FROM view_events ve
+       JOIN pages p ON ve.slug = p.slug
+       WHERE ve.hour_bucket >= ? AND p.status = 'live'
+       GROUP BY ve.slug
+       ORDER BY views_24h DESC LIMIT 10`
+    ).bind(cutoff24h).all();
     popularPages = results || [];
   } catch {}
   
-  // Also check news views
+  // Also check news views (rolling 24h)
   try {
     const { results } = await env.DB.prepare(
-      `SELECT vc.slug, vc.views_24h, n.title, n.category, 'news' as page_type, 0 as keyword_volume, n.published_at as created_at
-       FROM view_counts vc 
-       JOIN news n ON ('news/' || n.slug) = vc.slug 
-       WHERE vc.views_24h > 0 AND n.status = 'live'
-       ORDER BY vc.views_24h DESC LIMIT 10`
-    ).all();
+      `SELECT ve.slug, SUM(ve.views) as views_24h, n.title, n.category, 'news' as page_type, 0 as keyword_volume, n.published_at as created_at
+       FROM view_events ve
+       JOIN news n ON ('news/' || n.slug) = ve.slug
+       WHERE ve.hour_bucket >= ? AND n.status = 'live'
+       GROUP BY ve.slug
+       ORDER BY views_24h DESC LIMIT 10`
+    ).bind(cutoff24h).all();
     popularPages = [...popularPages, ...(results || [])].sort((a, b) => b.views_24h - a.views_24h).slice(0, 10);
   } catch {}
 
