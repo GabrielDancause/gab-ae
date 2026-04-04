@@ -56,8 +56,8 @@ export default {
       await pruneOldViews(env);
     }
 
-    // Rework top-traffic Haiku pages — every 6 hours
-    if (nowHour % 6 === 0 && nowMin < 5) {
+    // Rework top-traffic pages — once daily at 4 AM UTC (11 AM Bangkok)
+    if (nowHour === 4 && nowMin < 5) {
       try {
         await llmRework(env);
       } catch (e) {
