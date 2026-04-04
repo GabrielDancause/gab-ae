@@ -164,7 +164,7 @@ Rules:
 
   let html;
   try {
-    html = await callLLM(apiKey, prompt, { maxTokens: 16384 });
+    html = await callLLM(apiKey, prompt, { maxTokens: 16384, model: 'google/gemini-2.5-pro' });
     html = html.replace(/^```html?\s*\n?/i, '').replace(/\n?```\s*$/i, '').trim();
     html = html.replace(/Updated\s+(?:January|February|March|April|May|June|July|August|September|October|November|December)\s+20\d{2}/gi, 'Updated ' + currentDate);
   } catch (e) {
