@@ -2,8 +2,6 @@ import { layout, esc } from './templates/layout.js';
 import { renderCalculator } from './engines/calculator.js';
 import { renderNews } from './engines/news.js';
 import { renderChangelog } from './engines/changelog.js';
-import { newsAutopilot } from './news-autopilot.js';
-import { seedPages } from './seed-pages.js';
 import { upgradeTrigger } from './upgrade-trigger.js';
 import { llmNews } from './llm-news.js';
 import { llmSeedPages, detectIntent } from './llm-seed-pages.js';
@@ -119,7 +117,7 @@ export default {
 
     if (path === '/api/seed-test') {
       try {
-        const result = await seedPages(env);
+        const result = await llmSeedPages(env);
         return new Response(JSON.stringify(result, null, 2), {
           headers: { 'content-type': 'application/json' },
         });

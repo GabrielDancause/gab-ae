@@ -1,5 +1,15 @@
 /**
  * Shared HTML layout for all gab.ae pages
+ * 
+ * Wraps page content in a consistent shell: <html>, <head> (meta, OG, canonical,
+ * JSON-LD schema), dark-themed nav bar, footer, and global CSS.
+ * 
+ * Every page on gab.ae passes through this layout.
+ * Content stored in D1 is body-only HTML — this adds the chrome.
+ * 
+ * Exports:
+ *   layout({ title, description, canonical, schemaJson, body }) → full HTML string
+ *   esc(str) → HTML-escaped string
  */
 export function layout({ title, description, canonical, schemaJson, body }) {
   const schema = schemaJson ? `<script type="application/ld+json">${JSON.stringify(schemaJson)}</script>` : '';

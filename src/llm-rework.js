@@ -1,7 +1,21 @@
 /**
- * LLM Rework — Sonnet-powered page upgrades
- * Finds pages with traffic that were built by Haiku, rewrites with Sonnet.
- * Runs on CF cron every 6 hours. 1 page per run.
+ * LLM Rework — Upgrades existing pages with a better model
+ * 
+ * HOW IT WORKS:
+ * 1. Queries view_counts to find the highest-traffic page still at "llm" quality
+ * 2. Fetches the page's current HTML from D1
+ * 3. Gathers related pages (for internal linking) and related keywords (for FAQ)
+ * 4. Sends the page to Gemini Pro via OpenRouter with instructions to rewrite it
+ * 5. Validates the output (must be longer, must contain seed-page class)
+ * 6. Updates the page in-place, setting quality='llm-sonnet' and engine='llm-sonnet'
+ * 
+ * SCHEDULE: Runs daily at 4 AM UTC (11 AM Bangkok) via worker.js cron
+ * RATE: 1 page per run
+ * 
+ * ELIGIBLE PAGES: status='live', quality='llm', engine IN (llm-haiku, llm-gemini, 
+ * llm-gemini-pro, seed), views_total > 0
+ * 
+ * Uses callLLM() from llm-client.js for the API call.
  */
 
 import { callLLM } from './llm-client.js';

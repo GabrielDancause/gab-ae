@@ -1,5 +1,13 @@
 /**
  * News article renderer for gab.ae
+ * 
+ * Renders structured news articles from the `news` D1 table.
+ * Articles are stored as JSON sections [{heading, paragraphs}]
+ * and rendered into the shared layout shell.
+ * 
+ * Called by worker.js when a request matches /news/{slug}.
+ * 
+ * Data flow: RSS → llm-news.js writes JSON to D1 → this file renders it as HTML
  */
 import { layout, esc } from '../templates/layout.js';
 

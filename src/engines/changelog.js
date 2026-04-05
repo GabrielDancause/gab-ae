@@ -1,6 +1,10 @@
 /**
  * Changelog / Updates renderer for gab.ae
- * Renders from the changelog D1 table
+ * 
+ * Renders the public changelog at /updates from the `changelog` D1 table.
+ * Each entry has: action (upgrade/create/rework/fix/expand), target, summary, details.
+ * 
+ * Called by worker.js when a request matches /updates.
  */
 import { layout, esc } from '../templates/layout.js';
 
