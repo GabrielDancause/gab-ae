@@ -25,7 +25,7 @@ export async function llmRework(env) {
        JOIN pages p ON vc.slug = p.slug
        WHERE p.status = 'live'
          AND p.quality = 'llm'
-         AND p.engine = 'llm-haiku'
+         AND p.engine IN ('llm-haiku','llm-gemini','llm-gemini-pro','seed')
          AND vc.views_total > 0
        ORDER BY vc.views_total DESC
        LIMIT 1`

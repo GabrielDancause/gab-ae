@@ -40,13 +40,11 @@ export default {
       console.log(`❌ LLM News error: ${e.message}`);
     }
 
-    // LLM Seed Pages — every 10 minutes
-    if (minute % 10 === 0) {
-      try {
-        await llmSeedPages(env);
-      } catch (e) {
-        console.log(`❌ LLM Seed Pages error: ${e.message}`);
-      }
+    // LLM Seed Pages — every minute
+    try {
+      await llmSeedPages(env);
+    } catch (e) {
+      console.log(`❌ LLM Seed Pages error: ${e.message}`);
     }
 
     // Prune view events older than 24h (every hour)
@@ -933,7 +931,7 @@ async function resourcesPage(env) {
   let latestPages = [];
   try {
     const { results } = await env.DB.prepare(
-      "SELECT slug, title, category, page_type, keyword_volume, created_at FROM pages WHERE status='live' AND engine='llm-haiku' ORDER BY created_at DESC LIMIT 10"
+      "SELECT slug, title, category, page_type, keyword_volume, created_at FROM pages WHERE status='live' AND engine IN ('llm-haiku','llm-gemini','llm-gemini-pro','llm-sonnet','seed') ORDER BY created_at DESC LIMIT 10"
     ).all();
     latestPages = results || [];
   } catch {}
