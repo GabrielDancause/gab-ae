@@ -1,9 +1,15 @@
 #!/usr/bin/env python3
 """
-Import all Ahrefs keyword exports into D1-compatible SQL.
-Handles both CSV (comma) and TSV (tab, UTF-16) formats.
+Import Ahrefs keyword exports into the D1 keywords table.
+
+Usage: python3 scripts/import-keywords.py path/to/keywords.csv [--dry-run]
+
+Handles both CSV (comma) and TSV (tab, UTF-16 from Ahrefs export).
+Expected columns: Keyword, Volume, KD, CPC, Traffic potential, Parent topic
 Deduplicates by keyword, keeps highest volume version.
-Auto-classifies engine type and category.
+Auto-classifies engine type (calculator, interactive_tool, etc.) and category.
+
+Output: Generates SQL INSERT statements and runs them against gab-ae-prod D1.
 """
 
 import csv

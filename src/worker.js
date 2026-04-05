@@ -45,11 +45,18 @@ import { llmSeedPages, detectIntent } from './llm-seed-pages.js';
 import { llmRework } from './llm-rework.js';
 import { callLLM } from './llm-client.js';
 
+// ═══════════════════════════════════════════════════════════════
+// SECTION: Engine Registry
+// Maps engine names (from D1 `pages.engine` column) to renderer functions.
+// Only 'calculator' has a custom engine; everything else renders raw HTML.
+// ═══════════════════════════════════════════════════════════════
 const ENGINES = {
   calculator: renderCalculator,
 };
 
-
+// ═══════════════════════════════════════════════════════════════
+// SECTION: Utilities
+// ═══════════════════════════════════════════════════════════════
 function timeAgo(dateStr) {
   if (!dateStr) return '';
   const d = new Date(dateStr.endsWith('Z') ? dateStr : dateStr + 'Z');
@@ -66,6 +73,10 @@ function timeAgo(dateStr) {
 }
 
 export default {
+  // ═══════════════════════════════════════════════════════════════
+  // SECTION: Cron Scheduler (runs every minute via wrangler.toml)
+  // Each pipeline has its own frequency gate inside.
+  // ═══════════════════════════════════════════════════════════════
   async scheduled(event, env, ctx) {
     // LLM News — every 5 minutes (cron fires every 5 min, so every tick)
     const minute = new Date().getUTCMinutes();
@@ -109,6 +120,11 @@ export default {
     }
   },
 
+  // ═══════════════════════════════════════════════════════════════
+  // SECTION: Request Router (fetch handler)
+  // Routes incoming HTTP requests to the right handler.
+  // Order matters — first match wins.
+  // ═══════════════════════════════════════════════════════════════
   async fetch(request, env, ctx) {
     const url = new URL(request.url);
     const path = url.pathname.replace(/\/$/, '') || '/';
@@ -574,6 +590,10 @@ Rules:
   },
 };
 
+// ═══════════════════════════════════════════════════════════════
+// SECTION: HTML Renderers (helper functions that build page HTML)
+// These are called by the route handlers above.
+// ═══════════════════════════════════════════════════════════════
 function renderNewsCards(articles) {
   if (!articles || !articles.length) return '';
   const cards = articles.map(function(a) {
@@ -668,6 +688,10 @@ function renderPropertyCards() {
   `).join('');
 }
 
+// ═══════════════════════════════════════════════════════════════
+// SECTION: Page Handlers (full page builders called by router)
+// Each returns a Response object with complete HTML.
+// ═══════════════════════════════════════════════════════════════
 async function homepage(env) {
   const body = `
     <div class="min-h-[60vh] flex flex-col items-center justify-center">
@@ -908,6 +932,10 @@ async function categoryPage(env, category) {
 }
 
 // ─── View tracking (rolling 24h) ───
+// ═══════════════════════════════════════════════════════════════
+// SECTION: Analytics (view tracking + pruning)
+// Tracks page views in view_events (rolling 24h) and view_counts (cumulative).
+// ═══════════════════════════════════════════════════════════════
 async function trackView(env, slug) {
   try {
     // Bucket by hour: "2026-04-03T00"
@@ -1115,6 +1143,9 @@ function notFound(env, path) {
   return new Response(html, { status: 404, headers: { 'content-type': 'text/html;charset=UTF-8' } });
 }
 
+// ═══════════════════════════════════════════════════════════════
+// SECTION: API Endpoints (JSON responses for internal tools)
+// ═══════════════════════════════════════════════════════════════
 async function siteTreeAPI(env) {
   const headers = {
     'content-type': 'application/json',

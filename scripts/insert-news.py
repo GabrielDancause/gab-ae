@@ -1,7 +1,25 @@
 #!/usr/bin/env python3
 """
 Insert news articles into gab-ae-prod D1.
+
 Usage: python3 scripts/insert-news.py articles.json
+
+JSON format (array of articles):
+[
+  {
+    "slug": "kebab-case-slug",
+    "title": "Article Headline",
+    "description": "Meta description, 150-160 chars",
+    "category": "business",  # business|world|politics|tech|health|science|travel|sports|entertainment
+    "lede": "Opening sentence.",
+    "sections": [
+      {"heading": "Section Title", "paragraphs": ["paragraph 1", "paragraph 2"]}
+    ],
+    "tags": ["#Tag1", "#Tag2"],
+    "sources": [{"name": "Source Name", "url": "https://..."}],
+    "faqs": [{"q": "Question?", "a": "Answer."}]
+  }
+]
 """
 import json, sys, subprocess, os
 
