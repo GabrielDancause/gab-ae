@@ -1,7 +1,27 @@
 /**
- * LLM Seed Pages — Haiku-powered page generation
- * Picks best keyword from D1 → Haiku writes full HTML → inserts into D1
- * Runs on CF cron, 1 page per run.
+ * LLM Seed Pages — Automated page generation from keyword queue
+ * 
+ * HOW IT WORKS:
+ * 1. Picks the highest-value keyword from D1 (scored by CPC × volume / KD)
+ *    Filter: status='new', KD ≤ 20, volume ≥ 50, not already built
+ * 2. Detects page intent from keyword (calculator, listicle, tutorial, etc.)
+ * 3. Gathers context: related pages for internal linking, related keywords for FAQ
+ * 4. Sends prompt to LLM via OpenRouter (callLLM with fallback chain)
+ * 5. Validates output HTML, injects JSON-LD schema + internal links
+ * 6. Inserts into D1 `pages` table with engine='llm-gemini'
+ * 7. Tracks page in `tracked_pages` table for SEO monitoring
+ * 
+ * SCHEDULE: Every minute via worker.js cron
+ * RATE: 1 page per run (~1,440/day)
+ * 
+ * INTENT TYPES: calculator, interactive_tool, listicle, comparison, tutorial,
+ *               definition, review, list_query, educational (default)
+ * 
+ * JavaScript is ONLY allowed for interactive_tool intent — all others are static HTML.
+ * 
+ * SITE MAPPING: Keywords have a target_site field. Each site maps to an apex
+ * pillar guide (e.g., westmount → capital-markets-wealth-guide-2026).
+ * Pages link back to their apex guide for topical authority.
  */
 
 const SITE_TO_APEX = {

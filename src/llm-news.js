@@ -1,7 +1,25 @@
 /**
- * LLM News Generator — Haiku-powered article creation
- * Fetches RSS → picks best story → Haiku writes structured article → inserts into D1
- * Runs on CF cron, 1 article per run.
+ * LLM News Generator — Automated article creation from RSS feeds
+ * 
+ * HOW IT WORKS:
+ * 1. Fetches 12 RSS feeds (NPR, BBC, NYT, CNBC, TechCrunch, etc.)
+ * 2. Filters: dedup against existing slugs/URLs, skip UK domestic, skip paywalled
+ * 3. Picks a random story from top 5 candidates
+ * 4. Fetches full article text from source URL (paragraph extraction)
+ * 5. Sends to LLM via OpenRouter → gets structured JSON (title, sections, FAQs)
+ * 6. Inserts into D1 `news` table with status='live'
+ * 
+ * SCHEDULE: Every minute via worker.js cron
+ * RATE: 1 article per run (skips if no new candidates)
+ * 
+ * ARTICLE STRUCTURE in D1:
+ *   sections: [{heading, paragraphs}]  — rendered by engines/news.js
+ *   faqs: [{q, a}]                     — rendered as FAQ section
+ *   sources: [{name, url}]             — attribution
+ * 
+ * CATEGORIES: business, world, politics, tech, health, science, travel, sports, entertainment
+ * 
+ * Uses callLLM() from llm-client.js for the API call.
  */
 
 // ─── RSS Feeds ───

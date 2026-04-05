@@ -1,3 +1,40 @@
+/**
+ * gab.ae — Main Cloudflare Worker
+ * 
+ * This is the entire backend. It handles:
+ * 
+ * ROUTING (fetch handler):
+ *   /                    → Homepage (featured content, stats, category grid)
+ *   /resources           → All pages dashboard (recently published, popular, updated tabs)
+ *   /news                → News index (all articles, filterable by category)
+ *   /news/{slug}         → Single news article (rendered by engines/news.js)
+ *   /{slug}              → Tool/guide/seed page (calculator engine or raw HTML from D1)
+ *   /category/{cat}      → Category filter page
+ *   /updates             → Public changelog (rendered by engines/changelog.js)
+ *   /api/recent-seeds    → JSON: latest seed pages
+ *   /api/seed-test       → JSON: manually trigger one seed page generation
+ *   /api/search?q=       → JSON: search pages + news
+ *   /sitemap.xml         → Auto-generated sitemap
+ *   /robots.txt          → Robots file
+ * 
+ * CRON (scheduled handler, runs every minute):
+ *   - llmNews()          → Generate 1 news article from RSS (every tick)
+ *   - llmSeedPages()     → Generate 1 seed page from keyword queue (every tick)
+ *   - pruneOldViews()    → Clean view_events older than 24h (hourly)
+ *   - llmRework()        → Upgrade top-traffic page with better model (daily 4 AM UTC)
+ *   - upgradeTrigger()   → Queue pages with 2+ sessions for upgrade (hourly)
+ * 
+ * DATA:
+ *   All content lives in D1 (gab-ae-prod). Pages table stores HTML body content,
+ *   news table stores structured JSON. The layout shell (nav, footer, CSS) is
+ *   applied by templates/layout.js at render time.
+ * 
+ * ENV VARS:
+ *   DB                   → D1 database binding
+ *   OPENROUTER_API_KEY   → For LLM calls (seed pages, news, rework)
+ *   ANTHROPIC_API_KEY    → Fallback for LLM calls
+ */
+
 import { layout, esc } from './templates/layout.js';
 import { renderCalculator } from './engines/calculator.js';
 import { renderNews } from './engines/news.js';
