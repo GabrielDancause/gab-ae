@@ -42,6 +42,7 @@ export async function callLLM(apiKey, prompt, { maxTokens = 4096, model = null }
       const text = data.choices?.[0]?.message?.content || '';
       if (!text) {
         console.log(`⚠️ ${m} returned empty response`);
+        lastError = new Error(`${m} returned empty response`);
         continue;
       }
 
