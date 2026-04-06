@@ -101,6 +101,7 @@ export function detectIntent(keyword) {
 }
 
 import { callLLM } from './llm-client.js';
+import { sanitizeHtmlLinks } from './utils/sanitize-internal-links.js';
 
 // ─── Main ───
 export async function llmSeedPages(env) {
@@ -458,6 +459,12 @@ Rules:
     ],
   };
   const jsonLdTag = `<script type="application/ld+json">${JSON.stringify(jsonLd)}</script>`;
+
+  // 6c. Sanitize internal links — remove any hallucinated hrefs the LLM invented.
+  // Queries D1 for live slugs and unwraps any anchor whose slug doesn't exist,
+  // keeping the link text. The apex guide link is always allowed.
+  html = await sanitizeHtmlLinks(html, env.DB, [apexSlug]);
+
   // Inject JSON-LD at the start of the HTML (before content)
   html = jsonLdTag + '\n' + html;
   const now = new Date().toISOString().replace('T', ' ').slice(0, 19);

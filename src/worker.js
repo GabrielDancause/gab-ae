@@ -44,6 +44,7 @@ import { llmNews } from './llm-news.js';
 import { llmSeedPages, detectIntent } from './llm-seed-pages.js';
 import { llmRework } from './llm-rework.js';
 import { callLLM } from './llm-client.js';
+import { sanitizeHtmlLinks } from './utils/sanitize-internal-links.js';
 
 // ═══════════════════════════════════════════════════════════════
 // SECTION: Engine Registry
@@ -392,6 +393,10 @@ Rules:
             { '@type': 'BreadcrumbList', itemListElement: [{ '@type': 'ListItem', position: 1, name: 'Home', item: 'https://gab.ae/' }, { '@type': 'ListItem', position: 2, name: titleClean }] },
           ],
         };
+
+        // Sanitize internal links — unwrap any hallucinated hrefs the LLM invented.
+        html = await sanitizeHtmlLinks(html, env.DB);
+
         html = `<script type="application/ld+json">${JSON.stringify(odJsonLd)}</script>\n` + html;
 
         const now = new Date().toISOString().replace('T', ' ').slice(0, 19);
