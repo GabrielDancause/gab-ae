@@ -1,1 +1,5 @@
 # Test file for OpenClaw commit verification
+
+Modified by OpenClaw
+- This line added to test PR creation
+- Second modification line
