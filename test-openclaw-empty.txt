@@ -3,3 +3,7 @@
 Modified by OpenClaw
 - This line added to test PR creation
 - Second modification line
+
+--- ADDITION FOR PR TEST ---
+This line was added on the feature branch
+to demonstrate a proper pull request workflow.
