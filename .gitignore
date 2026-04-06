@@ -1,2 +1,3 @@
 backups/
 .wrangler/
+node_modules/
