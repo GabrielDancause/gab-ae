@@ -215,7 +215,7 @@ Rules:
     const jsonStr = raw.replace(/^```json?\s*/, '').replace(/\s*```$/, '').trim();
     article = JSON.parse(jsonStr);
   } catch (e) {
-    console.log(`❌ Haiku parse error: ${e.message}`);
+    console.log(`❌ News LLM/parse error: ${e.message}${e.cause ? ` | cause: ${e.cause}` : ''}`);
     return;
   }
 

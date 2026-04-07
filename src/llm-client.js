@@ -14,6 +14,7 @@ export async function callLLM(apiKey, prompt, { maxTokens = 4096, model = null }
   let lastError;
 
   for (const m of models) {
+    console.log(`🤖 Trying model: ${m}`);
     try {
       const resp = await fetch('https://openrouter.ai/api/v1/chat/completions', {
         method: 'POST',

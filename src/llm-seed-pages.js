@@ -375,7 +375,8 @@ Rules:
     const currentDate = new Date().toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
     html = html.replace(/Updated\s+(?:January|February|March|April|May|June|July|August|September|October|November|December)\s+20\d{2}/gi, 'Updated ' + currentDate);
   } catch (e) {
-    console.log(`❌ Haiku error: ${e.message}`);
+    console.log(`❌ Seed LLM error [${kw.keyword}]: ${e.message}`);
+    await env.DB.prepare("UPDATE keywords SET status = 'error' WHERE keyword = ?").bind(kw.keyword).run();
     return;
   }
 
