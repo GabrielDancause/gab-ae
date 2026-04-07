@@ -4,9 +4,9 @@
  */
 
 const FALLBACK_CHAIN = [
-  'meta-llama/llama-4-maverick:free',                  // Fast, high quality, free
-  'google/gemini-2.0-flash-exp:free',                  // Gemini free tier backup
-  'mistralai/mistral-small-3.1-24b-instruct:free',     // Reliable free fallback
+  'google/gemini-2.0-flash-001',     // Fast, cheap, good for content
+  'deepseek/deepseek-chat-v3-0324',  // Cheap backup, solid quality
+  'openai/gpt-4.1-mini',             // Reliable fallback
 ];
 
 export async function callLLM(apiKey, prompt, { maxTokens = 4096, model = null } = {}) {
