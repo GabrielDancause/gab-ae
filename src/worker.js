@@ -984,7 +984,7 @@ async function healthPage(env, triggered = false) {
     const [pendingRes, fixedTodayRes, unfixableRes, lastScanRes, pendingRowsRes, recentLogsRes] = await Promise.all([
       env.DB.prepare("SELECT COUNT(*) as cnt FROM broken_links WHERE status='pending'").first(),
       env.DB.prepare("SELECT COUNT(*) as cnt FROM broken_links WHERE status='fixed' AND date(fixed_at)=date('now')").first(),
-      env.DB.prepare("SELECT COUNT(*) as cnt FROM broken_links WHERE status='unfixable'").first(),
+      env.DB.prepare("SELECT COUNT(*) as cnt FROM broken_links WHERE status='removed'").first(),
       env.DB.prepare("SELECT scanned_at FROM link_scan_log ORDER BY id DESC LIMIT 1").first(),
       env.DB.prepare("SELECT source_slug, broken_href, suggested_slug, status, detected_at FROM broken_links WHERE status='pending' ORDER BY detected_at DESC LIMIT 100").all(),
       env.DB.prepare("SELECT scanned_at, total_links, broken_found, auto_fixed, unfixable FROM link_scan_log ORDER BY id DESC LIMIT 10").all(),
@@ -1066,9 +1066,9 @@ async function healthPage(env, triggered = false) {
           <div class="text-xs text-gray-500 mt-1">links corrected</div>
         </div>
         <div class="bg-surface-card border border-surface-border rounded-xl p-5">
-          <div class="text-xs text-gray-500 uppercase tracking-wider mb-1">Unfixable</div>
+          <div class="text-xs text-gray-500 uppercase tracking-wider mb-1">Removed</div>
           <div class="text-3xl font-bold ${unfixableCount > 0 ? 'text-yellow-400' : 'text-gray-400'}">${unfixableCount}</div>
-          <div class="text-xs text-gray-500 mt-1">no match found</div>
+          <div class="text-xs text-gray-500 mt-1">anchor stripped</div>
         </div>
         <div class="bg-surface-card border border-surface-border rounded-xl p-5">
           <div class="text-xs text-gray-500 uppercase tracking-wider mb-1">Last scan</div>
