@@ -463,7 +463,8 @@ Rules:
     // Site health dashboard
     if (path === '/health') {
       if (url.searchParams.get('run') === '1') {
-        await scanAndFixLinks(env);
+        ctx.waitUntil(scanAndFixLinks(env));
+        return healthPage(env, true);
       }
       return healthPage(env);
     }
@@ -978,7 +979,7 @@ async function trackView(env, slug) {
 // ═══════════════════════════════════════════════════════════════
 // SECTION: /health — Site Health Dashboard
 // ═══════════════════════════════════════════════════════════════
-async function healthPage(env) {
+async function healthPage(env, triggered = false) {
   try {
     const [pendingRes, fixedTodayRes, unfixableRes, lastScanRes, pendingRowsRes, recentLogsRes] = await Promise.all([
       env.DB.prepare("SELECT COUNT(*) as cnt FROM broken_links WHERE status='pending'").first(),
@@ -1050,6 +1051,7 @@ async function healthPage(env) {
 
     const body = `
       <h1 class="text-3xl font-bold text-white mb-8">Site Health</h1>
+      ${triggered ? `<div class="bg-blue-900 border border-blue-700 text-blue-200 rounded-xl px-5 py-3 mb-6 text-sm">Scan triggered — refresh in a minute to see results.</div>` : ''}
 
       <!-- Stat cards -->
       <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-10">
