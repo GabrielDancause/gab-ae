@@ -462,6 +462,9 @@ Rules:
 
     // Site health dashboard
     if (path === '/health') {
+      if (url.searchParams.get('run') === '1') {
+        await scanAndFixLinks(env);
+      }
       return healthPage(env);
     }
 
