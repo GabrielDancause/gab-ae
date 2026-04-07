@@ -78,12 +78,13 @@ export default {
   // Each pipeline has its own frequency gate inside.
   // ═══════════════════════════════════════════════════════════════
   async scheduled(event, env, ctx) {
-    // LLM News — every 5 minutes (cron fires every 5 min, so every tick)
-    const minute = new Date().getUTCMinutes();
-    try {
-      await llmNews(env);
-    } catch (e) {
-      console.log(`❌ LLM News error: ${e.message}`);
+    // LLM News — every 5th minute
+    if (new Date().getUTCMinutes() % 5 === 0) {
+      try {
+        await llmNews(env);
+      } catch (e) {
+        console.log(`❌ LLM News error: ${e.message}`);
+      }
     }
 
     // LLM Seed Pages — every minute
