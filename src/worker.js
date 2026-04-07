@@ -44,6 +44,8 @@ import { llmNews } from './llm-news.js';
 import { llmSeedPages, detectIntent } from './llm-seed-pages.js';
 import { llmRework } from './llm-rework.js';
 import { callLLM } from './llm-client.js';
+import { scanAndFixLinks } from './link-scanner.js';
+import { scanAndFixLinks } from './link-scanner.js';
 
 // ═══════════════════════════════════════════════════════════════
 // SECTION: Engine Registry
@@ -117,6 +119,15 @@ export default {
         await upgradeTrigger(env);
       } catch (e) {
         console.log(`❌ Upgrade Trigger cron error: ${e.message}`);
+      }
+    }
+
+    // Link scanner — top of every hour
+    if (nowMin === 0) {
+      try {
+        await scanAndFixLinks(env);
+      } catch (e) {
+        console.log(`❌ Link scanner error: ${e.message}`);
       }
     }
   },
@@ -449,6 +460,11 @@ Rules:
       return new Response(`User-agent: *\nAllow: /\n\nSitemap: https://gab.ae/sitemap.xml\n`, {
         headers: { 'content-type': 'text/plain' },
       });
+    }
+
+    // Site health dashboard
+    if (path === '/health') {
+      return healthPage(env);
     }
 
         // Resources — apex guides hub
@@ -955,6 +971,134 @@ async function trackView(env, slug) {
     ]);
   } catch (e) {
     // Non-critical — don't break page loads
+  }
+}
+
+// ═══════════════════════════════════════════════════════════════
+// SECTION: /health — Site Health Dashboard
+// ═══════════════════════════════════════════════════════════════
+async function healthPage(env) {
+  try {
+    const [pendingRes, fixedTodayRes, unfixableRes, lastScanRes, pendingRowsRes, recentLogsRes] = await Promise.all([
+      env.DB.prepare("SELECT COUNT(*) as cnt FROM broken_links WHERE status='pending'").first(),
+      env.DB.prepare("SELECT COUNT(*) as cnt FROM broken_links WHERE status='fixed' AND date(fixed_at)=date('now')").first(),
+      env.DB.prepare("SELECT COUNT(*) as cnt FROM broken_links WHERE status='unfixable'").first(),
+      env.DB.prepare("SELECT scanned_at FROM link_scan_log ORDER BY id DESC LIMIT 1").first(),
+      env.DB.prepare("SELECT source_slug, broken_href, suggested_slug, status, detected_at FROM broken_links WHERE status='pending' ORDER BY detected_at DESC LIMIT 100").all(),
+      env.DB.prepare("SELECT scanned_at, total_links, broken_found, auto_fixed, unfixable FROM link_scan_log ORDER BY id DESC LIMIT 10").all(),
+    ]);
+
+    const pendingCount = pendingRes?.cnt ?? 0;
+    const fixedToday = fixedTodayRes?.cnt ?? 0;
+    const unfixableCount = unfixableRes?.cnt ?? 0;
+    const lastScan = lastScanRes?.scanned_at ?? 'Never';
+    const pendingRows = pendingRowsRes?.results ?? [];
+    const recentLogs = recentLogsRes?.results ?? [];
+
+    const pendingColor = pendingCount > 0 ? 'text-red-400' : 'text-green-400';
+
+    const pendingTable = pendingRows.length === 0
+      ? `<p class="text-gray-400 text-sm">No pending broken links.</p>`
+      : `<div class="overflow-x-auto">
+          <table class="w-full text-sm">
+            <thead>
+              <tr class="text-left text-gray-500 border-b border-surface-border">
+                <th class="pb-2 pr-4">Source</th>
+                <th class="pb-2 pr-4">Broken href</th>
+                <th class="pb-2 pr-4">Suggested fix</th>
+                <th class="pb-2">Detected</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-surface-border">
+              ${pendingRows.map(r => `
+                <tr class="text-gray-300">
+                  <td class="py-2 pr-4"><a href="/${esc(r.source_slug)}" class="text-accent hover:underline">/${esc(r.source_slug)}</a></td>
+                  <td class="py-2 pr-4 text-red-400 font-mono text-xs">${esc(r.broken_href)}</td>
+                  <td class="py-2 pr-4 text-green-400 font-mono text-xs">${r.suggested_slug ? esc(r.suggested_slug) : '—'}</td>
+                  <td class="py-2 text-gray-500 text-xs">${esc(r.detected_at ?? '')}</td>
+                </tr>`).join('')}
+            </tbody>
+          </table>
+        </div>`;
+
+    const scanLogTable = recentLogs.length === 0
+      ? `<p class="text-gray-400 text-sm">No scans yet.</p>`
+      : `<div class="overflow-x-auto">
+          <table class="w-full text-sm">
+            <thead>
+              <tr class="text-left text-gray-500 border-b border-surface-border">
+                <th class="pb-2 pr-4">Scanned at</th>
+                <th class="pb-2 pr-4">Total links</th>
+                <th class="pb-2 pr-4">Broken</th>
+                <th class="pb-2 pr-4">Auto-fixed</th>
+                <th class="pb-2">Unfixable</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-surface-border">
+              ${recentLogs.map(r => `
+                <tr class="text-gray-300">
+                  <td class="py-2 pr-4 text-xs text-gray-400">${esc(r.scanned_at ?? '')}</td>
+                  <td class="py-2 pr-4">${r.total_links ?? 0}</td>
+                  <td class="py-2 pr-4 ${(r.broken_found ?? 0) > 0 ? 'text-red-400' : 'text-gray-300'}">${r.broken_found ?? 0}</td>
+                  <td class="py-2 pr-4 text-green-400">${r.auto_fixed ?? 0}</td>
+                  <td class="py-2 text-yellow-400">${r.unfixable ?? 0}</td>
+                </tr>`).join('')}
+            </tbody>
+          </table>
+        </div>`;
+
+    const body = `
+      <h1 class="text-3xl font-bold text-white mb-8">Site Health</h1>
+
+      <!-- Stat cards -->
+      <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-10">
+        <div class="bg-surface-card border border-surface-border rounded-xl p-5">
+          <div class="text-xs text-gray-500 uppercase tracking-wider mb-1">404 Links</div>
+          <div class="text-3xl font-bold ${pendingColor}">${pendingCount}</div>
+          <div class="text-xs text-gray-500 mt-1">pending fix</div>
+        </div>
+        <div class="bg-surface-card border border-surface-border rounded-xl p-5">
+          <div class="text-xs text-gray-500 uppercase tracking-wider mb-1">Auto-fixed today</div>
+          <div class="text-3xl font-bold text-green-400">${fixedToday}</div>
+          <div class="text-xs text-gray-500 mt-1">links corrected</div>
+        </div>
+        <div class="bg-surface-card border border-surface-border rounded-xl p-5">
+          <div class="text-xs text-gray-500 uppercase tracking-wider mb-1">Unfixable</div>
+          <div class="text-3xl font-bold ${unfixableCount > 0 ? 'text-yellow-400' : 'text-gray-400'}">${unfixableCount}</div>
+          <div class="text-xs text-gray-500 mt-1">no match found</div>
+        </div>
+        <div class="bg-surface-card border border-surface-border rounded-xl p-5">
+          <div class="text-xs text-gray-500 uppercase tracking-wider mb-1">Last scan</div>
+          <div class="text-sm font-medium text-gray-300 mt-2">${esc(lastScan)}</div>
+          <div class="text-xs text-gray-500 mt-1">top of each hour</div>
+        </div>
+      </div>
+
+      <!-- Broken links table -->
+      <div class="bg-surface-card border border-surface-border rounded-xl p-6 mb-6">
+        <h2 class="text-lg font-semibold text-white mb-4">Pending Broken Links</h2>
+        ${pendingTable}
+      </div>
+
+      <!-- Scan log -->
+      <div class="bg-surface-card border border-surface-border rounded-xl p-6">
+        <h2 class="text-lg font-semibold text-white mb-4">Recent Scan Log</h2>
+        ${scanLogTable}
+      </div>
+    `;
+
+    const html = layout({
+      title: 'Site Health | gab.ae',
+      description: 'Internal site health dashboard — broken link scanner and auto-fix log.',
+      canonical: 'https://gab.ae/health',
+      body,
+    });
+
+    return new Response(html, {
+      headers: { 'content-type': 'text/html;charset=UTF-8', 'cache-control': 'no-store' },
+    });
+  } catch (e) {
+    return new Response(`Health page error: ${e.message}`, { status: 500 });
   }
 }
 

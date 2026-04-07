@@ -219,6 +219,36 @@ CREATE TABLE IF NOT EXISTS not_found_log (
   last_seen TEXT
 );
 
+-- ═══════════════════════════════════════════════════════════════
+-- LINK HEALTH TABLES
+-- Track broken internal links and scan history.
+-- ═══════════════════════════════════════════════════════════════
+
+-- Broken links: internal hrefs that resolve to no known slug
+-- status: pending (needs fix), fixed (auto-corrected), unfixable (no close match)
+CREATE TABLE IF NOT EXISTS broken_links (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  source_slug TEXT NOT NULL,
+  broken_href TEXT NOT NULL,
+  suggested_slug TEXT,
+  status TEXT DEFAULT 'pending',   -- pending | fixed | unfixable
+  detected_at TEXT DEFAULT (datetime('now')),
+  fixed_at TEXT
+);
+
+CREATE INDEX IF NOT EXISTS idx_broken_links_status ON broken_links(status);
+CREATE INDEX IF NOT EXISTS idx_broken_links_source ON broken_links(source_slug);
+
+-- Link scan log: one row per scan run (inserted by link-scanner.js)
+CREATE TABLE IF NOT EXISTS link_scan_log (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  scanned_at TEXT DEFAULT (datetime('now')),
+  total_links INTEGER,
+  broken_found INTEGER,
+  auto_fixed INTEGER,
+  unfixable INTEGER
+);
+
 -- Engines: page engine registry (legacy, mostly unused — ENGINES const in worker.js)
 CREATE TABLE IF NOT EXISTS engines (
   id TEXT PRIMARY KEY,
