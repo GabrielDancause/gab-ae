@@ -45,8 +45,6 @@ import { llmSeedPages, detectIntent } from './llm-seed-pages.js';
 import { llmRework } from './llm-rework.js';
 import { callLLM } from './llm-client.js';
 import { scanAndFixLinks } from './link-scanner.js';
-import { scanAndFixLinks } from './link-scanner.js';
-
 // ═══════════════════════════════════════════════════════════════
 // SECTION: Engine Registry
 // Maps engine names (from D1 `pages.engine` column) to renderer functions.
