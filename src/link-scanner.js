@@ -7,12 +7,15 @@ export async function scanAndFixLinks(env) {
   const knownSlugs = new Set([...pagesRes.results.map(r=>r.slug),...newsRes.results.map(r=>r.slug)]);
   let totalLinks=0,brokenFound=0,autoFixed=0,unfixable=0;
   let offset=0;
+  const deadline = Date.now() + 25_000;
   try {
     while(true){
+      if(Date.now() > deadline) break;
       const batch=await db.prepare("SELECT slug,html FROM pages WHERE status='live' LIMIT 100 OFFSET ?").bind(offset).all();
       if(!batch.results.length)break;
       offset+=100;
       for(const page of batch.results){
+        if(Date.now() > deadline) break;
         if(!page.html)continue;
         const hrefRegex=/href="(\/[^"#?][^"]*?)"/g;
         let match,newHtml=page.html,pageModified=false;
