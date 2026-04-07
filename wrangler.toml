@@ -14,5 +14,8 @@ database_id = "4e23e386-b430-4ffc-bf84-246a4e7bcdd1"
 pattern = "gab.ae/*"
 zone_name = "gab.ae"
 
+[observability]
+enabled = true
+
 [triggers]
 crons = ["*/5 * * * *"]
