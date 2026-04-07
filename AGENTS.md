@@ -259,3 +259,28 @@ Note: the `news` table uses `published_at`, not `created_at`.
 5. **Verify the pipeline resumed after every deploy.** Run `wrangler tail` for ~90 seconds post-deploy and confirm `📝 Generating:` lines appear within the next cron tick.
 
 6. **Check Worker Logs, not just trigger status.** The `scheduled()` handler catches all errors internally — Cloudflare always reports the trigger as succeeded. A green trigger status tells you nothing about whether content was actually generated.
+
+## Link Scanner (`src/link-scanner.js`)
+
+Added 2026-04-07. Scans all internal hrefs in `pages` HTML, validates against known slugs in D1.
+
+- **Auto-fix:** broken links with a fuzzy slug match (≥2 shared words) get their href rewritten in the stored HTML
+- **Remove:** links with no match get the `<a>` tag stripped, anchor text kept
+- **Tables:** `broken_links` (source_slug, broken_href, suggested_slug, status, detected_at, fixed_at), `link_scan_log` (scanned_at, total_links, broken_found, auto_fixed, unfixable)
+- **Trigger:** runs hourly via `nowMin === 0` in `scheduled()`, or manually via `curl https://gab.ae/health?run=1`
+- **Time budget:** 25s hard limit to avoid Cloudflare worker kill — partial runs are safe, next run continues
+- **Dashboard:** `GET /health` — shows 404 count, fixed today, removed, scan history
+
+## Agent Workflow Warning: Worktree Deadlocks
+
+**Never run more than one code task at a time on this repo.**
+
+Each code session spawns a git worktree under `.claude/worktrees/`. Multiple concurrent worktrees fight over `.git/index.lock` and freeze all Bash operations indefinitely.
+
+If sessions deadlock:
+```bash
+rm -f ~/Desktop/gab-ae/.git/index.lock
+cd ~/Desktop/gab-ae && git worktree prune
+```
+
+**Always route follow-up work to the existing active session via send_message, not by spawning new sessions.**
