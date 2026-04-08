@@ -249,6 +249,14 @@ CREATE TABLE IF NOT EXISTS link_scan_log (
   unfixable INTEGER
 );
 
+-- Rate limits: per-IP throttle for expensive API endpoints
+CREATE TABLE IF NOT EXISTS rate_limits (
+  ip TEXT NOT NULL,
+  endpoint TEXT NOT NULL,
+  last_request TEXT NOT NULL,       -- ISO timestamp of last request
+  PRIMARY KEY (ip, endpoint)
+);
+
 -- Engines: page engine registry (legacy, mostly unused — ENGINES const in worker.js)
 CREATE TABLE IF NOT EXISTS engines (
   id TEXT PRIMARY KEY,

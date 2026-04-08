@@ -206,6 +206,30 @@ export default {
     // On-demand page generation
     if (path === '/api/generate' && request.method === 'POST') {
       try {
+        // Rate limit: 1 request per 30s per IP
+        const clientIP = request.headers.get('cf-connecting-ip') || request.headers.get('x-forwarded-for') || 'unknown';
+        const RATE_LIMIT_SECONDS = 30;
+        try {
+          const rl = await env.DB.prepare(
+            "SELECT last_request FROM rate_limits WHERE ip = ? AND endpoint = '/api/generate'"
+          ).bind(clientIP).first();
+          if (rl) {
+            const elapsed = (Date.now() - new Date(rl.last_request).getTime()) / 1000;
+            if (elapsed < RATE_LIMIT_SECONDS) {
+              const retryAfter = Math.ceil(RATE_LIMIT_SECONDS - elapsed);
+              return new Response(JSON.stringify({ error: 'Rate limited. Try again shortly.', retry_after: retryAfter }), {
+                status: 429,
+                headers: { 'content-type': 'application/json', 'retry-after': String(retryAfter) },
+              });
+            }
+          }
+          await env.DB.prepare(
+            "INSERT INTO rate_limits (ip, endpoint, last_request) VALUES (?, '/api/generate', ?) ON CONFLICT(ip, endpoint) DO UPDATE SET last_request = excluded.last_request"
+          ).bind(clientIP, new Date().toISOString()).run();
+        } catch (e) {
+          console.log(`⚠️ Rate limit check failed (non-blocking): ${e.message}`);
+        }
+
         const { keyword } = await request.json();
         if (!keyword || keyword.length < 3 || keyword.length > 200) {
           return new Response(JSON.stringify({ error: 'Keyword must be 3-200 characters' }), { status: 400, headers: { 'content-type': 'application/json' } });
@@ -1112,6 +1136,13 @@ async function pruneOldViews(env) {
     console.log('🧹 Pruned old view events');
   } catch (e) {
     console.log(`❌ View prune error: ${e.message}`);
+  }
+  // Clean up rate limit entries older than 5 minutes
+  try {
+    const rlCutoff = new Date(Date.now() - 5 * 60 * 1000).toISOString();
+    await env.DB.prepare(`DELETE FROM rate_limits WHERE last_request < ?`).bind(rlCutoff).run();
+  } catch (e) {
+    console.log(`❌ Rate limit prune error: ${e.message}`);
   }
 }
 
