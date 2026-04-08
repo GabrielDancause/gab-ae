@@ -1,2 +1,6 @@
 backups/
 .wrangler/
+
+# Shorts uploader secrets
+shorts-uploader/credentials.json
+shorts-uploader/token.json
