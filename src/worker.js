@@ -18,8 +18,8 @@
  *   /robots.txt          → Robots file
  * 
  * CRON (scheduled handler, runs every minute):
- *   - llmNews()          → Generate 1 news article from RSS (every tick)
- *   - llmSeedPages()     → Generate 1 seed page from keyword queue (every tick)
+ *   - llmNews()          → Generate 1 news article from RSS (every 5 minutes)
+ *   - llmSeedPages()     → Generate 1 seed page from keyword queue (every 4 minutes)
  *   - pruneOldViews()    → Clean view_events older than 24h (hourly)
  *   - llmRework()        → Upgrade top-traffic page with better model (daily 4 AM UTC)
  *   - upgradeTrigger()   → Queue pages with 2+ sessions for upgrade (hourly)
@@ -87,11 +87,13 @@ export default {
       }
     }
 
-    // LLM Seed Pages — every minute
-    try {
-      await llmSeedPages(env);
-    } catch (e) {
-      console.log(`❌ LLM Seed Pages error: ${e.message}`);
+    // LLM Seed Pages — every 4th minute
+    if (new Date().getUTCMinutes() % 4 === 0) {
+      try {
+        await llmSeedPages(env);
+      } catch (e) {
+        console.log(`❌ LLM Seed Pages error: ${e.message}`);
+      }
     }
 
     // Prune view events older than 24h (every hour)
