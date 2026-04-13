@@ -79,7 +79,7 @@ export default {
   // ═══════════════════════════════════════════════════════════════
   async scheduled(event, env, ctx) {
     // LLM News — every 5th minute
-    if (new Date().getUTCMinutes() % 5 === 0) {
+    if (new Date().getUTCMinutes() % 4 === 0) {
       try {
         await llmNews(env);
       } catch (e) {
