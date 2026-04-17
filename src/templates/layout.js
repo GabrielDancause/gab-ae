@@ -111,7 +111,8 @@ export function layout({ title, description, canonical, schemaJson, body }) {
     <div class="max-w-5xl mx-auto flex items-center justify-between">
       <a href="/" class="text-xl font-bold text-white hover:text-accent transition-colors">GAB</a>
       <div class="flex gap-6 text-sm text-gray-400">
-        <a href="/news" class="hover:text-white transition-colors">News</a>
+        <a href="/" class="hover:text-white transition-colors">News</a>
+        <a href="/search" class="hover:text-white transition-colors">Search</a>
         <a href="/resources" class="hover:text-white transition-colors">Resources</a>
       </div>
     </div>

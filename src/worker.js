@@ -101,14 +101,16 @@ export default {
       await pruneOldViews(env);
     }
 
-    // Rework top-traffic pages — once daily at 4 AM UTC (11 AM Bangkok)
-    if (nowHour === 4 && nowMin < 5) {
-      try {
-        await llmRework(env);
-      } catch (e) {
-        console.log(`❌ LLM Rework error: ${e.message}`);
-      }
-    }
+    // PAUSED: Rework top-traffic pages (Gemini 2.5 Pro too expensive — paused 2026-04-09)
+    // Rewrites top-viewed LLM-generated pages with higher-quality content using Gemini 2.5 Pro.
+    // Runs once daily at 4 AM UTC. To re-enable, uncomment the block below and redeploy.
+    // if (nowHour === 4 && nowMin < 5) {
+    //   try {
+    //     await llmRework(env);
+    //   } catch (e) {
+    //     console.log(`❌ LLM Rework error: ${e.message}`);
+    //   }
+    // }
 
     // Upgrade trigger — check once per hour
     const hourCycle = Math.floor(Date.now() / 3600000);
@@ -145,8 +147,13 @@ export default {
       return new Response(JSON.stringify({ message: 'Rework triggered in background — check logs' }), { headers: { 'content-type': 'application/json' } });
     }
 
-    // Homepage
+    // Homepage — news index
     if (path === '/') {
+      return newsIndex(env);
+    }
+
+    // Search page (formerly homepage)
+    if (path === '/search') {
       return homepage(env);
     }
 
@@ -515,9 +522,9 @@ Rules:
       return categoryPage(env, catMatch[1]);
     }
 
-    // News index
+    // /news redirects to homepage
     if (path === '/news') {
-      return newsIndex(env);
+      return Response.redirect('https://gab.ae/', 301);
     }
 
     // News category
@@ -810,9 +817,9 @@ async function homepage(env) {
   `;
 
   return new Response(layout({
-    title: 'gab.ae — Ask the Team',
+    title: 'gab.ae — Search',
     description: 'Free tools, news, and expert guides across finance, tech, health, travel, gaming, and more. Built by a team of humans and AI agents answering your questions.',
-    canonical: 'https://gab.ae/',
+    canonical: 'https://gab.ae/search',
     body,
   }), {
     headers: { 'content-type': 'text/html;charset=UTF-8' },
@@ -865,7 +872,7 @@ async function newsIndex(env, category = null) {
       <p class="text-gray-400 text-sm">Breaking stories and analysis</p>
     </div>
     <div class="flex gap-2 overflow-x-auto pb-2 mb-6 scrollbar-hide">
-      <a href="/news" class="flex-shrink-0 px-3 py-1.5 rounded-full text-xs font-medium ${!category ? 'bg-accent text-white' : 'bg-surface border border-surface-border text-gray-400 hover:bg-accent/10 hover:text-white'} transition-all">All</a>
+      <a href="/" class="flex-shrink-0 px-3 py-1.5 rounded-full text-xs font-medium ${!category ? 'bg-accent text-white' : 'bg-surface border border-surface-border text-gray-400 hover:bg-accent/10 hover:text-white'} transition-all">All</a>
       ${catTabsHtml}
     </div>
     ${articles.length ? `<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">${articlesHtml}</div>` : '<p class="text-gray-500 text-center py-12">No articles yet — check back soon.</p>'}
@@ -875,7 +882,7 @@ async function newsIndex(env, category = null) {
   return new Response(layout({
     title: category ? `${category.charAt(0).toUpperCase() + category.slice(1)} News | gab.ae` : 'Latest News & Analysis | gab.ae',
     description: category ? `Latest ${category} news, breaking stories, and in-depth analysis. Updated every 5 minutes with AI-powered summaries and expert context.` : 'Latest news, breaking stories, and in-depth analysis across business, tech, world affairs, health, science, and entertainment. Updated every 5 minutes.',
-    canonical: category ? `https://gab.ae/news/category/${category}` : 'https://gab.ae/news',
+    canonical: category ? `https://gab.ae/news/category/${category}` : 'https://gab.ae/',
     body,
   }), { headers: { 'content-type': 'text/html;charset=UTF-8' } });
 }
