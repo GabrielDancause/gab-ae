@@ -7,9 +7,9 @@ Cloudflare Worker + D1 site serving news articles, tools/calculators, educationa
 ```
 gab.ae (Cloudflare Worker)
 ├── D1 Database (gab-ae-prod) — all content stored here
-│   ├── pages     — tools, guides, seed pages (engine: calculator, llm-gemini, llm-sonnet, seed, html)
+│   │   ├── pages     — tools, calculators, and archived seed pages (engine: calculator, llm-gemini, llm-sonnet, html)
 │   ├── news      — structured news articles (JSON sections)
-│   ├── keywords  — 100K+ Ahrefs keywords for seed page generation
+│   ├── keywords  — 100K+ Ahrefs keywords (seed page generation deprecated)
 │   ├── changelog — public changelog at /updates
 │   └── view_counts / view_events — analytics
 ├── Worker (src/worker.js) — routing, rendering, cron scheduler
@@ -18,12 +18,11 @@ gab.ae (Cloudflare Worker)
 
 ## Content Pipelines (Cron-driven)
 
-All pipelines run on Cloudflare's `scheduled()` handler (cron: `* * * * *` = every minute).
+All pipelines run on Cloudflare's `scheduled()` handler (cron: `*/5 * * * *` = every 5 minutes).
 
 | Pipeline | File | Frequency | What it does |
 |----------|------|-----------|-------------|
-| **Seed Pages** | `src/llm-seed-pages.js` | Every minute | Picks best keyword from D1 → LLM writes full HTML page → inserts into `pages` table |
-| **News** | `src/llm-news.js` | Every minute | Fetches RSS feeds → picks best story → LLM writes structured article → inserts into `news` table |
+| **News** | `src/llm-news.js` | Every 5 minutes | Fetches RSS feeds → picks best story → LLM writes structured article → inserts into `news` table |
 | **Rework** | `src/llm-rework.js` | Daily at 4 AM UTC | Finds highest-traffic LLM pages → rewrites with better model (Gemini Pro) → updates in-place |
 | **Upgrade Trigger** | `src/upgrade-trigger.js` | Hourly | Finds template pages with 2+ sessions → queues for Sonnet rewrite |
 
@@ -33,7 +32,7 @@ All pipelines run on Cloudflare's `scheduled()` handler (cron: `* * * * *` = eve
 src/
 ├── worker.js              — Main Worker: routing, rendering, homepage, /resources, cron scheduler
 ├── llm-client.js          — OpenRouter API client with model fallback chain
-├── llm-seed-pages.js      — Seed page generator (keyword → LLM → HTML → D1)
+├── llm-seed-pages.js      — Seed page generator (deprecated — no longer runs on cron)
 ├── llm-news.js            — News article generator (RSS → LLM → structured JSON → D1)
 ├── llm-rework.js          — Page upgrader (finds traffic pages, rewrites with better model)
 ├── upgrade-trigger.js     — Detects pages with traffic, queues for upgrade
@@ -83,6 +82,4 @@ npx wrangler d1 execute gab-ae-prod --remote --command "SQL"  # Query D1
 
 ## Content Stats
 
-- **100K+** keywords in queue
-- **30K+** eligible for seed page generation (KD ≤ 20, volume ≥ 50)
-- Pages auto-generated at ~1/minute via cron
+- News articles generated every 5 minutes via cron

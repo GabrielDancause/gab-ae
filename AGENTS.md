@@ -14,7 +14,7 @@ This document captures architecture, operational gotchas, and rules learned from
 |---|---|
 | `src/worker.js` | Main Worker: HTTP router + `scheduled()` cron handler |
 | `src/llm-client.js` | OpenRouter API client with 3-model fallback chain |
-| `src/llm-seed-pages.js` | Automated page generator — pulls keywords from D1, calls LLM, writes HTML to `pages` table |
+| `src/llm-seed-pages.js` | Seed page generator — deprecated, no longer runs on cron |
 | `src/llm-news.js` | Automated news generator — fetches RSS feeds, summarises with LLM, writes to `news` table |
 | `src/llm-rework.js` | Upgrades existing low-quality pages using Gemini 2.5 Pro |
 | `wrangler.toml` | Cloudflare Worker config: cron triggers, D1 binding, observability |
@@ -22,11 +22,9 @@ This document captures architecture, operational gotchas, and rules learned from
 ### Data flow
 
 ```
-Cron tick (every minute)
+Cron tick (every 5 minutes)
   └─ scheduled() in worker.js
-       ├─ llmSeedPages(env)   → picks keyword from D1 → calls callLLM() → inserts into pages table
        └─ llmNews(env)        → fetches RSS → calls callLLM() → inserts into news table
-                                (only on minutes where UTCMinutes % 5 === 0)
 
 HTTP request
   └─ fetch() router in worker.js
@@ -48,26 +46,21 @@ HTTP request
 
 ## 2. The Cron System
 
-`wrangler.toml` registers **one cron**: `* * * * *` (every minute).
+`wrangler.toml` registers **one cron**: `*/5 * * * *` (every 5 minutes).
 
 `scheduled()` in `worker.js` handles all timed work with in-process frequency gates:
 
 ```js
 async scheduled(event, env, ctx) {
-  // Seed pages — every tick (every minute)
-  try { await llmSeedPages(env); } catch (e) { console.log(...) }
+  // News — every tick (cron fires every 5 minutes)
+  try { await llmNews(env); } catch (e) { console.log(...) }
 
-  // News — every 5th minute
-  if (new Date().getUTCMinutes() % 5 === 0) {
-    try { await llmNews(env); } catch (e) { console.log(...) }
-  }
-
-  // Rework — once daily at 4 AM UTC
+  // Rework — once daily at 4 AM UTC (currently paused)
   if (nowHour === 4 && nowMin < 5) { ... }
 }
 ```
 
-**Why this pattern instead of multiple crons:** Cloudflare's minimum cron resolution is 1 minute. Running one cron every minute and gating internally gives finer control and avoids Cloudflare-level scheduling complexity.
+**Why this pattern instead of multiple crons:** Cloudflare's minimum cron resolution is 1 minute. Running one cron and gating internally gives finer control and avoids Cloudflare-level scheduling complexity.
 
 ---
 
@@ -168,7 +161,7 @@ Key log patterns to watch for:
 
 | Log | Meaning |
 |---|---|
-| `📝 Generating: "<keyword>"` | Seed page pipeline fired successfully |
+| `📝 Generating: "<keyword>"` | Seed page pipeline fired (deprecated — should not appear) |
 | `🤖 Trying model: <name>` | LLM call starting |
 | `⚠️ <model> failed: ...` | That model failed, next in chain will be tried |
 | `❌ Seed LLM error [<keyword>]` | All models failed, keyword marked error |
@@ -178,11 +171,10 @@ Key log patterns to watch for:
 
 ### Diagnosing a stalled pipeline
 
-If pages stopped generating, check in order:
-1. Is the cron firing? Look for `"* * * * *" @` in tail output.
-2. Is the LLM failing? Look for `⚠️ ... failed` or `❌ Seed LLM error`.
-3. Are keywords available? `SELECT COUNT(*) FROM keywords WHERE status='new'`
-4. Are there stuck errors? `SELECT COUNT(*) FROM keywords WHERE status='error'`
+If news stopped generating, check in order:
+1. Is the cron firing? Look for `"*/5 * * * *" @` in tail output.
+2. Is the LLM failing? Look for `⚠️ ... failed` or `❌ News LLM/parse error`.
+3. Are RSS feeds reachable? Check for fetch errors in the tail output.
 
 ---
 
@@ -201,6 +193,7 @@ Always use `--remote` flag for production queries.
 | `news` | Generated news articles. Key columns: `slug`, `title`, `category`, `sections` (JSON), `published_at` |
 | `tracked_pages` | SEO tracking — maps pages to apex hub slugs. Used by `/resources` page count badges |
 | `view_events` | Rolling hourly view counts. Used for "Most Popular" tab on `/resources` |
+| `rate_limits` | Per-IP rate limiting for expensive endpoints. Key columns: `ip`, `endpoint`, `last_request` (ISO timestamp). Composite PK on `(ip, endpoint)` |
 
 ### Useful debug queries
 
@@ -259,6 +252,23 @@ Note: the `news` table uses `published_at`, not `created_at`.
 5. **Verify the pipeline resumed after every deploy.** Run `wrangler tail` for ~90 seconds post-deploy and confirm `📝 Generating:` lines appear within the next cron tick.
 
 6. **Check Worker Logs, not just trigger status.** The `scheduled()` handler catches all errors internally — Cloudflare always reports the trigger as succeeded. A green trigger status tells you nothing about whether content was actually generated.
+
+## Rate Limiting (`worker.js` — `/api/generate`)
+
+Added 2026-04-08 (PR #52, issue #51). Prevents abuse of the expensive LLM generation endpoint.
+
+- **How it works:** Before processing an `/api/generate` request, the handler reads `cf-connecting-ip` (or `x-forwarded-for` fallback) and checks the `rate_limits` D1 table for a recent request from that IP+endpoint pair.
+- **Cooldown:** 30 seconds per IP. Requests within the cooldown get HTTP 429 with a JSON body `{"error": "Rate limited. Try again shortly.", "retry_after": N}` and a `Retry-After` header.
+- **Upsert:** On allowed requests, the handler writes/updates the `rate_limits` row with the current ISO timestamp using `INSERT ... ON CONFLICT DO UPDATE`.
+- **Non-blocking:** The entire rate limit check is wrapped in a try/catch. If the `rate_limits` table doesn't exist or D1 errors, the request proceeds normally (logs a warning).
+- **Cleanup:** `pruneOldViews()` (runs hourly) also deletes `rate_limits` rows older than 5 minutes to keep the table small.
+- **Table schema:** `rate_limits(ip TEXT, endpoint TEXT, last_request TEXT, PRIMARY KEY(ip, endpoint))`
+
+**To change the cooldown period**, edit `RATE_LIMIT_SECONDS` in `worker.js` inside the `/api/generate` handler (search for `RATE_LIMIT_SECONDS`).
+
+**To add rate limiting to another endpoint**, follow the same pattern: read IP, check `rate_limits` for that endpoint string, upsert on success.
+
+---
 
 ## Link Scanner (`src/link-scanner.js`)
 

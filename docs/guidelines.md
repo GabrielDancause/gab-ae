@@ -3,8 +3,8 @@
 ## Repository Overview
 - **Main Application**: Cloudflare Worker handling routing and cron jobs (`src/worker.js`)
 - **Key Components**:
-  - `src/llm-news.js`: Automated news generation from RSS feeds
-  - `src/llm-seed-pages.js`: LLM-generated educational content
+  - `src/llm-news.js`: Automated news generation from RSS feeds (primary pipeline)
+  - `src/llm-seed-pages.js`: Seed page generator (deprecated)
   - `src/engines/`: Page renderers (news, calculator, changelog)
   - `templates/layout.js`: HTML layout structure
   - `database/`: D1 database schema and queries

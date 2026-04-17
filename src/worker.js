@@ -17,9 +17,8 @@
  *   /sitemap.xml         → Auto-generated sitemap
  *   /robots.txt          → Robots file
  * 
- * CRON (scheduled handler, runs every minute):
+ * CRON (scheduled handler, runs every 5 minutes):
  *   - llmNews()          → Generate 1 news article from RSS (every tick)
- *   - llmSeedPages()     → Generate 1 seed page from keyword queue (every tick)
  *   - pruneOldViews()    → Clean view_events older than 24h (hourly)
  *   - llmRework()        → Upgrade top-traffic page with better model (daily 4 AM UTC)
  *   - upgradeTrigger()   → Queue pages with 2+ sessions for upgrade (hourly)
@@ -74,24 +73,15 @@ function timeAgo(dateStr) {
 
 export default {
   // ═══════════════════════════════════════════════════════════════
-  // SECTION: Cron Scheduler (runs every minute via wrangler.toml)
+  // SECTION: Cron Scheduler (runs every 5 minutes via wrangler.toml)
   // Each pipeline has its own frequency gate inside.
   // ═══════════════════════════════════════════════════════════════
   async scheduled(event, env, ctx) {
-    // LLM News — every 5th minute
-    if (new Date().getUTCMinutes() % 5 === 0) {
-      try {
-        await llmNews(env);
-      } catch (e) {
-        console.log(`❌ LLM News error: ${e.message}`);
-      }
-    }
-
-    // LLM Seed Pages — every minute
+    // LLM News — every tick (cron fires every 5 minutes)
     try {
-      await llmSeedPages(env);
+      await llmNews(env);
     } catch (e) {
-      console.log(`❌ LLM Seed Pages error: ${e.message}`);
+      console.log(`❌ LLM News error: ${e.message}`);
     }
 
     // Prune view events older than 24h (every hour)
@@ -826,63 +816,211 @@ async function homepage(env) {
   });
 }
 
+const CAT_COLORS = {
+  us: '#c8102e', world: '#1a5c8a', politics: '#3a2060',
+  business: '#1a5c30', health: '#8a2020', entertainment: '#8a6020',
+  travel: '#1a4a6a', sports: '#1a3a5c', science: '#2a1e5e',
+  climate: '#1a5c30', tech: '#8a4020',
+};
+const CAT_LABELS = {
+  us: 'U.S.', world: 'World', politics: 'Politics', business: 'Business',
+  health: 'Health', entertainment: 'Entertainment', travel: 'Travel',
+  sports: 'Sports', science: 'Science', climate: 'Climate', tech: 'Tech',
+};
+
+function catColor(cat) { return CAT_COLORS[cat] || '#c8102e'; }
+function catLabel(cat) { return CAT_LABELS[cat] || (cat ? cat.charAt(0).toUpperCase() + cat.slice(1) : 'News'); }
+
+function storyCardHtml(a) {
+  return `
+    <div>
+      <a href="/news/${a.slug}" class="story-card-title">${esc(a.title)}</a>
+      ${a.description ? `<p class="story-card-desc">${esc(a.description)}</p>` : ''}
+      <div class="story-card-meta">${timeAgo(a.published_at)}</div>
+    </div>`;
+}
+
+function catSectionHtml(catArticles, cat) {
+  if (!catArticles.length) return '';
+  const color = catColor(cat);
+  const label = catLabel(cat);
+  const lead = catArticles[0];
+  const two = catArticles.slice(1, 3);
+  const grid = catArticles.slice(3, 6);
+
+  const leadPlusTwo = catArticles.length >= 2 ? `
+    <div class="lead-plus-two">
+      <div>
+        <a href="/news/${lead.slug}" class="lead-story-title">${esc(lead.title)}</a>
+        ${lead.description ? `<p class="lead-story-desc">${esc(lead.description)}</p>` : ''}
+        <div class="lead-story-meta">${timeAgo(lead.published_at)}</div>
+      </div>
+      <div class="two-stack">
+        ${two.map(a => `
+          <div class="two-stack-item">
+            <a href="/news/${a.slug}" class="two-stack-title">${esc(a.title)}</a>
+            <div class="two-stack-meta">${timeAgo(a.published_at)}</div>
+          </div>`).join('')}
+      </div>
+    </div>` : `
+    <div style="margin-bottom:20px">
+      <a href="/news/${lead.slug}" class="lead-story-title">${esc(lead.title)}</a>
+      ${lead.description ? `<p class="lead-story-desc">${esc(lead.description)}</p>` : ''}
+      <div class="lead-story-meta">${timeAgo(lead.published_at)}</div>
+    </div>`;
+
+  const gridHtml = grid.length >= 2 ? `
+    <div class="three-col">
+      ${grid.map(a => storyCardHtml(a)).join('')}
+    </div>` : '';
+
+  return `
+    <div class="cat-section">
+      <div class="section-header">
+        <div class="section-header-left">
+          <span class="section-label" style="background:${color}">${label}</span>
+          <span class="section-h2">${label}</span>
+        </div>
+        <a href="/news/category/${cat}" class="see-all">See all →</a>
+      </div>
+      ${leadPlusTwo}
+      ${gridHtml}
+    </div>`;
+}
+
 async function newsIndex(env, category = null) {
   let articles = [];
-  let categories = [];
   try {
-    const catQ = category 
-      ? env.DB.prepare("SELECT * FROM news WHERE status='live' AND category=? ORDER BY published_at DESC LIMIT 50").bind(category)
-      : env.DB.prepare("SELECT * FROM news WHERE status='live' ORDER BY published_at DESC LIMIT 50");
-    const result = await catQ.all();
+    const query = category
+      ? env.DB.prepare("SELECT id,slug,title,description,lede,category,published_at FROM news WHERE status='live' AND category=? ORDER BY published_at DESC LIMIT 60").bind(category)
+      : env.DB.prepare("SELECT id,slug,title,description,lede,category,published_at FROM news WHERE status='live' ORDER BY published_at DESC LIMIT 60");
+    const result = await query.all();
     articles = result?.results || [];
-    const catResult = await env.DB.prepare("SELECT category, COUNT(*) as cnt FROM news WHERE status='live' GROUP BY category ORDER BY cnt DESC").all();
-    categories = catResult?.results || [];
   } catch (e) { console.log('❌ newsIndex error:', e.message, e.stack); }
 
-  const catIcons = { us: '🇺🇸', world: '🌍', politics: '🏛️', business: '💼', health: '🏥', entertainment: '🎬', travel: '✈️', sports: '⚽', science: '🔬', climate: '🌱', tech: '💻' };
+  // ── Category page ──
+  if (category) {
+    const lead = articles[0];
+    const two = articles.slice(1, 3);
+    const rest = articles.slice(3);
+    const color = catColor(category);
+    const label = catLabel(category);
 
-  const catTabsHtml = categories.map(c => 
-    `<a href="/news/category/${c.category}" class="flex-shrink-0 px-3 py-1.5 rounded-full text-xs font-medium ${category === c.category ? 'bg-accent text-white' : 'bg-surface border border-surface-border text-gray-400 hover:bg-accent/10 hover:text-white'} transition-all">
-      ${catIcons[c.category] || '📰'} ${c.category.charAt(0).toUpperCase() + c.category.slice(1)} (${c.cnt})
-    </a>`
-  ).join('');
+    const body = articles.length === 0
+      ? `<div class="cat-page-header">
+           <h1 class="cat-page-title">${label}</h1>
+         </div>
+         <p style="color:var(--ink-light);padding:48px 0;text-align:center">No articles yet — check back soon.</p>`
+      : `<div class="cat-page-header">
+           <div style="margin-bottom:8px"><span class="section-label" style="background:${color}">${label}</span></div>
+           <h1 class="cat-page-title">${label}</h1>
+           <div class="cat-page-count">${articles.length} article${articles.length !== 1 ? 's' : ''}</div>
+         </div>
+         ${articles.length >= 2 ? `
+         <div class="lead-plus-two" style="margin-bottom:28px">
+           <div>
+             <a href="/news/${lead.slug}" class="lead-story-title">${esc(lead.title)}</a>
+             ${lead.description ? `<p class="lead-story-desc">${esc(lead.description)}</p>` : ''}
+             <div class="lead-story-meta">${timeAgo(lead.published_at)}</div>
+           </div>
+           <div class="two-stack">
+             ${two.map(a => `
+               <div class="two-stack-item">
+                 <a href="/news/${a.slug}" class="two-stack-title">${esc(a.title)}</a>
+                 <div class="two-stack-meta">${timeAgo(a.published_at)}</div>
+               </div>`).join('')}
+           </div>
+         </div>` : `
+         <div style="margin-bottom:28px">
+           <a href="/news/${lead.slug}" class="lead-story-title">${esc(lead.title)}</a>
+           ${lead.description ? `<p class="lead-story-desc">${esc(lead.description)}</p>` : ''}
+           <div class="lead-story-meta">${timeAgo(lead.published_at)}</div>
+         </div>`}
+         ${rest.length > 0 ? `
+         <div class="three-col" style="border-top:1px solid var(--border-light);padding-top:20px">
+           ${rest.map(a => storyCardHtml(a)).join('')}
+         </div>` : ''}`;
 
-  const articlesHtml = articles.map(a => {
-    const date = timeAgo(a.published_at);
-    return `
-      <a href="/news/${a.slug}" class="group block bg-surface border border-surface-border rounded-xl overflow-hidden hover:border-accent/30 transition-all">
-        <div class="w-full h-40 bg-gradient-to-br ${({'world':'from-blue-900 to-blue-700','politics':'from-purple-900 to-purple-700','business':'from-emerald-900 to-emerald-700','health':'from-red-900 to-red-700','sports':'from-orange-900 to-orange-700','entertainment':'from-pink-900 to-pink-700','tech':'from-cyan-900 to-cyan-700','science':'from-indigo-900 to-indigo-700','climate':'from-green-900 to-green-700','travel':'from-amber-900 to-amber-700','us':'from-slate-900 to-slate-700'})[a.category] || 'from-gray-900 to-gray-700'} flex items-center justify-center"><span class="text-3xl font-black tracking-widest text-white/20">${(a.category || 'news').toUpperCase()}</span></div>
-        <div class="p-4">
-          <div class="flex items-center gap-2 text-xs text-gray-500 mb-2">
-            <span class="capitalize">${a.category}</span>
-            <span>·</span>
-            <span>${date}</span>
-          </div>
-          <h3 class="text-sm font-bold text-white group-hover:text-accent transition-colors mb-1 line-clamp-2">${esc(a.title)}</h3>
-          <p class="text-xs text-gray-500 line-clamp-2">${esc(a.description || '')}</p>
+    return new Response(layout({
+      title: `${label} News | GAB.AE`,
+      description: `Latest ${label} news, breaking stories, and in-depth analysis.`,
+      canonical: `https://gab.ae/news/category/${category}`,
+      activeNav: category,
+      body,
+    }), { headers: { 'content-type': 'text/html;charset=UTF-8' } });
+  }
+
+  // ── Homepage ──
+  if (articles.length === 0) {
+    return new Response(layout({
+      title: 'Latest News & Analysis | GAB.AE',
+      description: 'Breaking news and in-depth analysis across business, tech, world affairs, health, science, and entertainment.',
+      canonical: 'https://gab.ae/',
+      activeNav: 'home',
+      body: '<p style="color:var(--ink-light);padding:80px 0;text-align:center">No articles yet — check back soon.</p>',
+    }), { headers: { 'content-type': 'text/html;charset=UTF-8' } });
+  }
+
+  const hero = articles[0];
+  const sidebar = articles.slice(1, 4);
+  const remaining = articles.slice(4);
+
+  // Group remaining by category, preserving insertion order
+  const byCategory = new Map();
+  for (const a of remaining) {
+    if (!byCategory.has(a.category)) byCategory.set(a.category, []);
+    byCategory.get(a.category).push(a);
+  }
+
+  // Trending: top 8 categories by article count
+  const catCounts = new Map();
+  for (const a of articles) catCounts.set(a.category, (catCounts.get(a.category) || 0) + 1);
+  const trendingCats = [...catCounts.entries()].sort((a, b) => b[1] - a[1]).slice(0, 8).map(([cat]) => cat);
+
+  const heroColor = catColor(hero.category);
+  const heroLabel = catLabel(hero.category);
+
+  const heroHtml = `
+    <div class="hero-section">
+      <div class="hero-grid">
+        <div class="hero-main">
+          <span class="hero-cat-label" style="background:${heroColor}">${heroLabel}</span>
+          <a href="/news/${hero.slug}" class="hero-headline">${esc(hero.title)}</a>
+          ${hero.lede ? `<p class="hero-deck">${esc(hero.lede)}</p>` : hero.description ? `<p class="hero-deck">${esc(hero.description)}</p>` : ''}
+          <div class="hero-meta">${timeAgo(hero.published_at)}</div>
         </div>
-      </a>`;
-  }).join('');
+        <div class="hero-sidebar">
+          ${sidebar.map(a => `
+            <div class="sidebar-story">
+              <span class="sidebar-story-cat" style="background:${catColor(a.category)}">${catLabel(a.category)}</span>
+              <a href="/news/${a.slug}" class="sidebar-story-title">${esc(a.title)}</a>
+              <div class="sidebar-story-meta">${timeAgo(a.published_at)}</div>
+            </div>`).join('')}
+        </div>
+      </div>
+    </div>`;
 
-  const heading = category ? `${catIcons[category] || '📰'} ${category.charAt(0).toUpperCase() + category.slice(1)} News` : '📰 Latest News';
+  const trendingHtml = trendingCats.length ? `
+    <div class="trending-bar">
+      <div class="trending-inner">
+        <span class="trending-label">Trending</span>
+        <div style="display:flex;gap:8px;flex-wrap:wrap">
+          ${trendingCats.map(cat => `<a href="/news/category/${cat}" class="trending-tag">${catLabel(cat)}</a>`).join('')}
+        </div>
+      </div>
+    </div>` : '';
 
-  const body = `
-    <div class="mb-6">
-      <h1 class="text-2xl font-bold text-white mb-2">${heading}</h1>
-      <p class="text-gray-400 text-sm">Breaking stories and analysis</p>
-    </div>
-    <div class="flex gap-2 overflow-x-auto pb-2 mb-6 scrollbar-hide">
-      <a href="/" class="flex-shrink-0 px-3 py-1.5 rounded-full text-xs font-medium ${!category ? 'bg-accent text-white' : 'bg-surface border border-surface-border text-gray-400 hover:bg-accent/10 hover:text-white'} transition-all">All</a>
-      ${catTabsHtml}
-    </div>
-    ${articles.length ? `<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">${articlesHtml}</div>` : '<p class="text-gray-500 text-center py-12">No articles yet — check back soon.</p>'}
-    <style>.line-clamp-2{overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;}.scrollbar-hide::-webkit-scrollbar{display:none;}.scrollbar-hide{-ms-overflow-style:none;scrollbar-width:none;}</style>
-  `;
+  const categorySectionsHtml = [...byCategory.entries()]
+    .map(([cat, arts]) => catSectionHtml(arts, cat))
+    .join('');
+
+  const body = heroHtml + trendingHtml + categorySectionsHtml;
 
   return new Response(layout({
-    title: category ? `${category.charAt(0).toUpperCase() + category.slice(1)} News | gab.ae` : 'Latest News & Analysis | gab.ae',
-    description: category ? `Latest ${category} news, breaking stories, and in-depth analysis. Updated every 5 minutes with AI-powered summaries and expert context.` : 'Latest news, breaking stories, and in-depth analysis across business, tech, world affairs, health, science, and entertainment. Updated every 5 minutes.',
-    canonical: category ? `https://gab.ae/news/category/${category}` : 'https://gab.ae/',
+    title: 'Latest News & Analysis | GAB.AE',
+    description: 'Breaking news and in-depth analysis across business, tech, world affairs, health, science, and entertainment.',
+    canonical: 'https://gab.ae/',
+    activeNav: 'home',
     body,
   }), { headers: { 'content-type': 'text/html;charset=UTF-8' } });
 }

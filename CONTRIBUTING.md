@@ -13,7 +13,6 @@ Want to change...
 ├── The /news index?                     → src/worker.js → newsIndex()
 ├── URL routing?                         → src/worker.js → fetch() handler
 ├── Cron schedule/frequency?             → src/worker.js → scheduled() handler
-├── How seed pages are generated?        → src/llm-seed-pages.js
 ├── How news articles are generated?     → src/llm-news.js
 ├── How pages get upgraded?              → src/llm-rework.js
 ├── Which LLM models are used?           → src/llm-client.js (FALLBACK_CHAIN)
@@ -39,7 +38,7 @@ Want to change...
 2. Import in `src/worker.js`
 3. Call it in the `scheduled()` handler with appropriate frequency gate
 4. Example frequency gates:
-   - Every minute: no gate (just call it)
+   - Every 5 minutes (every tick): no gate (just call it)
    - Every hour: `if (nowMin < 5) { ... }`
    - Daily at 4 AM UTC: `if (nowHour === 4 && nowMin < 5) { ... }`
 
