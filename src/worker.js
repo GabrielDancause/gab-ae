@@ -954,7 +954,7 @@ async function newsIndex(env, category = null) {
   if (articles.length === 0) {
     return new Response(layout({
       title: 'Latest News & Analysis | GAB.AE',
-      description: 'Breaking news and in-depth analysis across business, tech, world affairs, health, science, and entertainment.',
+      description: 'US news and in-depth analysis across politics, business, tech, health, science, sports, and entertainment.',
       canonical: 'https://gab.ae/',
       activeNav: 'home',
       body: '<p style="color:var(--ink-light);padding:80px 0;text-align:center">No articles yet — check back soon.</p>',
@@ -1018,7 +1018,7 @@ async function newsIndex(env, category = null) {
 
   return new Response(layout({
     title: 'Latest News & Analysis | GAB.AE',
-    description: 'Breaking news and in-depth analysis across business, tech, world affairs, health, science, and entertainment.',
+    description: 'US news and in-depth analysis across politics, business, tech, health, science, sports, and entertainment.',
     canonical: 'https://gab.ae/',
     activeNav: 'home',
     body,

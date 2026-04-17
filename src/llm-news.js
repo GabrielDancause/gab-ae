@@ -1,39 +1,41 @@
 /**
  * LLM News Generator — Automated article creation from RSS feeds
- * 
+ *
  * HOW IT WORKS:
- * 1. Fetches 12 RSS feeds (NPR, BBC, NYT, CNBC, TechCrunch, etc.)
+ * 1. Fetches 14 RSS feeds (US-centric: NPR, ABC, CBS, Fox, Politico, The Hill, CNBC, etc.)
  * 2. Filters: dedup against existing slugs/URLs, skip UK domestic, skip paywalled
  * 3. Picks a random story from top 5 candidates
  * 4. Fetches full article text from source URL (paragraph extraction)
  * 5. Sends to LLM via OpenRouter → gets structured JSON (title, sections, FAQs)
  * 6. Inserts into D1 `news` table with status='live'
- * 
- * SCHEDULE: Every minute via worker.js cron
+ *
+ * SCHEDULE: Every 5 minutes via worker.js cron
  * RATE: 1 article per run (skips if no new candidates)
- * 
+ *
  * ARTICLE STRUCTURE in D1:
  *   sections: [{heading, paragraphs}]  — rendered by engines/news.js
  *   faqs: [{q, a}]                     — rendered as FAQ section
  *   sources: [{name, url}]             — attribution
- * 
- * CATEGORIES: business, world, politics, tech, health, science, travel, sports, entertainment
- * 
+ *
+ * CATEGORIES: us, business, politics, tech, health, science, travel, sports, entertainment, world
+ *
  * Uses callLLM() from llm-client.js for the API call.
  */
 
 // ─── RSS Feeds ───
 const FEEDS = [
-  ['NPR', 'https://feeds.npr.org/1001/rss.xml', null],
-  ['BBC World', 'https://feeds.bbci.co.uk/news/world/rss.xml', null],
-  ['BBC Business', 'https://feeds.bbci.co.uk/news/business/rss.xml', 'business'],
-  ['NYT World', 'https://rss.nytimes.com/services/xml/rss/nyt/World.xml', null],
-  ['NYT Business', 'https://rss.nytimes.com/services/xml/rss/nyt/Business.xml', 'business'],
+  ['NPR', 'https://feeds.npr.org/1001/rss.xml', 'us'],
+  ['NPR Politics', 'https://feeds.npr.org/1014/rss.xml', 'politics'],
+  ['NPR Health', 'https://feeds.npr.org/1128/rss.xml', 'health'],
+  ['ABC News', 'https://abcnews.go.com/abcnews/topstories', 'us'],
+  ['CBS News', 'https://www.cbsnews.com/latest/rss/main', 'us'],
+  ['Fox News', 'https://moxie.foxnews.com/google-publisher/latest.xml', 'us'],
+  ['Politico', 'https://www.politico.com/rss/politicopicks.xml', 'politics'],
+  ['The Hill', 'https://thehill.com/rss/syndicator/19109/feed/', 'politics'],
   ['CNBC Top', 'https://search.cnbc.com/rs/search/combinedcms/view.xml?partnerId=wrss01&id=100003114', 'business'],
   ['TechCrunch', 'https://techcrunch.com/feed/', 'tech'],
   ['Ars Technica', 'https://feeds.arstechnica.com/arstechnica/index', 'tech'],
   ['Science Daily', 'https://www.sciencedaily.com/rss/all.xml', 'science'],
-  ['NPR Health', 'https://feeds.npr.org/1128/rss.xml', 'health'],
   ['ESPN', 'https://www.espn.com/espn/rss/news', 'sports'],
   ['Skift', 'https://skift.com/feed/', 'travel'],
 ];
@@ -170,12 +172,13 @@ export async function llmNews(env) {
   // 5. Fetch source article text
   const sourceText = await fetchArticleText(story.link);
 
-  // 6. Call Haiku to write the article
-  const systemPrompt = `You are a professional news journalist writing for gab.ae, a news and tools website. Write factual, clear articles. Never fabricate quotes or data — if you don't know, say so. null over fake data, always.`;
+  // 6. Call LLM to write the article
+  const systemPrompt = `You are a professional news journalist writing for gab.ae, a US-centric news website. Write factual, clear articles aimed at an American audience. Never fabricate quotes or data — if you don't know, say so. null over fake data, always.`;
 
   const userPrompt = `Write a news article based on this source. Return ONLY valid JSON, no markdown fences.
 
 SOURCE: ${story.source}
+CATEGORY HINT: ${story.hintCategory || 'us'}
 TITLE: ${story.title}
 DESCRIPTION: ${story.description}
 ARTICLE TEXT:
@@ -183,9 +186,9 @@ ${sourceText.slice(0, 3000)}
 
 Return this exact JSON structure:
 {
-  "title": "compelling headline, 60-80 chars",
-  "description": "meta description, 120-155 chars",
-  "category": "one of: business, world, politics, tech, health, science, travel, sports, entertainment",
+  "title": "compelling headline, STRICTLY 40-58 characters (Google truncates at 60!)",
+  "description": "meta description, STRICTLY 70-155 characters",
+  "category": "one of: us, business, politics, tech, health, science, travel, sports, entertainment, world — use 'us' for US domestic news, 'world' only for purely international stories with no US angle",
   "lede": "opening sentence that hooks the reader, 100-200 chars",
   "sections": [
     {"heading": "What Happened", "paragraphs": ["paragraph 1", "paragraph 2", "paragraph 3"]},
@@ -219,10 +222,25 @@ Rules:
     return;
   }
 
-  // 7. Validate
+  // 7. Validate structure and enforce SEO constraints
   if (!article.title || !article.sections || article.sections.length < 2) {
     console.log('❌ Invalid article structure');
     return;
+  }
+  // Enforce title ≤ 60 chars
+  if (article.title.length > 60) {
+    const cut = article.title.slice(0, 59);
+    const sp = cut.lastIndexOf(' ');
+    article.title = (sp > 24 ? cut.slice(0, sp) : cut) + '…';
+  }
+  // Enforce description 70-155 chars
+  if (article.description && article.description.length > 155) {
+    const cut = article.description.slice(0, 152);
+    const sp = cut.lastIndexOf(' ');
+    article.description = (sp > 60 ? cut.slice(0, sp) : cut) + '…';
+  }
+  if (!article.description || article.description.length < 50) {
+    article.description = (article.lede || article.title + '. Latest news and analysis.').slice(0, 155);
   }
 
   // 8. Build slug and internal links
@@ -251,7 +269,7 @@ Rules:
     slug,
     article.title,
     article.description || '',
-    article.category || 'world',
+    article.category || 'us',
     article.lede || '',
     JSON.stringify(article.sections),
     JSON.stringify(article.tags || []),
