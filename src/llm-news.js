@@ -72,16 +72,21 @@ function parseRssItems(xml, source, hintCategory) {
   return items.slice(0, 10);
 }
 
-// ─── Fetch article text ───
-async function fetchArticleText(url) {
+// ─── Fetch article text + og:image ───
+async function fetchArticleData(url) {
   try {
     const resp = await fetch(url, {
       headers: { 'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36' },
       signal: AbortSignal.timeout(8000),
     });
-    if (!resp.ok) return '';
+    if (!resp.ok) return { text: '', image: null };
     const html = await resp.text();
-    // Extract paragraph text
+
+    const ogImage = (
+      html.match(/<meta[^>]+property=["']og:image["'][^>]+content=["']([^"']+)["']/i) ||
+      html.match(/<meta[^>]+content=["']([^"']+)["'][^>]+property=["']og:image["']/i)
+    )?.[1] || null;
+
     const paragraphs = [];
     const pRegex = /<p[^>]*>([\s\S]*?)<\/p>/gi;
     let m;
@@ -91,10 +96,34 @@ async function fetchArticleText(url) {
         paragraphs.push(text);
       }
     }
-    return paragraphs.slice(0, 12).join('\n\n');
+    return { text: paragraphs.slice(0, 12).join('\n\n'), image: ogImage };
   } catch {
-    return '';
+    return { text: '', image: null };
   }
+}
+
+// ─── AI image via Pollinations.ai (free, no API key, FLUX model) ───
+const CAT_IMAGE_HINTS = {
+  us: 'American cityscape, USA landmark',
+  world: 'global news, international scene',
+  politics: 'government building, capitol, politics',
+  business: 'business district, financial market, economy',
+  tech: 'technology, digital innovation, modern devices',
+  health: 'healthcare, medicine, hospital, wellness',
+  science: 'scientific research, laboratory, discovery',
+  sports: 'sports action, athletic competition, stadium',
+  entertainment: 'entertainment venue, media, performance',
+  travel: 'travel destination, landscape, journey',
+  climate: 'nature, environment, climate landscape',
+};
+
+function buildImageUrl(title, category, slug) {
+  // Deterministic seed so the same article always gets the same image
+  let seed = 0;
+  for (let i = 0; i < slug.length; i++) seed = (seed * 31 + slug.charCodeAt(i)) & 0x7fffffff;
+  const hint = CAT_IMAGE_HINTS[category] || 'news scene';
+  const prompt = `${title}, ${hint}, professional photojournalism, editorial photography, high quality, cinematic`;
+  return `https://image.pollinations.ai/prompt/${encodeURIComponent(prompt)}?width=1200&height=675&nologo=true&seed=${seed}&model=flux`;
 }
 
 // ─── Slug generation ───
@@ -110,7 +139,8 @@ function findInternalLinks(title, description) {
   const text = (title + ' ' + description).toLowerCase();
   const links = [];
   for (const [keyword, path] of Object.entries(INTERNAL_LINKS)) {
-    if (text.includes(keyword)) links.push({ text: keyword, href: path });
+    const re = new RegExp(`\\b${keyword.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}\\b`);
+    if (re.test(text)) links.push({ text: keyword, href: path });
   }
   return links.slice(0, 3);
 }
@@ -169,8 +199,9 @@ export async function llmNews(env) {
   const story = top[Math.floor(Math.random() * top.length)];
   console.log(`📰 Selected: ${story.title.slice(0, 80)}`);
 
-  // 5. Fetch source article text
-  const sourceText = await fetchArticleText(story.link);
+  // 5. Fetch source article text + image
+  const { text: sourceText, image: fetchedImage } = await fetchArticleData(story.link);
+  const sourceImage = story.image || fetchedImage || null;
 
   // 6. Call LLM to write the article
   const systemPrompt = `You are a professional news journalist writing for gab.ae, a US-centric news website. Write factual, clear articles aimed at an American audience. Never fabricate quotes or data — if you don't know, say so. null over fake data, always.`;
@@ -190,6 +221,9 @@ Return this exact JSON structure:
   "description": "meta description, STRICTLY 70-155 characters",
   "category": "one of: us, business, politics, tech, health, science, travel, sports, entertainment, world — use 'us' for US domestic news, 'world' only for purely international stories with no US angle",
   "lede": "opening sentence that hooks the reader, 100-200 chars",
+  "takeaways": ["one-sentence key point", "one-sentence key point", "one-sentence key point"],
+  "key_stat": {"value": "a striking number or short phrase, e.g. '$4.2B' or '23 states'", "label": "brief context for the number, e.g. 'in federal funding cut'"},
+  "pull_quote": "a compelling sentence from the article body — the single most quotable line, 80-160 chars",
   "sections": [
     {"heading": "What Happened", "paragraphs": ["paragraph 1", "paragraph 2", "paragraph 3"]},
     {"heading": "Why It Matters", "paragraphs": ["paragraph 1", "paragraph 2"]},
@@ -252,6 +286,9 @@ Rules:
 
   const internalLinks = findInternalLinks(article.title, article.description || '');
 
+  // Resolve final image: source og:image → Pollinations.ai fallback
+  const imageUrl = sourceImage || buildImageUrl(article.title, article.category || 'us', slug);
+
   // Add explore-more section if we have internal links
   if (internalLinks.length > 0) {
     const linksHtml = internalLinks.map(l => `<a href="${l.href}">${l.text}</a>`).join(' · ');
@@ -263,19 +300,23 @@ Rules:
 
   // 9. Insert into D1
   await env.DB.prepare(
-    `INSERT OR IGNORE INTO news (slug, title, description, category, lede, sections, tags, sources, faqs, source_url, published_at, updated_at, status)
-     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, datetime('now'), datetime('now'), 'live')`
+    `INSERT OR IGNORE INTO news (slug, title, description, category, lede, takeaways, key_stat, pull_quote, sections, tags, sources, faqs, source_url, image, published_at, updated_at, status)
+     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, datetime('now'), datetime('now'), 'live')`
   ).bind(
     slug,
     article.title,
     article.description || '',
     article.category || 'us',
     article.lede || '',
+    article.takeaways ? JSON.stringify(article.takeaways) : null,
+    article.key_stat ? JSON.stringify(article.key_stat) : null,
+    article.pull_quote || null,
     JSON.stringify(article.sections),
     JSON.stringify(article.tags || []),
     JSON.stringify([{ name: story.source, url: story.link }]),
     JSON.stringify(article.faqs || []),
     story.link,
+    imageUrl,
   ).run();
 
   console.log(`✅ Published: ${slug} (${article.category})`);
