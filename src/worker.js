@@ -37,8 +37,10 @@
 import { layout, esc } from './templates/layout.js';
 import { nookieLayout, nkEsc } from './templates/nookie-layout.js';
 import { renderCalculator } from './engines/calculator.js';
-import { renderNews } from './engines/news.js';
-import { renderNookieNews } from './engines/nookie-news.js';
+// import { renderNews } from './engines/news.js';        // Phase 3: replaced by render-engine.js
+// import { renderNookieNews } from './engines/nookie-news.js'; // Phase 3: replaced by render-engine.js
+import { renderArticle } from './render-engine.js';
+import { getSiteById } from './sites.js';
 import { renderChangelog } from './engines/changelog.js';
 import { upgradeTrigger } from './upgrade-trigger.js';
 import { llmNews } from './llm-news.js';
@@ -578,7 +580,7 @@ Rules:
         const article = await env.DB.prepare("SELECT * FROM news WHERE slug = ? AND status = 'live'").bind(newsMatch[1]).first();
         if (article) {
           ctx.waitUntil(trackView(env, 'news/' + newsMatch[1]));
-          const html = renderNews(article);
+          const html = renderArticle(article, getSiteById('gab-ae'));
           return new Response(html, { headers: { 'content-type': 'text/html;charset=UTF-8', 'cache-control': 'public, max-age=300' } });
         }
       } catch (e) {}
@@ -2197,7 +2199,7 @@ async function nookieArticlePage(env, slug, basePath = '/thenookienook') {
   try {
     const article = await env.DB.prepare("SELECT * FROM news WHERE slug = ? AND site = 'thenookienook' AND status = 'live'").bind(slug).first();
     if (article) {
-      const html = renderNookieNews(article, basePath);
+      const html = renderArticle(article, getSiteById('thenookienook'), basePath);
       return new Response(html, { headers: { 'content-type': 'text/html;charset=UTF-8', 'cache-control': 'public, max-age=300' } });
     }
   } catch (e) { console.log('❌ nookieArticlePage error:', e.message); }
