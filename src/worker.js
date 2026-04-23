@@ -40,11 +40,12 @@ import { renderCalculator } from './engines/calculator.js';
 // import { renderNews } from './engines/news.js';        // Phase 3: replaced by render-engine.js
 // import { renderNookieNews } from './engines/nookie-news.js'; // Phase 3: replaced by render-engine.js
 import { renderArticle } from './render-engine.js';
-import { getSiteById } from './sites.js';
+import { getSiteById, SITES } from './sites.js';
 import { renderChangelog } from './engines/changelog.js';
 import { upgradeTrigger } from './upgrade-trigger.js';
-import { llmNews } from './llm-news.js';
-import { llmNookieNews } from './llm-nookie-news.js';
+// import { llmNews } from './llm-news.js';        // Phase 4: replaced by llm-engine.js
+// import { llmNookieNews } from './llm-nookie-news.js'; // Phase 4: replaced by llm-engine.js
+import { generateArticle } from './llm-engine.js';
 import { llmSeedPages, detectIntent } from './llm-seed-pages.js';
 import { llmRework } from './llm-rework.js';
 import { callLLM } from './llm-client.js';
@@ -82,25 +83,20 @@ export default {
   // Each pipeline has its own frequency gate inside.
   // ═══════════════════════════════════════════════════════════════
   async scheduled(event, env, ctx) {
-    // LLM News — every tick (cron fires every 5 minutes)
-    try {
-      await llmNews(env);
-    } catch (e) {
-      console.log(`❌ LLM News error: ${e.message}`);
-    }
-
-    // Nookie News — every 15 minutes
-    if (new Date().getUTCMinutes() % 15 === 0) {
-      try {
-        await llmNookieNews(env);
-      } catch (e) {
-        console.log(`❌ Nookie News error: ${e.message}`);
+    // Article generation — loop over all sites, each with its own frequency gate
+    const nowMin = new Date().getUTCMinutes();
+    for (const site of SITES) {
+      if (nowMin % site.cronModulo === site.cronOffset) {
+        try {
+          await generateArticle(env, site);
+        } catch (e) {
+          console.log(`❌ [${site.id}] generateArticle error: ${e.message}`);
+        }
       }
     }
 
     // Prune view events older than 24h (every hour)
     const nowHour = new Date().getUTCHours();
-    const nowMin = new Date().getUTCMinutes();
     if (nowMin < 5) {
       await pruneOldViews(env);
     }
@@ -175,13 +171,14 @@ export default {
 
     // Admin: trigger news generation manually
     if (path === '/api/admin/news' && request.method === 'POST') {
-      ctx.waitUntil(llmNews(env).then(r => console.log('✅ News result:', JSON.stringify(r))).catch(e => console.log('❌ News error:', e.message)));
-      return new Response(JSON.stringify({ message: 'News triggered in background — check logs' }), { headers: { 'content-type': 'application/json' } });
+      const site = getSiteById(url.searchParams.get('site') || 'gab-ae');
+      ctx.waitUntil(generateArticle(env, site).then(r => console.log('✅ Result:', JSON.stringify(r))).catch(e => console.log('❌ Error:', e.message)));
+      return new Response(JSON.stringify({ message: `${site.id} triggered in background — check logs` }), { headers: { 'content-type': 'application/json' } });
     }
 
-    // Admin: trigger nookie news generation manually
+    // Admin: trigger nookie news generation manually (backward-compat alias)
     if (path === '/api/admin/nookie-news' && request.method === 'POST') {
-      const result = await llmNookieNews(env).catch(e => ({ error: e.message }));
+      const result = await generateArticle(env, getSiteById('thenookienook')).catch(e => ({ error: e.message }));
       return new Response(JSON.stringify(result || { skipped: true }), { headers: { 'content-type': 'application/json' } });
     }
 
