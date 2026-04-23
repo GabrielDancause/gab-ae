@@ -6,7 +6,8 @@
  * 
  * Called by worker.js when a request matches /updates.
  */
-import { layout, esc } from '../templates/layout.js';
+import { siteLayout, esc } from '../templates/site-layout.js';
+import { getSiteById } from '../sites.js';
 
 const ACTION_LABELS = {
   upgrade: { label: 'Upgraded', color: 'text-emerald-400', bg: 'bg-emerald-400/10' },
@@ -84,7 +85,8 @@ export function renderChangelog(entries) {
     "url": "https://gab.ae/updates",
   };
 
-  return layout({
+  return siteLayout({
+    site: getSiteById('gab-ae'),
     title: 'Site Updates | GAB',
     description: 'What\'s been built, upgraded, and reworked across the GAB network.',
     canonical: 'https://gab.ae/updates',

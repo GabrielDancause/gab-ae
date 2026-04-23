@@ -34,17 +34,13 @@
  *   ANTHROPIC_API_KEY    → Fallback for LLM calls
  */
 
-import { layout, esc } from './templates/layout.js';
-import { nookieLayout, nkEsc } from './templates/nookie-layout.js';
+import { siteLayout, esc } from './templates/site-layout.js';
+// layout.js and nookie-layout.js replaced by site-layout.js (Phase 5)
 import { renderCalculator } from './engines/calculator.js';
-// import { renderNews } from './engines/news.js';        // Phase 3: replaced by render-engine.js
-// import { renderNookieNews } from './engines/nookie-news.js'; // Phase 3: replaced by render-engine.js
 import { renderArticle } from './render-engine.js';
 import { getSiteById, SITES } from './sites.js';
 import { renderChangelog } from './engines/changelog.js';
 import { upgradeTrigger } from './upgrade-trigger.js';
-// import { llmNews } from './llm-news.js';        // Phase 4: replaced by llm-engine.js
-// import { llmNookieNews } from './llm-nookie-news.js'; // Phase 4: replaced by llm-engine.js
 import { generateArticle } from './llm-engine.js';
 import { llmSeedPages, detectIntent } from './llm-seed-pages.js';
 import { llmRework } from './llm-rework.js';
@@ -58,6 +54,9 @@ import { scanAndFixLinks } from './link-scanner.js';
 const ENGINES = {
   calculator: renderCalculator,
 };
+
+const gabAeSite   = getSiteById('gab-ae');
+const nookieSite  = getSiteById('thenookienook');
 
 // ═══════════════════════════════════════════════════════════════
 // SECTION: Utilities
@@ -160,7 +159,7 @@ export default {
       }
       if (nkPath === '/sitemap.xml') return nookieSitemap(env);
       // Fallback: 404 within nookie brand
-      return new Response(nookieLayout({ title: 'Page Not Found | The Nookie Nook', description: 'This page could not be found.', canonical: 'https://thenookienook.com/', basePath: '', body: '<p style="text-align:center;padding:80px 0;color:var(--nk-ink-light)">Page not found. <a href="/" style="color:var(--nk-accent)">Return home</a></p>' }), { status: 404, headers: { 'content-type': 'text/html;charset=UTF-8' } });
+      return new Response(siteLayout({ site: nookieSite, title: 'Page Not Found | The Nookie Nook', description: 'This page could not be found.', canonical: 'https://thenookienook.com/', basePath: '', body: '<p style="text-align:center;padding:80px 0;color:var(--nk-ink-light)">Page not found. <a href="/" style="color:var(--nk-accent)">Return home</a></p>' }), { status: 404, headers: { 'content-type': 'text/html;charset=UTF-8' } });
     }
 
     // Admin: trigger rework manually (secret path) — runs in background via waitUntil
@@ -671,7 +670,7 @@ Rules:
       </nav>`;
       body = breadcrumb + body;
 
-      const html = layout({
+      const html = siteLayout({ site: gabAeSite,
         title: page.title,
         description: page.description,
         canonical: `https://gab.ae/${page.slug}`,
@@ -910,7 +909,7 @@ async function searchPage(env, q) {
     ? `Search results for "${q}" on GAB.AE — news, tools, and guides.`
     : 'Search news, tools, and guides on GAB.AE.';
 
-  return new Response(layout({
+  return new Response(siteLayout({ site: gabAeSite,
     title,
     description,
     canonical: `https://gab.ae/search${q ? `?q=${encodeURIComponent(q)}` : ''}`,
@@ -994,7 +993,7 @@ async function homepage(env) {
     </script>
   `;
 
-  return new Response(layout({
+  return new Response(siteLayout({ site: gabAeSite,
     title: 'gab.ae — Search',
     description: 'Free tools, news, and expert guides across finance, tech, health, travel, gaming, and more. Built by a team of humans and AI agents answering your questions.',
     canonical: 'https://gab.ae/search',
@@ -1152,7 +1151,7 @@ async function newsIndex(env, category = null, page = 1) {
          </div>` : ''}
          ${paginationHtml}`;
 
-    return new Response(layout({
+    return new Response(siteLayout({ site: gabAeSite,
       title: `${label} News${page > 1 ? ` — Page ${page}` : ''} | GAB.AE`,
       description: `Latest ${label} news, breaking stories, and in-depth analysis.`,
       canonical: `https://gab.ae${baseUrl}${page > 1 ? `?page=${page}` : ''}`,
@@ -1163,7 +1162,7 @@ async function newsIndex(env, category = null, page = 1) {
 
   // ── Homepage ──
   if (articles.length === 0) {
-    return new Response(layout({
+    return new Response(siteLayout({ site: gabAeSite,
       title: 'Latest News & Analysis | GAB.AE',
       description: 'US news and in-depth analysis across politics, business, tech, health, science, sports, and entertainment.',
       canonical: 'https://gab.ae/',
@@ -1228,7 +1227,7 @@ async function newsIndex(env, category = null, page = 1) {
 
   const body = heroHtml + trendingHtml + categorySectionsHtml;
 
-  return new Response(layout({
+  return new Response(siteLayout({ site: gabAeSite,
     title: 'Latest News & Analysis | GAB.AE',
     description: 'US news and in-depth analysis across politics, business, tech, health, science, sports, and entertainment.',
     canonical: 'https://gab.ae/',
@@ -1313,7 +1312,7 @@ async function categoryPage(env, category) {
         <div class="space-y-2">${pagesHtml}</div>
       </div>`;
 
-    const html = layout({
+    const html = siteLayout({ site: gabAeSite,
       title: `${catName} Tools | gab.ae`,
       description: `Free ${category} tools, calculators, guides, and resources. Expert-written content updated daily with data-driven insights and practical recommendations.`,
       canonical: `https://gab.ae/category/${category}`,
@@ -1471,7 +1470,7 @@ async function healthPage(env, triggered = false) {
       </div>
     `;
 
-    const html = layout({
+    const html = siteLayout({ site: gabAeSite,
       title: 'Site Health | gab.ae',
       description: 'Internal site health dashboard — broken link scanner and auto-fix log.',
       canonical: 'https://gab.ae/health',
@@ -1647,7 +1646,7 @@ async function resourcesPage(env) {
       </div>
     </div>`;
 
-  const html = layout({
+  const html = siteLayout({ site: gabAeSite,
     title: 'Resources | gab.ae',
     description: 'Free tools, calculators, expert guides, and data across finance, tech, health, travel, gaming, education, and more. 10 knowledge hubs with thousands of pages updated daily.',
     canonical: 'https://gab.ae/resources',
@@ -1665,7 +1664,7 @@ function notFound(env, path) {
       ).bind(path).run();
     } catch {}
   }
-  const html = layout({
+  const html = siteLayout({ site: gabAeSite,
     title: '404 — Not Found',
     description: 'Page not found',
     canonical: 'https://gab.ae/404',
@@ -1975,9 +1974,9 @@ function nkCatLabel(cat) { return NK_CAT_LABELS[cat] || (cat ? cat.replace(/-/g,
 function nkStoryCardHtml(a, basePath) {
   return `
     <div>
-      ${a.image ? `<a href="${basePath}/article/${a.slug}" class="nk-card-img-link"><img src="${nkEsc(a.image)}" alt="${nkEsc(a.title)}" class="nk-card-thumb" loading="lazy" width="400" height="225"></a>` : ''}
-      <a href="${basePath}/article/${a.slug}" class="nk-story-card-title">${nkEsc(a.title)}</a>
-      ${a.description ? `<p class="nk-story-card-desc">${nkEsc(a.description)}</p>` : ''}
+      ${a.image ? `<a href="${basePath}/article/${a.slug}" class="nk-card-img-link"><img src="${esc(a.image)}" alt="${esc(a.title)}" class="nk-card-thumb" loading="lazy" width="400" height="225"></a>` : ''}
+      <a href="${basePath}/article/${a.slug}" class="nk-story-card-title">${esc(a.title)}</a>
+      ${a.description ? `<p class="nk-story-card-desc">${esc(a.description)}</p>` : ''}
       <div class="nk-story-card-meta">${timeAgo(a.published_at)}</div>
     </div>`;
 }
@@ -1993,23 +1992,23 @@ function nkCatSectionHtml(catArticles, cat, basePath) {
   const leadPlusTwo = catArticles.length >= 2 ? `
     <div class="nk-lead-plus-two">
       <div>
-        ${lead.image ? `<a href="${basePath}/article/${lead.slug}" class="nk-card-img-link"><img src="${nkEsc(lead.image)}" alt="${nkEsc(lead.title)}" class="nk-lead-thumb" loading="lazy" width="600" height="338"></a>` : ''}
-        <a href="${basePath}/article/${lead.slug}" class="nk-lead-story-title">${nkEsc(lead.title)}</a>
-        ${lead.description ? `<p class="nk-lead-story-desc">${nkEsc(lead.description)}</p>` : ''}
+        ${lead.image ? `<a href="${basePath}/article/${lead.slug}" class="nk-card-img-link"><img src="${esc(lead.image)}" alt="${esc(lead.title)}" class="nk-lead-thumb" loading="lazy" width="600" height="338"></a>` : ''}
+        <a href="${basePath}/article/${lead.slug}" class="nk-lead-story-title">${esc(lead.title)}</a>
+        ${lead.description ? `<p class="nk-lead-story-desc">${esc(lead.description)}</p>` : ''}
         <div class="nk-lead-story-meta">${timeAgo(lead.published_at)}</div>
       </div>
       <div class="nk-two-stack">
         ${two.map(a => `
           <div class="nk-two-stack-item">
-            <a href="${basePath}/article/${a.slug}" class="nk-two-stack-title">${nkEsc(a.title)}</a>
+            <a href="${basePath}/article/${a.slug}" class="nk-two-stack-title">${esc(a.title)}</a>
             <div class="nk-two-stack-meta">${timeAgo(a.published_at)}</div>
           </div>`).join('')}
       </div>
     </div>` : `
     <div style="margin-bottom:20px">
-      ${lead.image ? `<a href="${basePath}/article/${lead.slug}" class="nk-card-img-link"><img src="${nkEsc(lead.image)}" alt="${nkEsc(lead.title)}" class="nk-lead-thumb" loading="lazy" width="600" height="338"></a>` : ''}
-      <a href="${basePath}/article/${lead.slug}" class="nk-lead-story-title">${nkEsc(lead.title)}</a>
-      ${lead.description ? `<p class="nk-lead-story-desc">${nkEsc(lead.description)}</p>` : ''}
+      ${lead.image ? `<a href="${basePath}/article/${lead.slug}" class="nk-card-img-link"><img src="${esc(lead.image)}" alt="${esc(lead.title)}" class="nk-lead-thumb" loading="lazy" width="600" height="338"></a>` : ''}
+      <a href="${basePath}/article/${lead.slug}" class="nk-lead-story-title">${esc(lead.title)}</a>
+      ${lead.description ? `<p class="nk-lead-story-desc">${esc(lead.description)}</p>` : ''}
       <div class="nk-lead-story-meta">${timeAgo(lead.published_at)}</div>
     </div>`;
 
@@ -2081,23 +2080,23 @@ async function nookieIndex(env, basePath = '/thenookienook', category = null, pa
          ${page === 1 && lead && two.length ? `
          <div class="nk-lead-plus-two" style="margin-bottom:28px">
            <div>
-             ${lead.image ? `<a href="${basePath}/article/${lead.slug}" class="nk-card-img-link"><img src="${nkEsc(lead.image)}" alt="${nkEsc(lead.title)}" class="nk-lead-thumb" loading="lazy" width="600" height="338"></a>` : ''}
-             <a href="${basePath}/article/${lead.slug}" class="nk-lead-story-title">${nkEsc(lead.title)}</a>
-             ${lead.description ? `<p class="nk-lead-story-desc">${nkEsc(lead.description)}</p>` : ''}
+             ${lead.image ? `<a href="${basePath}/article/${lead.slug}" class="nk-card-img-link"><img src="${esc(lead.image)}" alt="${esc(lead.title)}" class="nk-lead-thumb" loading="lazy" width="600" height="338"></a>` : ''}
+             <a href="${basePath}/article/${lead.slug}" class="nk-lead-story-title">${esc(lead.title)}</a>
+             ${lead.description ? `<p class="nk-lead-story-desc">${esc(lead.description)}</p>` : ''}
              <div class="nk-lead-story-meta">${timeAgo(lead.published_at)}</div>
            </div>
            <div class="nk-two-stack">
              ${two.map(a => `
                <div class="nk-two-stack-item">
-                 <a href="${basePath}/article/${a.slug}" class="nk-two-stack-title">${nkEsc(a.title)}</a>
+                 <a href="${basePath}/article/${a.slug}" class="nk-two-stack-title">${esc(a.title)}</a>
                  <div class="nk-two-stack-meta">${timeAgo(a.published_at)}</div>
                </div>`).join('')}
            </div>
          </div>` : page === 1 && lead ? `
          <div style="margin-bottom:28px">
-           ${lead.image ? `<a href="${basePath}/article/${lead.slug}" class="nk-card-img-link"><img src="${nkEsc(lead.image)}" alt="${nkEsc(lead.title)}" class="nk-lead-thumb" loading="lazy" width="600" height="338"></a>` : ''}
-           <a href="${basePath}/article/${lead.slug}" class="nk-lead-story-title">${nkEsc(lead.title)}</a>
-           ${lead.description ? `<p class="nk-lead-story-desc">${nkEsc(lead.description)}</p>` : ''}
+           ${lead.image ? `<a href="${basePath}/article/${lead.slug}" class="nk-card-img-link"><img src="${esc(lead.image)}" alt="${esc(lead.title)}" class="nk-lead-thumb" loading="lazy" width="600" height="338"></a>` : ''}
+           <a href="${basePath}/article/${lead.slug}" class="nk-lead-story-title">${esc(lead.title)}</a>
+           ${lead.description ? `<p class="nk-lead-story-desc">${esc(lead.description)}</p>` : ''}
            <div class="nk-lead-story-meta">${timeAgo(lead.published_at)}</div>
          </div>` : ''}
          ${(page === 1 ? rest : articles).length > 0 ? `
@@ -2106,7 +2105,7 @@ async function nookieIndex(env, basePath = '/thenookienook', category = null, pa
          </div>` : ''}
          ${paginationHtml}`;
 
-    return new Response(nookieLayout({
+    return new Response(siteLayout({ site: nookieSite,
       title: `${label}${page > 1 ? ` — Page ${page}` : ''} | The Nookie Nook`,
       description: `Evidence-based ${label} articles, guides, and educational content.`,
       canonical: `${canonicalBase}/category/${category}${page > 1 ? `?page=${page}` : ''}`,
@@ -2118,7 +2117,7 @@ async function nookieIndex(env, basePath = '/thenookienook', category = null, pa
 
   // ── Homepage ──
   if (articles.length === 0) {
-    return new Response(nookieLayout({
+    return new Response(siteLayout({ site: nookieSite,
       title: 'The Nookie Nook — Sex Education & Sexual Health',
       description: 'Evidence-based sex education, sexual health guides, and inclusive resources for everyone.',
       canonical: basePath === '' ? 'https://thenookienook.com/' : 'https://gab.ae/thenookienook',
@@ -2150,16 +2149,16 @@ async function nookieIndex(env, basePath = '/thenookienook', category = null, pa
       <div class="nk-hero-grid">
         <div class="nk-hero-main">
           <span class="nk-cat-label" style="background:${heroColor}">${heroLabel}</span>
-          ${hero.image ? `<a href="${basePath}/article/${hero.slug}" class="nk-hero-img-link"><img src="${nkEsc(hero.image)}" alt="${nkEsc(hero.title)}" class="nk-hero-img" loading="eager" width="860" height="484"></a>` : ''}
-          <a href="${basePath}/article/${hero.slug}" class="nk-hero-headline">${nkEsc(hero.title)}</a>
-          ${hero.lede ? `<p class="nk-hero-deck">${nkEsc(hero.lede)}</p>` : hero.description ? `<p class="nk-hero-deck">${nkEsc(hero.description)}</p>` : ''}
+          ${hero.image ? `<a href="${basePath}/article/${hero.slug}" class="nk-hero-img-link"><img src="${esc(hero.image)}" alt="${esc(hero.title)}" class="nk-hero-img" loading="eager" width="860" height="484"></a>` : ''}
+          <a href="${basePath}/article/${hero.slug}" class="nk-hero-headline">${esc(hero.title)}</a>
+          ${hero.lede ? `<p class="nk-hero-deck">${esc(hero.lede)}</p>` : hero.description ? `<p class="nk-hero-deck">${esc(hero.description)}</p>` : ''}
           <div class="nk-hero-meta">${timeAgo(hero.published_at)}</div>
         </div>
         <div class="nk-hero-sidebar">
           ${sidebar.map(a => `
             <div class="nk-sidebar-story">
               <span class="nk-sidebar-story-cat" style="background:${nkCatColor(a.category)}">${nkCatLabel(a.category)}</span>
-              <a href="${basePath}/article/${a.slug}" class="nk-sidebar-story-title">${nkEsc(a.title)}</a>
+              <a href="${basePath}/article/${a.slug}" class="nk-sidebar-story-title">${esc(a.title)}</a>
               <div class="nk-sidebar-story-meta">${timeAgo(a.published_at)}</div>
             </div>`).join('')}
         </div>
@@ -2182,7 +2181,7 @@ async function nookieIndex(env, basePath = '/thenookienook', category = null, pa
 
   const body = heroHtml + trendingHtml + categorySectionsHtml;
 
-  return new Response(nookieLayout({
+  return new Response(siteLayout({ site: nookieSite,
     title: 'The Nookie Nook — Sex Education & Sexual Health',
     description: 'Evidence-based sex education, sexual health guides, and inclusive resources for everyone.',
     canonical: basePath === '' ? 'https://thenookienook.com/' : 'https://gab.ae/thenookienook',
@@ -2200,7 +2199,7 @@ async function nookieArticlePage(env, slug, basePath = '/thenookienook') {
       return new Response(html, { headers: { 'content-type': 'text/html;charset=UTF-8', 'cache-control': 'public, max-age=300' } });
     }
   } catch (e) { console.log('❌ nookieArticlePage error:', e.message); }
-  return new Response(nookieLayout({
+  return new Response(siteLayout({ site: nookieSite,
     title: 'Article Not Found | The Nookie Nook',
     description: 'This article could not be found.',
     canonical: basePath === '' ? 'https://thenookienook.com/' : 'https://gab.ae/thenookienook',
@@ -2225,7 +2224,7 @@ async function nookieSearchPage(env, q, basePath = '/thenookienook') {
   const searchForm = `
     <div style="padding:32px 0 28px;border-bottom:3px double var(--nk-border)">
       <form method="GET" action="${basePath}/search" style="display:flex;gap:10px;max-width:680px;margin:0 auto">
-        <input type="search" name="q" value="${nkEsc(q)}" placeholder="Search sex ed topics, relationships, health…" autofocus
+        <input type="search" name="q" value="${esc(q)}" placeholder="Search sex ed topics, relationships, health…" autofocus
           style="flex:1;font-family:'DM Sans',sans-serif;font-size:16px;padding:12px 16px;border:2px solid var(--nk-border);border-radius:4px;background:var(--nk-paper);color:var(--nk-ink);outline:none"
           onfocus="this.style.borderColor='var(--nk-accent)'" onblur="this.style.borderColor='var(--nk-border)'">
         <button type="submit" style="font-family:'DM Sans',sans-serif;font-size:13px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;padding:12px 22px;background:var(--nk-ink);color:#fff;border:none;border-radius:4px;cursor:pointer">Search</button>
@@ -2235,23 +2234,23 @@ async function nookieSearchPage(env, q, basePath = '/thenookienook') {
   const resultsHtml = q.length < 2
     ? `<p style="padding:32px 0;color:var(--nk-ink-light);text-align:center">Enter a topic to search.</p>`
     : results.length === 0
-      ? `<p style="padding:48px 0;text-align:center;color:var(--nk-ink-light)">No results for <strong>"${nkEsc(q)}"</strong>.</p>`
-      : `<p style="font-size:12px;letter-spacing:0.12em;text-transform:uppercase;color:var(--nk-ink-light);margin:24px 0 20px">${results.length} result${results.length !== 1 ? 's' : ''} for <strong style="color:var(--nk-ink)">"${nkEsc(q)}"</strong></p>
+      ? `<p style="padding:48px 0;text-align:center;color:var(--nk-ink-light)">No results for <strong>"${esc(q)}"</strong>.</p>`
+      : `<p style="font-size:12px;letter-spacing:0.12em;text-transform:uppercase;color:var(--nk-ink-light);margin:24px 0 20px">${results.length} result${results.length !== 1 ? 's' : ''} for <strong style="color:var(--nk-ink)">"${esc(q)}"</strong></p>
          <div style="display:flex;flex-direction:column;gap:0">
            ${results.map(a => `
              <div style="display:flex;gap:16px;padding:16px 0;border-bottom:1px solid var(--nk-border-light);align-items:flex-start">
-               ${a.image ? `<a href="${basePath}/article/${a.slug}" style="flex-shrink:0"><img src="${nkEsc(a.image)}" alt="${nkEsc(a.title)}" style="width:120px;height:68px;object-fit:cover;display:block" loading="lazy"></a>` : ''}
+               ${a.image ? `<a href="${basePath}/article/${a.slug}" style="flex-shrink:0"><img src="${esc(a.image)}" alt="${esc(a.title)}" style="width:120px;height:68px;object-fit:cover;display:block" loading="lazy"></a>` : ''}
                <div style="flex:1;min-width:0">
                  <div style="margin-bottom:6px"><span style="font-size:9px;font-weight:700;letter-spacing:0.16em;text-transform:uppercase;color:#fff;background:${nkCatColor(a.category)};padding:2px 8px">${nkCatLabel(a.category)}</span></div>
-                 <a href="${basePath}/article/${a.slug}" style="font-family:'Playfair Display',Georgia,serif;font-size:18px;font-weight:700;line-height:1.3;color:var(--nk-ink);display:block;margin-bottom:5px">${nkEsc(a.title)}</a>
-                 ${(a.lede || a.description) ? `<p style="font-size:14px;color:var(--nk-ink-mid);line-height:1.5;margin-bottom:6px">${nkEsc(a.lede || a.description)}</p>` : ''}
+                 <a href="${basePath}/article/${a.slug}" style="font-family:'Playfair Display',Georgia,serif;font-size:18px;font-weight:700;line-height:1.3;color:var(--nk-ink);display:block;margin-bottom:5px">${esc(a.title)}</a>
+                 ${(a.lede || a.description) ? `<p style="font-size:14px;color:var(--nk-ink-mid);line-height:1.5;margin-bottom:6px">${esc(a.lede || a.description)}</p>` : ''}
                  <span style="font-size:11px;color:var(--nk-ink-light)">${timeAgo(a.published_at)}</span>
                </div>
              </div>`).join('')}
          </div>`;
 
   const body = `<div style="max-width:860px;margin:0 auto">${searchForm}${resultsHtml}</div>`;
-  return new Response(nookieLayout({
+  return new Response(siteLayout({ site: nookieSite,
     title: q ? `"${q}" — Search | The Nookie Nook` : 'Search | The Nookie Nook',
     description: q ? `Search results for "${q}" on The Nookie Nook.` : 'Search sex education topics on The Nookie Nook.',
     canonical: `${canonicalBase}/search${q ? `?q=${encodeURIComponent(q)}` : ''}`,
