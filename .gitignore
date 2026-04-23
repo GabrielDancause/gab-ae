@@ -1,6 +1,10 @@
 backups/
 .wrangler/
+.DS_Store
+shorts-uploader/__pycache__/
+shorts-uploader/cron.log
 
 # Shorts uploader secrets
 shorts-uploader/credentials.json
 shorts-uploader/token.json
+shorts-uploader/.env

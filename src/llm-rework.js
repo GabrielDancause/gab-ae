@@ -168,7 +168,7 @@ Return ONLY raw HTML (no markdown fences). Use these CSS classes:
 
 Structure:
 1. <div class="seed-page"> wrapper
-2. <h1> with a compelling, specific title
+2. <h1> with a compelling, specific title — MUST be under 50 characters (Google truncates after ~60 and we append " | gab.ae")
 3. <p class="seed-meta"> with "Updated ${currentDate}"
 4. Multiple <div class="seed-section"> blocks
 5. Use .seed-stat, .seed-takeaway, .seed-pros, .seed-cons where appropriate
@@ -178,6 +178,9 @@ Structure:
 Rules:
 - The rewrite must be SUBSTANTIALLY better than the original — not just reworded
 - Minimum 3000 characters (longer than original)
+- The <h1> MUST be under 50 characters — short, punchy, keyword-focused. Non-negotiable.
+- The first <p> after seed-meta MUST be 70-155 characters — it becomes the meta description
+- Use exactly ONE <h1> tag (use <h2> for all section headings)
 - ${jsAllowed ? 'JavaScript IS allowed and REQUIRED for this tool page — include <script> at the end with polished, working interactive logic. Make it delightful.' : 'No JavaScript, no script tags, no forms — content only.'}
 - null over fake data${relatedLinksSection}${relatedKeywordsPrompt}`;
 
@@ -217,14 +220,21 @@ Rules:
     }
   }
 
-  // 6. Extract new title and description
+  // 6. Extract new title and description (with SEO length enforcement)
   const h1Match = html.match(/<h1[^>]*>(.*?)<\/h1>/);
-  const title = h1Match ? h1Match[1].replace(/<[^>]+>/g, '').trim() : (page.keyword || page.slug);
-  const fullTitle = `${title} | gab.ae`;
+  let title = h1Match ? h1Match[1].replace(/<[^>]+>/g, '').trim() : (page.keyword || page.slug);
+  const titleSuffix = ' | gab.ae';
+  const maxBase = 60 - titleSuffix.length;
+  if (title.length > maxBase) {
+    const cut = title.slice(0, maxBase - 1);
+    const sp = cut.lastIndexOf(' ');
+    title = (sp > maxBase * 0.4 ? cut.slice(0, sp) : cut) + '…';
+  }
+  const fullTitle = `${title}${titleSuffix}`;
   const firstP = html.match(/<p[^>]*class="[^"]*"[^>]*>([\s\S]*?)<\/p>/);
   const extractedDesc = firstP ? firstP[1].replace(/<[^>]+>/g, '').trim().slice(0, 155) : '';
   const description = extractedDesc.length > 50
-    ? extractedDesc + (extractedDesc.length >= 155 ? '…' : '')
+    ? (extractedDesc.length > 155 ? extractedDesc.slice(0, 152) + '…' : extractedDesc)
     : `${title}. Expert guide with data, practical tips, and FAQs.`;
 
   // 7. JSON-LD

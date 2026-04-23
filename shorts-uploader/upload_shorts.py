@@ -20,11 +20,14 @@ YouTube API quota: each upload costs ~1,600 units. Default daily limit is
 from __future__ import annotations
 
 import argparse
+import json
 import os
 import re
 import sys
 import tempfile
 import time
+import urllib.request
+import urllib.error
 from pathlib import Path
 
 from google.auth.transport.requests import Request
@@ -47,6 +50,11 @@ SCOPES = [
 SCRIPT_DIR = Path(__file__).parent
 TOKEN_FILE = SCRIPT_DIR / "token.json"
 CREDENTIALS_FILE = SCRIPT_DIR / "credentials.json"
+OPENROUTER_API_KEY = os.environ.get("OPENROUTER_API_KEY", "")
+if not OPENROUTER_API_KEY and (SCRIPT_DIR / ".env").exists():
+    for line in (SCRIPT_DIR / ".env").read_text().splitlines():
+        if line.startswith("OPENROUTER_API_KEY="):
+            OPENROUTER_API_KEY = line.split("=", 1)[1].strip()
 
 VIDEO_MIME_TYPES = {
     "video/mp4", "video/quicktime", "video/x-msvideo",
@@ -137,19 +145,68 @@ def download_video(drive_service, file_id: str, dest_path: str):
     print()
 
 
+# ── LLM Title ────────────────────────────────────────────────────────────────
+
+def rewrite_title_with_llm(raw_title: str) -> str | None:
+    """Use a free OpenRouter model to craft a catchy YouTube Shorts title."""
+    if not OPENROUTER_API_KEY:
+        return None
+
+    prompt = (
+        "You are a YouTube Shorts title expert. Given a raw filename, write a single "
+        "short, catchy title for a YouTube Short (max 80 chars). The video is about sex "
+        "education and intimacy. Keep it intriguing and clickable but not clickbait. "
+        "Use 1-2 emojis max. Output ONLY the title, nothing else.\n\n"
+        f"Raw filename: {raw_title}"
+    )
+
+    payload = json.dumps({
+        "model": "openrouter/free",
+        "messages": [{"role": "user", "content": prompt}],
+        "max_tokens": 100,
+        "temperature": 0.7,
+    }).encode()
+
+    req = urllib.request.Request(
+        "https://openrouter.ai/api/v1/chat/completions",
+        data=payload,
+        headers={
+            "Authorization": f"Bearer {OPENROUTER_API_KEY}",
+            "Content-Type": "application/json",
+        },
+    )
+
+    try:
+        with urllib.request.urlopen(req, timeout=15) as resp:
+            data = json.loads(resp.read())
+            title = data["choices"][0]["message"]["content"].strip().strip('"')
+            return title[:100] if title else None
+    except Exception as e:
+        print(f"  LLM title failed ({e}), using fallback")
+        return None
+
+
+def clean_title(raw_filename: str) -> str:
+    """Clean up a filename into a usable title (regex fallback)."""
+    clean = Path(raw_filename).stem.strip()
+    clean = re.sub(r"^\d+\s*[-–—]\s*", "", clean)
+    clean = re.sub(r"^DONE[-\s]*", "", clean, flags=re.IGNORECASE)
+    # Remove everything after " - " (usually the original video title)
+    clean = re.sub(r"\s*-\s*[A-Z].*$", "", clean)
+    return clean.strip()[:100]
+
+
 # ── YouTube ───────────────────────────────────────────────────────────────────
 
 def upload_to_youtube(youtube_service, video_path: str, title: str) -> str:
     """Upload video as a Short. Returns the YouTube video ID."""
-    clean_title = Path(title).stem
-    # Strip leading number prefix like "302 - " or "DONE-"
-    clean_title = re.sub(r"^\d+\s*[-–—]\s*", "", clean_title)
-    clean_title = re.sub(r"^DONE[-\s]*", "", clean_title, flags=re.IGNORECASE)
-    clean_title = clean_title.strip()[:100]
+    clean_title_text = rewrite_title_with_llm(title) or clean_title(title)
+
+    print(f"  Title: {clean_title_text}")
 
     body = {
         "snippet": {
-            "title": clean_title,
+            "title": clean_title_text,
             "description": "#Shorts",
             "tags": ["Shorts"],
             "categoryId": "22",

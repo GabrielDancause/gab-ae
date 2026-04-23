@@ -14,6 +14,14 @@ database_id = "4e23e386-b430-4ffc-bf84-246a4e7bcdd1"
 pattern = "gab.ae/*"
 zone_name = "gab.ae"
 
+[[routes]]
+pattern = "thenookienook.com/*"
+zone_name = "thenookienook.com"
+
+[[routes]]
+pattern = "www.thenookienook.com/*"
+zone_name = "thenookienook.com"
+
 [observability]
 enabled = true
 

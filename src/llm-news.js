@@ -152,12 +152,13 @@ export async function llmNews(env) {
   const apiKey = env.OPENROUTER_API_KEY || env.ANTHROPIC_API_KEY;
   if (!apiKey) { console.log('❌ No OPENROUTER_API_KEY or ANTHROPIC_API_KEY'); return; }
 
-  // 1. Get existing slugs for dedup
-  const existingRows = await env.DB.prepare(
-    "SELECT slug, source_url FROM news ORDER BY published_at DESC LIMIT 100"
-  ).all();
-  const existingSlugs = new Set(existingRows.results.map(r => r.slug));
-  const existingUrls = new Set(existingRows.results.map(r => r.source_url).filter(Boolean));
+  // 1. Get existing data for dedup — slugs (last 500) + all source URLs (to prevent re-processing same stories)
+  const [slugRows, urlRows] = await Promise.all([
+    env.DB.prepare("SELECT slug FROM news ORDER BY published_at DESC LIMIT 500").all(),
+    env.DB.prepare("SELECT source_url FROM news WHERE source_url IS NOT NULL ORDER BY published_at DESC LIMIT 2000").all(),
+  ]);
+  const existingSlugs = new Set(slugRows.results.map(r => r.slug));
+  const existingUrls = new Set(urlRows.results.map(r => r.source_url).filter(Boolean));
 
   // 2. Fetch RSS feeds
   const allStories = [];
@@ -299,7 +300,7 @@ Rules:
   }
 
   // 9. Insert into D1
-  await env.DB.prepare(
+  const insertResult = await env.DB.prepare(
     `INSERT OR IGNORE INTO news (slug, title, description, category, lede, takeaways, key_stat, pull_quote, sections, tags, sources, faqs, source_url, image, published_at, updated_at, status)
      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, datetime('now'), datetime('now'), 'live')`
   ).bind(
@@ -319,6 +320,10 @@ Rules:
     imageUrl,
   ).run();
 
+  if (insertResult?.meta?.changes === 0) {
+    console.log(`⏭️ Duplicate insert ignored: ${slug}`);
+    return;
+  }
   console.log(`✅ Published: ${slug} (${article.category})`);
   return { slug, title: article.title, category: article.category };
 }

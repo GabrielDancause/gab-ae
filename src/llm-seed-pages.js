@@ -342,7 +342,7 @@ Return ONLY the raw HTML (no markdown fences, no explanation). The HTML must use
 
 Structure:
 1. <div class="seed-page"> wrapper
-2. <h1> with a compelling title (NOT just the keyword repeated)
+2. <h1> with a compelling title — MUST be under 50 characters (this is critical for SEO — Google truncates after ~60 chars and we append " | gab.ae")
 3. <p class="seed-meta"> with "Updated ${new Date().toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}"
 4. Multiple <div class="seed-section"> blocks for content
 5. FAQ section with <h3> questions and <p> answers
@@ -357,6 +357,9 @@ Visual components (use where appropriate based on content type):
 Rules:
 - Write like a human expert, not a template
 - Minimum 2000 characters of content
+- The <h1> MUST be under 50 characters — short, punchy, keyword-focused. This is non-negotiable.
+- The first <p> after seed-meta MUST be 70-155 characters — it becomes the meta description
+- Use exactly ONE <h1> tag per page (use <h2> for section headings)
 - ${jsAllowed ? 'JavaScript IS allowed and REQUIRED — include <script> at the end with all interactive logic. Make it polished and delightful.' : 'Do NOT include any JavaScript, <script> tags, or interactive elements. Content only.'}
 - Do NOT use HTML tables — use bullet lists, numbered lists, or card-style sections instead
 - ${jsAllowed ? 'Include inputs, buttons, and interactive UI elements as needed for the tool.' : 'No input fields, no forms — content only.'}
@@ -404,16 +407,24 @@ Rules:
     return;
   }
 
-  // 6. Build title and metadata
+  // 6. Build title and metadata (with SEO length enforcement)
   // Extract h1 from generated HTML
   const h1Match = html.match(/<h1[^>]*>(.*?)<\/h1>/);
-  const title = h1Match ? h1Match[1].replace(/<[^>]+>/g, '').trim() : kw.keyword;
-  const fullTitle = `${title} | gab.ae`;
+  let title = h1Match ? h1Match[1].replace(/<[^>]+>/g, '').trim() : kw.keyword;
+  // Enforce title length: base must fit in 60 chars with " | gab.ae" suffix
+  const titleSuffix = ' | gab.ae';
+  const maxBase = 60 - titleSuffix.length;
+  if (title.length > maxBase) {
+    const cut = title.slice(0, maxBase - 1);
+    const sp = cut.lastIndexOf(' ');
+    title = (sp > maxBase * 0.4 ? cut.slice(0, sp) : cut) + '…';
+  }
+  const fullTitle = `${title}${titleSuffix}`;
   // Generate unique description from first paragraph of content
   const firstP = html.match(/<p[^>]*class="[^"]*"[^>]*>([\s\S]*?)<\/p>/);
   const extractedDesc = firstP ? firstP[1].replace(/<[^>]+>/g, '').trim().slice(0, 155) : '';
   const description = extractedDesc.length > 50
-    ? extractedDesc + (extractedDesc.length >= 155 ? '…' : '')
+    ? (extractedDesc.length > 155 ? extractedDesc.slice(0, 152) + '…' : extractedDesc)
     : `${title}. Expert guide with data, practical tips, and FAQs about ${kw.keyword}.`;
 
   // 6b. Inject JSON-LD structured data (Article + FAQPage)

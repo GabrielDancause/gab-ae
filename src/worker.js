@@ -35,11 +35,14 @@
  */
 
 import { layout, esc } from './templates/layout.js';
+import { nookieLayout, nkEsc } from './templates/nookie-layout.js';
 import { renderCalculator } from './engines/calculator.js';
 import { renderNews } from './engines/news.js';
+import { renderNookieNews } from './engines/nookie-news.js';
 import { renderChangelog } from './engines/changelog.js';
 import { upgradeTrigger } from './upgrade-trigger.js';
 import { llmNews } from './llm-news.js';
+import { llmNookieNews } from './llm-nookie-news.js';
 import { llmSeedPages, detectIntent } from './llm-seed-pages.js';
 import { llmRework } from './llm-rework.js';
 import { callLLM } from './llm-client.js';
@@ -82,6 +85,15 @@ export default {
       await llmNews(env);
     } catch (e) {
       console.log(`❌ LLM News error: ${e.message}`);
+    }
+
+    // Nookie News — every 15 minutes
+    if (new Date().getUTCMinutes() % 15 === 0) {
+      try {
+        await llmNookieNews(env);
+      } catch (e) {
+        console.log(`❌ Nookie News error: ${e.message}`);
+      }
     }
 
     // Prune view events older than 24h (every hour)
@@ -129,7 +141,29 @@ export default {
   // ═══════════════════════════════════════════════════════════════
   async fetch(request, env, ctx) {
     const url = new URL(request.url);
+    const host = url.hostname;
     const path = url.pathname.replace(/\/$/, '') || '/';
+
+    // ─── The Nookie Nook: hostname routing (thenookienook.com points here) ───
+    const isNookieDomain = host === 'thenookienook.com' || host === 'www.thenookienook.com';
+    if (isNookieDomain) {
+      const nkPath = path || '/';
+      if (nkPath === '/' || nkPath === '') return nookieIndex(env, '');
+      const nkCatMatch = nkPath.match(/^\/category\/([a-z0-9-]+)$/);
+      if (nkCatMatch) {
+        const page = Math.max(1, parseInt(url.searchParams.get('page') || '1', 10));
+        return nookieIndex(env, '', nkCatMatch[1], page);
+      }
+      const nkArticleMatch = nkPath.match(/^\/article\/([a-z0-9-]+)$/);
+      if (nkArticleMatch) return nookieArticlePage(env, nkArticleMatch[1], '');
+      if (nkPath === '/search') return nookieSearchPage(env, url.searchParams.get('q')?.trim() || '', '');
+      if (nkPath === '/robots.txt') {
+        return new Response(`User-agent: *\nAllow: /\n\nSitemap: https://thenookienook.com/sitemap.xml\n`, { headers: { 'content-type': 'text/plain' } });
+      }
+      if (nkPath === '/sitemap.xml') return nookieSitemap(env);
+      // Fallback: 404 within nookie brand
+      return new Response(nookieLayout({ title: 'Page Not Found | The Nookie Nook', description: 'This page could not be found.', canonical: 'https://thenookienook.com/', basePath: '', body: '<p style="text-align:center;padding:80px 0;color:var(--nk-ink-light)">Page not found. <a href="/" style="color:var(--nk-accent)">Return home</a></p>' }), { status: 404, headers: { 'content-type': 'text/html;charset=UTF-8' } });
+    }
 
     // Admin: trigger rework manually (secret path) — runs in background via waitUntil
     if (path === '/api/admin/rework' && request.method === 'POST') {
@@ -137,14 +171,27 @@ export default {
       return new Response(JSON.stringify({ message: 'Rework triggered in background — check logs' }), { headers: { 'content-type': 'application/json' } });
     }
 
+    // Admin: trigger news generation manually
+    if (path === '/api/admin/news' && request.method === 'POST') {
+      ctx.waitUntil(llmNews(env).then(r => console.log('✅ News result:', JSON.stringify(r))).catch(e => console.log('❌ News error:', e.message)));
+      return new Response(JSON.stringify({ message: 'News triggered in background — check logs' }), { headers: { 'content-type': 'application/json' } });
+    }
+
+    // Admin: trigger nookie news generation manually
+    if (path === '/api/admin/nookie-news' && request.method === 'POST') {
+      const result = await llmNookieNews(env).catch(e => ({ error: e.message }));
+      return new Response(JSON.stringify(result || { skipped: true }), { headers: { 'content-type': 'application/json' } });
+    }
+
     // Homepage — news index
     if (path === '/') {
       return newsIndex(env);
     }
 
-    // Search page (formerly homepage)
+    // Search page
     if (path === '/search') {
-      return homepage(env);
+      const q = url.searchParams.get('q')?.trim() || '';
+      return searchPage(env, q);
     }
 
     // Health check
@@ -520,7 +567,8 @@ Rules:
     // News category
     const newsCatMatch = path.match(/^\/news\/category\/([a-z0-9-]+)$/);
     if (newsCatMatch) {
-      return newsIndex(env, newsCatMatch[1]);
+      const page = Math.max(1, parseInt(url.searchParams.get('page') || '1', 10));
+      return newsIndex(env, newsCatMatch[1], page);
     }
 
     // News article
@@ -535,6 +583,20 @@ Rules:
         }
       } catch (e) {}
     }
+
+    // ─── The Nookie Nook dev routes (at gab.ae/thenookienook) ───
+    if (path === '/thenookienook' || path === '/thenookienook/') {
+      return nookieIndex(env, '/thenookienook');
+    }
+    const nkDevCatMatch = path.match(/^\/thenookienook\/category\/([a-z0-9-]+)$/);
+    if (nkDevCatMatch) {
+      const page = Math.max(1, parseInt(url.searchParams.get('page') || '1', 10));
+      return nookieIndex(env, '/thenookienook', nkDevCatMatch[1], page);
+    }
+    const nkDevArticleMatch = path.match(/^\/thenookienook\/article\/([a-z0-9-]+)$/);
+    if (nkDevArticleMatch) return nookieArticlePage(env, nkDevArticleMatch[1], '/thenookienook');
+    if (path === '/thenookienook/search') return nookieSearchPage(env, url.searchParams.get('q')?.trim() || '', '/thenookienook');
+    if (path === '/thenookienook/sitemap.xml') return nookieSitemap(env);
 
     // Strip leading slash for slug lookup
     const slug = path.slice(1);
@@ -732,6 +794,133 @@ function renderPropertyCards() {
 // SECTION: Page Handlers (full page builders called by router)
 // Each returns a Response object with complete HTML.
 // ═══════════════════════════════════════════════════════════════
+async function searchPage(env, q) {
+  let newsResults = [];
+  let pageResults = [];
+
+  if (q.length >= 2) {
+    const pattern = `%${q.toLowerCase()}%`;
+    try {
+      const [nr, pr] = await Promise.all([
+        env.DB.prepare(
+          "SELECT slug, title, description, lede, category, published_at, image FROM news WHERE status='live' AND (LOWER(title) LIKE ? OR LOWER(description) LIKE ? OR LOWER(tags) LIKE ? OR LOWER(category) LIKE ?) ORDER BY published_at DESC LIMIT 20"
+        ).bind(pattern, pattern, pattern, pattern).all(),
+        env.DB.prepare(
+          "SELECT slug, title, description, category FROM pages WHERE status='live' AND (LOWER(title) LIKE ? OR LOWER(description) LIKE ? OR LOWER(keyword) LIKE ?) ORDER BY title ASC LIMIT 6"
+        ).bind(pattern, pattern, pattern).all(),
+      ]);
+      newsResults = nr?.results || [];
+      pageResults = pr?.results || [];
+    } catch (e) {
+      console.log('❌ searchPage error:', e.message);
+    }
+  }
+
+  const totalResults = newsResults.length + pageResults.length;
+
+  const searchFormHtml = `
+    <div style="padding:32px 0 28px;border-bottom:3px double var(--border)">
+      <form method="GET" action="/search" style="display:flex;gap:10px;max-width:680px;margin:0 auto">
+        <input
+          type="search"
+          name="q"
+          value="${esc(q)}"
+          placeholder="Search news, topics, categories…"
+          autofocus
+          style="flex:1;font-family:'DM Sans',sans-serif;font-size:16px;padding:12px 16px;border:2px solid var(--border);border-radius:4px;background:var(--paper);color:var(--ink);outline:none;transition:border-color 0.2s"
+          onfocus="this.style.borderColor='var(--accent)'"
+          onblur="this.style.borderColor='var(--border)'"
+        >
+        <button type="submit" style="font-family:'DM Sans',sans-serif;font-size:13px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;padding:12px 22px;background:var(--ink);color:#fff;border:none;border-radius:4px;cursor:pointer">Search</button>
+      </form>
+    </div>`;
+
+  let resultsHtml = '';
+
+  if (q.length >= 2) {
+    if (totalResults === 0) {
+      resultsHtml = `<p style="padding:48px 0;text-align:center;color:var(--ink-light);font-size:15px">No results found for <strong>"${esc(q)}"</strong> — try a different term.</p>`;
+    } else {
+      resultsHtml = `<p style="font-size:12px;letter-spacing:0.12em;text-transform:uppercase;color:var(--ink-light);margin:24px 0 20px">${totalResults} result${totalResults !== 1 ? 's' : ''} for <strong style="color:var(--ink)">"${esc(q)}"</strong></p>`;
+
+      if (newsResults.length > 0) {
+        resultsHtml += `
+          <div style="border-top:2px solid var(--ink);padding-top:16px;margin-bottom:24px">
+            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px">
+              <span style="font-size:10px;font-weight:700;letter-spacing:0.18em;text-transform:uppercase;color:var(--accent)">News Articles</span>
+              <span style="font-size:12px;color:var(--ink-light)">${newsResults.length} found</span>
+            </div>
+            <div style="display:flex;flex-direction:column;gap:0">
+              ${newsResults.map(a => {
+                const color = catColor(a.category);
+                const label = catLabel(a.category);
+                return `
+                <div style="display:flex;gap:16px;padding:16px 0;border-bottom:1px solid var(--border-light);align-items:flex-start">
+                  ${a.image ? `<a href="/news/${a.slug}" style="flex-shrink:0"><img src="${esc(a.image)}" alt="${esc(a.title)}" style="width:120px;height:68px;object-fit:cover;display:block" loading="lazy"></a>` : ''}
+                  <div style="flex:1;min-width:0">
+                    <div style="margin-bottom:6px"><span style="font-size:9px;font-weight:700;letter-spacing:0.16em;text-transform:uppercase;color:#fff;background:${color};padding:2px 8px">${label}</span></div>
+                    <a href="/news/${a.slug}" style="font-family:'Playfair Display',Georgia,serif;font-size:18px;font-weight:700;line-height:1.3;color:var(--ink);display:block;margin-bottom:5px">${esc(a.title)}</a>
+                    ${(a.lede || a.description) ? `<p style="font-size:14px;color:var(--ink-mid);line-height:1.5;margin-bottom:6px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden">${esc(a.lede || a.description)}</p>` : ''}
+                    <span style="font-size:11px;color:var(--ink-light)">${timeAgo(a.published_at)}</span>
+                  </div>
+                </div>`;
+              }).join('')}
+            </div>
+          </div>`;
+      }
+
+      if (pageResults.length > 0) {
+        resultsHtml += `
+          <div style="border-top:2px solid var(--ink);padding-top:16px">
+            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px">
+              <span style="font-size:10px;font-weight:700;letter-spacing:0.18em;text-transform:uppercase;color:var(--accent)">Tools & Guides</span>
+              <span style="font-size:12px;color:var(--ink-light)">${pageResults.length} found</span>
+            </div>
+            <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:12px">
+              ${pageResults.map(p => `
+                <a href="/${p.slug}" style="display:block;padding:14px 16px;border:1px solid var(--border);border-radius:4px;transition:border-color 0.15s,background 0.15s" onmouseover="this.style.borderColor='var(--accent)';this.style.background='var(--paper-mid)'" onmouseout="this.style.borderColor='var(--border)';this.style.background='transparent'">
+                  <div style="font-size:10px;font-weight:700;letter-spacing:0.15em;text-transform:uppercase;color:var(--ink-light);margin-bottom:5px">${esc(p.category || 'Guide')}</div>
+                  <div style="font-family:'Playfair Display',Georgia,serif;font-size:16px;font-weight:700;line-height:1.3;color:var(--ink);margin-bottom:4px">${esc(p.title)}</div>
+                  ${p.description ? `<p style="font-size:13px;color:var(--ink-mid);line-height:1.4;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden">${esc(p.description)}</p>` : ''}
+                </a>`).join('')}
+            </div>
+          </div>`;
+      }
+    }
+  } else {
+    // No query yet — show popular categories as suggestions
+    resultsHtml = `
+      <div style="padding:32px 0">
+        <p style="font-size:10px;font-weight:700;letter-spacing:0.18em;text-transform:uppercase;color:var(--ink-light);margin-bottom:16px">Browse by category</p>
+        <div style="display:flex;flex-wrap:wrap;gap:10px">
+          ${Object.entries(CAT_LABELS).map(([cat, label]) => `
+            <a href="/search?q=${cat}" style="font-size:13px;font-weight:600;color:var(--ink);border:1px solid var(--border);border-radius:20px;padding:7px 18px;transition:background 0.15s,color 0.15s,border-color 0.15s" onmouseover="this.style.background='var(--ink)';this.style.color='#fff';this.style.borderColor='var(--ink)'" onmouseout="this.style.background='transparent';this.style.color='var(--ink)';this.style.borderColor='var(--border)'">${label}</a>
+          `).join('')}
+        </div>
+      </div>`;
+  }
+
+  const body = `
+    <div style="max-width:860px;margin:0 auto">
+      ${searchFormHtml}
+      ${resultsHtml}
+    </div>`;
+
+  const title = q ? `"${q}" — Search | GAB.AE` : 'Search | GAB.AE';
+  const description = q
+    ? `Search results for "${q}" on GAB.AE — news, tools, and guides.`
+    : 'Search news, tools, and guides on GAB.AE.';
+
+  return new Response(layout({
+    title,
+    description,
+    canonical: `https://gab.ae/search${q ? `?q=${encodeURIComponent(q)}` : ''}`,
+    activeNav: 'search',
+    body,
+  }), { headers: { 'content-type': 'text/html;charset=UTF-8' } });
+}
+
+// ═══════════════════════════════════════════════════════════════
 async function homepage(env) {
   const body = `
     <div class="min-h-[60vh] flex flex-col items-center justify-center">
@@ -834,6 +1023,7 @@ function catLabel(cat) { return CAT_LABELS[cat] || (cat ? cat.charAt(0).toUpperC
 function storyCardHtml(a) {
   return `
     <div>
+      ${a.image ? `<a href="/news/${a.slug}" class="card-img-link"><img src="${esc(a.image)}" alt="${esc(a.title)}" class="card-thumb" loading="lazy" width="400" height="225"></a>` : ''}
       <a href="/news/${a.slug}" class="story-card-title">${esc(a.title)}</a>
       ${a.description ? `<p class="story-card-desc">${esc(a.description)}</p>` : ''}
       <div class="story-card-meta">${timeAgo(a.published_at)}</div>
@@ -851,6 +1041,7 @@ function catSectionHtml(catArticles, cat) {
   const leadPlusTwo = catArticles.length >= 2 ? `
     <div class="lead-plus-two">
       <div>
+        ${lead.image ? `<a href="/news/${lead.slug}" class="card-img-link"><img src="${esc(lead.image)}" alt="${esc(lead.title)}" class="lead-thumb" loading="lazy" width="600" height="338"></a>` : ''}
         <a href="/news/${lead.slug}" class="lead-story-title">${esc(lead.title)}</a>
         ${lead.description ? `<p class="lead-story-desc">${esc(lead.description)}</p>` : ''}
         <div class="lead-story-meta">${timeAgo(lead.published_at)}</div>
@@ -864,6 +1055,7 @@ function catSectionHtml(catArticles, cat) {
       </div>
     </div>` : `
     <div style="margin-bottom:20px">
+      ${lead.image ? `<a href="/news/${lead.slug}" class="card-img-link"><img src="${esc(lead.image)}" alt="${esc(lead.title)}" class="lead-thumb" loading="lazy" width="600" height="338"></a>` : ''}
       <a href="/news/${lead.slug}" class="lead-story-title">${esc(lead.title)}</a>
       ${lead.description ? `<p class="lead-story-desc">${esc(lead.description)}</p>` : ''}
       <div class="lead-story-meta">${timeAgo(lead.published_at)}</div>
@@ -888,15 +1080,24 @@ function catSectionHtml(catArticles, cat) {
     </div>`;
 }
 
-async function newsIndex(env, category = null) {
+async function newsIndex(env, category = null, page = 1) {
+  const PAGE_SIZE = 60;
+  const offset = (page - 1) * PAGE_SIZE;
   let articles = [];
+  let totalCount = 0;
   try {
-    const query = category
-      ? env.DB.prepare("SELECT id,slug,title,description,lede,category,published_at FROM news WHERE status='live' AND category=? ORDER BY published_at DESC LIMIT 60").bind(category)
-      : env.DB.prepare("SELECT id,slug,title,description,lede,category,published_at FROM news WHERE status='live' ORDER BY published_at DESC LIMIT 60");
-    const result = await query.all();
+    const [result, countResult] = await Promise.all([
+      category
+        ? env.DB.prepare("SELECT id,slug,title,description,lede,category,published_at,image FROM news WHERE status='live' AND category=? ORDER BY published_at DESC LIMIT ? OFFSET ?").bind(category, PAGE_SIZE, offset).all()
+        : env.DB.prepare("SELECT id,slug,title,description,lede,category,published_at,image FROM news WHERE status='live' ORDER BY published_at DESC LIMIT ? OFFSET ?").bind(PAGE_SIZE, offset).all(),
+      category
+        ? env.DB.prepare("SELECT COUNT(*) as cnt FROM news WHERE status='live' AND category=?").bind(category).first()
+        : env.DB.prepare("SELECT COUNT(*) as cnt FROM news WHERE status='live'").first(),
+    ]);
     articles = result?.results || [];
+    totalCount = countResult?.cnt || 0;
   } catch (e) { console.log('❌ newsIndex error:', e.message, e.stack); }
+  const totalPages = Math.ceil(totalCount / PAGE_SIZE);
 
   // ── Category page ──
   if (category) {
@@ -906,6 +1107,14 @@ async function newsIndex(env, category = null) {
     const color = catColor(category);
     const label = catLabel(category);
 
+    const baseUrl = `/news/category/${category}`;
+    const paginationHtml = totalPages > 1 ? `
+      <div style="display:flex;align-items:center;justify-content:center;gap:12px;padding:32px 0;border-top:1px solid var(--border-light);margin-top:20px">
+        ${page > 1 ? `<a href="${baseUrl}?page=${page - 1}" style="padding:8px 16px;border:1px solid var(--border-light);border-radius:4px;color:var(--ink);text-decoration:none;font-size:14px">← Newer</a>` : '<span style="padding:8px 16px;opacity:0.3;font-size:14px">← Newer</span>'}
+        <span style="font-size:14px;color:var(--ink-light)">Page ${page} of ${totalPages}</span>
+        ${page < totalPages ? `<a href="${baseUrl}?page=${page + 1}" style="padding:8px 16px;border:1px solid var(--border-light);border-radius:4px;color:var(--ink);text-decoration:none;font-size:14px">Older →</a>` : '<span style="padding:8px 16px;opacity:0.3;font-size:14px">Older →</span>'}
+      </div>` : '';
+
     const body = articles.length === 0
       ? `<div class="cat-page-header">
            <h1 class="cat-page-title">${label}</h1>
@@ -914,11 +1123,12 @@ async function newsIndex(env, category = null) {
       : `<div class="cat-page-header">
            <div style="margin-bottom:8px"><span class="section-label" style="background:${color}">${label}</span></div>
            <h1 class="cat-page-title">${label}</h1>
-           <div class="cat-page-count">${articles.length} article${articles.length !== 1 ? 's' : ''}</div>
+           <div class="cat-page-count">${totalCount} article${totalCount !== 1 ? 's' : ''}</div>
          </div>
-         ${articles.length >= 2 ? `
+         ${page === 1 && articles.length >= 2 ? `
          <div class="lead-plus-two" style="margin-bottom:28px">
            <div>
+             ${lead.image ? `<a href="/news/${lead.slug}" class="card-img-link"><img src="${esc(lead.image)}" alt="${esc(lead.title)}" class="lead-thumb" loading="lazy" width="600" height="338"></a>` : ''}
              <a href="/news/${lead.slug}" class="lead-story-title">${esc(lead.title)}</a>
              ${lead.description ? `<p class="lead-story-desc">${esc(lead.description)}</p>` : ''}
              <div class="lead-story-meta">${timeAgo(lead.published_at)}</div>
@@ -930,21 +1140,23 @@ async function newsIndex(env, category = null) {
                  <div class="two-stack-meta">${timeAgo(a.published_at)}</div>
                </div>`).join('')}
            </div>
-         </div>` : `
+         </div>` : page === 1 ? `
          <div style="margin-bottom:28px">
+           ${lead.image ? `<a href="/news/${lead.slug}" class="card-img-link"><img src="${esc(lead.image)}" alt="${esc(lead.title)}" class="lead-thumb" loading="lazy" width="600" height="338"></a>` : ''}
            <a href="/news/${lead.slug}" class="lead-story-title">${esc(lead.title)}</a>
            ${lead.description ? `<p class="lead-story-desc">${esc(lead.description)}</p>` : ''}
            <div class="lead-story-meta">${timeAgo(lead.published_at)}</div>
-         </div>`}
-         ${rest.length > 0 ? `
+         </div>` : ''}
+         ${(page === 1 ? rest : articles).length > 0 ? `
          <div class="three-col" style="border-top:1px solid var(--border-light);padding-top:20px">
-           ${rest.map(a => storyCardHtml(a)).join('')}
-         </div>` : ''}`;
+           ${(page === 1 ? rest : articles).map(a => storyCardHtml(a)).join('')}
+         </div>` : ''}
+         ${paginationHtml}`;
 
     return new Response(layout({
-      title: `${label} News | GAB.AE`,
+      title: `${label} News${page > 1 ? ` — Page ${page}` : ''} | GAB.AE`,
       description: `Latest ${label} news, breaking stories, and in-depth analysis.`,
-      canonical: `https://gab.ae/news/category/${category}`,
+      canonical: `https://gab.ae${baseUrl}${page > 1 ? `?page=${page}` : ''}`,
       activeNav: category,
       body,
     }), { headers: { 'content-type': 'text/html;charset=UTF-8' } });
@@ -985,6 +1197,7 @@ async function newsIndex(env, category = null) {
       <div class="hero-grid">
         <div class="hero-main">
           <span class="hero-cat-label" style="background:${heroColor}">${heroLabel}</span>
+          ${hero.image ? `<a href="/news/${hero.slug}" class="hero-img-link"><img src="${esc(hero.image)}" alt="${esc(hero.title)}" class="hero-img" loading="eager" width="860" height="484"></a>` : ''}
           <a href="/news/${hero.slug}" class="hero-headline">${esc(hero.title)}</a>
           ${hero.lede ? `<p class="hero-deck">${esc(hero.lede)}</p>` : hero.description ? `<p class="hero-deck">${esc(hero.description)}</p>` : ''}
           <div class="hero-meta">${timeAgo(hero.published_at)}</div>
@@ -1737,3 +1950,330 @@ async function seoDashboardAPI(env) {
 }
 
 // esc imported from templates/layout.js
+
+// ═══════════════════════════════════════════════════════════════
+// SECTION: The Nookie Nook Page Handlers
+// Shared by both hostname (thenookienook.com) and dev path (/thenookienook)
+// basePath = '' for domain, '/thenookienook' for dev
+// ═══════════════════════════════════════════════════════════════
+
+const NK_CAT_COLORS = {
+  'sexual-health': '#c44ad9', 'relationships': '#e84393', 'lgbtq': '#9b35b5',
+  'wellness': '#7c3aed', 'education': '#6366f1', 'research': '#4f46e5',
+  'reproductive-health': '#d946a8', 'culture': '#a855f7',
+  'mental-health': '#8b5cf6', 'body-literacy': '#c026d3',
+};
+const NK_CAT_LABELS = {
+  'sexual-health': 'Sexual Health', 'relationships': 'Relationships', 'lgbtq': 'LGBTQ+',
+  'wellness': 'Wellness', 'education': 'Education', 'research': 'Research',
+  'reproductive-health': 'Reproductive Health', 'culture': 'Culture',
+  'mental-health': 'Mental Health', 'body-literacy': 'Body Literacy',
+};
+
+function nkCatColor(cat) { return NK_CAT_COLORS[cat] || '#c44ad9'; }
+function nkCatLabel(cat) { return NK_CAT_LABELS[cat] || (cat ? cat.replace(/-/g, ' ').replace(/\b\w/g, c => c.toUpperCase()) : 'Sexual Health'); }
+
+function nkStoryCardHtml(a, basePath) {
+  return `
+    <div>
+      ${a.image ? `<a href="${basePath}/article/${a.slug}" class="nk-card-img-link"><img src="${nkEsc(a.image)}" alt="${nkEsc(a.title)}" class="nk-card-thumb" loading="lazy" width="400" height="225"></a>` : ''}
+      <a href="${basePath}/article/${a.slug}" class="nk-story-card-title">${nkEsc(a.title)}</a>
+      ${a.description ? `<p class="nk-story-card-desc">${nkEsc(a.description)}</p>` : ''}
+      <div class="nk-story-card-meta">${timeAgo(a.published_at)}</div>
+    </div>`;
+}
+
+function nkCatSectionHtml(catArticles, cat, basePath) {
+  if (!catArticles.length) return '';
+  const color = nkCatColor(cat);
+  const label = nkCatLabel(cat);
+  const lead = catArticles[0];
+  const two = catArticles.slice(1, 3);
+  const grid = catArticles.slice(3, 6);
+
+  const leadPlusTwo = catArticles.length >= 2 ? `
+    <div class="nk-lead-plus-two">
+      <div>
+        ${lead.image ? `<a href="${basePath}/article/${lead.slug}" class="nk-card-img-link"><img src="${nkEsc(lead.image)}" alt="${nkEsc(lead.title)}" class="nk-lead-thumb" loading="lazy" width="600" height="338"></a>` : ''}
+        <a href="${basePath}/article/${lead.slug}" class="nk-lead-story-title">${nkEsc(lead.title)}</a>
+        ${lead.description ? `<p class="nk-lead-story-desc">${nkEsc(lead.description)}</p>` : ''}
+        <div class="nk-lead-story-meta">${timeAgo(lead.published_at)}</div>
+      </div>
+      <div class="nk-two-stack">
+        ${two.map(a => `
+          <div class="nk-two-stack-item">
+            <a href="${basePath}/article/${a.slug}" class="nk-two-stack-title">${nkEsc(a.title)}</a>
+            <div class="nk-two-stack-meta">${timeAgo(a.published_at)}</div>
+          </div>`).join('')}
+      </div>
+    </div>` : `
+    <div style="margin-bottom:20px">
+      ${lead.image ? `<a href="${basePath}/article/${lead.slug}" class="nk-card-img-link"><img src="${nkEsc(lead.image)}" alt="${nkEsc(lead.title)}" class="nk-lead-thumb" loading="lazy" width="600" height="338"></a>` : ''}
+      <a href="${basePath}/article/${lead.slug}" class="nk-lead-story-title">${nkEsc(lead.title)}</a>
+      ${lead.description ? `<p class="nk-lead-story-desc">${nkEsc(lead.description)}</p>` : ''}
+      <div class="nk-lead-story-meta">${timeAgo(lead.published_at)}</div>
+    </div>`;
+
+  const gridHtml = grid.length >= 2 ? `
+    <div class="nk-three-col">
+      ${grid.map(a => nkStoryCardHtml(a, basePath)).join('')}
+    </div>` : '';
+
+  return `
+    <div class="nk-cat-section">
+      <div class="nk-section-header">
+        <div class="nk-section-header-left">
+          <span class="nk-section-label" style="background:${color}">${label}</span>
+          <span class="nk-section-h2">${label}</span>
+        </div>
+        <a href="${basePath}/category/${cat}" class="nk-see-all">See all →</a>
+      </div>
+      ${leadPlusTwo}
+      ${gridHtml}
+    </div>`;
+}
+
+async function nookieIndex(env, basePath = '/thenookienook', category = null, page = 1) {
+  const PAGE_SIZE = 60;
+  const offset = (page - 1) * PAGE_SIZE;
+  let articles = [];
+  let totalCount = 0;
+  const canonicalBase = basePath === '' ? 'https://thenookienook.com' : 'https://gab.ae/thenookienook';
+
+  try {
+    const [result, countResult] = await Promise.all([
+      category
+        ? env.DB.prepare("SELECT id,slug,title,description,lede,category,published_at,image FROM news WHERE status='live' AND site='thenookienook' AND category=? ORDER BY published_at DESC LIMIT ? OFFSET ?").bind(category, PAGE_SIZE, offset).all()
+        : env.DB.prepare("SELECT id,slug,title,description,lede,category,published_at,image FROM news WHERE status='live' AND site='thenookienook' ORDER BY published_at DESC LIMIT ? OFFSET ?").bind(PAGE_SIZE, offset).all(),
+      category
+        ? env.DB.prepare("SELECT COUNT(*) as cnt FROM news WHERE status='live' AND site='thenookienook' AND category=?").bind(category).first()
+        : env.DB.prepare("SELECT COUNT(*) as cnt FROM news WHERE status='live' AND site='thenookienook'").first(),
+    ]);
+    articles = result?.results || [];
+    totalCount = countResult?.cnt || 0;
+  } catch (e) { console.log('❌ nookieIndex error:', e.message); }
+
+  const totalPages = Math.ceil(totalCount / PAGE_SIZE);
+
+  // ── Category page ──
+  if (category) {
+    const lead = articles[0];
+    const two = articles.slice(1, 3);
+    const rest = articles.slice(3);
+    const color = nkCatColor(category);
+    const label = nkCatLabel(category);
+    const baseUrl = `${basePath}/category/${category}`;
+
+    const paginationHtml = totalPages > 1 ? `
+      <div style="display:flex;align-items:center;justify-content:center;gap:12px;padding:32px 0;border-top:1px solid var(--nk-border-light);margin-top:20px">
+        ${page > 1 ? `<a href="${baseUrl}?page=${page - 1}" style="padding:8px 16px;border:1px solid var(--nk-border-light);border-radius:4px;color:var(--nk-ink);font-size:14px">← Newer</a>` : '<span style="padding:8px 16px;opacity:0.3;font-size:14px">← Newer</span>'}
+        <span style="font-size:14px;color:var(--nk-ink-light)">Page ${page} of ${totalPages}</span>
+        ${page < totalPages ? `<a href="${baseUrl}?page=${page + 1}" style="padding:8px 16px;border:1px solid var(--nk-border-light);border-radius:4px;color:var(--nk-ink);font-size:14px">Older →</a>` : '<span style="padding:8px 16px;opacity:0.3;font-size:14px">Older →</span>'}
+      </div>` : '';
+
+    const body = articles.length === 0
+      ? `<div class="nk-cat-page-header"><h1 class="nk-cat-page-title">${label}</h1></div>
+         <p style="color:var(--nk-ink-light);padding:48px 0;text-align:center">No articles yet — check back soon.</p>`
+      : `<div class="nk-cat-page-header">
+           <div style="margin-bottom:8px"><span class="nk-section-label" style="background:${color}">${label}</span></div>
+           <h1 class="nk-cat-page-title">${label}</h1>
+           <div class="nk-cat-page-count">${totalCount} article${totalCount !== 1 ? 's' : ''}</div>
+         </div>
+         ${page === 1 && lead && two.length ? `
+         <div class="nk-lead-plus-two" style="margin-bottom:28px">
+           <div>
+             ${lead.image ? `<a href="${basePath}/article/${lead.slug}" class="nk-card-img-link"><img src="${nkEsc(lead.image)}" alt="${nkEsc(lead.title)}" class="nk-lead-thumb" loading="lazy" width="600" height="338"></a>` : ''}
+             <a href="${basePath}/article/${lead.slug}" class="nk-lead-story-title">${nkEsc(lead.title)}</a>
+             ${lead.description ? `<p class="nk-lead-story-desc">${nkEsc(lead.description)}</p>` : ''}
+             <div class="nk-lead-story-meta">${timeAgo(lead.published_at)}</div>
+           </div>
+           <div class="nk-two-stack">
+             ${two.map(a => `
+               <div class="nk-two-stack-item">
+                 <a href="${basePath}/article/${a.slug}" class="nk-two-stack-title">${nkEsc(a.title)}</a>
+                 <div class="nk-two-stack-meta">${timeAgo(a.published_at)}</div>
+               </div>`).join('')}
+           </div>
+         </div>` : page === 1 && lead ? `
+         <div style="margin-bottom:28px">
+           ${lead.image ? `<a href="${basePath}/article/${lead.slug}" class="nk-card-img-link"><img src="${nkEsc(lead.image)}" alt="${nkEsc(lead.title)}" class="nk-lead-thumb" loading="lazy" width="600" height="338"></a>` : ''}
+           <a href="${basePath}/article/${lead.slug}" class="nk-lead-story-title">${nkEsc(lead.title)}</a>
+           ${lead.description ? `<p class="nk-lead-story-desc">${nkEsc(lead.description)}</p>` : ''}
+           <div class="nk-lead-story-meta">${timeAgo(lead.published_at)}</div>
+         </div>` : ''}
+         ${(page === 1 ? rest : articles).length > 0 ? `
+         <div class="nk-three-col" style="border-top:1px solid var(--nk-border-light);padding-top:20px">
+           ${(page === 1 ? rest : articles).map(a => nkStoryCardHtml(a, basePath)).join('')}
+         </div>` : ''}
+         ${paginationHtml}`;
+
+    return new Response(nookieLayout({
+      title: `${label}${page > 1 ? ` — Page ${page}` : ''} | The Nookie Nook`,
+      description: `Evidence-based ${label} articles, guides, and educational content.`,
+      canonical: `${canonicalBase}/category/${category}${page > 1 ? `?page=${page}` : ''}`,
+      activeNav: category,
+      basePath,
+      body,
+    }), { headers: { 'content-type': 'text/html;charset=UTF-8' } });
+  }
+
+  // ── Homepage ──
+  if (articles.length === 0) {
+    return new Response(nookieLayout({
+      title: 'The Nookie Nook — Sex Education & Sexual Health',
+      description: 'Evidence-based sex education, sexual health guides, and inclusive resources for everyone.',
+      canonical: basePath === '' ? 'https://thenookienook.com/' : 'https://gab.ae/thenookienook',
+      activeNav: 'home',
+      basePath,
+      body: '<p style="color:var(--nk-ink-light);padding:80px 0;text-align:center">Content coming soon — check back soon.</p>',
+    }), { headers: { 'content-type': 'text/html;charset=UTF-8' } });
+  }
+
+  const hero = articles[0];
+  const sidebar = articles.slice(1, 4);
+  const remaining = articles.slice(4);
+
+  const byCategory = new Map();
+  for (const a of remaining) {
+    if (!byCategory.has(a.category)) byCategory.set(a.category, []);
+    byCategory.get(a.category).push(a);
+  }
+
+  const catCounts = new Map();
+  for (const a of articles) catCounts.set(a.category, (catCounts.get(a.category) || 0) + 1);
+  const trendingCats = [...catCounts.entries()].sort((a, b) => b[1] - a[1]).slice(0, 8).map(([cat]) => cat);
+
+  const heroColor = nkCatColor(hero.category);
+  const heroLabel = nkCatLabel(hero.category);
+
+  const heroHtml = `
+    <div class="nk-hero">
+      <div class="nk-hero-grid">
+        <div class="nk-hero-main">
+          <span class="nk-cat-label" style="background:${heroColor}">${heroLabel}</span>
+          ${hero.image ? `<a href="${basePath}/article/${hero.slug}" class="nk-hero-img-link"><img src="${nkEsc(hero.image)}" alt="${nkEsc(hero.title)}" class="nk-hero-img" loading="eager" width="860" height="484"></a>` : ''}
+          <a href="${basePath}/article/${hero.slug}" class="nk-hero-headline">${nkEsc(hero.title)}</a>
+          ${hero.lede ? `<p class="nk-hero-deck">${nkEsc(hero.lede)}</p>` : hero.description ? `<p class="nk-hero-deck">${nkEsc(hero.description)}</p>` : ''}
+          <div class="nk-hero-meta">${timeAgo(hero.published_at)}</div>
+        </div>
+        <div class="nk-hero-sidebar">
+          ${sidebar.map(a => `
+            <div class="nk-sidebar-story">
+              <span class="nk-sidebar-story-cat" style="background:${nkCatColor(a.category)}">${nkCatLabel(a.category)}</span>
+              <a href="${basePath}/article/${a.slug}" class="nk-sidebar-story-title">${nkEsc(a.title)}</a>
+              <div class="nk-sidebar-story-meta">${timeAgo(a.published_at)}</div>
+            </div>`).join('')}
+        </div>
+      </div>
+    </div>`;
+
+  const trendingHtml = trendingCats.length ? `
+    <div class="nk-trending-bar">
+      <div class="nk-trending-inner">
+        <span class="nk-trending-label">Topics</span>
+        <div style="display:flex;gap:8px;flex-wrap:wrap">
+          ${trendingCats.map(cat => `<a href="${basePath}/category/${cat}" class="nk-trending-tag">${nkCatLabel(cat)}</a>`).join('')}
+        </div>
+      </div>
+    </div>` : '';
+
+  const categorySectionsHtml = [...byCategory.entries()]
+    .map(([cat, arts]) => nkCatSectionHtml(arts, cat, basePath))
+    .join('');
+
+  const body = heroHtml + trendingHtml + categorySectionsHtml;
+
+  return new Response(nookieLayout({
+    title: 'The Nookie Nook — Sex Education & Sexual Health',
+    description: 'Evidence-based sex education, sexual health guides, and inclusive resources for everyone.',
+    canonical: basePath === '' ? 'https://thenookienook.com/' : 'https://gab.ae/thenookienook',
+    activeNav: 'home',
+    basePath,
+    body,
+  }), { headers: { 'content-type': 'text/html;charset=UTF-8' } });
+}
+
+async function nookieArticlePage(env, slug, basePath = '/thenookienook') {
+  try {
+    const article = await env.DB.prepare("SELECT * FROM news WHERE slug = ? AND site = 'thenookienook' AND status = 'live'").bind(slug).first();
+    if (article) {
+      const html = renderNookieNews(article, basePath);
+      return new Response(html, { headers: { 'content-type': 'text/html;charset=UTF-8', 'cache-control': 'public, max-age=300' } });
+    }
+  } catch (e) { console.log('❌ nookieArticlePage error:', e.message); }
+  return new Response(nookieLayout({
+    title: 'Article Not Found | The Nookie Nook',
+    description: 'This article could not be found.',
+    canonical: basePath === '' ? 'https://thenookienook.com/' : 'https://gab.ae/thenookienook',
+    basePath,
+    body: '<p style="text-align:center;padding:80px 0;color:var(--nk-ink-light)">Article not found. <a href="' + basePath + '/" style="color:var(--nk-accent)">Return home</a></p>',
+  }), { status: 404, headers: { 'content-type': 'text/html;charset=UTF-8' } });
+}
+
+async function nookieSearchPage(env, q, basePath = '/thenookienook') {
+  let results = [];
+  const canonicalBase = basePath === '' ? 'https://thenookienook.com' : 'https://gab.ae/thenookienook';
+  if (q.length >= 2) {
+    try {
+      const pattern = `%${q.toLowerCase()}%`;
+      const r = await env.DB.prepare(
+        "SELECT slug, title, description, lede, category, published_at, image FROM news WHERE status='live' AND site='thenookienook' AND (LOWER(title) LIKE ? OR LOWER(description) LIKE ? OR LOWER(tags) LIKE ?) ORDER BY published_at DESC LIMIT 30"
+      ).bind(pattern, pattern, pattern).all();
+      results = r?.results || [];
+    } catch (e) {}
+  }
+
+  const searchForm = `
+    <div style="padding:32px 0 28px;border-bottom:3px double var(--nk-border)">
+      <form method="GET" action="${basePath}/search" style="display:flex;gap:10px;max-width:680px;margin:0 auto">
+        <input type="search" name="q" value="${nkEsc(q)}" placeholder="Search sex ed topics, relationships, health…" autofocus
+          style="flex:1;font-family:'DM Sans',sans-serif;font-size:16px;padding:12px 16px;border:2px solid var(--nk-border);border-radius:4px;background:var(--nk-paper);color:var(--nk-ink);outline:none"
+          onfocus="this.style.borderColor='var(--nk-accent)'" onblur="this.style.borderColor='var(--nk-border)'">
+        <button type="submit" style="font-family:'DM Sans',sans-serif;font-size:13px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;padding:12px 22px;background:var(--nk-ink);color:#fff;border:none;border-radius:4px;cursor:pointer">Search</button>
+      </form>
+    </div>`;
+
+  const resultsHtml = q.length < 2
+    ? `<p style="padding:32px 0;color:var(--nk-ink-light);text-align:center">Enter a topic to search.</p>`
+    : results.length === 0
+      ? `<p style="padding:48px 0;text-align:center;color:var(--nk-ink-light)">No results for <strong>"${nkEsc(q)}"</strong>.</p>`
+      : `<p style="font-size:12px;letter-spacing:0.12em;text-transform:uppercase;color:var(--nk-ink-light);margin:24px 0 20px">${results.length} result${results.length !== 1 ? 's' : ''} for <strong style="color:var(--nk-ink)">"${nkEsc(q)}"</strong></p>
+         <div style="display:flex;flex-direction:column;gap:0">
+           ${results.map(a => `
+             <div style="display:flex;gap:16px;padding:16px 0;border-bottom:1px solid var(--nk-border-light);align-items:flex-start">
+               ${a.image ? `<a href="${basePath}/article/${a.slug}" style="flex-shrink:0"><img src="${nkEsc(a.image)}" alt="${nkEsc(a.title)}" style="width:120px;height:68px;object-fit:cover;display:block" loading="lazy"></a>` : ''}
+               <div style="flex:1;min-width:0">
+                 <div style="margin-bottom:6px"><span style="font-size:9px;font-weight:700;letter-spacing:0.16em;text-transform:uppercase;color:#fff;background:${nkCatColor(a.category)};padding:2px 8px">${nkCatLabel(a.category)}</span></div>
+                 <a href="${basePath}/article/${a.slug}" style="font-family:'Playfair Display',Georgia,serif;font-size:18px;font-weight:700;line-height:1.3;color:var(--nk-ink);display:block;margin-bottom:5px">${nkEsc(a.title)}</a>
+                 ${(a.lede || a.description) ? `<p style="font-size:14px;color:var(--nk-ink-mid);line-height:1.5;margin-bottom:6px">${nkEsc(a.lede || a.description)}</p>` : ''}
+                 <span style="font-size:11px;color:var(--nk-ink-light)">${timeAgo(a.published_at)}</span>
+               </div>
+             </div>`).join('')}
+         </div>`;
+
+  const body = `<div style="max-width:860px;margin:0 auto">${searchForm}${resultsHtml}</div>`;
+  return new Response(nookieLayout({
+    title: q ? `"${q}" — Search | The Nookie Nook` : 'Search | The Nookie Nook',
+    description: q ? `Search results for "${q}" on The Nookie Nook.` : 'Search sex education topics on The Nookie Nook.',
+    canonical: `${canonicalBase}/search${q ? `?q=${encodeURIComponent(q)}` : ''}`,
+    activeNav: 'search',
+    basePath,
+    body,
+  }), { headers: { 'content-type': 'text/html;charset=UTF-8' } });
+}
+
+async function nookieSitemap(env) {
+  try {
+    const { results } = await env.DB.prepare(
+      "SELECT slug, updated_at, published_at FROM news WHERE status='live' AND site='thenookienook' ORDER BY published_at DESC LIMIT 1000"
+    ).all();
+    const urls = results.map(r => {
+      const date = (r.updated_at || r.published_at || '').slice(0, 10);
+      return `  <url><loc>https://thenookienook.com/article/${r.slug}</loc>${date ? `<lastmod>${date}</lastmod>` : ''}<changefreq>weekly</changefreq></url>`;
+    }).join('\n');
+    const xml = `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n  <url><loc>https://thenookienook.com/</loc><changefreq>hourly</changefreq></url>\n${urls}\n</urlset>`;
+    return new Response(xml, { headers: { 'content-type': 'application/xml;charset=UTF-8' } });
+  } catch (e) {
+    return new Response('<?xml version="1.0"?><urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"></urlset>', { headers: { 'content-type': 'application/xml' } });
+  }
+}
