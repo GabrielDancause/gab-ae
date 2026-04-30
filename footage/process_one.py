@@ -11,8 +11,11 @@ import os
 import subprocess
 import sys
 import tempfile
+import textwrap
 import time
 from pathlib import Path
+
+from PIL import Image, ImageDraw, ImageFont
 
 from googleapiclient.discovery import build
 from googleapiclient.http import MediaFileUpload, MediaIoBaseDownload
@@ -212,6 +215,103 @@ def cut_short(input_path, output_path, start, end):
     print(f"  Short: {output_path} ({size_mb:.1f}MB, {duration:.0f}s)")
     return True
 
+FONT_BOLD    = '/usr/share/fonts/truetype/open-sans/OpenSans-Bold.ttf'
+FONT_REGULAR = '/usr/share/fonts/truetype/open-sans/OpenSans-Regular.ttf'
+
+def write_caption(location, env):
+    """Ask AI to write a short travel paragraph about the given location."""
+    from openai import OpenAI
+    client = OpenAI(base_url='https://openrouter.ai/api/v1', api_key=env['OPENROUTER_API_KEY'])
+    prompt = f"""Write a short travel description for a YouTube Short about {location}.
+2-3 sentences max. Vivid, informative, enthusiastic. No hashtags. Plain text only."""
+    for model in OPENROUTER_MODELS:
+        try:
+            resp = client.chat.completions.create(
+                model=model,
+                messages=[{"role": "user", "content": prompt}],
+                temperature=0.7,
+            )
+            return resp.choices[0].message.content.strip()
+        except Exception as e:
+            if "429" in str(e):
+                time.sleep(3)
+                continue
+    return f"Exploring {location} — one of Paris's hidden gems."
+
+def burn_text(video_path, location, paragraph, output_path):
+    """Render location name + paragraph as a Pillow overlay at the top of the video."""
+    # Get video dimensions
+    r = subprocess.run(
+        ['ffprobe', '-v', 'quiet', '-print_format', 'json', '-show_streams',
+         '-select_streams', 'v:0', video_path],
+        capture_output=True, text=True
+    )
+    stream = json.loads(r.stdout).get('streams', [{}])[0]
+    W, H = stream.get('width', 1080), stream.get('height', 1920)
+
+    # Build overlay image with Pillow
+    overlay = Image.new('RGBA', (W, H), (0, 0, 0, 0))
+    draw = ImageDraw.Draw(overlay)
+
+    pad = 40
+    text_w = W - pad * 2
+
+    font_title = ImageFont.truetype(FONT_BOLD, 56)
+    font_body  = ImageFont.truetype(FONT_REGULAR, 38)
+
+    # Word-wrap the paragraph
+    wrapped = textwrap.fill(paragraph, width=32)
+    lines = [location, ''] + wrapped.split('\n')
+
+    # Measure total text block height
+    line_heights = []
+    for i, line in enumerate(lines):
+        font = font_title if i == 0 else font_body
+        bbox = draw.textbbox((0, 0), line, font=font)
+        line_heights.append(bbox[3] - bbox[1] + (8 if i > 0 else 12))
+    total_h = sum(line_heights) + pad * 2
+
+    # Draw semi-transparent dark background
+    draw.rectangle([(0, 0), (W, total_h)], fill=(0, 0, 0, 180))
+
+    # Draw text
+    y = pad
+    for i, line in enumerate(lines):
+        if not line:
+            y += 10
+            continue
+        font = font_title if i == 0 else font_body
+        color = (255, 255, 255, 255) if i == 0 else (220, 220, 220, 230)
+        bbox = draw.textbbox((0, 0), line, font=font)
+        x = (W - (bbox[2] - bbox[0])) // 2
+        draw.text((x, y), line, font=font, fill=color)
+        y += line_heights[i]
+
+    # Save overlay as PNG, composite onto video with FFmpeg
+    with tempfile.NamedTemporaryFile(suffix='.png', delete=False) as tmp:
+        overlay_path = tmp.name
+    overlay.save(overlay_path)
+
+    result = subprocess.run([
+        'ffmpeg', '-y',
+        '-i', video_path,
+        '-i', overlay_path,
+        '-filter_complex', '[0:v][1:v]overlay=0:0',
+        '-c:v', 'libx264', '-crf', '18', '-preset', 'slow',
+        '-maxrate', '25M', '-bufsize', '50M',
+        '-c:a', 'copy',
+        output_path
+    ], capture_output=True, text=True)
+
+    os.unlink(overlay_path)
+
+    if result.returncode != 0:
+        print("  Text burn error:", result.stderr[-300:])
+        return False
+    size_mb = os.path.getsize(output_path) / 1024 / 1024
+    print(f"  With text: {size_mb:.1f}MB")
+    return True
+
 def mix_audio(video_path, music_filename, output_path):
     """Overlay music track onto silent video, looping/trimming to fit."""
     library = json.loads(Path(MUSIC_LIBRARY).read_text()) if Path(MUSIC_LIBRARY).exists() else []
@@ -279,16 +379,18 @@ def upload_to_youtube(video_path, title, description=''):
 def main():
     file_id  = sys.argv[1] if len(sys.argv) > 1 else '1wD1w2Zfw6rLyKXU5lDuLCqmLsavOiHFE'
     filename = sys.argv[2] if len(sys.argv) > 2 else 'DJI_20260430154051_0294_D.MP4'
+    location = sys.argv[3] if len(sys.argv) > 3 else None  # e.g. "Parc Martin Luther King, Paris 17e"
 
     env = load_env()
     os.makedirs(WORKDIR, exist_ok=True)
 
     raw_path    = os.path.join(WORKDIR, filename)
-    short_path  = os.path.join(WORKDIR, 'short_' + filename)
-    final_path  = os.path.join(WORKDIR, 'final_' + filename)
+    short_path  = os.path.join(WORKDIR, 'short_'  + filename)
+    audio_path  = os.path.join(WORKDIR, 'audio_'  + filename)
+    final_path  = os.path.join(WORKDIR, 'final_'  + filename)
 
     # 1. Download
-    print(f"\n[1/5] Downloading {filename}...")
+    print(f"\n[1/6] Downloading {filename}...")
     drive_svc = drive_service()
     if not os.path.exists(raw_path):
         download_from_drive(drive_svc, file_id, raw_path)
@@ -296,7 +398,7 @@ def main():
         print(f"  Already exists, skipping download")
 
     # 2. Analyze
-    print(f"\n[2/5] Analyzing clip with AI...")
+    print(f"\n[2/6] Analyzing clip with AI...")
     ai = analyze_clip(raw_path, env)
     if not ai:
         print("  AI analysis failed, using defaults")
@@ -310,21 +412,35 @@ def main():
     print(f"  Music:  {music}")
 
     # 3. Cut short
-    print(f"\n[3/5] Cutting short (center crop)...")
+    print(f"\n[3/6] Cutting short (center crop)...")
     ok = cut_short(raw_path, short_path, ai['start_time'], ai['end_time'])
     if not ok:
         print("  FFmpeg failed")
         sys.exit(1)
 
     # 4. Mix audio
-    print(f"\n[4/5] Mixing music...")
-    ok = mix_audio(short_path, music, final_path)
+    print(f"\n[4/6] Mixing music...")
+    ok = mix_audio(short_path, music, audio_path)
     if not ok:
-        print("  Audio mix failed — uploading without music")
-        final_path = short_path
+        print("  Audio mix failed — continuing without music")
+        audio_path = short_path
 
-    # 5. Upload to YouTube
-    print(f"\n[5/5] Uploading to YouTube...")
+    # 5. Burn text caption (only if location provided)
+    print(f"\n[5/6] Burning caption...")
+    if location:
+        print(f"  Writing caption for: {location}")
+        paragraph = write_caption(location, env)
+        print(f"  Caption: {paragraph[:80]}...")
+        ok = burn_text(audio_path, location, paragraph, final_path)
+        if not ok:
+            print("  Text burn failed — uploading without caption")
+            final_path = audio_path
+    else:
+        print("  No location provided — skipping caption")
+        final_path = audio_path
+
+    # 6. Upload to YouTube
+    print(f"\n[6/6] Uploading to YouTube...")
     yt_id = upload_to_youtube(final_path, title)
     yt_url = f"https://www.youtube.com/watch?v={yt_id}"
 
