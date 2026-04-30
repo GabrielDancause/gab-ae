@@ -396,6 +396,335 @@ Rules:
     ogSiteName: 'The Nookie Nook',
     adultContent: true,
   },
+
+  {
+    // ── Identity ──
+    id: 'paris',
+    dbSiteValue: 'paris',
+    name: 'Paris Dispatch',
+    eyebrow: 'News from the City of Light',
+    tagline: 'Paris & France, every day',
+    footerTagline: 'Independent news from Paris and across France.',
+    footerCredit: 'Part of the gab.ae network',
+
+    // ── Routing ──
+    pathPrefix: '/paris',
+    ownDomain: null,
+    articlePath: '/article',
+    categoryPath: '/category',
+
+    // ── Schema.org ──
+    schemaType: 'NewsArticle',
+    publisherName: 'Paris Dispatch',
+    publisherUrl: 'https://gab.ae/paris',
+    aboutThing: { '@type': 'Place', name: 'Paris, France' },
+
+    // ── Generation schedule ──
+    cronModulo: 30,
+    cronOffset: 0,
+
+    // ── RSS Sources ──
+    feeds: [
+      ['France 24',         'https://www.france24.com/en/rss',                                    'politics'],
+      ['RFI English',       'https://www.rfi.fr/en/rss',                                          'world'],
+      ['The Local France',  'https://www.thelocal.fr/france/feed/',                               'society'],
+      ['Euronews',          'https://feeds.feedburner.com/euronews/en/news/',                     'world'],
+      ['Connexion France',  'https://www.connexionfrance.com/rss',                                'society'],
+      ['Le Monde English',  'https://www.lemonde.fr/en/rss/une.xml',                              'politics'],
+      ['French Tribune',    'https://www.frenchtribune.com/feed',                                 'culture'],
+    ],
+
+    // ── Content filter ──
+    filter: {
+      type: 'include',
+      keywords: [
+        'paris', 'france', 'french', 'macron', 'élysée', 'elysee',
+        'seine', 'louvre', 'versailles', 'montmartre', 'bastille',
+        'assemblée', 'assemblee', 'sénat', 'senat', 'matignon',
+        'hollande', 'sarkozy', 'le pen', 'mélenchon', 'melenchon',
+        'banlieue', 'île-de-france', 'ile-de-france',
+        'french economy', 'french culture', 'french politics',
+        'french election', 'french government', 'french police',
+        'caf', 'psg', 'roland garros', 'tour de france',
+        'côte d\'azur', 'provence', 'alsace', 'normandy', 'lyon',
+        'marseille', 'bordeaux', 'toulouse', 'nice', 'strasbourg',
+      ],
+      paywallDomains: [],
+    },
+
+    // ── LLM prompts ──
+    systemPrompt: `You are a professional journalist writing for Paris Dispatch, an English-language news site covering Paris and France. Write clear, engaging articles for an international English-speaking audience interested in French news, culture, politics, and daily life. Provide context that helps non-French readers understand the story. Never fabricate facts. null over fake data, always.`,
+
+    userPromptTemplate: `Write a news article about Paris or France based on this source. Return ONLY valid JSON, no markdown fences.
+
+SOURCE: {source}
+CATEGORY HINT: {hintCategory}
+TITLE: {title}
+DESCRIPTION: {description}
+ARTICLE TEXT:
+{articleText}
+
+Return this exact JSON structure:
+{
+  "title": "compelling headline, STRICTLY 40-58 characters",
+  "description": "meta description, STRICTLY 70-155 characters",
+  "category": "one of: politics, culture, society, economy, travel, arts, sports, food",
+  "lede": "opening sentence that hooks the reader, 100-200 chars",
+  "takeaways": ["one-sentence key point", "one-sentence key point", "one-sentence key point"],
+  "key_stat": {"value": "a striking number or short phrase", "label": "brief context"},
+  "pull_quote": "a compelling sentence from the article, 80-160 chars",
+  "sections": [
+    {"heading": "What Happened", "paragraphs": ["paragraph 1", "paragraph 2", "paragraph 3"]},
+    {"heading": "Why It Matters", "paragraphs": ["paragraph 1", "paragraph 2"]},
+    {"heading": "Context", "paragraphs": ["paragraph 1", "paragraph 2"]}
+  ],
+  "tags": ["category", "topic1", "topic2", "topic3"],
+  "faqs": [
+    {"q": "specific question about this story?", "a": "1-2 sentence answer"},
+    {"q": "another relevant question?", "a": "1-2 sentence answer"},
+    {"q": "third question?", "a": "1-2 sentence answer"}
+  ]
+}
+
+Rules:
+- Always explain French political/cultural context for international readers
+- Each section MUST have at least 2 paragraphs, each 80-200 words
+- FAQs must be specific to THIS story
+- Total article should be 600-800 words
+- Do not invent facts. If source text is thin, say "details are still emerging"`,
+
+    llmCanSkip: true,
+    defaultCategory: 'politics',
+
+    // ── Image hints per category ──
+    imageHints: {
+      politics:  'Paris government building, Elysée Palace, French parliament',
+      culture:   'Paris street scene, French culture, art gallery, café',
+      society:   'Paris neighborhood, French people, urban life',
+      economy:   'Paris business district, La Défense, French economy',
+      travel:    'Paris landmark, Eiffel Tower, Seine river, tourism',
+      arts:      'Paris museum, Louvre, French art, performance',
+      sports:    'PSG, Roland Garros, Tour de France, French sports',
+      food:      'French cuisine, Paris restaurant, boulangerie, wine',
+    },
+    defaultImageHint: 'Paris cityscape, France',
+    imagePromptSuffix: 'professional editorial photography, cinematic, high quality',
+
+    // ── Internal cross-links ──
+    internalLinks: {},
+    exploreMoreHeading: 'Explore More',
+    exploreMoreIntro: 'More from Paris Dispatch',
+
+    // ── Article UI ──
+    takeawaysLabel: 'Key Points',
+    disclaimer: null,
+
+    // ── Theme: Parisian dark navy + gold ──
+    theme: {
+      ink:         '#0f1b2d',
+      inkMid:      '#3d4f63',
+      inkLight:    '#7a8fa6',
+      paper:       '#f8f6f0',
+      paperMid:    '#ede9df',
+      paperDark:   '#ddd8ca',
+      accent:      '#c9a84c',
+      accentDark:  '#a07830',
+      border:      '#cdc8b8',
+      borderLight: '#e0ddd2',
+    },
+
+    categoryColors: {
+      politics: '#1a3a6b',
+      culture:  '#c9a84c',
+      society:  '#5c7a3e',
+      economy:  '#2d5a8e',
+      travel:   '#8e4a2d',
+      arts:     '#6b3a7a',
+      sports:   '#2d6b5a',
+      food:     '#8e6a2d',
+    },
+
+    // ── Nav ──
+    navItems: [
+      { href: '/category/politics', label: 'Politics' },
+      { href: '/category/culture',  label: 'Culture' },
+      { href: '/category/society',  label: 'Society' },
+      { href: '/category/economy',  label: 'Economy' },
+      { href: '/category/travel',   label: 'Travel' },
+      { href: '/category/arts',     label: 'Arts' },
+      { href: '/category/sports',   label: 'Sports' },
+      { href: '/category/food',     label: 'Food' },
+    ],
+
+    // ── Meta ──
+    ga4Id: 'G-24QTGCDKMH',
+    twitterCard: 'summary_large_image',
+    ogSiteName: 'Paris Dispatch',
+    adultContent: false,
+  },
+
+  {
+    // ── Identity ──
+    id: 'toolstack',
+    dbSiteValue: 'toolstack',
+    name: 'ToolStack',
+    eyebrow: 'AI · Streaming · Management · SaaS',
+    tagline: 'The tools powering modern work and content',
+    footerTagline: 'Daily news on AI tools, live streaming, management software, and SaaS.',
+    footerCredit: 'Part of the gab.ae network',
+
+    // ── Routing ──
+    pathPrefix: '/toolstack',
+    ownDomain: null,
+    articlePath: '/article',
+    categoryPath: '/category',
+
+    // ── Schema.org ──
+    schemaType: 'NewsArticle',
+    publisherName: 'ToolStack',
+    publisherUrl: 'https://gab.ae/toolstack',
+    aboutThing: null,
+
+    // ── Generation schedule ──
+    cronModulo: 10,
+    cronOffset: 5,
+
+    // ── RSS Sources ──
+    feeds: [
+      ['TechCrunch',        'https://techcrunch.com/feed/',                                          'ai'],
+      ['The Verge',         'https://www.theverge.com/rss/index.xml',                               'tools'],
+      ['VentureBeat',       'https://venturebeat.com/feed/',                                         'ai'],
+      ['Wired',             'https://www.wired.com/feed/rss',                                        'management'],
+      ['AI News',           'https://artificialintelligence-news.com/feed/',                         'ai'],
+      ['Product Hunt',      'https://www.producthunt.com/feed',                                      'tools'],
+      ['Hacker News',       'https://news.ycombinator.com/rss',                                      'saas'],
+      ['The Information',   'https://www.theinformation.com/feed',                                   'management'],
+    ],
+
+    // ── Content filter ──
+    filter: {
+      type: 'include',
+      keywords: [
+        'ai tool', 'ai tools', 'artificial intelligence', 'machine learning', 'chatgpt', 'openai',
+        'anthropic', 'gemini', 'llm', 'copilot', 'automation',
+        'live stream', 'livestream', 'streaming', 'twitch', 'youtube', 'obs', 'streamlabs', 'creator',
+        'management software', 'project management', 'notion', 'asana', 'linear', 'jira', 'clickup',
+        'productivity', 'workflow', 'saas', 'software tool', 'no-code', 'low-code', 'platform launch',
+        'app launch', 'startup tool', 'developer tool', 'devtool', 'api tool', 'content tool',
+      ],
+      paywallDomains: ['theinformation.com'],
+    },
+
+    // ── LLM prompts ──
+    systemPrompt: `You are a sharp tech journalist writing for ToolStack, a publication covering AI tools, live streaming technology, management software, and SaaS. Your readers are operators, content creators, developers, and managers who want to stay on top of the best tools and how they're evolving. Be direct, practical, and opinionated. Highlight what the tool does, who it's for, and why it matters now. Never fabricate facts. null over fake data, always.`,
+
+    userPromptTemplate: `Write a news article for ToolStack based on this source. Return ONLY valid JSON, no markdown fences.
+
+SOURCE: {source}
+CATEGORY HINT: {hintCategory}
+TITLE: {title}
+DESCRIPTION: {description}
+ARTICLE TEXT:
+{articleText}
+
+Return this exact JSON structure:
+{
+  "title": "punchy headline, STRICTLY 40-58 characters",
+  "description": "meta description, STRICTLY 70-155 characters",
+  "category": "one of: ai, streaming, management, saas, automation, productivity, reviews, tools",
+  "lede": "one-sentence hook that explains why this matters right now, 100-200 chars",
+  "takeaways": ["key point", "key point", "key point"],
+  "key_stat": {"value": "striking number or short phrase", "label": "brief context"},
+  "pull_quote": "compelling sentence from the article, 80-160 chars",
+  "sections": [
+    {"heading": "What It Does", "paragraphs": ["paragraph 1", "paragraph 2", "paragraph 3"]},
+    {"heading": "Why It Matters", "paragraphs": ["paragraph 1", "paragraph 2"]},
+    {"heading": "Who Should Use It", "paragraphs": ["paragraph 1", "paragraph 2"]}
+  ],
+  "tags": ["category", "topic1", "topic2", "topic3"],
+  "faqs": [
+    {"q": "specific question about this tool or story?", "a": "1-2 sentence answer"},
+    {"q": "another practical question?", "a": "1-2 sentence answer"},
+    {"q": "third question?", "a": "1-2 sentence answer"}
+  ]
+}
+
+Rules:
+- Be specific about features, pricing, and use cases when available
+- Each section MUST have at least 2 paragraphs, each 80-200 words
+- FAQs must be practical and specific to THIS story
+- Total article 600-800 words
+- Do not invent features or pricing. If details are thin, say "details are still emerging"`,
+
+    llmCanSkip: true,
+    defaultCategory: 'tools',
+
+    // ── Image hints per category ──
+    imageHints: {
+      ai:           'AI interface, neural network visualization, futuristic software UI',
+      streaming:    'live streaming setup, OBS dashboard, ring light, microphone, creator workspace',
+      management:   'project management dashboard, team collaboration, kanban board',
+      saas:         'SaaS dashboard, cloud software interface, analytics screen',
+      automation:   'workflow automation, connected apps, Zapier-style diagram, pipelines',
+      productivity: 'clean desk setup, productivity app, task list, focus workspace',
+      reviews:      'software review, laptop screen, rating stars, product comparison',
+      tools:        'developer tools, software interface, command line, app icon grid',
+    },
+    defaultImageHint: 'modern software tool, clean UI, tech workspace',
+    imagePromptSuffix: 'professional product photography, clean minimal aesthetic, high quality',
+
+    // ── Internal cross-links ──
+    internalLinks: {},
+    exploreMoreHeading: 'More Tools',
+    exploreMoreIntro: 'Related coverage on ToolStack',
+
+    // ── Article UI ──
+    takeawaysLabel: 'Key Takeaways',
+    disclaimer: null,
+
+    // ── Theme: dark charcoal + indigo ──
+    theme: {
+      ink:         '#0f0f14',
+      inkMid:      '#3d3d52',
+      inkLight:    '#7a7a99',
+      paper:       '#f5f5fa',
+      paperMid:    '#e8e8f0',
+      paperDark:   '#d8d8e8',
+      accent:      '#6366f1',
+      accentDark:  '#4f46e5',
+      border:      '#c8c8da',
+      borderLight: '#dcdcec',
+    },
+
+    categoryColors: {
+      ai:           '#6366f1',
+      streaming:    '#ec4899',
+      management:   '#0ea5e9',
+      saas:         '#8b5cf6',
+      automation:   '#f59e0b',
+      productivity: '#10b981',
+      reviews:      '#ef4444',
+      tools:        '#3b82f6',
+    },
+
+    // ── Nav ──
+    navItems: [
+      { href: '/category/ai',           label: 'AI' },
+      { href: '/category/streaming',    label: 'Streaming' },
+      { href: '/category/management',   label: 'Management' },
+      { href: '/category/saas',         label: 'SaaS' },
+      { href: '/category/automation',   label: 'Automation' },
+      { href: '/category/productivity', label: 'Productivity' },
+      { href: '/category/reviews',      label: 'Reviews' },
+      { href: '/category/tools',        label: 'Tools' },
+    ],
+
+    // ── Meta ──
+    ga4Id: 'G-24QTGCDKMH',
+    twitterCard: 'summary_large_image',
+    ogSiteName: 'ToolStack',
+    adultContent: false,
+  },
 ];
 
 // ─── Lookup helpers ───────────────────────────────────────────────────────────

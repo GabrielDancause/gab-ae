@@ -20,8 +20,8 @@ export function renderArticle(article, site, basePath = null) {
   const wordCount = sections.reduce((n, s) => n + (s.paragraphs || []).join(' ').split(/\s+/).length, 0);
   const readingTime = Math.max(1, Math.round(wordCount / 220));
 
-  // Canonical always points to own domain regardless of access path
-  const canonical = `https://${site.ownDomain}${site.articlePath}/${article.slug}`;
+  // Canonical uses publisherUrl so sites without ownDomain (e.g. /paris) resolve correctly
+  const canonical = `${site.publisherUrl}${site.articlePath}/${article.slug}`;
 
   const sectionsHtml = sections.map((s, i) => `
     ${i === 1 && pullQuote ? `<blockquote class="article-pullquote">${esc(pullQuote)}</blockquote>` : ''}

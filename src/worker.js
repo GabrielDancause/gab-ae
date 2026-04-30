@@ -57,6 +57,8 @@ const ENGINES = {
 
 const gabAeSite   = getSiteById('gab-ae');
 const nookieSite  = getSiteById('thenookienook');
+const parisSite      = getSiteById('paris');
+const toolstackSite  = getSiteById('toolstack');
 
 // ═══════════════════════════════════════════════════════════════
 // SECTION: Utilities
@@ -171,14 +173,105 @@ export default {
     // Admin: trigger news generation manually
     if (path === '/api/admin/news' && request.method === 'POST') {
       const site = getSiteById(url.searchParams.get('site') || 'gab-ae');
+      // sync=1 waits for result so caller can see output directly
+      if (url.searchParams.get('sync') === '1') {
+        const result = await generateArticle(env, site).catch(e => ({ error: e.message }));
+        return new Response(JSON.stringify(result || { skipped: true }), { headers: { 'content-type': 'application/json' } });
+      }
       ctx.waitUntil(generateArticle(env, site).then(r => console.log('✅ Result:', JSON.stringify(r))).catch(e => console.log('❌ Error:', e.message)));
       return new Response(JSON.stringify({ message: `${site.id} triggered in background — check logs` }), { headers: { 'content-type': 'application/json' } });
+    }
+
+    // Admin: debug RSS + filter pipeline for a site (no LLM, no DB write)
+    if (path === '/api/admin/debug-feeds' && request.method === 'GET') {
+      const siteId = url.searchParams.get('site') || 'paris';
+      const debugSite = getSiteById(siteId);
+      if (!debugSite) return new Response(JSON.stringify({ error: 'site not found' }), { status: 404, headers: { 'content-type': 'application/json' } });
+
+      const slugRows = await env.DB.prepare('SELECT slug FROM news ORDER BY published_at DESC LIMIT 500').all();
+      const existingSlugs = new Set(slugRows.results.map(r => r.slug));
+
+      const allStories = [];
+      const feedResults = await Promise.allSettled(debugSite.feeds.map(async ([name, feedUrl, hint]) => {
+        try {
+          const resp = await fetch(feedUrl, { headers: { 'User-Agent': 'Mozilla/5.0' }, signal: AbortSignal.timeout(8000) });
+          if (!resp.ok) return { name, error: `HTTP ${resp.status}` };
+          const xml = await resp.text();
+          const items = [];
+          const parseOne = (block) => {
+            const title = (block.match(/<title><!\[CDATA\[(.*?)\]\]>/) || block.match(/<title[^>]*>(.*?)<\/title>/) || [])[1] || '';
+            const link  = (block.match(/<link[^>]+href=["']([^"']+)["']/) || block.match(/<link>(.*?)<\/link>/) || [])[1] || '';
+            const desc  = (block.match(/<description><!\[CDATA\[(.*?)\]\]>/) || block.match(/<description>(.*?)<\/description>/) || [])[1] || '';
+            if (title && link) items.push({ title: title.trim(), link: link.trim(), description: desc.replace(/<[^>]+>/g, '').trim(), source: name, hintCategory: hint });
+          };
+          let m;
+          const ir = /<item>([\s\S]*?)<\/item>/g;
+          const er = /<entry>([\s\S]*?)<\/entry>/g;
+          while ((m = ir.exec(xml)) !== null) parseOne(m[1]);
+          while ((m = er.exec(xml)) !== null) parseOne(m[1]);
+          return { name, count: items.length, items: items.slice(0, 5) };
+        } catch (e) { return { name, error: e.message }; }
+      }));
+
+      for (const r of feedResults) {
+        if (r.status === 'fulfilled' && r.value.items) allStories.push(...r.value.items);
+      }
+
+      const filter = debugSite.filter;
+      const candidates = allStories.filter(s => {
+        if (existingSlugs.has(s.link)) return false;
+        const text = (s.title + ' ' + s.description).toLowerCase();
+        if (!filter) return true;
+        if (filter.type === 'include') return filter.keywords.some(kw => text.includes(kw));
+        if (filter.type === 'exclude') {
+          if (filter.keywords.some(kw => text.includes(kw))) return false;
+          try { const h = new URL(s.link).hostname; if (filter.paywallDomains?.some(d => h.includes(d))) return false; } catch {}
+          return true;
+        }
+        return true;
+      });
+
+      return new Response(JSON.stringify({
+        feeds: feedResults.map(r => r.status === 'fulfilled' ? { name: r.value.name, count: r.value.count, error: r.value.error } : { error: r.reason }),
+        totalStories: allStories.length,
+        candidates: candidates.length,
+        sampleCandidates: candidates.slice(0, 5).map(s => ({ title: s.title, source: s.source })),
+        slugPoolSize: existingSlugs.size,
+      }, null, 2), { headers: { 'content-type': 'application/json' } });
     }
 
     // Admin: trigger nookie news generation manually (backward-compat alias)
     if (path === '/api/admin/nookie-news' && request.method === 'POST') {
       const result = await generateArticle(env, getSiteById('thenookienook')).catch(e => ({ error: e.message }));
       return new Response(JSON.stringify(result || { skipped: true }), { headers: { 'content-type': 'application/json' } });
+    }
+
+    // Shorts feed — today's tech + business articles for video generation
+    if (path === '/api/shorts-feed') {
+      const rows = await env.DB.prepare(`
+        SELECT slug, title, lede, takeaways, key_stat, pull_quote, category, tags
+        FROM news
+        WHERE category IN ('tech', 'business')
+        AND (site IS NULL OR site = '')
+        AND status = 'live'
+        AND published_at >= datetime('now', '-24 hours')
+        ORDER BY published_at DESC
+        LIMIT 15
+      `).all();
+      const articles = (rows.results || []).map(r => ({
+        slug:       r.slug,
+        title:      r.title,
+        lede:       r.lede,
+        takeaways:  r.takeaways  ? JSON.parse(r.takeaways)  : [],
+        key_stat:   r.key_stat   ? JSON.parse(r.key_stat)   : null,
+        pull_quote: r.pull_quote || null,
+        category:   r.category,
+        tags:       r.tags       ? JSON.parse(r.tags)       : [],
+        url:        `https://gab.ae/news/${r.slug}`,
+      }));
+      return new Response(JSON.stringify(articles), {
+        headers: { 'content-type': 'application/json', 'access-control-allow-origin': '*' },
+      });
     }
 
     // Homepage — news index
@@ -202,6 +295,42 @@ export default {
     // Stats endpoint
     if (path === '/_stats') {
       return stats(env);
+    }
+
+    if (path === '/api/library') {
+      try {
+        const vpsResp = await fetch('http://178.105.50.213:8765/library', { signal: AbortSignal.timeout(10000) });
+        if (!vpsResp.ok) throw new Error(`VPS returned ${vpsResp.status}`);
+        const data = await vpsResp.json();
+        return new Response(JSON.stringify(data), {
+          headers: { 'content-type': 'application/json', 'cache-control': 'public, max-age=60' },
+        });
+      } catch (e) {
+        return new Response(JSON.stringify({ error: e.message, sessions: [] }), {
+          status: 503,
+          headers: { 'content-type': 'application/json' },
+        });
+      }
+    }
+
+    if (path === '/api/library/stats') {
+      try {
+        const vpsResp = await fetch('http://178.105.50.213:8765/library/stats', { signal: AbortSignal.timeout(5000) });
+        if (!vpsResp.ok) throw new Error(`VPS returned ${vpsResp.status}`);
+        const data = await vpsResp.json();
+        return new Response(JSON.stringify(data), {
+          headers: { 'content-type': 'application/json', 'cache-control': 'public, max-age=60' },
+        });
+      } catch (e) {
+        return new Response(JSON.stringify({ error: e.message }), {
+          status: 503,
+          headers: { 'content-type': 'application/json' },
+        });
+      }
+    }
+
+    if (path === '/library') {
+      return renderLibraryPage();
     }
 
     // Seed test endpoint
@@ -596,6 +725,40 @@ Rules:
     if (path === '/thenookienook/search') return nookieSearchPage(env, url.searchParams.get('q')?.trim() || '', '/thenookienook');
     if (path === '/thenookienook/sitemap.xml') return nookieSitemap(env);
 
+    // ─── Paris Dispatch routes (at gab.ae/paris) ───
+    if (path === '/paris' || path === '/paris/') {
+      return siteIndex(env, parisSite, '/paris');
+    }
+    const parisDevCatMatch = path.match(/^\/paris\/category\/([a-z0-9-]+)$/);
+    if (parisDevCatMatch) {
+      const page = Math.max(1, parseInt(url.searchParams.get('page') || '1', 10));
+      return siteIndex(env, parisSite, '/paris', parisDevCatMatch[1], page);
+    }
+    const parisDevArticleMatch = path.match(/^\/paris\/article\/([a-z0-9-]+)$/);
+    if (parisDevArticleMatch) return siteArticlePage(env, parisSite, parisDevArticleMatch[1], '/paris');
+    if (path === '/paris/search') return siteSearchPage(env, parisSite, url.searchParams.get('q')?.trim() || '', '/paris');
+    if (path === '/paris/sitemap.xml') return siteSitemapXml(env, parisSite);
+    if (path === '/paris/robots.txt') {
+      return new Response(`User-agent: *\nAllow: /\n\nSitemap: https://gab.ae/paris/sitemap.xml\n`, { headers: { 'content-type': 'text/plain' } });
+    }
+
+    // ─── ToolStack routes (at gab.ae/toolstack) ───
+    if (path === '/toolstack' || path === '/toolstack/') {
+      return siteIndex(env, toolstackSite, '/toolstack');
+    }
+    const toolstackCatMatch = path.match(/^\/toolstack\/category\/([a-z0-9-]+)$/);
+    if (toolstackCatMatch) {
+      const page = Math.max(1, parseInt(url.searchParams.get('page') || '1', 10));
+      return siteIndex(env, toolstackSite, '/toolstack', toolstackCatMatch[1], page);
+    }
+    const toolstackArticleMatch = path.match(/^\/toolstack\/article\/([a-z0-9-]+)$/);
+    if (toolstackArticleMatch) return siteArticlePage(env, toolstackSite, toolstackArticleMatch[1], '/toolstack');
+    if (path === '/toolstack/search') return siteSearchPage(env, toolstackSite, url.searchParams.get('q')?.trim() || '', '/toolstack');
+    if (path === '/toolstack/sitemap.xml') return siteSitemapXml(env, toolstackSite);
+    if (path === '/toolstack/robots.txt') {
+      return new Response(`User-agent: *\nAllow: /\n\nSitemap: https://gab.ae/toolstack/sitemap.xml\n`, { headers: { 'content-type': 'text/plain' } });
+    }
+
     // Strip leading slash for slug lookup
     const slug = path.slice(1);
 
@@ -786,6 +949,201 @@ function renderPropertyCards() {
       </div>
     </div>
   `).join('');
+}
+
+function renderLibraryPage() {
+  const html = `<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Footage Library — gab.ae</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    body { background: #0a0a0a; color: #e5e5e5; font-family: system-ui, sans-serif; }
+    .card { background: #141414; border: 1px solid #222; border-radius: 12px; overflow: hidden; }
+    .badge { display: inline-block; padding: 2px 8px; border-radius: 999px; font-size: 11px; font-weight: 600; }
+    .thumb { width: 100%; aspect-ratio: 9/16; object-fit: cover; background: #1a1a1a; }
+    .thumb-wide { width: 100%; aspect-ratio: 16/9; object-fit: cover; background: #1a1a1a; }
+    .score-bar { height: 3px; background: #222; border-radius: 2px; }
+    .score-fill { height: 3px; border-radius: 2px; background: linear-gradient(90deg, #22c55e, #86efac); }
+    .filter-btn { padding: 6px 14px; border-radius: 999px; font-size: 12px; font-weight: 600; border: 1px solid #333; background: #141414; color: #999; cursor: pointer; transition: all .15s; }
+    .filter-btn.active, .filter-btn:hover { background: #fff; color: #000; border-color: #fff; }
+    .skeleton { background: linear-gradient(90deg, #1a1a1a 25%, #222 50%, #1a1a1a 75%); background-size: 200% 100%; animation: shimmer 1.5s infinite; border-radius: 8px; }
+    @keyframes shimmer { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
+  </style>
+</head>
+<body class="min-h-screen">
+
+  <!-- Header -->
+  <div class="border-b border-[#222] px-6 py-4 flex items-center justify-between sticky top-0 z-10" style="background:#0a0a0aee;backdrop-filter:blur(12px)">
+    <div class="flex items-center gap-3">
+      <a href="/" class="text-gray-500 hover:text-white text-sm transition-colors">gab.ae</a>
+      <span class="text-gray-700">/</span>
+      <span class="text-white font-semibold">Footage Library</span>
+    </div>
+    <div id="stats" class="flex gap-4 text-xs text-gray-500"></div>
+  </div>
+
+  <!-- Filters -->
+  <div class="px-6 py-4 flex flex-wrap gap-2 border-b border-[#1a1a1a]">
+    <button class="filter-btn active" data-filter="all">All</button>
+    <button class="filter-btn" data-filter="dji">DJI</button>
+    <button class="filter-btn" data-filter="meta">Meta Glasses</button>
+    <button class="filter-btn" data-filter="phone">Phone</button>
+    <button class="filter-btn" data-filter="has_ali">Has Ali</button>
+    <button class="filter-btn" data-filter="has_short">Has Short</button>
+    <button class="filter-btn" data-filter="score_8">Score 8+</button>
+  </div>
+
+  <!-- Content -->
+  <div class="px-6 py-6">
+    <div id="loading" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-3">
+      ${Array(12).fill('<div class="skeleton" style="height:280px"></div>').join('')}
+    </div>
+    <div id="sessions" class="hidden space-y-8"></div>
+    <div id="empty" class="hidden text-center py-20 text-gray-600">No clips match this filter.</div>
+  </div>
+
+  <script>
+    let allSessions = [];
+    let activeFilter = 'all';
+
+    async function load() {
+      const [libResp, statsResp] = await Promise.all([
+        fetch('/api/library'),
+        fetch('/api/library/stats'),
+      ]);
+      const { sessions } = await libResp.json();
+      const stats = await statsResp.json();
+      allSessions = sessions;
+
+      document.getElementById('stats').innerHTML = \`
+        <span>\${stats.total_clips} clips</span>
+        <span class="text-gray-700">·</span>
+        <span>\${stats.total_shorts} shorts</span>
+        <span class="text-gray-700">·</span>
+        <span>\${stats.processed_sessions}/\${stats.total_sessions} sessions done</span>
+      \`;
+
+      render();
+    }
+
+    function driveThumb(fileId, wide) {
+      return \`https://drive.google.com/thumbnail?id=\${fileId}&sz=w400\`;
+    }
+
+    function driveLink(fileId) {
+      return \`https://drive.google.com/file/d/\${fileId}/view\`;
+    }
+
+    function scoreColor(s) {
+      if (s >= 8) return '#22c55e';
+      if (s >= 5) return '#f59e0b';
+      return '#6b7280';
+    }
+
+    function render() {
+      const sessions = document.getElementById('sessions');
+      const empty = document.getElementById('empty');
+      document.getElementById('loading').classList.add('hidden');
+      sessions.innerHTML = '';
+
+      let anyVisible = false;
+
+      for (const s of allSessions) {
+        const clips = s.clips.filter(c => {
+          if (activeFilter === 'dji') return c.device === 'dji';
+          if (activeFilter === 'meta') return c.device === 'meta';
+          if (activeFilter === 'phone') return c.device === 'phone';
+          if (activeFilter === 'has_ali') return c.has_ali === 1;
+          if (activeFilter === 'has_short') return !!c.short_drive_id;
+          if (activeFilter === 'score_8') return c.short_score >= 8;
+          return true;
+        });
+        if (!clips.length) continue;
+        anyVisible = true;
+
+        const date = s.started_at?.slice(0, 10) || '';
+        const time = s.started_at?.slice(11, 16) || '';
+        const dur = s.total_duration_seconds ? Math.round(s.total_duration_seconds / 60) + ' min' : '';
+        const deviceLabel = { dji: 'DJI', meta: 'Meta Glasses', phone: 'Phone', unknown: 'Unknown' }[s.device] || s.device;
+
+        sessions.innerHTML += \`
+          <div class="session-block">
+            <div class="flex items-center gap-3 mb-3">
+              <span class="badge" style="background:#ffffff15;color:#aaa">\${deviceLabel}</span>
+              <span class="text-sm font-semibold text-white">\${date} · \${time}</span>
+              \${dur ? \`<span class="text-xs text-gray-500">\${dur}</span>\` : ''}
+              \${s.activity ? \`<span class="text-xs text-gray-500 italic">\${s.activity}</span>\` : ''}
+              \${s.has_ali ? \`<span class="badge" style="background:#7c3aed20;color:#a78bfa">Ali</span>\` : ''}
+              \${s.processed_at ? \`<span class="badge" style="background:#16a34a20;color:#4ade80">Done</span>\` : \`<span class="badge" style="background:#d9770620;color:#fb923c">Processing</span>\`}
+              <span class="text-xs text-gray-600">\${clips.length} clip\${clips.length > 1 ? 's' : ''}</span>
+            </div>
+            <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-3">
+              \${clips.map(c => {
+                const hasShort = !!c.short_drive_id;
+                const tags = (c.ai_tags || []).slice(0, 3).join(', ');
+                const dur = c.duration_seconds ? Math.round(c.duration_seconds) + 's' : '';
+                return \`
+                  <div class="card group">
+                    <div class="relative overflow-hidden cursor-pointer" style="aspect-ratio:\${hasShort ? '9/16' : '16/9'}" onclick="window.open('\${c.youtube_url || (hasShort ? driveLink(c.short_drive_id) : (c.drive_file_id ? driveLink(c.drive_file_id) : '#'))}', '_blank')">
+                      \${(c.short_drive_id || c.drive_file_id) ? \`
+                        <img src="\${driveThumb(c.short_drive_id || c.drive_file_id)}"
+                             class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                             onerror="this.style.display='none'">
+                      \` : '<div class="w-full h-full bg-[#1a1a1a]"></div>'}
+                      <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent"></div>
+                      \${hasShort ? \`
+                        <div class="absolute top-2 left-2 flex gap-1">
+                          <span class="badge" style="background:#ffffff20;color:#fff;backdrop-filter:blur(4px)">SHORT</span>
+                          \${c.youtube_url ? \`<span class="badge" style="background:#ff000080;color:#fff;backdrop-filter:blur(4px)">▶ YT</span>\` : ''}
+                        </div>
+                        \${c.short_score ? \`
+                          <div class="absolute top-2 right-2 w-7 h-7 rounded-full flex items-center justify-center text-[11px] font-bold" style="background:\${scoreColor(c.short_score)}25;color:\${scoreColor(c.short_score)};border:1px solid \${scoreColor(c.short_score)}50">
+                            \${c.short_score}
+                          </div>
+                        \` : ''}
+                      \` : ''}
+                      \${c.has_ali ? \`<div class="absolute bottom-2 right-2"><span class="badge" style="background:#7c3aed30;color:#a78bfa;backdrop-filter:blur(4px)">Ali</span></div>\` : ''}
+                      <div class="absolute bottom-2 left-2 text-[10px] text-gray-400">\${dur}</div>
+                    </div>
+                    <div class="p-2">
+                      \${c.short_score ? \`
+                        <div class="score-bar mb-1.5">
+                          <div class="score-fill" style="width:\${c.short_score * 10}%;background:\${scoreColor(c.short_score)}"></div>
+                        </div>
+                      \` : ''}
+                      \${tags ? \`<p class="text-[10px] text-gray-600 leading-tight line-clamp-2">\${tags}</p>\` : ''}
+                      \${c.short_reason && c.short_score >= 5 ? \`<p class="text-[10px] text-gray-500 mt-1 leading-tight line-clamp-2 italic">\${c.short_reason}</p>\` : ''}
+                      \${c.youtube_url ? \`<a href="\${c.youtube_url}" target="_blank" onclick="event.stopPropagation()" class="block mt-1.5 text-[10px] font-semibold text-red-400 hover:text-red-300 transition-colors">▶ Watch on YouTube</a>\` : ''}
+                    </div>
+                  </div>
+                \`;
+              }).join('')}
+            </div>
+          </div>
+        \`;
+      }
+
+      sessions.classList.toggle('hidden', !anyVisible);
+      empty.classList.toggle('hidden', anyVisible);
+    }
+
+    document.querySelectorAll('.filter-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        activeFilter = btn.dataset.filter;
+        render();
+      });
+    });
+
+    load();
+  </script>
+</body>
+</html>`;
+  return new Response(html, { headers: { 'content-type': 'text/html;charset=utf-8' } });
 }
 
 // ═══════════════════════════════════════════════════════════════
@@ -1947,31 +2305,23 @@ async function seoDashboardAPI(env) {
   }
 }
 
-// esc imported from templates/layout.js
-
 // ═══════════════════════════════════════════════════════════════
-// SECTION: The Nookie Nook Page Handlers
-// Shared by both hostname (thenookienook.com) and dev path (/thenookienook)
-// basePath = '' for domain, '/thenookienook' for dev
+// SECTION: Generic Site Page Handlers
+// Powers The Nookie Nook, Paris Dispatch, and all future sub-sites.
+// nookieIndex/nookieArticlePage/etc. are thin wrappers at the bottom.
 // ═══════════════════════════════════════════════════════════════
 
-const NK_CAT_COLORS = {
-  'sexual-health': '#c44ad9', 'relationships': '#e84393', 'lgbtq': '#9b35b5',
-  'wellness': '#7c3aed', 'education': '#6366f1', 'research': '#4f46e5',
-  'reproductive-health': '#d946a8', 'culture': '#a855f7',
-  'mental-health': '#8b5cf6', 'body-literacy': '#c026d3',
-};
-const NK_CAT_LABELS = {
-  'sexual-health': 'Sexual Health', 'relationships': 'Relationships', 'lgbtq': 'LGBTQ+',
-  'wellness': 'Wellness', 'education': 'Education', 'research': 'Research',
-  'reproductive-health': 'Reproductive Health', 'culture': 'Culture',
-  'mental-health': 'Mental Health', 'body-literacy': 'Body Literacy',
-};
+function siteCatColor(site, cat) {
+  return site.categoryColors[cat] || site.theme.accent;
+}
 
-function nkCatColor(cat) { return NK_CAT_COLORS[cat] || '#c44ad9'; }
-function nkCatLabel(cat) { return NK_CAT_LABELS[cat] || (cat ? cat.replace(/-/g, ' ').replace(/\b\w/g, c => c.toUpperCase()) : 'Sexual Health'); }
+function siteCatLabel(site, cat) {
+  if (!cat) return site.defaultCategory.replace(/-/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
+  const nav = site.navItems.find(n => n.href.endsWith('/' + cat));
+  return nav?.label || cat.replace(/-/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
+}
 
-function nkStoryCardHtml(a, basePath) {
+function siteStoryCardHtml(a, basePath, site) {
   return `
     <div>
       ${a.image ? `<a href="${basePath}/article/${a.slug}" class="nk-card-img-link"><img src="${esc(a.image)}" alt="${esc(a.title)}" class="nk-card-thumb" loading="lazy" width="400" height="225"></a>` : ''}
@@ -1981,10 +2331,10 @@ function nkStoryCardHtml(a, basePath) {
     </div>`;
 }
 
-function nkCatSectionHtml(catArticles, cat, basePath) {
+function siteCatSectionHtml(catArticles, cat, basePath, site) {
   if (!catArticles.length) return '';
-  const color = nkCatColor(cat);
-  const label = nkCatLabel(cat);
+  const color = siteCatColor(site, cat);
+  const label = siteCatLabel(site, cat);
   const lead = catArticles[0];
   const two = catArticles.slice(1, 3);
   const grid = catArticles.slice(3, 6);
@@ -2014,7 +2364,7 @@ function nkCatSectionHtml(catArticles, cat, basePath) {
 
   const gridHtml = grid.length >= 2 ? `
     <div class="nk-three-col">
-      ${grid.map(a => nkStoryCardHtml(a, basePath)).join('')}
+      ${grid.map(a => siteStoryCardHtml(a, basePath, site)).join('')}
     </div>` : '';
 
   return `
@@ -2031,25 +2381,27 @@ function nkCatSectionHtml(catArticles, cat, basePath) {
     </div>`;
 }
 
-async function nookieIndex(env, basePath = '/thenookienook', category = null, page = 1) {
+async function siteIndex(env, site, basePath, category = null, page = 1) {
   const PAGE_SIZE = 60;
   const offset = (page - 1) * PAGE_SIZE;
   let articles = [];
   let totalCount = 0;
-  const canonicalBase = basePath === '' ? 'https://thenookienook.com' : 'https://gab.ae/thenookienook';
+  const canonicalBase = (basePath === '' && site.ownDomain)
+    ? 'https://' + site.ownDomain
+    : 'https://gab.ae' + basePath;
 
   try {
     const [result, countResult] = await Promise.all([
       category
-        ? env.DB.prepare("SELECT id,slug,title,description,lede,category,published_at,image FROM news WHERE status='live' AND site='thenookienook' AND category=? ORDER BY published_at DESC LIMIT ? OFFSET ?").bind(category, PAGE_SIZE, offset).all()
-        : env.DB.prepare("SELECT id,slug,title,description,lede,category,published_at,image FROM news WHERE status='live' AND site='thenookienook' ORDER BY published_at DESC LIMIT ? OFFSET ?").bind(PAGE_SIZE, offset).all(),
+        ? env.DB.prepare("SELECT id,slug,title,description,lede,category,published_at,image FROM news WHERE status='live' AND site=? AND category=? ORDER BY published_at DESC LIMIT ? OFFSET ?").bind(site.dbSiteValue, category, PAGE_SIZE, offset).all()
+        : env.DB.prepare("SELECT id,slug,title,description,lede,category,published_at,image FROM news WHERE status='live' AND site=? ORDER BY published_at DESC LIMIT ? OFFSET ?").bind(site.dbSiteValue, PAGE_SIZE, offset).all(),
       category
-        ? env.DB.prepare("SELECT COUNT(*) as cnt FROM news WHERE status='live' AND site='thenookienook' AND category=?").bind(category).first()
-        : env.DB.prepare("SELECT COUNT(*) as cnt FROM news WHERE status='live' AND site='thenookienook'").first(),
+        ? env.DB.prepare("SELECT COUNT(*) as cnt FROM news WHERE status='live' AND site=? AND category=?").bind(site.dbSiteValue, category).first()
+        : env.DB.prepare("SELECT COUNT(*) as cnt FROM news WHERE status='live' AND site=?").bind(site.dbSiteValue).first(),
     ]);
     articles = result?.results || [];
     totalCount = countResult?.cnt || 0;
-  } catch (e) { console.log('❌ nookieIndex error:', e.message); }
+  } catch (e) { console.log(`❌ siteIndex [${site.id}] error:`, e.message); }
 
   const totalPages = Math.ceil(totalCount / PAGE_SIZE);
 
@@ -2058,8 +2410,8 @@ async function nookieIndex(env, basePath = '/thenookienook', category = null, pa
     const lead = articles[0];
     const two = articles.slice(1, 3);
     const rest = articles.slice(3);
-    const color = nkCatColor(category);
-    const label = nkCatLabel(category);
+    const color = siteCatColor(site, category);
+    const label = siteCatLabel(site, category);
     const baseUrl = `${basePath}/category/${category}`;
 
     const paginationHtml = totalPages > 1 ? `
@@ -2101,13 +2453,13 @@ async function nookieIndex(env, basePath = '/thenookienook', category = null, pa
          </div>` : ''}
          ${(page === 1 ? rest : articles).length > 0 ? `
          <div class="nk-three-col" style="border-top:1px solid var(--nk-border-light);padding-top:20px">
-           ${(page === 1 ? rest : articles).map(a => nkStoryCardHtml(a, basePath)).join('')}
+           ${(page === 1 ? rest : articles).map(a => siteStoryCardHtml(a, basePath, site)).join('')}
          </div>` : ''}
          ${paginationHtml}`;
 
-    return new Response(siteLayout({ site: nookieSite,
-      title: `${label}${page > 1 ? ` — Page ${page}` : ''} | The Nookie Nook`,
-      description: `Evidence-based ${label} articles, guides, and educational content.`,
+    return new Response(siteLayout({ site,
+      title: `${label}${page > 1 ? ` — Page ${page}` : ''} | ${site.name}`,
+      description: `${label} news and stories from ${site.name}.`,
       canonical: `${canonicalBase}/category/${category}${page > 1 ? `?page=${page}` : ''}`,
       activeNav: category,
       basePath,
@@ -2117,13 +2469,13 @@ async function nookieIndex(env, basePath = '/thenookienook', category = null, pa
 
   // ── Homepage ──
   if (articles.length === 0) {
-    return new Response(siteLayout({ site: nookieSite,
-      title: 'The Nookie Nook — Sex Education & Sexual Health',
-      description: 'Evidence-based sex education, sexual health guides, and inclusive resources for everyone.',
-      canonical: basePath === '' ? 'https://thenookienook.com/' : 'https://gab.ae/thenookienook',
+    return new Response(siteLayout({ site,
+      title: `${site.name} — ${site.tagline}`,
+      description: site.footerTagline,
+      canonical: `${canonicalBase}/`,
       activeNav: 'home',
       basePath,
-      body: '<p style="color:var(--nk-ink-light);padding:80px 0;text-align:center">Content coming soon — check back soon.</p>',
+      body: `<p style="color:var(--nk-ink-light);padding:80px 0;text-align:center">Content coming soon — check back soon.</p>`,
     }), { headers: { 'content-type': 'text/html;charset=UTF-8' } });
   }
 
@@ -2141,8 +2493,8 @@ async function nookieIndex(env, basePath = '/thenookienook', category = null, pa
   for (const a of articles) catCounts.set(a.category, (catCounts.get(a.category) || 0) + 1);
   const trendingCats = [...catCounts.entries()].sort((a, b) => b[1] - a[1]).slice(0, 8).map(([cat]) => cat);
 
-  const heroColor = nkCatColor(hero.category);
-  const heroLabel = nkCatLabel(hero.category);
+  const heroColor = siteCatColor(site, hero.category);
+  const heroLabel = siteCatLabel(site, hero.category);
 
   const heroHtml = `
     <div class="nk-hero">
@@ -2157,7 +2509,7 @@ async function nookieIndex(env, basePath = '/thenookienook', category = null, pa
         <div class="nk-hero-sidebar">
           ${sidebar.map(a => `
             <div class="nk-sidebar-story">
-              <span class="nk-sidebar-story-cat" style="background:${nkCatColor(a.category)}">${nkCatLabel(a.category)}</span>
+              <span class="nk-sidebar-story-cat" style="background:${siteCatColor(site, a.category)}">${siteCatLabel(site, a.category)}</span>
               <a href="${basePath}/article/${a.slug}" class="nk-sidebar-story-title">${esc(a.title)}</a>
               <div class="nk-sidebar-story-meta">${timeAgo(a.published_at)}</div>
             </div>`).join('')}
@@ -2170,53 +2522,54 @@ async function nookieIndex(env, basePath = '/thenookienook', category = null, pa
       <div class="nk-trending-inner">
         <span class="nk-trending-label">Topics</span>
         <div style="display:flex;gap:8px;flex-wrap:wrap">
-          ${trendingCats.map(cat => `<a href="${basePath}/category/${cat}" class="nk-trending-tag">${nkCatLabel(cat)}</a>`).join('')}
+          ${trendingCats.map(cat => `<a href="${basePath}/category/${cat}" class="nk-trending-tag">${siteCatLabel(site, cat)}</a>`).join('')}
         </div>
       </div>
     </div>` : '';
 
   const categorySectionsHtml = [...byCategory.entries()]
-    .map(([cat, arts]) => nkCatSectionHtml(arts, cat, basePath))
+    .map(([cat, arts]) => siteCatSectionHtml(arts, cat, basePath, site))
     .join('');
 
   const body = heroHtml + trendingHtml + categorySectionsHtml;
 
-  return new Response(siteLayout({ site: nookieSite,
-    title: 'The Nookie Nook — Sex Education & Sexual Health',
-    description: 'Evidence-based sex education, sexual health guides, and inclusive resources for everyone.',
-    canonical: basePath === '' ? 'https://thenookienook.com/' : 'https://gab.ae/thenookienook',
+  return new Response(siteLayout({ site,
+    title: `${site.name} — ${site.tagline}`,
+    description: site.footerTagline,
+    canonical: `${canonicalBase}/`,
     activeNav: 'home',
     basePath,
     body,
   }), { headers: { 'content-type': 'text/html;charset=UTF-8' } });
 }
 
-async function nookieArticlePage(env, slug, basePath = '/thenookienook') {
+async function siteArticlePage(env, site, slug, basePath) {
   try {
-    const article = await env.DB.prepare("SELECT * FROM news WHERE slug = ? AND site = 'thenookienook' AND status = 'live'").bind(slug).first();
+    const article = await env.DB.prepare("SELECT * FROM news WHERE slug = ? AND site = ? AND status = 'live'").bind(slug, site.dbSiteValue).first();
     if (article) {
-      const html = renderArticle(article, getSiteById('thenookienook'), basePath);
+      const html = renderArticle(article, site, basePath);
       return new Response(html, { headers: { 'content-type': 'text/html;charset=UTF-8', 'cache-control': 'public, max-age=300' } });
     }
-  } catch (e) { console.log('❌ nookieArticlePage error:', e.message); }
-  return new Response(siteLayout({ site: nookieSite,
-    title: 'Article Not Found | The Nookie Nook',
+  } catch (e) { console.log(`❌ siteArticlePage [${site.id}] error:`, e.message); }
+  const canonicalBase = (basePath === '' && site.ownDomain) ? 'https://' + site.ownDomain : 'https://gab.ae' + basePath;
+  return new Response(siteLayout({ site,
+    title: `Article Not Found | ${site.name}`,
     description: 'This article could not be found.',
-    canonical: basePath === '' ? 'https://thenookienook.com/' : 'https://gab.ae/thenookienook',
+    canonical: `${canonicalBase}/`,
     basePath,
-    body: '<p style="text-align:center;padding:80px 0;color:var(--nk-ink-light)">Article not found. <a href="' + basePath + '/" style="color:var(--nk-accent)">Return home</a></p>',
+    body: `<p style="text-align:center;padding:80px 0;color:var(--nk-ink-light)">Article not found. <a href="${basePath || '/'}" style="color:var(--nk-accent)">Return home</a></p>`,
   }), { status: 404, headers: { 'content-type': 'text/html;charset=UTF-8' } });
 }
 
-async function nookieSearchPage(env, q, basePath = '/thenookienook') {
+async function siteSearchPage(env, site, q, basePath) {
   let results = [];
-  const canonicalBase = basePath === '' ? 'https://thenookienook.com' : 'https://gab.ae/thenookienook';
+  const canonicalBase = (basePath === '' && site.ownDomain) ? 'https://' + site.ownDomain : 'https://gab.ae' + basePath;
   if (q.length >= 2) {
     try {
       const pattern = `%${q.toLowerCase()}%`;
       const r = await env.DB.prepare(
-        "SELECT slug, title, description, lede, category, published_at, image FROM news WHERE status='live' AND site='thenookienook' AND (LOWER(title) LIKE ? OR LOWER(description) LIKE ? OR LOWER(tags) LIKE ?) ORDER BY published_at DESC LIMIT 30"
-      ).bind(pattern, pattern, pattern).all();
+        "SELECT slug, title, description, lede, category, published_at, image FROM news WHERE status='live' AND site=? AND (LOWER(title) LIKE ? OR LOWER(description) LIKE ? OR LOWER(tags) LIKE ?) ORDER BY published_at DESC LIMIT 30"
+      ).bind(site.dbSiteValue, pattern, pattern, pattern).all();
       results = r?.results || [];
     } catch (e) {}
   }
@@ -2224,7 +2577,7 @@ async function nookieSearchPage(env, q, basePath = '/thenookienook') {
   const searchForm = `
     <div style="padding:32px 0 28px;border-bottom:3px double var(--nk-border)">
       <form method="GET" action="${basePath}/search" style="display:flex;gap:10px;max-width:680px;margin:0 auto">
-        <input type="search" name="q" value="${esc(q)}" placeholder="Search sex ed topics, relationships, health…" autofocus
+        <input type="search" name="q" value="${esc(q)}" placeholder="Search ${esc(site.name)}…" autofocus
           style="flex:1;font-family:'DM Sans',sans-serif;font-size:16px;padding:12px 16px;border:2px solid var(--nk-border);border-radius:4px;background:var(--nk-paper);color:var(--nk-ink);outline:none"
           onfocus="this.style.borderColor='var(--nk-accent)'" onblur="this.style.borderColor='var(--nk-border)'">
         <button type="submit" style="font-family:'DM Sans',sans-serif;font-size:13px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;padding:12px 22px;background:var(--nk-ink);color:#fff;border:none;border-radius:4px;cursor:pointer">Search</button>
@@ -2241,7 +2594,7 @@ async function nookieSearchPage(env, q, basePath = '/thenookienook') {
              <div style="display:flex;gap:16px;padding:16px 0;border-bottom:1px solid var(--nk-border-light);align-items:flex-start">
                ${a.image ? `<a href="${basePath}/article/${a.slug}" style="flex-shrink:0"><img src="${esc(a.image)}" alt="${esc(a.title)}" style="width:120px;height:68px;object-fit:cover;display:block" loading="lazy"></a>` : ''}
                <div style="flex:1;min-width:0">
-                 <div style="margin-bottom:6px"><span style="font-size:9px;font-weight:700;letter-spacing:0.16em;text-transform:uppercase;color:#fff;background:${nkCatColor(a.category)};padding:2px 8px">${nkCatLabel(a.category)}</span></div>
+                 <div style="margin-bottom:6px"><span style="font-size:9px;font-weight:700;letter-spacing:0.16em;text-transform:uppercase;color:#fff;background:${siteCatColor(site, a.category)};padding:2px 8px">${siteCatLabel(site, a.category)}</span></div>
                  <a href="${basePath}/article/${a.slug}" style="font-family:'Playfair Display',Georgia,serif;font-size:18px;font-weight:700;line-height:1.3;color:var(--nk-ink);display:block;margin-bottom:5px">${esc(a.title)}</a>
                  ${(a.lede || a.description) ? `<p style="font-size:14px;color:var(--nk-ink-mid);line-height:1.5;margin-bottom:6px">${esc(a.lede || a.description)}</p>` : ''}
                  <span style="font-size:11px;color:var(--nk-ink-light)">${timeAgo(a.published_at)}</span>
@@ -2250,9 +2603,9 @@ async function nookieSearchPage(env, q, basePath = '/thenookienook') {
          </div>`;
 
   const body = `<div style="max-width:860px;margin:0 auto">${searchForm}${resultsHtml}</div>`;
-  return new Response(siteLayout({ site: nookieSite,
-    title: q ? `"${q}" — Search | The Nookie Nook` : 'Search | The Nookie Nook',
-    description: q ? `Search results for "${q}" on The Nookie Nook.` : 'Search sex education topics on The Nookie Nook.',
+  return new Response(siteLayout({ site,
+    title: q ? `"${q}" — Search | ${site.name}` : `Search | ${site.name}`,
+    description: q ? `Search results for "${q}" on ${site.name}.` : `Search ${site.name}.`,
     canonical: `${canonicalBase}/search${q ? `?q=${encodeURIComponent(q)}` : ''}`,
     activeNav: 'search',
     basePath,
@@ -2260,18 +2613,25 @@ async function nookieSearchPage(env, q, basePath = '/thenookienook') {
   }), { headers: { 'content-type': 'text/html;charset=UTF-8' } });
 }
 
-async function nookieSitemap(env) {
+async function siteSitemapXml(env, site) {
+  const siteBase = site.ownDomain ? 'https://' + site.ownDomain : 'https://gab.ae' + site.pathPrefix;
   try {
     const { results } = await env.DB.prepare(
-      "SELECT slug, updated_at, published_at FROM news WHERE status='live' AND site='thenookienook' ORDER BY published_at DESC LIMIT 1000"
-    ).all();
+      "SELECT slug, updated_at, published_at FROM news WHERE status='live' AND site=? ORDER BY published_at DESC LIMIT 1000"
+    ).bind(site.dbSiteValue).all();
     const urls = results.map(r => {
       const date = (r.updated_at || r.published_at || '').slice(0, 10);
-      return `  <url><loc>https://thenookienook.com/article/${r.slug}</loc>${date ? `<lastmod>${date}</lastmod>` : ''}<changefreq>weekly</changefreq></url>`;
+      return `  <url><loc>${siteBase}/article/${r.slug}</loc>${date ? `<lastmod>${date}</lastmod>` : ''}<changefreq>weekly</changefreq></url>`;
     }).join('\n');
-    const xml = `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n  <url><loc>https://thenookienook.com/</loc><changefreq>hourly</changefreq></url>\n${urls}\n</urlset>`;
+    const xml = `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n  <url><loc>${siteBase}/</loc><changefreq>hourly</changefreq></url>\n${urls}\n</urlset>`;
     return new Response(xml, { headers: { 'content-type': 'application/xml;charset=UTF-8' } });
   } catch (e) {
     return new Response('<?xml version="1.0"?><urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"></urlset>', { headers: { 'content-type': 'application/xml' } });
   }
 }
+
+// Thin nookie wrappers — kept so existing call sites in the router don't need changing
+function nookieIndex(env, basePath, category, page) { return siteIndex(env, nookieSite, basePath, category, page); }
+function nookieArticlePage(env, slug, basePath) { return siteArticlePage(env, nookieSite, slug, basePath); }
+function nookieSearchPage(env, q, basePath) { return siteSearchPage(env, nookieSite, q, basePath); }
+function nookieSitemap(env) { return siteSitemapXml(env, nookieSite); }
