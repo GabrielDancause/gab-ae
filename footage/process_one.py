@@ -115,22 +115,34 @@ def analyze_clip(video_path, env, slowmo=False, has_ali=None, question_style='cr
         elif has_ali is False:
             ali_hint = '\nIMPORTANT: Ali is NOT in this clip. Title should focus entirely on the scene, action, or subject visible.'
 
-        if question_style == 'trivia':
+        if question_style == 'clickbait':
             title_instruction = f"""
-The TITLE must be a trivia question with a real, knowable answer based on what you see in the frames.
-The viewer should be able to answer correctly if they know their Paris — or be motivated to look it up.
-Ask about a specific fact: the name of a place, a historical detail, a famous landmark visible in the shot.
-Only ask about things you can genuinely see or confidently infer — never invent facts.
+The TITLE must be a clickbait-style hook — emotional, surprising, urgent. Makes the viewer NEED to watch.
+It does NOT need to be a question. Focus on intrigue, FOMO, surprise, or an unexpected angle.
+Be specific to what you actually see. Do NOT invent things not in the frame.
 
-Good examples (trivia-style, specific and answerable):
+Good examples (clickbait):
+- "Nobody told me Paris looked like this 😱"
+- "This spot in Paris broke me 🥹"
+- "I almost walked past this 😮"
+- "This is why I keep coming back to Paris 🔥"
+- "Wait... is this really Paris? 🤯"
+- "The side of Paris nobody shows you 👀"
+- "I can't believe I filmed this 😭"
+
+Rules: max 60 chars — 1 emoji ok — NO hashtags — NEVER invent what's in the frame.{ali_hint}"""
+        elif question_style == 'trivia':
+            title_instruction = f"""
+The TITLE must be a trivia question with a real, knowable answer based ONLY on what you can clearly see in the frames.
+WARNING: Only ask about landmarks or places you can identify with near-certainty from the visuals. If unsure, ask a general question instead.
+NEVER invent or assume specific names — a wrong fact is worse than a vague question.
+
+Good examples (trivia-style, only when clearly visible):
 - "Which famous cemetery is this in Paris? 🏛️"
-- "Can you name the basilica in the background? ⛪"
-- "What is the name of this Paris bridge? 🌉"
-- "How many steps lead up to Sacré-Cœur? 🗼"
-- "Which arrondissement is the Eiffel Tower in? 🇫🇷"
-- "What style of architecture is this? 🏛️"
+- "Can you name this Paris bridge? 🌉"
+- "Which arrondissement is this? 🗺️"
 
-Rules: must end with ? — must have a real answer — max 60 chars — 1 emoji ok — NO hashtags — NEVER invent facts.{ali_hint}"""
+Rules: must end with ? — only ask facts visible in frame — max 60 chars — 1 emoji ok — NO hashtags.{ali_hint}"""
         elif question_style == 'audience':
             title_instruction = f"""
 The TITLE must be a curious question directed at the audience — make them want to answer in the comments.
