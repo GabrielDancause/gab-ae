@@ -122,11 +122,11 @@ Respond ONLY with valid JSON, no explanation:
 {{
   "score": 1-10,
   "music": "<filename that best fits — pick something cinematic/ambient for slow-mo>",
-  "title": "SEO-optimized title for a slow-mo Paris short. Describe the scene and mood. You can say 'Paris' as the city. NEVER guess specific street/park names unless clearly visible. Max 60 chars, 1 emoji ok, NO hashtags.",
+  "title": "Vivid, specific YouTube Shorts title. LEAD with what is happening or who is in the shot (e.g. 'Rollerblading Through Paris', 'Golden Hour Walk in Paris', 'Street Performer in Slow Motion'). You can say 'Paris' as the city. NEVER use generic phrases like 'Slow Motion Cityscape' or 'Paris Viewpoint'. NEVER guess street/park names unless clearly readable in frame. Max 60 chars, 1 emoji ok, NO hashtags.",
   "reason": "one sentence on why this is a great slow-mo shot",
   "has_ali": true or false,
   "tags": ["tag1","tag2"],
-  "activity": "brief description of the scene"
+  "activity": "brief description of the specific subject and action"
 }}
 
 Scoring: 8-10=stunning panning/gesture with great background, 5-7=decent, 1-4=nothing interesting"""
@@ -146,7 +146,7 @@ Respond ONLY with valid JSON, no explanation:
   "start_time": <float seconds>,
   "end_time": <float seconds — must be start_time + at least 30>,
   "music": "<filename from the list above that best fits this clip>",
-  "title": "SEO-optimized YouTube Shorts title. Describe the activity, shot type, and mood. You can say 'Paris' as the city. NEVER invent or guess specific street names, park names, or landmarks — only use location names you can read clearly in the frame. Max 60 chars, 1 emoji ok, NO hashtags.",
+  "title": "Vivid, specific YouTube Shorts title. LEAD with what is happening (e.g. 'Cycling Along the Seine', 'Sunset Walk in Paris', 'Market Day in Paris'). NEVER use generic phrases. NEVER invent street/park/landmark names — only use ones clearly readable in the frame. Max 60 chars, 1 emoji ok, NO hashtags.",
   "reason": "one sentence describing the best visual moment in the window",
   "has_ali": true or false,
   "tags": ["tag1","tag2"],
