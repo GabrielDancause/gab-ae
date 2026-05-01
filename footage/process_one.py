@@ -122,7 +122,7 @@ Respond ONLY with valid JSON, no explanation:
   "start_time": <float seconds>,
   "end_time": <float seconds — must be start_time + at least 30>,
   "music": "<filename from the list above that best fits this clip>",
-  "title": "Catchy YouTube Short title, max 60 chars, 1 emoji ok, NO hashtags",
+  "title": "SEO-optimized YouTube Shorts title: specific, vivid, searchable. Use keywords people search (city name, activity, landmark). Max 60 chars, 1 emoji ok, NO hashtags.",
   "reason": "one sentence describing the best visual moment in the window",
   "has_ali": true or false,
   "tags": ["tag1","tag2"],
