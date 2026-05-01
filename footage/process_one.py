@@ -122,7 +122,7 @@ Respond ONLY with valid JSON, no explanation:
   "start_time": <float seconds>,
   "end_time": <float seconds — must be start_time + at least 30>,
   "music": "<filename from the list above that best fits this clip>",
-  "title": "SEO-optimized YouTube Shorts title: specific, vivid, searchable. Use keywords people search (city name, activity, landmark). Max 60 chars, 1 emoji ok, NO hashtags.",
+  "title": "SEO-optimized YouTube Shorts title. Describe the activity, shot type, and mood. You can say 'Paris' as the city. NEVER invent or guess specific street names, park names, or landmarks — only use location names you can read clearly in the frame. Max 60 chars, 1 emoji ok, NO hashtags.",
   "reason": "one sentence describing the best visual moment in the window",
   "has_ali": true or false,
   "tags": ["tag1","tag2"],
