@@ -132,6 +132,9 @@ The TITLE must be a clickbait-style hook — emotional, surprising, urgent. Make
 It does NOT need to be a question. Use CAPS on 1-2 key words for emphasis. Focus on intrigue, FOMO, surprise.
 Be specific to what you actually see. Do NOT invent things not in the frame.
 
+The CAPS word must amplify the hook — pick something that creates surprise or FOMO about what's visible.
+NEVER capitalize a word that describes a mood you invented (e.g. SILENCE, BEAUTY, MAGIC) — only cap something that makes the specific scene more dramatic.
+
 Good examples (clickbait with CAPS emphasis):
 - "NOBODY told me Paris looked like this 😱"
 - "This spot in Paris BROKE me 🥹"
@@ -141,6 +144,8 @@ Good examples (clickbait with CAPS emphasis):
 - "The side of Paris NOBODY shows you 👀"
 - "I can't believe I FILMED this 😭"
 - "POV: stumbling onto something MAGICAL in Paris ✨"
+
+Bad CAPS (invented mood, not scene-specific): "Parisian SILENCE", "Pure BEAUTY", "Total PEACE"
 
 Rules: max 60 chars — 1-2 words in CAPS — 1 emoji ok — NO hashtags — NEVER invent what's in the frame.{ali_hint}"""
         elif question_style == 'trivia':
