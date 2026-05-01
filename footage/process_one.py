@@ -1,7 +1,8 @@
 #!/usr/bin/env python3
 """
 One-shot: Download square DJI clip → center crop → AI title → YouTube unlisted.
-Usage: python3 process_one.py <drive_file_id> <filename>
+Usage: python3 process_one.py <drive_file_id> <filename> [--slowmo]
+  --slowmo  Use full clip slowed 2× (for 60fps panning/travel gesture shots)
 """
 
 import base64
@@ -90,7 +91,7 @@ def extract_frames(video_path, timestamps, out_dir):
 def img_b64(path):
     return base64.b64encode(Path(path).read_bytes()).decode()
 
-def analyze_clip(video_path, env):
+def analyze_clip(video_path, env, slowmo=False):
     from openai import OpenAI
     client = OpenAI(base_url='https://openrouter.ai/api/v1', api_key=env['OPENROUTER_API_KEY'])
 
@@ -105,9 +106,29 @@ def analyze_clip(video_path, env):
         music_lib = json.loads(Path(MUSIC_LIBRARY).read_text()) if Path(MUSIC_LIBRARY).exists() else []
         music_list = '\n'.join(f'- {t["filename"]}: {t["description"]} (mood: {t["mood"]}, energy: {t["energy"]})' for t in music_lib)
 
-        content = [{
-            "type": "text",
-            "text": f"""You are selecting the best moment from a travel/adventure video clip for a YouTube Short.
+        if slowmo:
+            slowed_dur = duration * 2
+            clip_desc = f"""You are titling a slow-motion travel short for YouTube.
+I show you frames from a {duration:.1f}s clip filmed at 60fps with a DJI Action Cam 6 (square 3840x3840) in Paris, France.
+This clip will be slowed down 2× and become {slowed_dur:.0f}s — smooth, cinematic slow-motion.
+
+Available background music tracks:
+{music_list}
+
+Respond ONLY with valid JSON, no explanation:
+{{
+  "score": 1-10,
+  "music": "<filename that best fits — pick something cinematic/ambient for slow-mo>",
+  "title": "SEO-optimized title for a slow-mo Paris short. Describe the scene and mood. You can say 'Paris' as the city. NEVER guess specific street/park names unless clearly visible. Max 60 chars, 1 emoji ok, NO hashtags.",
+  "reason": "one sentence on why this is a great slow-mo shot",
+  "has_ali": true or false,
+  "tags": ["tag1","tag2"],
+  "activity": "brief description of the scene"
+}}
+
+Scoring: 8-10=stunning panning/gesture with great background, 5-7=decent, 1-4=nothing interesting"""
+        else:
+            clip_desc = f"""You are selecting the best moment from a travel/adventure video clip for a YouTube Short.
 I show you 4 frames from a {int(duration)}s clip filmed with a DJI Action Cam 6 (square 3840x3840) in Paris, France.
 
 CRITICAL RULE: end_time - start_time MUST be between 30 and 60 seconds. Never less than 30.
@@ -131,7 +152,8 @@ Respond ONLY with valid JSON, no explanation:
 
 Constraints: start_time >= 0, end_time <= {duration:.1f}, end_time - start_time >= 30
 Scoring: 8-10=stunning/clear action/strong hook, 5-7=decent, 1-4=boring transition"""
-        }]
+
+        content = [{"type": "text", "text": clip_desc}]
 
         if Path(REFERENCE_PHOTO).exists():
             content.append({"type": "text", "text": "Reference photo of Ali:"})
@@ -157,15 +179,19 @@ Scoring: 8-10=stunning/clear action/strong hook, 5-7=decent, 1-4=boring transiti
                 if json_match:
                     text = json_match.group(0)
                 data = json.loads(text)
-                data['start_time'] = max(0.0, min(float(data.get('start_time', 0)), duration))
-                data['end_time']   = max(0.0, min(float(data.get('end_time', 60)), duration))
-                window = data['end_time'] - data['start_time']
-                if window < 30:
-                    # AI returned a short window — extend to 30s centered on the suggested start
-                    mid = (data['start_time'] + data['end_time']) / 2 if window > 0 else duration / 2
-                    data['start_time'] = max(0.0, mid - 15)
-                    data['end_time']   = min(duration, data['start_time'] + 30)
-                    print(f"  Window too short ({window:.1f}s) — extended to {data['start_time']:.1f}s→{data['end_time']:.1f}s")
+                if slowmo:
+                    # Use full clip — no window needed
+                    data['start_time'] = 0.0
+                    data['end_time']   = duration
+                else:
+                    data['start_time'] = max(0.0, min(float(data.get('start_time', 0)), duration))
+                    data['end_time']   = max(0.0, min(float(data.get('end_time', 60)), duration))
+                    window = data['end_time'] - data['start_time']
+                    if window < 30:
+                        mid = (data['start_time'] + data['end_time']) / 2 if window > 0 else duration / 2
+                        data['start_time'] = max(0.0, mid - 15)
+                        data['end_time']   = min(duration, data['start_time'] + 30)
+                        print(f"  Window too short ({window:.1f}s) — extended to {data['start_time']:.1f}s→{data['end_time']:.1f}s")
                 print(f"  Score: {data.get('score')} | Music: {data.get('music')} | Title: {data.get('title')}")
                 return data
             except Exception as e:
@@ -213,6 +239,38 @@ def cut_short(input_path, output_path, start, end):
         return False
     size_mb = os.path.getsize(output_path) / 1024 / 1024
     print(f"  Short: {output_path} ({size_mb:.1f}MB, {duration:.0f}s)")
+    return True
+
+def cut_short_slowmo(input_path, output_path):
+    """Slow down 60fps clip 2× via setpts=2.0*PTS, then center crop to 1080x1920."""
+    duration = get_duration(input_path)
+    if duration < 2:
+        return False
+
+    w, h = get_dimensions(input_path)
+    is_square = abs(w - h) < 10
+    slowed = duration * 2
+    print(f"  Dimensions: {w}x{h} @ 60fps → {slowed:.0f}s at 50% speed {'(center crop)' if is_square else '(blur bg)'}")
+
+    if is_square:
+        vf = 'setpts=2.0*PTS,crop=ih*9/16:ih:(iw-ih*9/16)/2:0,scale=1080:1920'
+        cmd = ['ffmpeg', '-y', '-i', input_path, '-an',
+               '-vf', vf, '-r', '30',
+               '-c:v', 'libx264', '-crf', '18', '-preset', 'slow',
+               '-maxrate', '25M', '-bufsize', '50M', output_path]
+    else:
+        fc = '[0:v]setpts=2.0*PTS,scale=1080:1920,boxblur=20:5[bg];[0:v]setpts=2.0*PTS,scale=-2:1080[fg];[bg][fg]overlay=(W-w)/2:(H-h)/2'
+        cmd = ['ffmpeg', '-y', '-i', input_path, '-an',
+               '-filter_complex', fc, '-r', '30',
+               '-c:v', 'libx264', '-crf', '18', '-preset', 'slow',
+               '-maxrate', '25M', '-bufsize', '50M', output_path]
+
+    result = subprocess.run(cmd, capture_output=True, text=True)
+    if result.returncode != 0:
+        print("FFmpeg error:", result.stderr[-500:])
+        return False
+    size_mb = os.path.getsize(output_path) / 1024 / 1024
+    print(f"  Slow-mo: {output_path} ({size_mb:.1f}MB, {slowed:.0f}s)")
     return True
 
 FONT_BOLD    = '/usr/share/fonts/truetype/open-sans/OpenSans-Bold.ttf'
@@ -377,9 +435,12 @@ def upload_to_youtube(video_path, title, description=''):
 
 # ── Main ─────────────────────────────────────────────────────────────────────
 def main():
-    file_id  = sys.argv[1] if len(sys.argv) > 1 else '1wD1w2Zfw6rLyKXU5lDuLCqmLsavOiHFE'
-    filename = sys.argv[2] if len(sys.argv) > 2 else 'DJI_20260430154051_0294_D.MP4'
-    location = sys.argv[3] if len(sys.argv) > 3 else None  # e.g. "Parc Martin Luther King, Paris 17e"
+    args     = sys.argv[1:]
+    slowmo   = '--slowmo' in args
+    args     = [a for a in args if a != '--slowmo']
+    file_id  = args[0] if len(args) > 0 else '1wD1w2Zfw6rLyKXU5lDuLCqmLsavOiHFE'
+    filename = args[1] if len(args) > 1 else 'DJI_20260430154051_0294_D.MP4'
+    location = args[2] if len(args) > 2 else None
 
     env = load_env()
     os.makedirs(WORKDIR, exist_ok=True)
@@ -390,7 +451,7 @@ def main():
     final_path  = os.path.join(WORKDIR, 'final_'  + filename)
 
     # 1. Download
-    print(f"\n[1/6] Downloading {filename}...")
+    print(f"\n[1/6] Downloading {filename}{'  [SLOW-MO MODE]' if slowmo else ''}...")
     drive_svc = drive_service()
     if not os.path.exists(raw_path):
         download_from_drive(drive_svc, file_id, raw_path)
@@ -399,21 +460,27 @@ def main():
 
     # 2. Analyze
     print(f"\n[2/6] Analyzing clip with AI...")
-    ai = analyze_clip(raw_path, env)
+    ai = analyze_clip(raw_path, env, slowmo=slowmo)
     if not ai:
         print("  AI analysis failed, using defaults")
-        ai = {'start_time': 0, 'end_time': 45, 'title': 'Paris adventure 🗼', 'score': 5,
-              'activity': 'unknown', 'music': 'shipping_lanes.mp3'}
+        dur = get_duration(raw_path)
+        ai = {'start_time': 0, 'end_time': dur, 'title': 'Paris slow-motion 🎬' if slowmo else 'Paris adventure 🗼',
+              'score': 5, 'activity': 'unknown', 'music': 'shipping_lanes.mp3'}
 
     title = ai.get('title', 'Paris short')
     music = ai.get('music', 'shipping_lanes.mp3')
-    print(f"  Window: {ai['start_time']:.1f}s → {ai['end_time']:.1f}s")
+    if not slowmo:
+        print(f"  Window: {ai['start_time']:.1f}s → {ai['end_time']:.1f}s")
     print(f"  Title:  {title}")
     print(f"  Music:  {music}")
 
-    # 3. Cut short
-    print(f"\n[3/6] Cutting short (center crop)...")
-    ok = cut_short(raw_path, short_path, ai['start_time'], ai['end_time'])
+    # 3. Cut short (or slow-mo)
+    if slowmo:
+        print(f"\n[3/6] Applying 2× slow-motion + center crop...")
+        ok = cut_short_slowmo(raw_path, short_path)
+    else:
+        print(f"\n[3/6] Cutting short (center crop)...")
+        ok = cut_short(raw_path, short_path, ai['start_time'], ai['end_time'])
     if not ok:
         print("  FFmpeg failed")
         sys.exit(1)
