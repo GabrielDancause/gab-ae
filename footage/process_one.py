@@ -115,6 +115,22 @@ def analyze_clip(video_path, env, slowmo=False, has_ali=None):
         elif has_ali is False:
             ali_hint = '\nIMPORTANT: Ali is NOT in this clip. Title should focus entirely on the scene, action, or subject visible.'
 
+        title_instruction = f"""
+The TITLE must be a curious question that invites viewers to engage in the comments.
+The question should make the viewer want to answer — about location, what's happening, what's next, who the person is, or what they're looking at.
+Be specific to what you actually see in the frames. Pick the most interesting unknown from the scene.
+
+Good examples:
+- "Where in Paris do you think this is? 🗺️"
+- "Can you guess what she's looking at? 👀"
+- "Would you hop on this vélib? 🚲"
+- "Which arrondissement is this? 🗼"
+- "Spot what's behind her 👇"
+- "What's she about to do? ✨"
+- "Have you ever skated through Paris? 🛼"
+
+Rules: must end with ? — max 60 chars — 1 emoji ok — NO hashtags — NEVER invent place names.{ali_hint}"""
+
         if slowmo:
             slowed_dur = duration * 2
             clip_desc = f"""You are titling a slow-motion travel short for YouTube.
@@ -128,7 +144,7 @@ Respond ONLY with valid JSON, no explanation:
 {{
   "score": 1-10,
   "music": "<filename that best fits — pick something cinematic/ambient for slow-mo>",
-  "title": "Vivid, specific YouTube Shorts title. LEAD with what is happening or who is in the shot (e.g. 'Rollerblading Through Paris', 'Golden Hour Walk in Paris', 'Street Performer in Slow Motion'). You can say 'Paris' as the city. NEVER use generic phrases like 'Slow Motion Cityscape' or 'Paris Viewpoint'. NEVER guess street/park names unless clearly readable in frame. Max 60 chars, 1 emoji ok, NO hashtags.{ali_hint}",
+  "title": {title_instruction},
   "reason": "one sentence on why this is a great slow-mo shot",
   "has_ali": true or false,
   "tags": ["tag1","tag2"],
@@ -152,7 +168,7 @@ Respond ONLY with valid JSON, no explanation:
   "start_time": <float seconds>,
   "end_time": <float seconds — must be start_time + at least 30>,
   "music": "<filename from the list above that best fits this clip>",
-  "title": "Vivid, specific YouTube Shorts title. LEAD with what is happening (e.g. 'Cycling Along the Seine', 'Sunset Walk in Paris', 'Market Day in Paris'). NEVER use generic phrases. NEVER invent street/park/landmark names — only use ones clearly readable in the frame. Max 60 chars, 1 emoji ok, NO hashtags.{ali_hint}",
+  "title": {title_instruction},
   "reason": "one sentence describing the best visual moment in the window",
   "has_ali": true or false,
   "tags": ["tag1","tag2"],
