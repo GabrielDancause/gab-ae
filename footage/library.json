@@ -118,5 +118,21 @@
     "energy": "medium",
     "description": "Pure solo piano, adventure opening, travel beginnings",
     "attribution": "Music: Torley (archive.org/details/solo-piano-7) CC BY-SA"
+  },
+  {
+    "file": "/opt/gab/music/gymnopedie_no1_macloed.mp3",
+    "filename": "gymnopedie_no1_macloed.mp3",
+    "mood": "peaceful",
+    "energy": "low",
+    "description": "Pure solo piano, Gymnopedie No 1 by Satie, dreamy and timeless, perfect for Paris",
+    "attribution": "Music: Kevin MacLeod (incompetech.com) CC BY"
+  },
+  {
+    "file": "/opt/gab/music/gnossienne_no1.mp3",
+    "filename": "gnossienne_no1.mp3",
+    "mood": "cinematic",
+    "energy": "low",
+    "description": "Pure solo piano, Gnossienne No 1 by Satie, mysterious and atmospheric, city moods",
+    "attribution": "Music: classicals.de - Erik Satie (royalty free)"
   }
 ]
