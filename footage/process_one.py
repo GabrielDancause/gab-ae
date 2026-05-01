@@ -497,13 +497,29 @@ def upload_to_drive(svc, file_path, title):
     f = svc.files().create(body=meta, media_body=media, fields='id').execute()
     return f['id']
 
+def build_description(ai_data, music_filename):
+    """Build YouTube description with tags and music attribution."""
+    parts = []
+    activity = ai_data.get('activity', '')
+    if activity:
+        parts.append(activity)
+    tags = ai_data.get('tags', [])
+    if tags:
+        parts.append(' '.join(f'#{t.replace(" ", "")}' for t in tags))
+    # Music attribution
+    library = json.loads(Path(MUSIC_LIBRARY).read_text()) if Path(MUSIC_LIBRARY).exists() else []
+    track = next((t for t in library if t['filename'] == music_filename), None)
+    if track and track.get('attribution'):
+        parts.append(track['attribution'])
+    return '\n\n'.join(parts)
+
 def upload_to_youtube(video_path, title, description='', channel='ali'):
     svc = yt_service(channel)
     body = {
         'snippet': {
             'title': title,
             'description': description,
-            'tags': ['shorts', 'paris', 'travel'],
+            'tags': ['shorts', 'paris', 'travel', 'france'],
             'categoryId': '19',  # Travel & Events
         },
         'status': {'privacyStatus': 'public'},
@@ -650,8 +666,10 @@ def main():
 
     # 6. Upload to YouTube
     ch_label = 'GAB adventures' if channel == 'gab' else 'Ali Imperiale'
+    description = build_description(ai, music)
     print(f"\n[6/6] Uploading to YouTube ({ch_label})...")
-    yt_id = upload_to_youtube(final_path, title, channel=channel)
+    print(f"  Description: {description[:80]}..." if description else "  No description")
+    yt_id = upload_to_youtube(final_path, title, description=description, channel=channel)
     yt_url = f"https://www.youtube.com/watch?v={yt_id}"
 
     print(f"\n✅ Done!")
