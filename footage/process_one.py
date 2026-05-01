@@ -1,9 +1,10 @@
 #!/usr/bin/env python3
 """
 One-shot: Download square DJI clip → center crop → AI title → YouTube unlisted.
-Usage: python3 process_one.py <drive_file_id> <filename> [--slowmo] [--channel gab]
-  --slowmo       Use full clip slowed 2× (for 60fps panning/travel gesture shots)
-  --channel gab  Upload to GAB adventures channel (default: Ali Imperiale channel)
+Usage: python3 process_one.py <drive_file_id> <filename> [--slowmo] [--channel gab|gab2]
+  --slowmo        Use full clip slowed 2× (for 60fps panning/travel gesture shots)
+  --channel gab   Upload to GAB adventures channel (default: Ali Imperiale channel)
+  --channel gab2  Upload to UC59Q6e7KzugopKWetMtsssA channel
 """
 
 import base64
@@ -28,7 +29,8 @@ from google.oauth2.credentials import Credentials
 DRIVE_TOKEN    = '/opt/gab/footage/token.json'
 YT_CREDS       = '/opt/gab/shorts-uploader/credentials.json'
 YT_TOKEN       = '/opt/gab/shorts-uploader/token.json'        # Ali Imperiale channel
-YT_TOKEN_GAB   = '/opt/gab/gab-adventures/token.json'         # GAB adventures channel
+YT_TOKEN_GAB   = '/opt/gab/gab-adventures/token.json'         # GAB adventures (UC4Cqz6AsnmMWV-4w8_pKhLw)
+YT_TOKEN_GAB2  = '/opt/gab/channel-uc59/token.json'           # UCa2usb0qccYisugjJ-Q1pnw
 SHORTS_FOLDER  = '1NIMuljumdURuvWJa_c7YCPFY-wAIMb_f'
 REFERENCE_PHOTO = '/opt/gab/footage/reference_photo.jpg'
 ENV_FILE       = '/opt/gab/.env'
@@ -56,7 +58,12 @@ def drive_service():
     return build('drive', 'v3', credentials=creds)
 
 def yt_service(channel='ali'):
-    token = YT_TOKEN_GAB if channel == 'gab' else YT_TOKEN
+    if channel == 'gab2':
+        token = YT_TOKEN_GAB2
+    elif channel == 'gab':
+        token = YT_TOKEN_GAB
+    else:
+        token = YT_TOKEN
     creds = Credentials.from_authorized_user_file(token)
     return build('youtube', 'v3', credentials=creds)
 
@@ -564,7 +571,7 @@ def main():
         val = args[idx + 1].lower() if idx + 1 < len(args) else ''
         has_ali_override = val in ('yes', 'true', '1')
         args = args[:idx] + args[idx+2:]
-    channel  = 'gab' if '--channel' in args and args[args.index('--channel') + 1] == 'gab' else 'ali'
+    channel  = args[args.index('--channel') + 1] if '--channel' in args else 'ali'
     if '--channel' in args:
         idx  = args.index('--channel')
         args = args[:idx] + args[idx+2:]
@@ -676,7 +683,7 @@ def main():
         final_path = audio_path
 
     # 6. Upload to YouTube
-    ch_label = 'GAB adventures' if channel == 'gab' else 'Ali Imperiale'
+    ch_label = {'gab': 'GAB adventures', 'gab2': 'GAB channel 2'}.get(channel, 'Ali Imperiale')
     description = build_description(ai, music)
     print(f"\n[6/6] Uploading to YouTube ({ch_label})...")
     print(f"  Description: {description[:80]}..." if description else "  No description")

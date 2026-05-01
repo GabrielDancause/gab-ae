@@ -31,7 +31,7 @@ def main():
     print(f">> Next: {clip['name']} ({clip['id']})", flush=True)
 
     result = subprocess.run(
-        ['python3', SCRIPT, clip['id'], clip['name'], '--channel', 'gab'],
+        ['python3', SCRIPT, clip['id'], clip['name'], '--channel', 'gab2'],
         capture_output=True, text=True,
     )
 
