@@ -94,7 +94,7 @@ def extract_frames(video_path, timestamps, out_dir):
 def img_b64(path):
     return base64.b64encode(Path(path).read_bytes()).decode()
 
-def analyze_clip(video_path, env, slowmo=False, has_ali=None):
+def analyze_clip(video_path, env, slowmo=False, has_ali=None, question_style='creator'):
     from openai import OpenAI
     client = OpenAI(base_url='https://openrouter.ai/api/v1', api_key=env['OPENROUTER_API_KEY'])
 
@@ -115,7 +115,23 @@ def analyze_clip(video_path, env, slowmo=False, has_ali=None):
         elif has_ali is False:
             ali_hint = '\nIMPORTANT: Ali is NOT in this clip. Title should focus entirely on the scene, action, or subject visible.'
 
-        title_instruction = f"""
+        if question_style == 'audience':
+            title_instruction = f"""
+The TITLE must be a curious question directed at the audience — make them want to answer in the comments.
+Ask about what they see: location, landmark, activity, what happens next.
+Be specific to what you actually see in the frames.
+
+Good examples (audience-directed):
+- "Where in Paris do you think this is? 🗺️"
+- "Can you name this Paris landmark? 🗼"
+- "What do you think is happening here? 👀"
+- "Which arrondissement is this? 🤔"
+- "Have you ever been to this spot? ✨"
+- "Spot the hidden detail in this shot 👇"
+
+Rules: must end with ? — max 60 chars — 1 emoji ok — NO hashtags — NEVER invent place names.{ali_hint}"""
+        else:  # creator (default)
+            title_instruction = f"""
 The TITLE must be a curious question directed at the viewer, from the creator's point of view (first person).
 Frame it as if the person who filmed this is asking YOU (the viewer) to guess something about their experience.
 Be specific to what you actually see in the frames.
@@ -128,11 +144,6 @@ Good examples (first-person POV, directed at viewer):
 - "Have you ever been here? 🌿"
 - "Do you recognize where I filmed this? 🎬"
 - "Can you spot what caught my eye? 👇"
-
-Bad examples (avoid these — too impersonal):
-- "Where in Paris do you think this is?" (no first person)
-- "What is happening here?" (boring, not directed)
-- "Where is this located?" (generic)
 
 Rules: must end with ? — first-person or second-person framing — max 60 chars — 1 emoji ok — NO hashtags — NEVER invent place names.{ali_hint}"""
 
@@ -473,6 +484,12 @@ def main():
     args     = sys.argv[1:]
     slowmo   = '--slowmo' in args
     args     = [a for a in args if a != '--slowmo']
+    # --question creator|audience  (default: creator)
+    question_style = 'creator'
+    if '--question' in args:
+        idx = args.index('--question')
+        question_style = args[idx + 1] if idx + 1 < len(args) else 'creator'
+        args = args[:idx] + args[idx+2:]
     # --has-ali yes/no  → skip interactive prompt (for autopilot)
     has_ali_override = None
     if '--has-ali' in args:
@@ -535,7 +552,7 @@ def main():
 
     # 2. Analyze
     print(f"\n[2/6] Analyzing clip with AI...")
-    ai = analyze_clip(raw_path, env, slowmo=slowmo, has_ali=has_ali)
+    ai = analyze_clip(raw_path, env, slowmo=slowmo, has_ali=has_ali, question_style=question_style)
     if not ai:
         print("  AI analysis failed, using defaults")
         dur = get_duration(raw_path)
