@@ -9,6 +9,7 @@ Usage: python3 process_one.py <drive_file_id> <filename> [--slowmo] [--channel g
 import base64
 import io
 import json
+import random
 import os
 import subprocess
 import sys
@@ -472,10 +473,15 @@ def mix_audio(video_path, music_filename, output_path):
     # Get video duration to know how long to loop music
     vid_dur = get_duration(video_path)
 
+    # Pick a random start offset (leave at least vid_dur + 10s before end)
+    music_dur = get_duration(music_path)
+    max_offset = max(0, music_dur - vid_dur - 10)
+    offset = random.uniform(0, max_offset) if max_offset > 0 else 0
+
     result = subprocess.run([
         'ffmpeg', '-y',
         '-i', video_path,
-        '-stream_loop', '-1', '-i', music_path,
+        '-ss', str(offset), '-stream_loop', '-1', '-i', music_path,
         '-map', '0:v', '-map', '1:a',
         '-c:v', 'copy',
         '-filter:a', 'volume=0.6',
