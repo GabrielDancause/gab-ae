@@ -78,6 +78,16 @@ def get_duration(path):
     )
     return float(json.loads(r.stdout).get('format', {}).get('duration', 0))
 
+def get_fps(path):
+    r = subprocess.run(
+        ['ffprobe', '-v', 'quiet', '-print_format', 'json', '-show_streams',
+         '-select_streams', 'v:0', path],
+        capture_output=True, text=True
+    )
+    s = json.loads(r.stdout).get('streams', [{}])[0]
+    num, den = s.get('r_frame_rate', '0/1').split('/')
+    return float(num) / float(den) if float(den) else 0
+
 def extract_frames(video_path, timestamps, out_dir):
     frames = []
     for i, ts in enumerate(timestamps):
@@ -118,19 +128,20 @@ def analyze_clip(video_path, env, slowmo=False, has_ali=None, question_style='cr
         if question_style == 'clickbait':
             title_instruction = f"""
 The TITLE must be a clickbait-style hook — emotional, surprising, urgent. Makes the viewer NEED to watch.
-It does NOT need to be a question. Focus on intrigue, FOMO, surprise, or an unexpected angle.
+It does NOT need to be a question. Use CAPS on 1-2 key words for emphasis. Focus on intrigue, FOMO, surprise.
 Be specific to what you actually see. Do NOT invent things not in the frame.
 
-Good examples (clickbait):
-- "Nobody told me Paris looked like this 😱"
-- "This spot in Paris broke me 🥹"
-- "I almost walked past this 😮"
-- "This is why I keep coming back to Paris 🔥"
-- "Wait... is this really Paris? 🤯"
-- "The side of Paris nobody shows you 👀"
-- "I can't believe I filmed this 😭"
+Good examples (clickbait with CAPS emphasis):
+- "NOBODY told me Paris looked like this 😱"
+- "This spot in Paris BROKE me 🥹"
+- "I almost MISSED this 😮"
+- "This is WHY I keep coming back to Paris 🔥"
+- "WAIT... is this really Paris? 🤯"
+- "The side of Paris NOBODY shows you 👀"
+- "I can't believe I FILMED this 😭"
+- "POV: stumbling onto something MAGICAL in Paris ✨"
 
-Rules: max 60 chars — 1 emoji ok — NO hashtags — NEVER invent what's in the frame.{ali_hint}"""
+Rules: max 60 chars — 1-2 words in CAPS — 1 emoji ok — NO hashtags — NEVER invent what's in the frame.{ali_hint}"""
         elif question_style == 'trivia':
             title_instruction = f"""
 The TITLE must be a trivia question with a real, knowable answer based ONLY on what you can clearly see in the frames.
@@ -511,9 +522,10 @@ def upload_to_youtube(video_path, title, description='', channel='ali'):
 def main():
     args     = sys.argv[1:]
     slowmo   = '--slowmo' in args
+    slowmo_forced = slowmo  # user explicitly passed --slowmo
     args     = [a for a in args if a != '--slowmo']
-    # --question creator|audience  (default: creator)
-    question_style = 'creator'
+    # --question clickbait|creator|audience|trivia  (default: clickbait)
+    question_style = 'clickbait'
     if '--question' in args:
         idx = args.index('--question')
         question_style = args[idx + 1] if idx + 1 < len(args) else 'creator'
@@ -549,7 +561,17 @@ def main():
     else:
         print(f"  Already exists, skipping download")
 
-    # 1b. Ali check — extract mid-frame, ask user if Ali is in the shot
+    # 1b. Auto-detect slowmo: 60fps + short clip → 2× slowdown
+    if not slowmo_forced:
+        fps  = get_fps(raw_path)
+        dur  = get_duration(raw_path)
+        if fps >= 50 and dur <= 20:
+            slowmo = True
+            print(f"  Auto-slowmo: {fps:.0f}fps, {dur:.1f}s → will slow 2× to {dur*2:.0f}s")
+        else:
+            print(f"  Mode: regular speed ({fps:.0f}fps, {dur:.1f}s)")
+
+    # 1c. Ali check — extract mid-frame, ask user if Ali is in the shot
     has_ali = has_ali_override
     check_frame = os.path.join(WORKDIR, 'check_ali_' + filename + '.jpg')
     dur_check = get_duration(raw_path)
