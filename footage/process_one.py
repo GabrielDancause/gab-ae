@@ -115,7 +115,23 @@ def analyze_clip(video_path, env, slowmo=False, has_ali=None, question_style='cr
         elif has_ali is False:
             ali_hint = '\nIMPORTANT: Ali is NOT in this clip. Title should focus entirely on the scene, action, or subject visible.'
 
-        if question_style == 'audience':
+        if question_style == 'trivia':
+            title_instruction = f"""
+The TITLE must be a trivia question with a real, knowable answer based on what you see in the frames.
+The viewer should be able to answer correctly if they know their Paris — or be motivated to look it up.
+Ask about a specific fact: the name of a place, a historical detail, a famous landmark visible in the shot.
+Only ask about things you can genuinely see or confidently infer — never invent facts.
+
+Good examples (trivia-style, specific and answerable):
+- "Which famous cemetery is this in Paris? 🏛️"
+- "Can you name the basilica in the background? ⛪"
+- "What is the name of this Paris bridge? 🌉"
+- "How many steps lead up to Sacré-Cœur? 🗼"
+- "Which arrondissement is the Eiffel Tower in? 🇫🇷"
+- "What style of architecture is this? 🏛️"
+
+Rules: must end with ? — must have a real answer — max 60 chars — 1 emoji ok — NO hashtags — NEVER invent facts.{ali_hint}"""
+        elif question_style == 'audience':
             title_instruction = f"""
 The TITLE must be a curious question directed at the audience — make them want to answer in the comments.
 Ask about what they see: location, landmark, activity, what happens next.
