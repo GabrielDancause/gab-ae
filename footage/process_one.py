@@ -94,7 +94,7 @@ def extract_frames(video_path, timestamps, out_dir):
 def img_b64(path):
     return base64.b64encode(Path(path).read_bytes()).decode()
 
-def analyze_clip(video_path, env, slowmo=False):
+def analyze_clip(video_path, env, slowmo=False, has_ali=None):
     from openai import OpenAI
     client = OpenAI(base_url='https://openrouter.ai/api/v1', api_key=env['OPENROUTER_API_KEY'])
 
@@ -109,6 +109,12 @@ def analyze_clip(video_path, env, slowmo=False):
         music_lib = json.loads(Path(MUSIC_LIBRARY).read_text()) if Path(MUSIC_LIBRARY).exists() else []
         music_list = '\n'.join(f'- {t["filename"]}: {t["description"]} (mood: {t["mood"]}, energy: {t["energy"]})' for t in music_lib)
 
+        ali_hint = ''
+        if has_ali is True:
+            ali_hint = '\nIMPORTANT: A woman named Ali IS confirmed in this clip. Lead the title with her action (e.g. "Ali Cycling in Paris", "Ali Exploring Montmartre").'
+        elif has_ali is False:
+            ali_hint = '\nIMPORTANT: Ali is NOT in this clip. Title should focus entirely on the scene, action, or subject visible.'
+
         if slowmo:
             slowed_dur = duration * 2
             clip_desc = f"""You are titling a slow-motion travel short for YouTube.
@@ -122,7 +128,7 @@ Respond ONLY with valid JSON, no explanation:
 {{
   "score": 1-10,
   "music": "<filename that best fits — pick something cinematic/ambient for slow-mo>",
-  "title": "Vivid, specific YouTube Shorts title. LEAD with what is happening or who is in the shot (e.g. 'Rollerblading Through Paris', 'Golden Hour Walk in Paris', 'Street Performer in Slow Motion'). You can say 'Paris' as the city. NEVER use generic phrases like 'Slow Motion Cityscape' or 'Paris Viewpoint'. NEVER guess street/park names unless clearly readable in frame. Max 60 chars, 1 emoji ok, NO hashtags.",
+  "title": "Vivid, specific YouTube Shorts title. LEAD with what is happening or who is in the shot (e.g. 'Rollerblading Through Paris', 'Golden Hour Walk in Paris', 'Street Performer in Slow Motion'). You can say 'Paris' as the city. NEVER use generic phrases like 'Slow Motion Cityscape' or 'Paris Viewpoint'. NEVER guess street/park names unless clearly readable in frame. Max 60 chars, 1 emoji ok, NO hashtags.{ali_hint}",
   "reason": "one sentence on why this is a great slow-mo shot",
   "has_ali": true or false,
   "tags": ["tag1","tag2"],
@@ -146,7 +152,7 @@ Respond ONLY with valid JSON, no explanation:
   "start_time": <float seconds>,
   "end_time": <float seconds — must be start_time + at least 30>,
   "music": "<filename from the list above that best fits this clip>",
-  "title": "Vivid, specific YouTube Shorts title. LEAD with what is happening (e.g. 'Cycling Along the Seine', 'Sunset Walk in Paris', 'Market Day in Paris'). NEVER use generic phrases. NEVER invent street/park/landmark names — only use ones clearly readable in the frame. Max 60 chars, 1 emoji ok, NO hashtags.",
+  "title": "Vivid, specific YouTube Shorts title. LEAD with what is happening (e.g. 'Cycling Along the Seine', 'Sunset Walk in Paris', 'Market Day in Paris'). NEVER use generic phrases. NEVER invent street/park/landmark names — only use ones clearly readable in the frame. Max 60 chars, 1 emoji ok, NO hashtags.{ali_hint}",
   "reason": "one sentence describing the best visual moment in the window",
   "has_ali": true or false,
   "tags": ["tag1","tag2"],
@@ -167,41 +173,46 @@ Scoring: 8-10=stunning/clear action/strong hook, 5-7=decent, 1-4=boring transiti
             content.append({"type": "text", "text": f"Frame at {m}:{s:02d}:"})
             content.append({"type": "image_url", "image_url": {"url": f"data:image/jpeg;base64,{img_b64(p)}"}})
 
+        import re
         for model in OPENROUTER_MODELS:
-            try:
-                print(f"  Trying model: {model}")
-                resp = client.chat.completions.create(
-                    model=model,
-                    messages=[{"role": "user", "content": content}],
-                    temperature=0.2,
-                )
-                text = resp.choices[0].message.content.strip()
-                # Extract JSON from markdown fences or surrounding prose
-                import re
-                json_match = re.search(r'\{[\s\S]*\}', text)
-                if json_match:
-                    text = json_match.group(0)
-                data = json.loads(text)
-                if slowmo:
-                    # Use full clip — no window needed
-                    data['start_time'] = 0.0
-                    data['end_time']   = duration
-                else:
-                    data['start_time'] = max(0.0, min(float(data.get('start_time', 0)), duration))
-                    data['end_time']   = max(0.0, min(float(data.get('end_time', 60)), duration))
-                    window = data['end_time'] - data['start_time']
-                    if window < 30:
-                        mid = (data['start_time'] + data['end_time']) / 2 if window > 0 else duration / 2
-                        data['start_time'] = max(0.0, mid - 15)
-                        data['end_time']   = min(duration, data['start_time'] + 30)
-                        print(f"  Window too short ({window:.1f}s) — extended to {data['start_time']:.1f}s→{data['end_time']:.1f}s")
-                print(f"  Score: {data.get('score')} | Music: {data.get('music')} | Title: {data.get('title')}")
-                return data
-            except Exception as e:
-                print(f"  {model} failed: {e}")
-                if "429" in str(e):
-                    time.sleep(3)
-                    continue
+            max_retries = 4 if model == 'openrouter/free' else 2
+            for attempt in range(max_retries):
+                try:
+                    print(f"  Trying model: {model}" + (f" (attempt {attempt+1})" if attempt else ""))
+                    resp = client.chat.completions.create(
+                        model=model,
+                        messages=[{"role": "user", "content": content}],
+                        temperature=0.2,
+                    )
+                    text = resp.choices[0].message.content.strip()
+                    json_match = re.search(r'\{[\s\S]*\}', text)
+                    if not json_match:
+                        raise ValueError("no JSON in response")
+                    data = json.loads(json_match.group(0))
+                    if slowmo:
+                        data['start_time'] = 0.0
+                        data['end_time']   = duration
+                    else:
+                        data['start_time'] = max(0.0, min(float(data.get('start_time', 0)), duration))
+                        data['end_time']   = max(0.0, min(float(data.get('end_time', 60)), duration))
+                        window = data['end_time'] - data['start_time']
+                        if window < 30:
+                            mid = (data['start_time'] + data['end_time']) / 2 if window > 0 else duration / 2
+                            data['start_time'] = max(0.0, mid - 15)
+                            data['end_time']   = min(duration, data['start_time'] + 30)
+                            print(f"  Window too short ({window:.1f}s) — extended to {data['start_time']:.1f}s→{data['end_time']:.1f}s")
+                    print(f"  Score: {data.get('score')} | Music: {data.get('music')} | Title: {data.get('title')}")
+                    return data
+                except Exception as e:
+                    err = str(e)
+                    is_rate_limit = "429" in err
+                    delay = 12 if is_rate_limit else 8
+                    print(f"  {model} failed (attempt {attempt+1}): {err[:120]}")
+                    if attempt + 1 < max_retries:
+                        print(f"  Retrying in {delay}s...")
+                        time.sleep(delay)
+                    else:
+                        break  # try next model
         return None
 
 def get_dimensions(path):
@@ -441,6 +452,13 @@ def main():
     args     = sys.argv[1:]
     slowmo   = '--slowmo' in args
     args     = [a for a in args if a != '--slowmo']
+    # --has-ali yes/no  → skip interactive prompt (for autopilot)
+    has_ali_override = None
+    if '--has-ali' in args:
+        idx = args.index('--has-ali')
+        val = args[idx + 1].lower() if idx + 1 < len(args) else ''
+        has_ali_override = val in ('yes', 'true', '1')
+        args = args[:idx] + args[idx+2:]
     channel  = 'gab' if '--channel' in args and args[args.index('--channel') + 1] == 'gab' else 'ali'
     if '--channel' in args:
         idx  = args.index('--channel')
@@ -465,9 +483,38 @@ def main():
     else:
         print(f"  Already exists, skipping download")
 
+    # 1b. Ali check — extract mid-frame, ask user if Ali is in the shot
+    has_ali = has_ali_override
+    check_frame = os.path.join(WORKDIR, 'check_ali_' + filename + '.jpg')
+    dur_check = get_duration(raw_path)
+    subprocess.run(
+        ['ffmpeg', '-y', '-ss', str(dur_check / 2), '-i', raw_path,
+         '-vframes', '1', '-q:v', '2', check_frame],
+        capture_output=True
+    )
+    if has_ali is None and os.path.exists(check_frame):
+        print(f"\n  Preview frame saved → {check_frame}")
+        print(f"  Is Ali in this clip? [yes/no/skip]: ", end='', flush=True)
+        try:
+            ans = input().strip().lower()
+            if ans in ('yes', 'y'):
+                has_ali = True
+            elif ans in ('no', 'n'):
+                has_ali = False
+            # 'skip' or anything else → leave as None (let AI decide)
+        except EOFError:
+            pass  # non-interactive / piped — let AI decide
+
+    if has_ali is True:
+        print(f"  ✓ Ali confirmed — title will feature her name/presence")
+    elif has_ali is False:
+        print(f"  ✓ No Ali — title will focus on scene/action")
+    else:
+        print(f"  ? Ali presence unknown — AI will guess from reference photo")
+
     # 2. Analyze
     print(f"\n[2/6] Analyzing clip with AI...")
-    ai = analyze_clip(raw_path, env, slowmo=slowmo)
+    ai = analyze_clip(raw_path, env, slowmo=slowmo, has_ali=has_ali)
     if not ai:
         print("  AI analysis failed, using defaults")
         dur = get_duration(raw_path)
