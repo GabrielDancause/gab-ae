@@ -1,8 +1,9 @@
 #!/usr/bin/env python3
 """
 One-shot: Download square DJI clip → center crop → AI title → YouTube unlisted.
-Usage: python3 process_one.py <drive_file_id> <filename> [--slowmo]
-  --slowmo  Use full clip slowed 2× (for 60fps panning/travel gesture shots)
+Usage: python3 process_one.py <drive_file_id> <filename> [--slowmo] [--channel gab]
+  --slowmo       Use full clip slowed 2× (for 60fps panning/travel gesture shots)
+  --channel gab  Upload to GAB adventures channel (default: Ali Imperiale channel)
 """
 
 import base64
@@ -25,7 +26,8 @@ from google.oauth2.credentials import Credentials
 # ── Config ──────────────────────────────────────────────────────────────────
 DRIVE_TOKEN    = '/opt/gab/footage/token.json'
 YT_CREDS       = '/opt/gab/shorts-uploader/credentials.json'
-YT_TOKEN       = '/opt/gab/shorts-uploader/token.json'
+YT_TOKEN       = '/opt/gab/shorts-uploader/token.json'        # Ali Imperiale channel
+YT_TOKEN_GAB   = '/opt/gab/gab-adventures/token.json'         # GAB adventures channel
 SHORTS_FOLDER  = '1NIMuljumdURuvWJa_c7YCPFY-wAIMb_f'
 REFERENCE_PHOTO = '/opt/gab/footage/reference_photo.jpg'
 ENV_FILE       = '/opt/gab/.env'
@@ -52,8 +54,9 @@ def drive_service():
     creds = Credentials.from_authorized_user_file(DRIVE_TOKEN)
     return build('drive', 'v3', credentials=creds)
 
-def yt_service():
-    creds = Credentials.from_authorized_user_file(YT_TOKEN)
+def yt_service(channel='ali'):
+    token = YT_TOKEN_GAB if channel == 'gab' else YT_TOKEN
+    creds = Credentials.from_authorized_user_file(token)
     return build('youtube', 'v3', credentials=creds)
 
 def download_from_drive(svc, file_id, dest_path):
@@ -412,8 +415,8 @@ def upload_to_drive(svc, file_path, title):
     f = svc.files().create(body=meta, media_body=media, fields='id').execute()
     return f['id']
 
-def upload_to_youtube(video_path, title, description=''):
-    svc = yt_service()
+def upload_to_youtube(video_path, title, description='', channel='ali'):
+    svc = yt_service(channel)
     body = {
         'snippet': {
             'title': title,
@@ -438,6 +441,10 @@ def main():
     args     = sys.argv[1:]
     slowmo   = '--slowmo' in args
     args     = [a for a in args if a != '--slowmo']
+    channel  = 'gab' if '--channel' in args and args[args.index('--channel') + 1] == 'gab' else 'ali'
+    if '--channel' in args:
+        idx  = args.index('--channel')
+        args = args[:idx] + args[idx+2:]
     file_id  = args[0] if len(args) > 0 else '1wD1w2Zfw6rLyKXU5lDuLCqmLsavOiHFE'
     filename = args[1] if len(args) > 1 else 'DJI_20260430154051_0294_D.MP4'
     location = args[2] if len(args) > 2 else None
@@ -507,11 +514,13 @@ def main():
         final_path = audio_path
 
     # 6. Upload to YouTube
-    print(f"\n[6/6] Uploading to YouTube...")
-    yt_id = upload_to_youtube(final_path, title)
+    ch_label = 'GAB adventures' if channel == 'gab' else 'Ali Imperiale'
+    print(f"\n[6/6] Uploading to YouTube ({ch_label})...")
+    yt_id = upload_to_youtube(final_path, title, channel=channel)
     yt_url = f"https://www.youtube.com/watch?v={yt_id}"
 
     print(f"\n✅ Done!")
+    print(f"   Channel: {ch_label}")
     print(f"   Title:   {title}")
     print(f"   YouTube: {yt_url}")
     print(f"   Score:   {ai.get('score')}")
