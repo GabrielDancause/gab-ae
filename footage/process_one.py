@@ -506,7 +506,7 @@ def upload_to_youtube(video_path, title, description='', channel='ali'):
             'tags': ['shorts', 'paris', 'travel'],
             'categoryId': '19',  # Travel & Events
         },
-        'status': {'privacyStatus': 'unlisted'},
+        'status': {'privacyStatus': 'public'},
     }
     media = MediaFileUpload(video_path, mimetype='video/mp4', resumable=True, chunksize=32*1024*1024)
     request = svc.videos().insert(part='snippet,status', body=body, media_body=media)
