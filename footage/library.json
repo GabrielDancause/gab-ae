@@ -1,130 +1,26 @@
 [
   {
-    "file": "/opt/gab/music/beauty_flow.mp3",
-    "filename": "beauty_flow.mp3",
-    "mood": "uplifting",
-    "energy": "medium",
-    "description": "Uplifting and fluid, city exploration, positive energy",
-    "attribution": "Music: incompetech.com/Kevin MacLeod (CC BY)"
-  },
-  {
-    "file": "/opt/gab/music/lightless_dawn.mp3",
-    "filename": "lightless_dawn.mp3",
-    "mood": "cinematic",
-    "energy": "medium",
-    "description": "Cinematic build, dramatic outdoor scenery",
-    "attribution": "Music: incompetech.com/Kevin MacLeod (CC BY)"
-  },
-  {
-    "file": "/opt/gab/music/shipping_lanes.mp3",
-    "filename": "shipping_lanes.mp3",
-    "mood": "peaceful",
-    "energy": "low",
-    "description": "Gentle arpeggios, flowing and calm, park walk or canal stroll",
-    "attribution": "Music: incompetech.com/Kevin MacLeod (CC BY)"
-  },
-  {
-    "file": "/opt/gab/music/morning_light.mp3",
-    "filename": "morning_light.mp3",
-    "mood": "warm",
-    "energy": "low",
-    "description": "Gentle piano, fresh morning energy, Paris sunrise",
-    "attribution": "Music: soundimage.org"
-  },
-  {
-    "file": "/opt/gab/music/peaceful_evening.mp3",
-    "filename": "peaceful_evening.mp3",
-    "mood": "peaceful",
-    "energy": "low",
-    "description": "Soft and calm, evening stroll, golden hour",
-    "attribution": "Music: soundimage.org"
-  },
-  {
-    "file": "/opt/gab/music/romantic_lands.mp3",
-    "filename": "romantic_lands.mp3",
-    "mood": "romantic",
-    "energy": "medium",
-    "description": "Romantic and dreamy, perfect for Paris city scenes",
-    "attribution": "Music: soundimage.org"
-  },
-  {
-    "file": "/opt/gab/music/magical_day.mp3",
-    "filename": "magical_day.mp3",
-    "mood": "uplifting",
-    "energy": "medium",
-    "description": "Uplifting and bright, joyful Paris exploration",
-    "attribution": "Music: soundimage.org"
-  },
-  {
-    "file": "/opt/gab/music/still_of_morning.mp3",
-    "filename": "still_of_morning.mp3",
-    "mood": "cinematic",
-    "energy": "low",
-    "description": "Moody cinematic opener, early Paris morning",
-    "attribution": "Music: soundimage.org"
-  },
-  {
-    "file": "/opt/gab/music/valley_sunrise.mp3",
-    "filename": "valley_sunrise.mp3",
-    "mood": "peaceful",
-    "energy": "low",
-    "description": "Peaceful and airy, sunrise walks, open spaces",
-    "attribution": "Music: soundimage.org"
-  },
-  {
-    "file": "/opt/gab/music/the_garden.mp3",
-    "filename": "the_garden.mp3",
-    "mood": "peaceful",
-    "energy": "low",
-    "description": "Pure solo piano, gentle and serene, garden walks, quiet streets",
-    "attribution": "Music: Torley (archive.org/details/solo-piano-7) CC BY-SA"
-  },
-  {
-    "file": "/opt/gab/music/outside_the_hotel.mp3",
-    "filename": "outside_the_hotel.mp3",
-    "mood": "warm",
-    "energy": "low",
-    "description": "Pure solo piano, city arrival energy, hotel district stroll",
-    "attribution": "Music: Torley (archive.org/details/solo-piano-7) CC BY-SA"
-  },
-  {
-    "file": "/opt/gab/music/street_scene.mp3",
-    "filename": "street_scene.mp3",
-    "mood": "cinematic",
-    "energy": "medium",
-    "description": "Pure solo piano, lively street energy, urban exploration",
-    "attribution": "Music: Torley (archive.org/details/solo-piano-7) CC BY-SA"
-  },
-  {
-    "file": "/opt/gab/music/peaceful_crossing.mp3",
-    "filename": "peaceful_crossing.mp3",
-    "mood": "peaceful",
-    "energy": "low",
-    "description": "Pure solo piano, crossing bridges, gentle transit",
-    "attribution": "Music: Torley (archive.org/details/solo-piano-7) CC BY-SA"
-  },
-  {
-    "file": "/opt/gab/music/beautiful_things.mp3",
-    "filename": "beautiful_things.mp3",
-    "mood": "uplifting",
-    "energy": "medium",
-    "description": "Pure solo piano, wonder and discovery, beautiful city moments",
-    "attribution": "Music: Torley (archive.org/details/solo-piano-7) CC BY-SA"
-  },
-  {
-    "file": "/opt/gab/music/journeys_begin.mp3",
-    "filename": "journeys_begin.mp3",
-    "mood": "cinematic",
-    "energy": "medium",
-    "description": "Pure solo piano, adventure opening, travel beginnings",
-    "attribution": "Music: Torley (archive.org/details/solo-piano-7) CC BY-SA"
-  },
-  {
     "file": "/opt/gab/music/gymnopedie_no1_macloed.mp3",
     "filename": "gymnopedie_no1_macloed.mp3",
     "mood": "peaceful",
     "energy": "low",
-    "description": "Pure solo piano, Gymnopedie No 1 by Satie, dreamy and timeless, perfect for Paris",
+    "description": "Erik Satie - Gymnopedie No 1, solo piano, dreamy and timeless",
+    "attribution": "Music: Kevin MacLeod (incompetech.com) CC BY"
+  },
+  {
+    "file": "/opt/gab/music/gymnopedie_no2.mp3",
+    "filename": "gymnopedie_no2.mp3",
+    "mood": "peaceful",
+    "energy": "low",
+    "description": "Erik Satie - Gymnopedie No 2, solo piano, melancholic and gentle",
+    "attribution": "Music: Kevin MacLeod (incompetech.com) CC BY"
+  },
+  {
+    "file": "/opt/gab/music/gymnopedie_no3.mp3",
+    "filename": "gymnopedie_no3.mp3",
+    "mood": "cinematic",
+    "energy": "low",
+    "description": "Erik Satie - Gymnopedie No 3, solo piano, slow and introspective",
     "attribution": "Music: Kevin MacLeod (incompetech.com) CC BY"
   },
   {
@@ -132,7 +28,7 @@
     "filename": "gnossienne_no1.mp3",
     "mood": "cinematic",
     "energy": "low",
-    "description": "Pure solo piano, Gnossienne No 1 by Satie, mysterious and atmospheric, city moods",
+    "description": "Erik Satie - Gnossienne No 1, solo piano, mysterious and atmospheric",
     "attribution": "Music: classicals.de - Erik Satie (royalty free)"
   }
 ]
