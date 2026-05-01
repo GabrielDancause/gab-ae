@@ -116,20 +116,25 @@ def analyze_clip(video_path, env, slowmo=False, has_ali=None):
             ali_hint = '\nIMPORTANT: Ali is NOT in this clip. Title should focus entirely on the scene, action, or subject visible.'
 
         title_instruction = f"""
-The TITLE must be a curious question that invites viewers to engage in the comments.
-The question should make the viewer want to answer — about location, what's happening, what's next, who the person is, or what they're looking at.
-Be specific to what you actually see in the frames. Pick the most interesting unknown from the scene.
+The TITLE must be a curious question directed at the viewer, from the creator's point of view (first person).
+Frame it as if the person who filmed this is asking YOU (the viewer) to guess something about their experience.
+Be specific to what you actually see in the frames.
 
-Good examples:
-- "Where in Paris do you think this is? 🗺️"
-- "Can you guess what she's looking at? 👀"
-- "Would you hop on this vélib? 🚲"
-- "Which arrondissement is this? 🗼"
-- "Spot what's behind her 👇"
-- "What's she about to do? ✨"
-- "Have you ever skated through Paris? 🛼"
+Good examples (first-person POV, directed at viewer):
+- "Can you guess where I was? 🗺️"
+- "Do you know this Paris spot? 👀"
+- "Would you have stopped here? ✨"
+- "Can you name this neighborhood? 🗼"
+- "Have you ever been here? 🌿"
+- "Do you recognize where I filmed this? 🎬"
+- "Can you spot what caught my eye? 👇"
 
-Rules: must end with ? — max 60 chars — 1 emoji ok — NO hashtags — NEVER invent place names.{ali_hint}"""
+Bad examples (avoid these — too impersonal):
+- "Where in Paris do you think this is?" (no first person)
+- "What is happening here?" (boring, not directed)
+- "Where is this located?" (generic)
+
+Rules: must end with ? — first-person or second-person framing — max 60 chars — 1 emoji ok — NO hashtags — NEVER invent place names.{ali_hint}"""
 
         if slowmo:
             slowed_dur = duration * 2
