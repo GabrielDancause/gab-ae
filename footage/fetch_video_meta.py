@@ -50,27 +50,33 @@ def print_stats(conn):
 
     vertical = conn.execute(
         "SELECT COUNT(*), COALESCE(SUM(size_bytes),0) FROM files "
-        "WHERE mime_type LIKE 'video/%' AND height > width"
+        "WHERE mime_type LIKE 'video/%' AND height > width AND width > 0"
     ).fetchone()
 
     short_vertical = conn.execute(
         "SELECT COUNT(*) FROM files "
-        "WHERE mime_type LIKE 'video/%' AND height > width AND duration_ms < 60000"
+        "WHERE mime_type LIKE 'video/%' AND height > width AND width > 0 AND duration_ms < 60000"
     ).fetchone()[0]
 
     horizontal = conn.execute(
         "SELECT COUNT(*) FROM files "
-        "WHERE mime_type LIKE 'video/%' AND width >= height AND width IS NOT NULL"
+        "WHERE mime_type LIKE 'video/%' AND width >= height AND width > 0"
     ).fetchone()[0]
 
     square = conn.execute(
         "SELECT COUNT(*) FROM files "
-        "WHERE mime_type LIKE 'video/%' AND width = height AND width IS NOT NULL"
+        "WHERE mime_type LIKE 'video/%' AND width = height AND width > 0"
+    ).fetchone()[0]
+
+    no_meta = conn.execute(
+        "SELECT COUNT(*) FROM files "
+        "WHERE mime_type LIKE 'video/%' AND width = -1"
     ).fetchone()[0]
 
     print("\n=== Video Metadata Summary ===")
     print("  Total videos      : {:,}".format(total))
     print("  Metadata fetched  : {:,}  ({} remaining)".format(done, total - done))
+    print("  No Drive metadata : {:,}  (large/raw files — need ffprobe)".format(no_meta))
     print()
     print("  Vertical (h>w)    : {:,}  ({:.1f} GB)".format(vertical[0], vertical[1]/1024**3))
     print("  Vertical <60s     : {:,}  ← Shorts-ready, no crop needed".format(short_vertical))
@@ -82,7 +88,7 @@ def print_stats(conn):
         SELECT folder_name, COUNT(*) n,
                SUM(CASE WHEN duration_ms < 60000 THEN 1 ELSE 0 END) short_n
         FROM files
-        WHERE mime_type LIKE 'video/%' AND height > width
+        WHERE mime_type LIKE 'video/%' AND height > width AND width > 0
         GROUP BY folder_name ORDER BY n DESC LIMIT 15
     """):
         print("  {:4d} vertical ({:3d} <60s)  {}".format(r[1], r[2] if r[2] is not None else 0, r[0]))
@@ -133,9 +139,16 @@ def fetch_metadata():
         height   = meta.get('height')
         dur_ms   = meta.get('durationMillis')
 
+        # Use -1 as sentinel when Drive has no metadata (large/unprocessed files)
+        # so they don't keep appearing in the "width IS NULL" queue
         conn.execute(
             "UPDATE files SET width=?, height=?, duration_ms=? WHERE drive_id=?",
-            (width, height, int(dur_ms) if dur_ms else None, drive_id)
+            (
+                int(width) if width else -1,
+                int(height) if height else -1,
+                int(dur_ms) if dur_ms else None,
+                drive_id
+            )
         )
         done += 1
 
