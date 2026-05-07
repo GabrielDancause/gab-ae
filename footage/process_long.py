@@ -86,6 +86,46 @@ META_VARIANTS = [
 ]
 
 
+# ── Resume cache helpers ───────────────────────────────────────────────────────
+WORKDIR_MARKER = os.path.join(WORKDIR, '.folder_id')
+
+
+def is_cached(path):
+    """True if path exists and is non-empty."""
+    p = Path(path)
+    return p.exists() and p.stat().st_size > 0
+
+
+def cached_download(path, drive_size):
+    """True if file is already fully downloaded (within 0.5% of Drive-reported size)."""
+    p = Path(path)
+    if not p.exists():
+        return False
+    local = p.stat().st_size
+    if local == 0:
+        return False
+    if drive_size and local < int(drive_size) * 0.995:
+        return False
+    return True
+
+
+def workdir_init(folder_id):
+    """Prepare WORKDIR for this folder.
+
+    If WORKDIR contains leftover data from a *different* folder, wipe it first.
+    Writes a marker so the next invocation can detect the same situation.
+    """
+    os.makedirs(WORKDIR, exist_ok=True)
+    marker = Path(WORKDIR_MARKER)
+    if marker.exists():
+        prev = marker.read_text().strip()
+        if prev != folder_id:
+            print(f"  [resume] WORKDIR has stale data from {prev}, cleaning...")
+            shutil.rmtree(WORKDIR)
+            os.makedirs(WORKDIR)
+    marker.write_text(folder_id)
+
+
 # ── Lock ───────────────────────────────────────────────────────────────────────
 def acquire_lock():
     if Path(LOCK_FILE).exists():
@@ -606,9 +646,20 @@ def make_phone_short(raw_path, out_path):
 
 def make_meta_stitch(raw_paths, folder_id):
     """Normalize all meta clips to 1440×1920 and stitch into one file. Returns path or None."""
+    stitched = os.path.join(WORKDIR, f'meta_stitched_{folder_id}.mp4')
+    if is_cached(stitched):
+        dur = get_duration(stitched)
+        gb  = os.path.getsize(stitched) / 1024**3
+        print(f"  Stitch cached: {gb:.2f} GB, {dur:.0f}s")
+        return stitched
+
     norm_paths = []
     for p in raw_paths:
         norm = p + '.norm.mp4'
+        if is_cached(norm):
+            print(f"  Norm cached: {Path(p).name}")
+            norm_paths.append(norm)
+            continue
         r = subprocess.run([
             'ffmpeg', '-y', '-i', p,
             '-vf', 'scale=1440:-2,pad=1440:1920:0:(1920-ih)/2:black',
@@ -621,7 +672,6 @@ def make_meta_stitch(raw_paths, folder_id):
     if not norm_paths:
         return None
 
-    stitched = os.path.join(WORKDIR, f'meta_stitched_{folder_id}.mp4')
     if len(norm_paths) == 1:
         shutil.copy2(norm_paths[0], stitched)
     else:
@@ -670,7 +720,12 @@ def parallel_download_process(svc, files, process_fn):
     def downloader():
         for f in files:
             raw = os.path.join(WORKDIR, f['name'])
-            size_gb = int(f.get('size', 0)) / 1024**3
+            drive_size = int(f.get('size', 0))
+            if cached_download(raw, drive_size):
+                print(f"\n  ↓ {f['name']} (cached)")
+                dl_q.put((f, raw))
+                continue
+            size_gb = drive_size / 1024**3
             print(f"\n  ↓ {f['name']} ({size_gb:.1f} GB)")
             try:
                 download_file(svc, f['id'], raw)
@@ -798,7 +853,7 @@ def _main(dry_run, list_mode):
     if dry_run:
         return
 
-    os.makedirs(WORKDIR, exist_ok=True)
+    workdir_init(folder['id'])
     os.makedirs(READY_DIR, exist_ok=True)
     os.makedirs(READY_LONG_DIR, exist_ok=True)
     env = load_env()
@@ -820,16 +875,40 @@ def _main(dry_run, list_mode):
         print(f"\n[DJI: {len(dji_files)} file(s) — download+encode in parallel]")
 
         def process_dji(f, raw_path):
-            # Probe actual dimensions (resolves 'unknown' files)
+            stem    = Path(f['name']).stem
+            sq_path = os.path.join(WORKDIR, 'sq_' + f['name'])
+            hz_path = os.path.join(WORKDIR, 'hz_' + f['name'])
+
+            # Resume: crop already done — no need to re-probe or re-encode
+            if is_cached(sq_path):
+                print(f"  → Square (cached crop): {f['name']}")
+                dji_square_cropped.append(sq_path)
+                cached_short = next(Path(WORKDIR).glob(f'short_*_dji_{stem}.mp4'), None)
+                if cached_short and is_cached(str(cached_short)) and short_count[0] < MAX_SHORTS:
+                    print(f"  → Short cached: {cached_short.name}")
+                    short_no_music.append(str(cached_short))
+                    short_count[0] += 1
+                if raw_path != sq_path:
+                    Path(raw_path).unlink(missing_ok=True)
+                return
+
+            # Resume: horizontal already moved
+            if is_cached(hz_path):
+                print(f"  → Horizontal (cached): {f['name']}")
+                dji_horiz_paths.append(hz_path)
+                if raw_path != hz_path:
+                    Path(raw_path).unlink(missing_ok=True)
+                return
+
+            # Fresh processing — probe actual dimensions (resolves 'unknown' files)
             w, h = get_dimensions(raw_path)
             fps  = get_fps(raw_path)
             dur  = get_duration(raw_path)
 
             if w > 0 and h > 0 and (w - h) > 100:
                 # Turned out to be horizontal — keep raw for stitching
-                stable = os.path.join(WORKDIR, 'hz_' + f['name'])
-                shutil.move(raw_path, stable)
-                dji_horiz_paths.append(stable)
+                shutil.move(raw_path, hz_path)
+                dji_horiz_paths.append(hz_path)
                 print(f"  → Horizontal ({w}x{h}), kept for stitch")
                 return
 
@@ -837,15 +916,14 @@ def _main(dry_run, list_mode):
             print(f"  → Square ({w}x{h}, {dur:.0f}s, {fps:.0f}fps)")
 
             # Crop to 4K 16:9 for long-form
-            cropped = os.path.join(WORKDIR, 'sq_' + f['name'])
-            if crop_to_4k(raw_path, cropped):
-                dji_square_cropped.append(cropped)
+            if crop_to_4k(raw_path, sq_path):
+                dji_square_cropped.append(sq_path)
 
             # Extract Short from long clips
             if short_count[0] < MAX_SHORTS and dur > SHORT_CLIP_SECS + 10:
                 short_path = os.path.join(
                     WORKDIR,
-                    f'short_{short_count[0]:02d}_dji_{Path(f["name"]).stem}.mp4'
+                    f'short_{short_count[0]:02d}_dji_{stem}.mp4'
                 )
                 if extract_dji_short(raw_path, location, env, short_path):
                     short_no_music.append(short_path)
@@ -861,9 +939,12 @@ def _main(dry_run, list_mode):
         print(f"\n[DJI horizontal: {len(horiz_files)} file(s)]")
         for f in horiz_files:
             raw = os.path.join(WORKDIR, 'hz_' + f['name'])
-            size_gb = int(f.get('size', 0)) / 1024**3
-            print(f"\n  ↓ {f['name']} ({size_gb:.1f} GB)")
-            download_file(svc, f['id'], raw)
+            if cached_download(raw, int(f.get('size', 0))):
+                print(f"\n  ↓ {f['name']} (cached)")
+            else:
+                size_gb = int(f.get('size', 0)) / 1024**3
+                print(f"\n  ↓ {f['name']} ({size_gb:.1f} GB)")
+                download_file(svc, f['id'], raw)
             dji_horiz_paths.append(raw)
 
     # ── 3. Meta glasses — download sequentially ───────────────────────────────
@@ -872,9 +953,12 @@ def _main(dry_run, list_mode):
         print(f"\n[Meta glasses: {len(meta_files)} file(s)]")
         for f in meta_files:
             raw = os.path.join(WORKDIR, f['name'])
-            size_gb = int(f.get('size', 0)) / 1024**3
-            print(f"\n  ↓ {f['name']} ({size_gb:.1f} GB)")
-            download_file(svc, f['id'], raw)
+            if cached_download(raw, int(f.get('size', 0))):
+                print(f"\n  ↓ {f['name']} (cached)")
+            else:
+                size_gb = int(f.get('size', 0)) / 1024**3
+                print(f"\n  ↓ {f['name']} ({size_gb:.1f} GB)")
+                download_file(svc, f['id'], raw)
             meta_raw_paths.append(raw)
 
     # ── 4. Phone Shorts — parallel download/process ───────────────────────────
@@ -909,19 +993,25 @@ def _main(dry_run, list_mode):
         parallel_download_process(svc, phone_files, process_phone)
 
     # ── 5. Add music to all Shorts and write to queue ─────────────────────────
-    final_shorts = short_no_music[:MAX_SHORTS]
+    queued_shorts = 0
+    final_shorts  = short_no_music[:MAX_SHORTS]
     if final_shorts:
         print(f"\n[Mixing music + AI titles for {len(final_shorts)} Short(s)...]")
-        short_q = load_queue(READY_QUEUE)
-        city = location.split()[-1].title()  # best-effort city from end of location string
+        city = location.split()[-1].title()
+        tags = f'#shorts #{city.lower()} #travel #pov'
         for i, sp in enumerate(final_shorts):
-            final = os.path.join(READY_DIR,
-                                 f'{folder["id"]}_short_{i:02d}.mp4')
+            final = os.path.join(READY_DIR, f'{folder["id"]}_short_{i:02d}.mp4')
+            # Resume: skip if final already exists and queued
+            short_q = load_queue(READY_QUEUE)
+            if is_cached(final) and any(e.get('local_file') == final for e in short_q):
+                print(f"  Short {i+1}: already queued, skipping")
+                Path(sp).unlink(missing_ok=True)
+                queued_shorts += 1
+                continue
             if add_short_music(sp, final):
                 mb = os.path.getsize(final) / 1024 / 1024
                 print(f"  Short {i+1}: {mb:.0f} MB → {Path(final).name}")
                 title, desc = generate_title_short(final, city, env)
-                tags = f'#shorts #{city.lower()} #travel #pov'
                 short_q.append({
                     'drive_id':     folder['id'],
                     'name':         folder['name'],
@@ -932,18 +1022,42 @@ def _main(dry_run, list_mode):
                     'ts_processed': ts(),
                     'uploaded':     False,
                 })
+                save_queue(short_q, READY_QUEUE)
+                queued_shorts += 1
             Path(sp).unlink(missing_ok=True)
-        save_queue(short_q, READY_QUEUE)
-        print(f"  {len(final_shorts)} Short(s) queued")
+        print(f"  {queued_shorts} Short(s) queued")
 
-    long_form_entries = []
+    queued_long = 0
+
+    def _queue_long(entry):
+        """Append one long-form entry to the queue immediately (crash-safe)."""
+        nonlocal queued_long
+        q = load_queue(READY_LONG_Q)
+        if any(e.get('local_file') == entry['local_file'] for e in q):
+            return  # already queued from a previous partial run
+        q.append(entry)
+        save_queue(q, READY_LONG_Q)
+        queued_long += 1
 
     # ── 6. DJI square long-form ───────────────────────────────────────────────
-    if dji_square_cropped:
+    final_sq = os.path.join(READY_LONG_DIR, f'{folder["id"]}_sq.mp4')
+    if is_cached(final_sq):
+        print(f"\n[DJI square long-form: output exists, re-queuing if needed]")
+        _queue_long({
+            'drive_folder_id': folder['id'], 'folder_name': folder['name'],
+            'location': location, 'type': 'dji_square',
+            'title': f'{location} 🎬', 'description': f'Exploring {location}',
+            'local_file': final_sq, 'ts_processed': ts(), 'uploaded': False,
+        })
+    elif dji_square_cropped:
         dji_square_cropped.sort()
         print(f"\n[DJI square long-form: stitching {len(dji_square_cropped)} clip(s)...]")
         stitched = os.path.join(WORKDIR, f'sq_stitched_{folder["id"]}.mp4')
-        if concat_clips(dji_square_cropped, stitched):
+        if is_cached(stitched):
+            print(f"  Stitch cached")
+        elif not concat_clips(dji_square_cropped, stitched):
+            stitched = None
+        if stitched:
             for p in dji_square_cropped:
                 Path(p).unlink(missing_ok=True)
             audio = os.path.join(WORKDIR, f'sq_audio_{folder["id"]}.mp4')
@@ -955,27 +1069,34 @@ def _main(dry_run, list_mode):
                 attr = track.get('attribution', '')
                 if attr:
                     desc += f'\n\n{attr}'
-                final = os.path.join(READY_LONG_DIR, f'{folder["id"]}_sq.mp4')
-                shutil.move(audio, final)
-                long_form_entries.append({
-                    'drive_folder_id': folder['id'],
-                    'folder_name':     folder['name'],
-                    'location':        location,
-                    'type':            'dji_square',
-                    'title':           title,
-                    'description':     desc,
-                    'local_file':      final,
-                    'ts_processed':    ts(),
-                    'uploaded':        False,
+                shutil.move(audio, final_sq)
+                print(f"  Saved: {final_sq}")
+                _queue_long({
+                    'drive_folder_id': folder['id'], 'folder_name': folder['name'],
+                    'location': location, 'type': 'dji_square',
+                    'title': title, 'description': desc,
+                    'local_file': final_sq, 'ts_processed': ts(), 'uploaded': False,
                 })
-                print(f"  Saved: {final}")
 
     # ── 7. DJI horizontal long-form ───────────────────────────────────────────
-    if dji_horiz_paths:
+    final_hz = os.path.join(READY_LONG_DIR, f'{folder["id"]}_hz.mp4')
+    if is_cached(final_hz):
+        print(f"\n[DJI horizontal long-form: output exists, re-queuing if needed]")
+        _queue_long({
+            'drive_folder_id': folder['id'], 'folder_name': folder['name'],
+            'location': location, 'type': 'dji_horizontal',
+            'title': f'{location} 🎬', 'description': f'Exploring {location}',
+            'local_file': final_hz, 'ts_processed': ts(), 'uploaded': False,
+        })
+    elif dji_horiz_paths:
         dji_horiz_paths.sort()
         print(f"\n[DJI horizontal long-form: stitching {len(dji_horiz_paths)} clip(s)...]")
         stitched = os.path.join(WORKDIR, f'hz_stitched_{folder["id"]}.mp4')
-        if concat_clips(dji_horiz_paths, stitched):
+        if is_cached(stitched):
+            print(f"  Stitch cached")
+        elif not concat_clips(dji_horiz_paths, stitched):
+            stitched = None
+        if stitched:
             for p in dji_horiz_paths:
                 Path(p).unlink(missing_ok=True)
             audio = os.path.join(WORKDIR, f'hz_audio_{folder["id"]}.mp4')
@@ -987,22 +1108,16 @@ def _main(dry_run, list_mode):
                 attr = track.get('attribution', '')
                 if attr:
                     desc += f'\n\n{attr}'
-                final = os.path.join(READY_LONG_DIR, f'{folder["id"]}_hz.mp4')
-                shutil.move(audio, final)
-                long_form_entries.append({
-                    'drive_folder_id': folder['id'],
-                    'folder_name':     folder['name'],
-                    'location':        location,
-                    'type':            'dji_horizontal',
-                    'title':           title,
-                    'description':     desc,
-                    'local_file':      final,
-                    'ts_processed':    ts(),
-                    'uploaded':        False,
+                shutil.move(audio, final_hz)
+                print(f"  Saved: {final_hz}")
+                _queue_long({
+                    'drive_folder_id': folder['id'], 'folder_name': folder['name'],
+                    'location': location, 'type': 'dji_horizontal',
+                    'title': title, 'description': desc,
+                    'local_file': final_hz, 'ts_processed': ts(), 'uploaded': False,
                 })
-                print(f"  Saved: {final}")
 
-    # ── 8. Meta glasses — normalize+stitch once, then fan out to 3 variants ─────
+    # ── 8. Meta glasses — normalize+stitch once, then fan out to variants ────
     if meta_raw_paths:
         print(f"\n[Meta glasses: normalizing + stitching {len(meta_raw_paths)} clip(s)...]")
         stitched = make_meta_stitch(meta_raw_paths, folder['id'])
@@ -1015,47 +1130,50 @@ def _main(dry_run, list_mode):
             print(f"\n[Generating {len(META_VARIANTS)} variant preview(s)...]")
             for variant_name, vf in META_VARIANTS:
                 print(f"\n  Variant: {variant_name}")
+                final_meta = os.path.join(READY_LONG_DIR,
+                                          f'{folder["id"]}_meta_{variant_name}.mp4')
+                # Resume: variant already mixed and saved
+                if is_cached(final_meta):
+                    print(f"  Already in ready_long/, re-queuing if needed")
+                    if meta_title is None:
+                        meta_title, meta_desc, _ = generate_title(
+                            final_meta, f'{location} POV glasses', env)
+                    _queue_long({
+                        'drive_folder_id': folder['id'], 'folder_name': folder['name'],
+                        'location': location, 'type': f'meta_preview_{variant_name}',
+                        'title': meta_title,
+                        'description': meta_desc + f'\n\nFormat: {variant_name}.',
+                        'local_file': final_meta, 'ts_processed': ts(), 'uploaded': False,
+                    })
+                    continue
                 prev = os.path.join(WORKDIR, f'meta_{variant_name}_{folder["id"]}.mp4')
                 if not make_meta_preview(stitched, variant_name, vf, prev):
                     continue
-                # Generate AI title once from first successful preview
                 if meta_title is None:
                     print(f"\n[AI title for Meta glasses long-form...]")
                     meta_title, meta_desc, _ = generate_title(
                         prev, f'{location} POV glasses', env)
-                audio = os.path.join(READY_LONG_DIR,
-                                     f'{folder["id"]}_meta_{variant_name}.mp4')
-                ok, track = mix_satie(prev, audio)
+                ok, track = mix_satie(prev, final_meta)
                 Path(prev).unlink(missing_ok=True)
                 if ok:
-                    long_form_entries.append({
-                        'drive_folder_id': folder['id'],
-                        'folder_name':     folder['name'],
-                        'location':        location,
-                        'type':            f'meta_preview_{variant_name}',
-                        'title':           meta_title,
-                        'description':     meta_desc + f'\n\nFormat: {variant_name}.',
-                        'local_file':      audio,
-                        'ts_processed':    ts(),
-                        'uploaded':        False,
+                    print(f"  Saved: {final_meta}")
+                    _queue_long({
+                        'drive_folder_id': folder['id'], 'folder_name': folder['name'],
+                        'location': location, 'type': f'meta_preview_{variant_name}',
+                        'title': meta_title,
+                        'description': meta_desc + f'\n\nFormat: {variant_name}.',
+                        'local_file': final_meta, 'ts_processed': ts(), 'uploaded': False,
                     })
-                    print(f"  Saved: {audio}")
             Path(stitched).unlink(missing_ok=True)
 
-    # ── 9. Write long-form queue ──────────────────────────────────────────────
-    if long_form_entries:
-        q = load_queue(READY_LONG_Q)
-        q.extend(long_form_entries)
-        save_queue(q, READY_LONG_Q)
-
-    # ── 10. Move Drive folder → 4 - Review/ ──────────────────────────────────
+    # ── 9. Move Drive folder → 4 - Review/ ───────────────────────────────────
     move_folder(svc, folder['id'], DUMP_FOLDER_ID, REVIEW_ID)
     print(f"\n  Moved '{folder['name']}' to 4 - Review/")
 
     print(f"\n{'--'*30}")
     print(f"Done!")
-    print(f"  Long-form : {len(long_form_entries)} video(s) queued")
-    print(f"  Shorts    : {len(final_shorts) if final_shorts else 0} clip(s) queued")
+    print(f"  Long-form : {queued_long} video(s) queued")
+    print(f"  Shorts    : {queued_shorts} clip(s) queued")
 
 
 if __name__ == '__main__':
