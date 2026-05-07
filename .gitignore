@@ -8,3 +8,10 @@ shorts-uploader/cron.log
 shorts-uploader/credentials.json
 shorts-uploader/token.json
 shorts-uploader/.env
+
+# Footage pipeline secrets & generated files
+footage/config.py
+footage/token.json
+footage/token_uc59_full.json
+footage/library.db
+footage/__pycache__/

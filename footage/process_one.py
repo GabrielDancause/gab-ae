@@ -531,8 +531,13 @@ def build_description(ai_data, music_filename):
         parts.append(track['attribution'])
     return '\n\n'.join(parts)
 
-def upload_to_youtube(video_path, title, description='', channel='ali'):
+def upload_to_youtube(video_path, title, description='', channel='ali', publish_at=None):
     svc = yt_service(channel)
+
+    if not publish_at:
+        publish_at = time.strftime('%Y-%m-%dT%H:%M:%S.000Z', time.gmtime(time.time() + 3600))
+    print(f"  Scheduled for: {publish_at}")
+
     body = {
         'snippet': {
             'title': title,
@@ -540,7 +545,10 @@ def upload_to_youtube(video_path, title, description='', channel='ali'):
             'tags': ['shorts', 'paris', 'travel', 'france'],
             'categoryId': '19',  # Travel & Events
         },
-        'status': {'privacyStatus': 'public'},
+        'status': {
+            'privacyStatus': 'private',
+            'publishAt': publish_at,
+        },
     }
     media = MediaFileUpload(video_path, mimetype='video/mp4', resumable=True, chunksize=32*1024*1024)
     request = svc.videos().insert(part='snippet,status', body=body, media_body=media)
@@ -574,6 +582,18 @@ def main():
     channel  = args[args.index('--channel') + 1] if '--channel' in args else 'ali'
     if '--channel' in args:
         idx  = args.index('--channel')
+        args = args[:idx] + args[idx+2:]
+    publish_at = None
+    if '--publish-at' in args:
+        idx = args.index('--publish-at')
+        publish_at = args[idx + 1] if idx + 1 < len(args) else None
+        args = args[:idx] + args[idx+2:]
+    no_upload = '--no-upload' in args
+    args = [a for a in args if a != '--no-upload']
+    output_dir = None
+    if '--output-dir' in args:
+        idx = args.index('--output-dir')
+        output_dir = args[idx + 1] if idx + 1 < len(args) else None
         args = args[:idx] + args[idx+2:]
     file_id  = args[0] if len(args) > 0 else '1wD1w2Zfw6rLyKXU5lDuLCqmLsavOiHFE'
     filename = args[1] if len(args) > 1 else 'DJI_20260430154051_0294_D.MP4'
@@ -682,12 +702,33 @@ def main():
         print("  No location provided — skipping caption")
         final_path = audio_path
 
-    # 6. Upload to YouTube
-    ch_label = {'gab': 'GAB adventures', 'gab2': 'GAB channel 2'}.get(channel, 'Ali Imperiale')
     description = build_description(ai, music)
+
+    # 6a. --no-upload: save locally and print READY JSON for the upload scheduler
+    if no_upload:
+        import shutil
+        dest_dir = output_dir or '/opt/gab/footage/ready'
+        os.makedirs(dest_dir, exist_ok=True)
+        dest = os.path.join(dest_dir, file_id + '.mp4')
+        shutil.copy2(final_path, dest)
+        ready = {
+            'drive_id':    file_id,
+            'name':        filename,
+            'title':       title,
+            'description': description,
+            'channel':     channel,
+            'local_file':  dest,
+        }
+        print(f"\nREADY: {json.dumps(ready)}")
+        print(f"   Title:  {title}")
+        print(f"   File:   {dest}")
+        return
+
+    # 6b. Upload to YouTube
+    ch_label = {'gab': 'GAB adventures', 'gab2': 'GAB channel 2'}.get(channel, 'Ali Imperiale')
     print(f"\n[6/6] Uploading to YouTube ({ch_label})...")
     print(f"  Description: {description[:80]}..." if description else "  No description")
-    yt_id = upload_to_youtube(final_path, title, description=description, channel=channel)
+    yt_id = upload_to_youtube(final_path, title, description=description, channel=channel, publish_at=publish_at)
     yt_url = f"https://www.youtube.com/watch?v={yt_id}"
 
     print(f"\n✅ Done!")
