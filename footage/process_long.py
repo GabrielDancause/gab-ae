@@ -62,8 +62,9 @@ READY_QUEUE    = '/opt/gab/footage/ready_queue.json'
 READY_LONG_Q   = '/opt/gab/footage/ready_long_queue.json'
 WORKDIR        = '/opt/gab/footage/workdir'
 LOCK_FILE      = '/tmp/process_long.lock'
-MAX_SHORTS     = 15
+MAX_SHORTS      = 15
 SHORT_CLIP_SECS = 12   # seconds extracted from long DJI clip for a Short
+AI_TITLES       = False  # set True to enable AI-generated clickbait titles
 
 OPENROUTER_MODELS = [
     "openrouter/free",
@@ -1011,7 +1012,8 @@ def _main(dry_run, list_mode):
             if add_short_music(sp, final):
                 mb = os.path.getsize(final) / 1024 / 1024
                 print(f"  Short {i+1}: {mb:.0f} MB → {Path(final).name}")
-                title, desc = generate_title_short(final, city, env)
+                title, desc = (generate_title_short(final, city, env)
+                               if AI_TITLES else (city, f'Shot in {city}.'))
                 short_q.append({
                     'drive_id':     folder['id'],
                     'name':         folder['name'],
@@ -1064,8 +1066,9 @@ def _main(dry_run, list_mode):
             ok, track = mix_satie(stitched, audio)
             Path(stitched).unlink(missing_ok=True)
             if ok:
-                print(f"\n[AI title for DJI square long-form...]")
-                title, desc, tags = generate_title(audio, f'{location} (day)', env)
+                print(f"\n[Title for DJI square long-form...]")
+                title, desc, tags = (generate_title(audio, f'{location} (day)', env)
+                                     if AI_TITLES else (location, f'Exploring {location}.', []))
                 attr = track.get('attribution', '')
                 if attr:
                     desc += f'\n\n{attr}'
@@ -1103,8 +1106,9 @@ def _main(dry_run, list_mode):
             ok, track = mix_satie(stitched, audio)
             Path(stitched).unlink(missing_ok=True)
             if ok:
-                print(f"\n[AI title for DJI horizontal long-form...]")
-                title, desc, tags = generate_title(audio, f'{location} (night)', env)
+                print(f"\n[Title for DJI horizontal long-form...]")
+                title, desc, tags = (generate_title(audio, f'{location} (night)', env)
+                                     if AI_TITLES else (location, f'Exploring {location}.', []))
                 attr = track.get('attribution', '')
                 if attr:
                     desc += f'\n\n{attr}'
@@ -1136,8 +1140,9 @@ def _main(dry_run, list_mode):
                 if is_cached(final_meta):
                     print(f"  Already in ready_long/, re-queuing if needed")
                     if meta_title is None:
-                        meta_title, meta_desc, _ = generate_title(
-                            final_meta, f'{location} POV glasses', env)
+                        meta_title, meta_desc = (
+                            generate_title(final_meta, f'{location} POV glasses', env)[:2]
+                            if AI_TITLES else (location, f'Exploring {location}.'))
                     _queue_long({
                         'drive_folder_id': folder['id'], 'folder_name': folder['name'],
                         'location': location, 'type': f'meta_preview_{variant_name}',
@@ -1150,9 +1155,10 @@ def _main(dry_run, list_mode):
                 if not make_meta_preview(stitched, variant_name, vf, prev):
                     continue
                 if meta_title is None:
-                    print(f"\n[AI title for Meta glasses long-form...]")
-                    meta_title, meta_desc, _ = generate_title(
-                        prev, f'{location} POV glasses', env)
+                    print(f"\n[Title for Meta glasses long-form...]")
+                    meta_title, meta_desc = (
+                        generate_title(prev, f'{location} POV glasses', env)[:2]
+                        if AI_TITLES else (location, f'Exploring {location}.'))
                 ok, track = mix_satie(prev, final_meta)
                 Path(prev).unlink(missing_ok=True)
                 if ok:
