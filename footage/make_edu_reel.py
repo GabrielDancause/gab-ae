@@ -93,18 +93,36 @@ def extract_ts(name):
 
 # ── Text overlay rendering ────────────────────────────────────────────────────
 
-def render_text_overlay(text, style_key, out_png, fade_in=0.4):
+def _wrap_line(draw, line, font, max_w):
+    """Break a single line into word-wrapped sub-lines that fit within max_w."""
+    words = line.split()
+    if not words:
+        return ['']
+    result, current = [], words[0]
+    for word in words[1:]:
+        test = current + ' ' + word
+        bb = draw.textbbox((0, 0), test, font=font)
+        if bb[2] - bb[0] <= max_w:
+            current = test
+        else:
+            result.append(current)
+            current = word
+    result.append(current)
+    return result
+
+
+def render_text_overlay(text, style_key, out_png):
     """
     Render a text card as a 1080×1920 RGBA PNG using Pillow.
-    Returns the PNG path.
+    Auto-wraps lines that are too wide. Returns the PNG path.
     """
     from PIL import Image, ImageDraw, ImageFont
 
     style = STYLES[style_key]
-    font_size   = style["font_size"]
-    pill_alpha  = style["pill_alpha"]
-    text_color  = style["text_color"]
-    y_frac      = style["y_frac"]
+    font_size  = style["font_size"]
+    pill_alpha = style["pill_alpha"]
+    text_color = style["text_color"]
+    y_frac     = style["y_frac"]
 
     # Load font
     font_path = '/System/Library/Fonts/HelveticaNeue.ttc'
@@ -112,57 +130,64 @@ def render_text_overlay(text, style_key, out_png, fade_in=0.4):
         font_path = '/System/Library/Fonts/Supplemental/Arial.ttf'
     try:
         font = ImageFont.truetype(font_path, font_size)
-        font_small = ImageFont.truetype(font_path, max(24, font_size - 16))
     except Exception:
         font = ImageFont.load_default()
-        font_small = font
 
-    W, H = TARGET_W, TARGET_H
-    img  = Image.new('RGBA', (W, H), (0, 0, 0, 0))
-    draw = ImageDraw.Draw(img)
+    W, H      = TARGET_W, TARGET_H
+    padding_x = 56
+    padding_y = 24
+    line_gap  = 12
+    corner_r  = 22
+    max_text_w = W - padding_x * 2 - 40   # text must fit within this
 
-    lines = text.split('\n')
-    padding_x = 48
-    padding_y = 22
-    line_gap  = 10
-    corner_r  = 20
+    # Dummy draw just for measuring
+    dummy = ImageDraw.Draw(Image.new('RGBA', (W, H)))
 
-    # Measure each line
+    # Auto-wrap each \n-delimited line, preserving blank lines as spacers
+    raw_lines = text.split('\n')
+    lines = []
+    for raw in raw_lines:
+        if not raw.strip():
+            lines.append('')          # blank spacer
+        else:
+            bb = dummy.textbbox((0, 0), raw, font=font)
+            if bb[2] - bb[0] > max_text_w:
+                lines.extend(_wrap_line(dummy, raw, font, max_text_w))
+            else:
+                lines.append(raw)
+
+    # Measure wrapped lines
     line_sizes = []
     for line in lines:
         if line.strip():
-            bbox = draw.textbbox((0, 0), line, font=font)
-            line_sizes.append((bbox[2]-bbox[0], bbox[3]-bbox[1]))
+            bb = dummy.textbbox((0, 0), line, font=font)
+            line_sizes.append((bb[2] - bb[0], bb[3] - bb[1]))
         else:
             line_sizes.append((0, font_size // 2))
 
-    block_w = max(w for w,_ in line_sizes) + padding_x * 2
-    block_h = sum(h for _,h in line_sizes) + line_gap * (len(lines)-1) + padding_y * 2
-    block_w = min(block_w, W - 80)   # never wider than screen
+    block_w = max(w for w, _ in line_sizes) + padding_x * 2
+    block_h = sum(h for _, h in line_sizes) + line_gap * (len(lines) - 1) + padding_y * 2
 
     x0 = (W - block_w) // 2
     y0 = int(H * y_frac - block_h / 2)
     y0 = max(60, min(y0, H - block_h - 60))
     x1, y1 = x0 + block_w, y0 + block_h
 
-    # Draw pill background
+    # Compose image
+    img  = Image.new('RGBA', (W, H), (0, 0, 0, 0))
     pill = Image.new('RGBA', (W, H), (0, 0, 0, 0))
     pdraw = ImageDraw.Draw(pill)
-    pdraw.rounded_rectangle([x0, y0, x1, y1],
-                              radius=corner_r,
-                              fill=(0, 0, 0, pill_alpha))
-    img = Image.alpha_composite(img, pill)
+    pdraw.rounded_rectangle([x0, y0, x1, y1], radius=corner_r,
+                             fill=(0, 0, 0, pill_alpha))
+    img  = Image.alpha_composite(img, pill)
     draw = ImageDraw.Draw(img)
 
-    # Draw text lines
     ty = y0 + padding_y
-    for i, (line, (lw, lh)) in enumerate(zip(lines, line_sizes)):
-        tx = (W - lw) // 2
+    for line, (lw, lh) in zip(lines, line_sizes):
         if line.strip():
-            # Shadow
-            draw.text((tx+2, ty+2), line, font=font, fill=(0,0,0,160))
-            # Main
-            draw.text((tx, ty), line, font=font, fill=text_color+(255,))
+            tx = (W - lw) // 2
+            draw.text((tx + 2, ty + 2), line, font=font, fill=(0, 0, 0, 160))
+            draw.text((tx,     ty),     line, font=font, fill=text_color + (255,))
         ty += lh + line_gap
 
     img.save(str(out_png), 'PNG')
