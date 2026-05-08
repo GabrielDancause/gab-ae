@@ -169,30 +169,10 @@ def render_text_overlay(text, style_key, out_png, fade_in=0.4):
     return out_png
 
 
-def render_animated_overlay(text, style_key, duration_s, out_path, fps=FPS_OUT):
-    """
-    Build a video overlay: transparent background, text fades in over 0.4s then holds.
-    Uses apng sequence → ffmpeg.
-    Actually: render ONE png and use ffmpeg fade filter.
-    """
-    with tempfile.TemporaryDirectory() as td:
-        td = Path(td)
-        png = td / 'overlay.png'
-        render_text_overlay(text, style_key, png)
-
-        # Build video from still image with alpha fade-in
-        fade_in_s = 0.4
-        # ffmpeg: image → video with geq for alpha fade-in
-        run(['ffmpeg', '-y',
-             '-loop', '1', '-i', str(png),
-             '-t', str(duration_s),
-             '-vf', (f'geq=r=\'r(X,Y)\':g=\'g(X,Y)\':b=\'b(X,Y)\':'
-                     f'a=\'if(lt(T,{fade_in_s}),T/{fade_in_s},1)*alpha(X,Y)\''),
-             '-c:v', 'libx264', '-preset', 'ultrafast', '-crf', '18',
-             '-pix_fmt', 'yuva420p',
-             '-r', str(fps),
-             str(out_path)], quiet=True)
-    return out_path
+def render_png_overlay(text, style_key, out_png):
+    """Render text card as RGBA PNG and return its path."""
+    render_text_overlay(text, style_key, out_png)
+    return out_png
 
 
 # ── Clip extraction ────────────────────────────────────────────────────────────
@@ -219,13 +199,17 @@ def extract_clip(src, center_t, duration, out_path):
          str(out_path)], quiet=True)
     return out_path
 
-def overlay_text_on_clip(video, text_vid, out_path):
-    """Composite text overlay (with alpha) onto video clip."""
-    run(['ffmpeg','-y',
+def overlay_text_on_clip(video, png, duration_s, out_path, fade_in_s=0.4):
+    """
+    Composite RGBA PNG text overlay onto video clip in one ffmpeg pass.
+    Uses fade=alpha=1 — works with libx264, no alpha-strip issues.
+    """
+    run(['ffmpeg', '-y',
          '-i', str(video),
-         '-i', str(text_vid),
+         '-loop', '1', '-i', str(png),
          '-filter_complex',
-         '[0:v][1:v]overlay=0:0:format=auto',
+         f'[1:v]fade=in:st=0:d={fade_in_s}:alpha=1[txt];[0:v][txt]overlay=0:0',
+         '-t', str(duration_s),
          '-c:v', 'libx264', '-preset', 'ultrafast', '-crf', '20',
          '-an',
          str(out_path)], quiet=True)
@@ -361,15 +345,15 @@ def main():
             log(f"  Extracting {dur}s at t={center_t:.1f}s...")
             extract_clip(src, center_t, dur, clip_raw)
 
-            # Render text overlay
+            # Render text overlay PNG
             log(f"  Rendering text overlay...")
-            text_vid = td / f'text_{i:02d}.mp4'
-            render_animated_overlay(text, style, dur, text_vid)
+            png = td / f'text_{i:02d}.png'
+            render_png_overlay(text, style, png)
 
-            # Composite
+            # Composite PNG over footage in one pass
             log(f"  Compositing...")
             final_clip = td / f'card_{i:02d}.mp4'
-            overlay_text_on_clip(clip_raw, text_vid, final_clip)
+            overlay_text_on_clip(clip_raw, png, dur, final_clip)
             final_clips.append(final_clip)
 
         # ── Concatenate all cards ──
