@@ -1,5 +1,5 @@
 {
-  "next_publish_at": "2026-05-08T17:32:58.000Z",
+  "next_publish_at": "2026-05-08T21:17:25.000Z",
   "done": [
     {
       "id": "2026-05-08 - Paris, France_s1",
@@ -136,6 +136,14 @@
       "youtube_url": "https://www.youtube.com/watch?v=EGvg-vjs8CI",
       "publish_at": "2026-05-08T17:32:58.000Z",
       "ts": "2026-05-08T16:33:02Z"
+    },
+    {
+      "id": "edu_France_changed_everything_Even_that",
+      "name": "France changed everything. Even that.",
+      "title": "France changed everything. Even that.",
+      "youtube_url": "https://www.youtube.com/watch?v=lxtr0X2jyiI",
+      "publish_at": "2026-05-08T21:17:25.000Z",
+      "ts": "2026-05-08T20:17:27Z"
     }
   ]
 }
