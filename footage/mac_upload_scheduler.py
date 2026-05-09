@@ -80,7 +80,7 @@ def next_publish_time(state):
         base = max(last_epoch, now)
     else:
         base = now
-    return time.strftime('%Y-%m-%dT%H:%M:%S.000Z', time.gmtime(base + 3600))
+    return time.strftime('%Y-%m-%dT%H:%M:%S.000Z', time.gmtime(base + 4200))  # 70 min
 
 
 def ts():
