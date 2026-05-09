@@ -95,6 +95,11 @@ def within_hours():
     return PUBLISH_HOUR_START <= h < PUBLISH_HOUR_END
 
 def seconds_until_next_slot():
+    """
+    Returns seconds until the next scheduled slot.
+    Negative = last slot was in the past (gap exists).
+    +inf     = no slot ever scheduled (gap exists).
+    """
     state = load_json(STATE_FILE, {})
     next_at = state.get('next_publish_at')
     if not next_at:
@@ -324,8 +329,13 @@ def main():
         return
 
     secs = seconds_until_next_slot()
-    log(f"Next slot in {secs/60:.0f} min")
-    if secs <= GAP_THRESHOLD:
+    if secs == float('inf') or secs < 0:
+        log(f"Last slot was {abs(secs)/60:.0f} min ago — gap confirmed")
+    else:
+        log(f"Next slot in {secs/60:.0f} min")
+
+    # No gap if a slot is scheduled within the next PUBLISH_INTERVAL
+    if 0 < secs <= GAP_THRESHOLD:
         log("No gap — done")
         return
 
