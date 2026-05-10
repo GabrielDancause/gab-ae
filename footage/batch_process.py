@@ -20,15 +20,21 @@ import shutil
 import subprocess
 import sys
 import time
-import urllib.request
-import urllib.error
 from datetime import datetime, timezone
 from pathlib import Path
 
 OPENROUTER_KEY = '${OPENROUTER_API_KEY}'
 CF_API_TOKEN   = os.environ.get('CF_API_TOKEN') or os.environ.get('CLOUDFLARE_API_TOKEN') or ''
-CF_ACCOUNT_ID  = 'f8a9c8de1fcedb10d25b24325a6f8727'
-CF_DB_ID       = '4e23e386-b430-4ffc-bf84-246a4e7bcdd1'
+
+def get_cf_token():
+    """Re-read CF_API_TOKEN from env or /tmp/cf_token.txt at each session."""
+    import pathlib as _p
+    tok_file = _p.Path('/tmp/cf_token.txt')
+    if tok_file.exists():
+        t = tok_file.read_text().strip()
+        if t: return t
+    return os.environ.get('CF_API_TOKEN') or os.environ.get('CLOUDFLARE_API_TOKEN') or ''
+
 SCRIPT_DIR     = Path(__file__).parent
 PROCESS_SCRIPT = SCRIPT_DIR / 'process_session.py'
 FOOTAGE_DIR    = Path('/opt/gab/footage')
@@ -151,27 +157,7 @@ def write_state(sessions_state):
         'vps_free_gb': round(free_gb(), 1),
         'sessions':   sessions_state,
     }
-    state_json = json.dumps(state, indent=2)
-    STATE_FILE.write_text(state_json)
-    _write_state_d1(state_json)
-
-
-def _write_state_d1(state_json):
-    if not CF_API_TOKEN:
-        return
-    sql    = "INSERT OR REPLACE INTO pipeline_state (key, value, updated_at) VALUES ('current', ?, datetime('now'))"
-    url    = f'https://api.cloudflare.com/client/v4/accounts/{CF_ACCOUNT_ID}/d1/database/{CF_DB_ID}/query'
-    body   = json.dumps({'sql': sql, 'params': [state_json]}).encode()
-    req    = urllib.request.Request(url, data=body, method='POST')
-    req.add_header('Authorization', f'Bearer {CF_API_TOKEN}')
-    req.add_header('Content-Type', 'application/json')
-    try:
-        with urllib.request.urlopen(req, timeout=10) as resp:
-            result = json.loads(resp.read())
-            if not result.get('success'):
-                log(f'  [state] D1 write error: {result.get("errors")}')
-    except Exception as e:
-        log(f'  [state] D1 write failed: {e}')
+    STATE_FILE.write_text(json.dumps(state, indent=2))
 
 
 def main():
@@ -244,7 +230,7 @@ def main():
             '--series',         s['series'],
             '--context',        s['context'],
             '--openrouter-key', OPENROUTER_KEY,
-        ] + (['--cf-api-token', CF_API_TOKEN] if CF_API_TOKEN else [])
+        ] + (['--cf-api-token', get_cf_token()] if get_cf_token() else [])
         r = run(cmd)
         if r.returncode != 0:
             log(f"  WARNING: process_session.py exited {r.returncode} — continuing anyway")

@@ -214,7 +214,10 @@ def seed_d1(slug, title, series, thumb_path, embed_url, status, tags_dict, cf_ap
         f"INSERT OR REPLACE INTO videos (slug, title, series, thumb_b64, video_url, status, tags) "
         f"VALUES ('{slug}', '{title_safe}', '{series_safe}', '{thumb_b64}', '{embed_safe}', '{status}', '{tags_json}');"
     )
-    token = cf_api_token or os.environ.get('CF_API_TOKEN') or os.environ.get('CLOUDFLARE_API_TOKEN')
+    # Re-read fresh token from /tmp/cf_token.txt on each call (handles hourly OAuth expiry)
+    _tok_file = Path('/tmp/cf_token.txt')
+    fresh_token = _tok_file.read_text().strip() if _tok_file.exists() else ''
+    token = fresh_token or cf_api_token or os.environ.get('CF_API_TOKEN') or os.environ.get('CLOUDFLARE_API_TOKEN')
     if token:
         url = f"https://api.cloudflare.com/client/v4/accounts/{CF_ACCOUNT_ID}/d1/database/{CF_DB_ID}/query"
         body = json.dumps({"sql": sql}).encode()
