@@ -11,11 +11,12 @@ export const SITES = [
     // ── Identity ──
     id: 'gab-ae',
     dbSiteValue: null,           // stored in news.site; null = original gab.ae articles
-    name: 'GAB.AE',
-    eyebrow: 'Independent News & Analysis',
-    tagline: 'All the stories that matter',
-    footerTagline: 'Breaking news and analysis, updated daily.',
-    footerCredit: 'Independent journalism powered by AI',
+    name: 'GAB adventures',
+    eyebrow: '',
+    tagline: '',
+    hideMasthead: true,
+    footerTagline: 'Paris · and beyond.',
+    footerCredit: 'gab.ae',
 
     // ── Routing ──
     pathPrefix: '',              // '' = root of domain
@@ -173,17 +174,10 @@ Rules:
 
     // ── Nav ──
     navItems: [
-      { href: '/news/category/us',            label: 'U.S.' },
-      { href: '/news/category/world',         label: 'World' },
-      { href: '/news/category/politics',      label: 'Politics' },
-      { href: '/news/category/business',      label: 'Business' },
-      { href: '/news/category/tech',          label: 'Tech' },
-      { href: '/news/category/health',        label: 'Health' },
-      { href: '/news/category/science',       label: 'Science' },
-      { href: '/news/category/entertainment', label: 'Entertainment' },
-      { href: '/news/category/sports',        label: 'Sports' },
-      { href: '/news/category/climate',       label: 'Climate' },
-      { href: '/news/category/travel',        label: 'Travel' },
+      { href: '/videos',     label: 'Videos' },
+      { href: '/projects',   label: 'Projects' },
+      { href: '/activities', label: 'Activities' },
+      { href: '/location',   label: 'Location' },
     ],
 
     // ── Meta ──

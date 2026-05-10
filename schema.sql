@@ -257,6 +257,43 @@ CREATE TABLE IF NOT EXISTS rate_limits (
   PRIMARY KEY (ip, endpoint)
 );
 
+-- Videos: horizontal (16:9) video clips displayed on /videos page
+CREATE TABLE IF NOT EXISTS videos (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  slug TEXT UNIQUE NOT NULL,
+  title TEXT NOT NULL,
+  series TEXT,
+  thumb_b64 TEXT,                -- base64 JPEG thumbnail (served via /vthumb/:slug)
+  video_url TEXT,                -- IA embed URL
+  published_at TEXT DEFAULT (datetime('now')),
+  status TEXT DEFAULT 'live'
+);
+
+CREATE INDEX IF NOT EXISTS idx_videos_series ON videos(series);
+CREATE INDEX IF NOT EXISTS idx_videos_status ON videos(status);
+
+-- Shorts: vertical video clips displayed on homepage grid
+CREATE TABLE IF NOT EXISTS shorts (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  slug TEXT UNIQUE NOT NULL,
+  title TEXT NOT NULL,
+  series TEXT,                   -- e.g. 'paris-satie'
+  thumb_b64 TEXT,                -- base64 JPEG thumbnail (served via /thumb/:slug)
+  video_url TEXT,                -- YouTube/IA URL (null until published)
+  published_at TEXT DEFAULT (datetime('now')),
+  status TEXT DEFAULT 'live'     -- live, draft, aside
+);
+
+CREATE INDEX IF NOT EXISTS idx_shorts_series ON shorts(series);
+CREATE INDEX IF NOT EXISTS idx_shorts_status ON shorts(status);
+
+-- Pipeline state: written by batch_process.py via D1 REST API, read by /vault/status
+CREATE TABLE IF NOT EXISTS pipeline_state (
+  key TEXT PRIMARY KEY,
+  value TEXT NOT NULL,
+  updated_at TEXT DEFAULT (datetime('now'))
+);
+
 -- Engines: page engine registry (legacy, mostly unused — ENGINES const in worker.js)
 CREATE TABLE IF NOT EXISTS engines (
   id TEXT PRIMARY KEY,

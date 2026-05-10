@@ -84,15 +84,15 @@ export default {
   // Each pipeline has its own frequency gate inside.
   // ═══════════════════════════════════════════════════════════════
   async scheduled(event, env, ctx) {
-    // Article generation — loop over all sites, each with its own frequency gate
     const nowMin = new Date().getUTCMinutes();
-    for (const site of SITES) {
-      if (nowMin % site.cronModulo === site.cronOffset) {
-        try {
-          await generateArticle(env, site);
-        } catch (e) {
-          console.log(`❌ [${site.id}] generateArticle error: ${e.message}`);
-        }
+
+    // Article generation — Nookie Nook only (gab.ae pivoted away from news 2026-05-09)
+    const nookieSiteForCron = getSiteById('thenookienook');
+    if (nookieSiteForCron && nowMin % nookieSiteForCron.cronModulo === nookieSiteForCron.cronOffset) {
+      try {
+        await generateArticle(env, nookieSiteForCron);
+      } catch (e) {
+        console.log(`❌ [thenookienook] generateArticle error: ${e.message}`);
       }
     }
 
@@ -274,9 +274,65 @@ export default {
       });
     }
 
-    // Homepage — news index
+    // Homepage — shorts grid
     if (path === '/') {
-      return newsIndex(env);
+      return shortsHomepage(env);
+    }
+
+    // Videos page
+    if (path === '/videos') {
+      return videosPage(env);
+    }
+
+    // Vault — hidden page for private/raw footage preview (not linked from nav)
+    if (path === '/vault' || path === '/vault/status') {
+      const VAULT_KEY = env.VAULT_KEY || 'gabvault2026';
+      const cookie = request.headers.get('Cookie') || '';
+      const authed = cookie.split(';').some(c => c.trim() === `vk=${VAULT_KEY}`);
+      if (!authed) {
+        if (request.method === 'POST') {
+          const form = await request.formData().catch(() => null);
+          const key = form ? form.get('key') : null;
+          if (key === VAULT_KEY) {
+            return new Response(null, { status: 302, headers: {
+              'Location': '/vault',
+              'Set-Cookie': `vk=${VAULT_KEY}; Path=/; Max-Age=7776000; HttpOnly; SameSite=Strict`,
+            }});
+          }
+          return vaultLoginPage(true);
+        }
+        return vaultLoginPage(false);
+      }
+      if (path === '/vault/status') return vaultStatusPage(env);
+      return vaultPage(env);
+    }
+
+    // Approve a processed clip → flip to live (appears on /videos)
+    if (path === '/api/approve-video' && request.method === 'POST') {
+      const { slug } = await request.json().catch(() => ({}));
+      if (!slug) return new Response('missing slug', { status: 400 });
+      await env.DB.prepare(
+        "UPDATE videos SET status='live', published_at=datetime('now') WHERE slug=? AND status='processed'"
+      ).bind(slug).run();
+      return new Response(JSON.stringify({ ok: true, slug }), { headers: { 'content-type': 'application/json' } });
+    }
+
+    // Thumbnail for a video (served from D1 blob)
+    const vthumbMatch = path.match(/^\/vthumb\/([a-z0-9-]+)$/);
+    if (vthumbMatch) {
+      const row = await env.DB.prepare("SELECT thumb_b64 FROM videos WHERE slug = ?").bind(vthumbMatch[1]).first();
+      if (!row?.thumb_b64) return new Response('Not found', { status: 404 });
+      const bytes = Uint8Array.from(atob(row.thumb_b64), c => c.charCodeAt(0));
+      return new Response(bytes, { headers: { 'content-type': 'image/jpeg', 'cache-control': 'public, max-age=86400' } });
+    }
+
+    // Thumbnail for a short (served from D1 blob)
+    const thumbMatch = path.match(/^\/thumb\/([a-z0-9-]+)$/);
+    if (thumbMatch) {
+      const row = await env.DB.prepare("SELECT thumb_b64 FROM shorts WHERE slug = ?").bind(thumbMatch[1]).first();
+      if (!row?.thumb_b64) return new Response('Not found', { status: 404 });
+      const bytes = Uint8Array.from(atob(row.thumb_b64), c => c.charCodeAt(0));
+      return new Response(bytes, { headers: { 'content-type': 'image/jpeg', 'cache-control': 'public, max-age=86400' } });
     }
 
     // Search page
@@ -650,7 +706,7 @@ Rules:
 
     // Robots.txt
     if (path === '/robots.txt') {
-      return new Response(`User-agent: *\nAllow: /\n\nSitemap: https://gab.ae/sitemap.xml\n`, {
+      return new Response(`User-agent: *\nDisallow: /vault\nAllow: /\n\nSitemap: https://gab.ae/sitemap.xml\n`, {
         headers: { 'content-type': 'text/plain' },
       });
     }
@@ -686,9 +742,9 @@ Rules:
       return categoryPage(env, catMatch[1]);
     }
 
-    // /news redirects to homepage
+    // /news — news index (moved off homepage)
     if (path === '/news') {
-      return Response.redirect('https://gab.ae/', 301);
+      return newsIndex(env);
     }
 
     // News category
@@ -1277,6 +1333,563 @@ async function searchPage(env, q) {
 }
 
 // ═══════════════════════════════════════════════════════════════
+async function vaultStatusPage(env) {
+  let state = null;
+  let fetchErr = null;
+  try {
+    const row = await env.DB.prepare("SELECT value FROM pipeline_state WHERE key='current'").first();
+    if (row?.value) state = JSON.parse(row.value);
+  } catch(e) { fetchErr = e.message; }
+
+  const statusIcon = s => ({ done:'✓', processing:'⏳', downloading:'⬇', moving:'→', queued:'·', skipped:'⏸', error:'✗' }[s] || '?');
+  const statusColor = s => ({ done:'#2e7d32', processing:'#1565c0', downloading:'#6a1b9a', moving:'#e65100', queued:'#555', skipped:'#888', error:'#c62828' }[s] || '#555');
+  const fmtTime = iso => iso ? iso.replace('T',' ').replace('Z','') : '—';
+
+  const rows = (state?.sessions || []).map(s => {
+    const icon  = statusIcon(s.status);
+    const color = statusColor(s.status);
+    const ia    = s.vault_ia_id ? `<a href="https://archive.org/details/${esc(s.vault_ia_id)}" target="_blank" style="color:#888;font-size:11px">${esc(s.vault_ia_id)}</a>` : '';
+    return `<tr>
+      <td style="padding:10px 14px;font-weight:600;color:var(--ink)">${esc(s.name)}</td>
+      <td style="padding:10px 14px;text-align:center;font-size:18px;color:${color}">${icon}</td>
+      <td style="padding:10px 14px;color:${color};font-weight:700;font-size:12px;text-transform:uppercase">${esc(s.status)}</td>
+      <td style="padding:10px 14px;color:var(--ink-light);text-align:right">${s.clips != null ? s.clips : '—'}</td>
+      <td style="padding:10px 14px;color:var(--ink-light);text-align:right">${s.size_gb} GB</td>
+      <td style="padding:10px 14px;color:var(--ink-light);font-size:11px">${fmtTime(s.started)}</td>
+      <td style="padding:10px 14px;color:var(--ink-light);font-size:11px">${fmtTime(s.finished)}</td>
+      <td style="padding:10px 14px">${ia}</td>
+    </tr>`;
+  }).join('');
+
+  const done    = (state?.sessions || []).filter(s => s.status === 'done').length;
+  const total   = (state?.sessions || []).length;
+  const freeGb  = state?.vps_free_gb ?? '?';
+  const updated = state?.updated ? fmtTime(state.updated) : '—';
+
+  const body = `
+    <style>
+      .status-header { padding: 28px 0 20px; }
+      .status-header h1 { font-family:'Playfair Display',Georgia,serif; font-size:clamp(20px,3vw,28px); font-weight:900; color:var(--ink); margin-bottom:6px; }
+      .status-meta { font-size:12px; color:var(--ink-light); margin-bottom:24px; display:flex; gap:20px; flex-wrap:wrap; }
+      .status-meta span { display:flex; align-items:center; gap:5px; }
+      .status-table { width:100%; border-collapse:collapse; font-size:13px; }
+      .status-table th { padding:8px 14px; text-align:left; font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:0.05em; color:var(--ink-light); border-bottom:2px solid var(--border); }
+      .status-table tr:nth-child(even) { background:var(--paper-mid); }
+      .status-table tr:hover { background:var(--paper-dark); }
+      .status-err { padding:16px; background:#fff3cd; border:1px solid #ffc107; border-radius:8px; color:#856404; font-size:13px; margin-bottom:20px; }
+      .status-back { display:inline-block; margin-bottom:20px; font-size:13px; color:var(--ink-light); text-decoration:none; }
+      .status-back:hover { color:var(--ink); }
+    </style>
+    <div class="status-header">
+      <a href="/vault" class="status-back">← Back to Vault</a>
+      <h1>Pipeline Status</h1>
+      <div class="status-meta">
+        <span>✓ ${done}/${total} sessions done</span>
+        <span>💾 ${freeGb} GB free on VPS</span>
+        <span>🕐 Updated ${updated}</span>
+      </div>
+    </div>
+    ${fetchErr ? `<div class="status-err">⚠ Could not read pipeline state from D1: ${esc(fetchErr)}</div>` : ''}
+    ${rows ? `<table class="status-table">
+      <thead><tr>
+        <th>Session</th><th></th><th>Status</th><th>Files</th><th>Size</th><th>Started</th><th>Finished</th><th>IA Item</th>
+      </tr></thead>
+      <tbody>${rows}</tbody>
+    </table>` : '<p style="color:var(--ink-light);padding:40px 0;text-align:center">No state file yet — start the pipeline first.</p>'}
+    <script>setTimeout(()=>location.reload(), 10000);</script>
+  `;
+
+  return new Response(siteLayout({
+    site: gabAeSite,
+    title: 'Pipeline Status — Vault',
+    description: '',
+    canonical: 'https://gab.ae/vault/status',
+    extraHead: '<meta name="robots" content="noindex,nofollow">',
+    body,
+  }), { headers: { 'content-type': 'text/html;charset=UTF-8', 'cache-control': 'no-store' } });
+}
+
+function vaultLoginPage(wrongKey = false) {
+  const html = `<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="noindex,nofollow">
+  <title>Vault</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { min-height: 100vh; display: flex; align-items: center; justify-content: center; background: #0e0e0e; font-family: 'DM Sans', system-ui, sans-serif; }
+    .login-box { background: #1a1a1a; border: 1px solid #2e2e2e; border-radius: 14px; padding: 40px 36px; width: 100%; max-width: 340px; }
+    h1 { font-size: 22px; font-weight: 800; color: #f0f0f0; margin-bottom: 6px; letter-spacing: -0.02em; }
+    p { font-size: 13px; color: #888; margin-bottom: 28px; }
+    label { display: block; font-size: 12px; font-weight: 600; color: #aaa; margin-bottom: 8px; }
+    input[type=password] { width: 100%; padding: 11px 14px; background: #111; border: 1px solid #333; border-radius: 8px; color: #f0f0f0; font-size: 15px; outline: none; transition: border-color 0.15s; }
+    input[type=password]:focus { border-color: #666; }
+    button { margin-top: 16px; width: 100%; padding: 12px; background: #f0f0f0; color: #111; border: none; border-radius: 8px; font-size: 14px; font-weight: 700; cursor: pointer; transition: background 0.15s; }
+    button:hover { background: #ddd; }
+    .err { margin-top: 14px; font-size: 12px; color: #e05252; text-align: center; }
+  </style>
+</head>
+<body>
+  <div class="login-box">
+    <h1>Vault</h1>
+    <p>Private media archive. Enter the access key.</p>
+    <form method="POST" action="/vault">
+      <label for="key">Access key</label>
+      <input type="password" id="key" name="key" autofocus autocomplete="current-password">
+      <button type="submit">Enter</button>
+      ${wrongKey ? '<p class="err">Wrong key — try again.</p>' : ''}
+    </form>
+  </div>
+</body>
+</html>`;
+  return new Response(html, { status: wrongKey ? 401 : 200, headers: { 'content-type': 'text/html;charset=UTF-8', 'cache-control': 'no-store' } });
+}
+
+async function vaultPage(env) {
+  let raw = [], processed = [], shorts = [], photos = [];
+  try {
+    const vr = await env.DB.prepare("SELECT slug, title, series, video_url, tags FROM videos WHERE status='vault' ORDER BY id DESC").all();
+    raw = vr.results || [];
+  } catch (e) {}
+  try {
+    const pr = await env.DB.prepare("SELECT slug, title, series, video_url, tags FROM videos WHERE status='processed' ORDER BY id DESC").all();
+    processed = pr.results || [];
+  } catch (e) {}
+  try {
+    const sr = await env.DB.prepare("SELECT slug, title, series, video_url FROM shorts WHERE status='vault' ORDER BY id DESC").all();
+    shorts = sr.results || [];
+  } catch (e) {}
+
+  // Collect all unique series across all content
+  const allItems = [...raw, ...processed, ...shorts];
+  const seriesSet = [...new Set(allItems.map(v => v.series).filter(Boolean))];
+
+  const metaCard = (v, showApprove = false) => {
+    let meta = null;
+    try { meta = v.tags ? JSON.parse(v.tags) : null; } catch(e) {}
+    const tagPills = meta?.tags?.slice(0,8).map(t => `<span class="vault-tag">${esc(t)}</span>`).join('') || '';
+    const metaLine = meta ? [meta.location, meta.time_of_day, meta.mood].filter(Boolean).map(x => esc(x)).join(' · ') : '';
+    return `
+    <div class="vault-card" ${v.video_url ? `data-embed="${esc(v.video_url)}"` : ''} data-slug="${esc(v.slug)}" data-series="${esc(v.series||'')}" role="button" tabindex="0">
+      <div class="vault-thumb" style="aspect-ratio:16/9">
+        <img src="/vthumb/${esc(v.slug)}" alt="${esc(v.title)}" loading="lazy" width="800" height="450">
+        <div class="vault-play">&#9654;</div>
+        <div class="vault-label">${esc(v.title)}</div>
+      </div>
+      ${v.series ? `<div class="vault-series-badge">${esc(v.series)}</div>` : ''}
+      ${meta ? `<div class="vault-meta">
+        ${metaLine ? `<div class="vault-meta-line">${metaLine}</div>` : ''}
+        ${meta.description ? `<div class="vault-desc">${esc(meta.description)}</div>` : ''}
+        ${tagPills ? `<div class="vault-tags">${tagPills}</div>` : ''}
+      </div>` : ''}
+      ${showApprove ? `<div class="vault-approve-row"><button class="vault-approve-btn" data-slug="${esc(v.slug)}">Publish to /videos</button></div>` : ''}
+    </div>`;
+  };
+
+  const shortCard = (s) => `
+    <div class="vault-card" ${s.video_url ? `data-embed="${esc(s.video_url)}"` : ''} data-series="${esc(s.series||'')}" role="button" tabindex="0">
+      <div class="vault-thumb" style="aspect-ratio:9/16">
+        <img src="/thumb/${esc(s.slug)}" alt="${esc(s.title)}" loading="lazy" width="270" height="480">
+        <div class="vault-play">&#9654;</div>
+        <div class="vault-label">${esc(s.title)}</div>
+      </div>
+    </div>`;
+
+  const empty = `<div class="vault-empty">Nothing here yet.</div>`;
+
+  const seriesFilterHtml = seriesSet.length > 1 ? `
+    <div class="vault-series-filter">
+      <button class="vault-series-btn active" data-series="">All <span class="vault-tab-count">${allItems.length}</span></button>
+      ${seriesSet.map(s => `<button class="vault-series-btn" data-series="${esc(s)}">${esc(s)}</button>`).join('')}
+    </div>` : '';
+
+  const body = `
+    <style>
+      .vault-header { padding: 28px 0 0; }
+      .vault-header h1 { font-family: 'Playfair Display', Georgia, serif; font-size: clamp(22px, 3vw, 32px); font-weight: 900; color: var(--ink); margin-bottom: 16px; }
+      .vault-series-filter { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 20px; }
+      .vault-series-btn { padding: 6px 14px; font-size: 12px; font-weight: 600; border: 1px solid var(--border); border-radius: 20px; background: transparent; color: var(--ink-light); cursor: pointer; transition: all 0.15s; display: flex; align-items: center; gap: 6px; }
+      .vault-series-btn:hover { border-color: var(--ink); color: var(--ink); }
+      .vault-series-btn.active { background: var(--ink); color: var(--paper); border-color: var(--ink); }
+      .vault-tabs { display: flex; gap: 0; border-bottom: 1px solid var(--border); margin-bottom: 24px; }
+      .vault-tab { padding: 10px 18px; font-size: 13px; font-weight: 600; color: var(--ink-light); cursor: pointer; border-bottom: 2px solid transparent; margin-bottom: -1px; transition: color 0.15s; user-select: none; display: flex; align-items: center; gap: 6px; }
+      .vault-tab:hover { color: var(--ink); }
+      .vault-tab.active { color: var(--ink); border-bottom-color: var(--ink); }
+      .vault-tab-count { font-size: 11px; background: var(--border); border-radius: 10px; padding: 1px 6px; font-weight: 700; }
+      .vault-panel { display: none; }
+      .vault-panel.active { display: block; }
+      .vault-grid-wide  { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px; padding-bottom: 48px; }
+      .vault-grid-tall  { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 16px; padding-bottom: 48px; }
+      @media (min-width: 640px) { .vault-grid-tall { grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); } }
+      .vault-card { border-radius: 10px; overflow: hidden; background: var(--paper-mid); cursor: pointer; transition: transform 0.2s ease, box-shadow 0.2s ease; }
+      .vault-card:hover { transform: translateY(-3px); box-shadow: 0 8px 28px rgba(0,0,0,0.15); }
+      .vault-card.hidden { display: none; }
+      .vault-thumb { position: relative; background: #111; overflow: hidden; }
+      .vault-thumb img { width: 100%; height: 100%; object-fit: cover; display: block; transition: transform 0.3s ease; }
+      .vault-card:hover .vault-thumb img { transform: scale(1.03); }
+      .vault-play { position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%); width: 52px; height: 52px; background: rgba(0,0,0,0.55); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: #fff; font-size: 20px; padding-left: 4px; opacity: 0; transition: opacity 0.2s; }
+      .vault-card:hover .vault-play { opacity: 1; }
+      .vault-label { position: absolute; bottom: 0; left: 0; right: 0; padding: 8px 12px; background: linear-gradient(transparent, rgba(0,0,0,0.72)); color: #fff; font-size: 12px; font-weight: 600; }
+      .vault-series-badge { padding: 5px 12px; font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; color: var(--ink-light); background: var(--paper-dark); }
+      .vault-empty { text-align: center; padding: 80px 24px; color: var(--ink-light); font-size: 15px; }
+      .vault-meta { padding: 12px 14px 14px; }
+      .vault-meta-line { font-size: 11px; font-weight: 600; color: var(--ink-light); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 6px; }
+      .vault-desc { font-size: 12px; color: var(--ink); line-height: 1.5; margin-bottom: 8px; }
+      .vault-tags { display: flex; flex-wrap: wrap; gap: 5px; }
+      .vault-tag { font-size: 11px; background: var(--paper-mid); border: 1px solid var(--border); border-radius: 20px; padding: 2px 9px; color: var(--ink-light); white-space: nowrap; }
+      .vault-approve-row { padding: 0 14px 14px; }
+      .vault-approve-btn { width: 100%; padding: 9px; background: #1a5c30; color: #fff; border: none; border-radius: 6px; font-size: 13px; font-weight: 600; cursor: pointer; transition: background 0.15s; }
+      .vault-approve-btn:hover { background: #145025; }
+      .vault-approve-btn.done { background: #888; cursor: default; }
+      .vault-modal { display: none; position: fixed; inset: 0; z-index: 1000; background: rgba(0,0,0,0.92); align-items: center; justify-content: center; }
+      .vault-modal.open { display: flex; }
+      .vault-modal-inner { position: relative; background: #000; border-radius: 12px; overflow: hidden; box-shadow: 0 24px 80px rgba(0,0,0,0.6); }
+      .vault-modal-inner iframe { width: 100%; height: 100%; border: none; display: block; }
+      .vault-modal-close { position: absolute; top: -42px; right: 0; background: none; border: none; color: #fff; font-size: 30px; cursor: pointer; opacity: 0.8; line-height: 1; }
+      .vault-modal-close:hover { opacity: 1; }
+    </style>
+
+    <div class="vault-header">
+      <h1>Vault</h1>
+      ${seriesFilterHtml}
+      <div class="vault-tabs">
+        <div class="vault-tab active" data-tab="raw">Raw <span class="vault-tab-count" id="count-raw">${raw.length}</span></div>
+        <div class="vault-tab" data-tab="processed">Processed <span class="vault-tab-count" id="count-processed">${processed.length}</span></div>
+        <div class="vault-tab" data-tab="photos">Photos <span class="vault-tab-count" id="count-photos">${photos.length}</span></div>
+        <div class="vault-tab" data-tab="shorts">Shorts <span class="vault-tab-count" id="count-shorts">${shorts.length}</span></div>
+      </div>
+    </div>
+
+    <div class="vault-panel active" id="vault-panel-raw">
+      ${raw.length ? `<div class="vault-grid-wide">${raw.map(v => metaCard(v, false)).join('')}</div>` : empty}
+    </div>
+    <div class="vault-panel" id="vault-panel-processed">
+      ${processed.length ? `<div class="vault-grid-wide">${processed.map(v => metaCard(v, true)).join('')}</div>` : `<div class="vault-empty">Nothing processed yet.</div>`}
+    </div>
+    <div class="vault-panel" id="vault-panel-photos">
+      ${photos.length ? `<div class="vault-grid-wide">${photos.join('')}</div>` : empty}
+    </div>
+    <div class="vault-panel" id="vault-panel-shorts">
+      ${shorts.length ? `<div class="vault-grid-tall">${shorts.map(shortCard).join('')}</div>` : empty}
+    </div>
+
+    <div class="vault-modal" id="vault-modal">
+      <div class="vault-modal-inner" id="vault-modal-inner">
+        <button class="vault-modal-close" id="vault-modal-close" aria-label="Close">&times;</button>
+        <iframe id="vault-modal-iframe" src="" allowfullscreen allow="autoplay; fullscreen"></iframe>
+      </div>
+    </div>
+
+    <script>
+    (function() {
+      var activeSeries = '';
+
+      // Series filter
+      document.querySelectorAll('.vault-series-btn').forEach(function(btn) {
+        btn.addEventListener('click', function() {
+          activeSeries = btn.dataset.series;
+          document.querySelectorAll('.vault-series-btn').forEach(function(b) { b.classList.toggle('active', b.dataset.series === activeSeries); });
+          applySeriesFilter();
+        });
+      });
+
+      function applySeriesFilter() {
+        var panels = { raw: 0, processed: 0, photos: 0, shorts: 0 };
+        document.querySelectorAll('.vault-card').forEach(function(c) {
+          var match = !activeSeries || c.dataset.series === activeSeries;
+          c.classList.toggle('hidden', !match);
+          if (match) {
+            var panel = c.closest('.vault-panel');
+            if (panel) {
+              var key = panel.id.replace('vault-panel-', '');
+              if (panels[key] !== undefined) panels[key]++;
+            }
+          }
+        });
+        if (activeSeries) {
+          var el;
+          if ((el = document.getElementById('count-raw')))       el.textContent = panels.raw;
+          if ((el = document.getElementById('count-processed'))) el.textContent = panels.processed;
+          if ((el = document.getElementById('count-photos')))    el.textContent = panels.photos;
+          if ((el = document.getElementById('count-shorts')))    el.textContent = panels.shorts;
+        } else {
+          var el;
+          if ((el = document.getElementById('count-raw')))       el.textContent = ${raw.length};
+          if ((el = document.getElementById('count-processed'))) el.textContent = ${processed.length};
+          if ((el = document.getElementById('count-photos')))    el.textContent = ${photos.length};
+          if ((el = document.getElementById('count-shorts')))    el.textContent = ${shorts.length};
+        }
+      }
+
+      // Tabs
+      var tabs   = document.querySelectorAll('.vault-tab');
+      var panels = document.querySelectorAll('.vault-panel');
+      function showTab(name) {
+        tabs.forEach(function(t)   { t.classList.toggle('active', t.dataset.tab === name); });
+        panels.forEach(function(p) { p.classList.toggle('active', p.id === 'vault-panel-' + name); });
+      }
+      tabs.forEach(function(t) { t.addEventListener('click', function() { showTab(t.dataset.tab); }); });
+
+      // Modal
+      var modal  = document.getElementById('vault-modal');
+      var inner  = document.getElementById('vault-modal-inner');
+      var iframe = document.getElementById('vault-modal-iframe');
+      function openVault(url, isShort) {
+        inner.style.width       = isShort ? 'min(360px, 95vw)' : 'min(900px, 95vw)';
+        inner.style.height      = isShort ? 'min(640px, 90vh)' : '';
+        inner.style.aspectRatio = isShort ? '9/16' : '16/9';
+        iframe.src = url;
+        modal.classList.add('open');
+        document.body.style.overflow = 'hidden';
+      }
+      function closeVault() { modal.classList.remove('open'); iframe.src = ''; document.body.style.overflow = ''; }
+
+      document.querySelectorAll('.vault-card[data-embed]').forEach(function(c) {
+        c.addEventListener('click', function(e) {
+          if (e.target.closest('.vault-approve-row')) return;
+          if (c.classList.contains('hidden')) return;
+          var isShort = c.closest('#vault-panel-shorts') !== null;
+          openVault(c.dataset.embed, isShort);
+        });
+      });
+      document.getElementById('vault-modal-close').addEventListener('click', closeVault);
+      modal.addEventListener('click', function(e) { if (e.target === modal) closeVault(); });
+      document.addEventListener('keydown', function(e) { if (e.key === 'Escape') closeVault(); });
+
+      // Approve buttons
+      document.querySelectorAll('.vault-approve-btn').forEach(function(btn) {
+        btn.addEventListener('click', function(e) {
+          e.stopPropagation();
+          var slug = btn.dataset.slug;
+          btn.textContent = 'Publishing...';
+          btn.classList.add('done');
+          fetch('/api/approve-video', {
+            method: 'POST',
+            headers: {'content-type': 'application/json'},
+            body: JSON.stringify({slug: slug})
+          }).then(function(r) { return r.json(); }).then(function(d) {
+            if (d.ok) {
+              btn.textContent = '✓ Live at /videos';
+            } else {
+              btn.textContent = 'Error — try again';
+              btn.classList.remove('done');
+            }
+          });
+        });
+      });
+    })();
+    </script>
+  `;
+
+  return new Response(siteLayout({
+    site: gabAeSite,
+    title: 'Vault',
+    description: '',
+    canonical: 'https://gab.ae/vault',
+    extraHead: '<meta name="robots" content="noindex,nofollow">',
+    body,
+  }), { headers: { 'content-type': 'text/html;charset=UTF-8', 'cache-control': 'no-store' } });
+}
+
+async function videosPage(env) {
+  let videos = [];
+  try {
+    const { results } = await env.DB.prepare(
+      "SELECT slug, title, series, video_url FROM videos WHERE status='live' ORDER BY id DESC"
+    ).all();
+    videos = results || [];
+  } catch (e) {}
+
+  const cardHtml = (v) => `
+    <div class="video-card" ${v.video_url ? `data-embed="${esc(v.video_url)}"` : ''} role="button" tabindex="0">
+      <div class="video-thumb">
+        <img src="/vthumb/${esc(v.slug)}" alt="${esc(v.title)}" loading="lazy" width="480" height="270">
+        <div class="video-play-icon">&#9654;</div>
+      </div>
+      <div class="video-info"><span class="video-title">${esc(v.title)}</span></div>
+    </div>`;
+
+  const body = `
+    <style>
+      .videos-header { padding: 28px 0 16px; border-bottom: 1px solid var(--border); margin-bottom: 24px; }
+      .videos-header h1 { font-family: 'Playfair Display', Georgia, serif; font-size: clamp(22px, 3vw, 32px); font-weight: 900; color: var(--ink); letter-spacing: -0.02em; }
+      .videos-header p { font-size: 13px; color: var(--ink-light); margin-top: 6px; }
+      .videos-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px; padding-bottom: 48px; }
+      @media (min-width: 1024px) { .videos-grid { grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); } }
+      .video-card { display: block; border-radius: 10px; overflow: hidden; background: var(--paper-mid); cursor: pointer; transition: transform 0.2s ease, box-shadow 0.2s ease; }
+      .video-card:hover { transform: translateY(-3px); box-shadow: 0 8px 28px rgba(0,0,0,0.15); }
+      .video-thumb { position: relative; aspect-ratio: 16/9; overflow: hidden; }
+      .video-thumb img { width: 100%; height: 100%; object-fit: cover; display: block; transition: transform 0.3s ease; }
+      .video-card:hover .video-thumb img { transform: scale(1.03); }
+      .video-play-icon { position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%); width: 48px; height: 48px; background: rgba(0,0,0,0.55); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: #fff; font-size: 18px; opacity: 0; transition: opacity 0.2s; padding-left: 4px; }
+      .video-card:hover .video-play-icon { opacity: 1; }
+      .video-info { padding: 12px 14px 14px; }
+      .video-title { font-size: 14px; font-weight: 600; color: var(--ink); line-height: 1.4; display: block; }
+      .videos-empty { text-align: center; padding: 80px 24px; color: var(--ink-light); font-size: 15px; }
+      /* Modal reuse */
+      .shorts-modal { display: none; position: fixed; inset: 0; z-index: 1000; background: rgba(0,0,0,0.88); align-items: center; justify-content: center; }
+      .shorts-modal.open { display: flex; }
+      .video-modal-inner { position: relative; width: min(800px, 92vw); aspect-ratio: 16/9; background: #000; border-radius: 12px; overflow: hidden; box-shadow: 0 24px 80px rgba(0,0,0,0.6); }
+      .video-modal-inner iframe { width: 100%; height: 100%; border: none; display: block; }
+      .shorts-modal-close { position: absolute; top: -40px; right: 0; background: none; border: none; color: #fff; font-size: 28px; cursor: pointer; line-height: 1; opacity: 0.8; }
+      .shorts-modal-close:hover { opacity: 1; }
+    </style>
+
+    <div class="videos-header">
+      <h1>Videos</h1>
+      ${videos.length ? `<p>${videos.length} video${videos.length > 1 ? 's' : ''}</p>` : ''}
+    </div>
+
+    ${videos.length
+      ? `<div class="videos-grid">${videos.map(cardHtml).join('')}</div>`
+      : `<div class="videos-empty">No videos yet.</div>`
+    }
+
+    <div class="shorts-modal" id="video-modal">
+      <div class="video-modal-inner">
+        <button class="shorts-modal-close" id="video-modal-close" aria-label="Close">&times;</button>
+        <iframe id="video-modal-iframe" src="" allowfullscreen allow="autoplay; fullscreen"></iframe>
+      </div>
+    </div>
+
+    <script>
+    (function() {
+      var modal  = document.getElementById('video-modal');
+      var iframe = document.getElementById('video-modal-iframe');
+      function open(url)  { iframe.src = url; modal.classList.add('open'); document.body.style.overflow = 'hidden'; }
+      function close()    { modal.classList.remove('open'); iframe.src = ''; document.body.style.overflow = ''; }
+      document.querySelectorAll('.video-card[data-embed]').forEach(function(c) {
+        c.addEventListener('click', function() { open(c.dataset.embed); });
+        c.addEventListener('keydown', function(e) { if (e.key === 'Enter' || e.key === ' ') open(c.dataset.embed); });
+      });
+      document.getElementById('video-modal-close').addEventListener('click', close);
+      modal.addEventListener('click', function(e) { if (e.target === modal) close(); });
+      document.addEventListener('keydown', function(e) { if (e.key === 'Escape') close(); });
+    })();
+    </script>
+  `;
+
+  return new Response(siteLayout({
+    site: gabAeSite,
+    title: 'Videos — GAB adventures',
+    description: 'Video clips by Gab.',
+    canonical: 'https://gab.ae/videos',
+    activeNav: 'videos',
+    body,
+  }), { headers: { 'content-type': 'text/html;charset=UTF-8', 'cache-control': 'public, max-age=60' } });
+}
+
+async function shortsHomepage(env) {
+  let shorts = [];
+  try {
+    const { results } = await env.DB.prepare(
+      "SELECT slug, title, series, video_url FROM shorts WHERE status='live' ORDER BY id ASC"
+    ).all();
+    shorts = results || [];
+  } catch (e) {}
+
+  const cardHtml = (s) => {
+    const embedUrl = esc(s.video_url || '');
+    return `
+      <div class="short-card" ${s.video_url ? `data-embed="${embedUrl}"` : ''} role="button" tabindex="0">
+        <div class="short-thumb">
+          <img src="/thumb/${esc(s.slug)}" alt="${esc(s.title)}" loading="lazy" width="270" height="480">
+          <div class="short-play-icon">&#9654;</div>
+          <div class="short-overlay"><span class="short-title">${esc(s.title)}</span></div>
+        </div>
+      </div>`;
+  };
+
+  const body = `
+    <style>
+      .shorts-header { padding: 28px 0 16px; border-bottom: 1px solid var(--border); margin-bottom: 24px; }
+      .shorts-header h1 { font-family: 'Playfair Display', Georgia, serif; font-size: clamp(22px, 3vw, 32px); font-weight: 900; color: var(--ink); letter-spacing: -0.02em; }
+      .shorts-header p { font-size: 13px; color: var(--ink-light); margin-top: 6px; }
+      .shorts-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 10px; padding-bottom: 48px; }
+      @media (min-width: 640px)  { .shorts-grid { grid-template-columns: repeat(auto-fill, minmax(170px, 1fr)); gap: 14px; } }
+      @media (min-width: 1024px) { .shorts-grid { grid-template-columns: repeat(auto-fill, minmax(185px, 1fr)); gap: 16px; } }
+      .short-card { display: block; border-radius: 10px; overflow: hidden; background: var(--paper-mid); cursor: pointer; transition: transform 0.2s ease, box-shadow 0.2s ease; }
+      .short-card:hover { transform: scale(1.03); box-shadow: 0 8px 28px rgba(0,0,0,0.25); }
+      .short-thumb { position: relative; aspect-ratio: 9/16; overflow: hidden; }
+      .short-thumb img { width: 100%; height: 100%; object-fit: cover; display: block; transition: transform 0.3s ease; }
+      .short-card:hover .short-thumb img { transform: scale(1.05); }
+      .short-play-icon { position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%); width: 44px; height: 44px; background: rgba(0,0,0,0.55); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: #fff; font-size: 16px; opacity: 0; transition: opacity 0.2s; padding-left: 3px; }
+      .short-card:hover .short-play-icon { opacity: 1; }
+      .short-overlay { position: absolute; bottom: 0; left: 0; right: 0; background: linear-gradient(transparent, rgba(0,0,0,0.72)); padding: 24px 10px 10px; }
+      .short-title { display: block; font-size: 12px; font-weight: 600; color: #fff; line-height: 1.3; }
+      .shorts-news-link { display: block; text-align: center; padding: 18px 0 36px; font-size: 13px; color: var(--ink-light); border-top: 1px solid var(--border); }
+      .shorts-news-link a { color: var(--accent); }
+      .shorts-news-link a:hover { text-decoration: underline; }
+      .shorts-empty { text-align: center; padding: 80px 24px; color: var(--ink-light); font-size: 15px; }
+
+      /* ── Modal player ── */
+      .shorts-modal { display: none; position: fixed; inset: 0; z-index: 1000; background: rgba(0,0,0,0.88); align-items: center; justify-content: center; }
+      .shorts-modal.open { display: flex; }
+      .shorts-modal-inner { position: relative; width: min(360px, 90vw); aspect-ratio: 9/16; background: #000; border-radius: 12px; overflow: hidden; box-shadow: 0 24px 80px rgba(0,0,0,0.6); }
+      .shorts-modal-inner iframe { width: 100%; height: 100%; border: none; display: block; }
+      .shorts-modal-close { position: absolute; top: -40px; right: 0; background: none; border: none; color: #fff; font-size: 28px; cursor: pointer; line-height: 1; opacity: 0.8; }
+      .shorts-modal-close:hover { opacity: 1; }
+    </style>
+
+    <div class="shorts-header">
+      <h1>Home</h1>
+      ${shorts.length ? `<p>${shorts.length} clips</p>` : ''}
+    </div>
+
+    ${shorts.length
+      ? `<div class="shorts-grid">${shorts.map(cardHtml).join('')}</div>`
+      : `<div class="shorts-empty">No clips yet.</div>`
+    }
+
+    <div class="shorts-news-link">Looking for news? <a href="/news">Visit the newsroom &rarr;</a></div>
+
+    <div class="shorts-modal" id="shorts-modal">
+      <div class="shorts-modal-inner" id="shorts-modal-inner">
+        <button class="shorts-modal-close" id="shorts-modal-close" aria-label="Close">&times;</button>
+        <iframe id="shorts-modal-iframe" src="" allowfullscreen allow="autoplay; fullscreen"></iframe>
+      </div>
+    </div>
+
+    <script>
+    (function() {
+      var modal = document.getElementById('shorts-modal');
+      var iframe = document.getElementById('shorts-modal-iframe');
+      var inner = document.getElementById('shorts-modal-inner');
+
+      function openModal(url) {
+        iframe.src = url;
+        modal.classList.add('open');
+        document.body.style.overflow = 'hidden';
+      }
+      function closeModal() {
+        modal.classList.remove('open');
+        iframe.src = '';
+        document.body.style.overflow = '';
+      }
+
+      document.querySelectorAll('.short-card[data-embed]').forEach(function(card) {
+        card.addEventListener('click', function() { openModal(card.dataset.embed); });
+        card.addEventListener('keydown', function(e) { if (e.key === 'Enter' || e.key === ' ') openModal(card.dataset.embed); });
+      });
+
+      document.getElementById('shorts-modal-close').addEventListener('click', closeModal);
+      modal.addEventListener('click', function(e) { if (e.target === modal) closeModal(); });
+      document.addEventListener('keydown', function(e) { if (e.key === 'Escape') closeModal(); });
+    })();
+    </script>
+  `;
+
+  return new Response(siteLayout({
+    site: gabAeSite,
+    title: 'gab.ae',
+    description: 'Short clips by Gab — Paris, slowmo, and more.',
+    canonical: 'https://gab.ae/',
+    body,
+  }), { headers: { 'content-type': 'text/html;charset=UTF-8', 'cache-control': 'public, max-age=60' } });
+}
+
 async function homepage(env) {
   const body = `
     <div class="min-h-[60vh] flex flex-col items-center justify-center">

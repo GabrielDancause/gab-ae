@@ -3,7 +3,7 @@
 // CSS covers both generic (gab.ae) and nk-* (nookie) class names during the
 // Phase 2→3 transition; nk-* aliases can be dropped once engines are unified.
 
-export function siteLayout({ site, title, description, canonical, schemaJson, body, activeNav = '', basePath = null }) {
+export function siteLayout({ site, title, description, canonical, schemaJson, body, activeNav = '', basePath = null, extraHead = '' }) {
   const prefix = basePath !== null ? basePath : site.pathPrefix;
   const schema = schemaJson ? `<script type="application/ld+json">${JSON.stringify(Array.isArray(schemaJson) ? schemaJson : schemaJson)}</script>` : '';
   const t = site.theme;
@@ -31,6 +31,7 @@ export function siteLayout({ site, title, description, canonical, schemaJson, bo
   <meta name="twitter:title" content="${esc(title)}">
   <meta name="twitter:description" content="${esc(description)}">
   ${schema}
+  ${extraHead}
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700;900&family=Source+Serif+4:ital,opsz,wght@0,8..60,300;0,8..60,400;0,8..60,600;1,8..60,400&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -75,6 +76,8 @@ export function siteLayout({ site, title, description, canonical, schemaJson, bo
     .primary-nav-inner::-webkit-scrollbar { display: none; }
     .nav-item { font-size: 12px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; color: rgba(255,255,255,0.7); padding: 14px 15px; border-bottom: 3px solid transparent; white-space: nowrap; transition: color 0.2s, border-color 0.2s; display: block; }
     .nav-item:hover, .nav-item.active { color: #fff; border-bottom-color: var(--accent); }
+    .nav-logo { font-family: 'Playfair Display', Georgia, serif; font-size: 17px; font-weight: 900; color: #fff; letter-spacing: -0.01em; padding: 14px 20px 14px 0; margin-right: 8px; border-right: 1px solid rgba(255,255,255,0.15); white-space: nowrap; flex-shrink: 0; }
+    .nav-logo:hover { color: var(--accent); }
 
     /* ── Site container ── */
     .site-main { max-width: 1280px; margin: 0 auto; padding: 0 24px; }
@@ -256,15 +259,15 @@ export function siteLayout({ site, title, description, canonical, schemaJson, bo
   </style>
 </head>
 <body>
-  <header class="masthead">
+  <header class="masthead"${site.hideMasthead ? ' style="display:none"' : ''}>
     <div class="masthead-eyebrow">${esc(site.eyebrow)}</div>
     <a href="${prefix}/" class="masthead-logo">${esc(site.name)}</a>
     <div class="masthead-tagline">${esc(site.tagline)}</div>
   </header>
 
-  <nav class="primary-nav">
+  <nav class="primary-nav"${site.hideMasthead ? ' style="position:sticky;top:0"' : ''}>
     <div class="primary-nav-inner">
-      <a href="${prefix}/search" class="nav-item" title="Search" style="font-size:18px">&#x2315;</a>
+      ${site.hideMasthead ? `<a href="${prefix}/" class="nav-logo">${esc(site.name)}</a>` : `<a href="${prefix}/search" class="nav-item" title="Search" style="font-size:18px">&#x2315;</a>`}
       ${site.navItems.map(item => navItem(prefix + item.href, item.label)).join('\n      ')}
     </div>
   </nav>
