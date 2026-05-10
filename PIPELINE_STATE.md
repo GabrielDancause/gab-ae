@@ -1,4 +1,4 @@
-# GAB.AE Pipeline — Current State (2026-05-10, updated ~13:00 UTC)
+# GAB.AE Pipeline — Current State (2026-05-10, updated ~13:05 UTC)
 
 ## What We Built
 
@@ -28,10 +28,10 @@
 
 - **SSH:** `ssh root@178.105.50.213`
 
-### Currently Running (as of 2026-05-10 ~13:00 UTC)
+### Currently Running (as of 2026-05-10 ~13:05 UTC)
 - `batch_process.py` running in background (`/tmp/batch_process.log`)
-- Session 6 of 9: `2026-05-01 - Square action cam 6 footage` (36 GB, 79 clips) — IA upload ~75% done, then ~2h LLM tagging phase
-- Session 7 (`2026-03-02 - Gab phone`, 10 GB) — queued, will start after session 6
+- Session 6: `2026-05-01 - Square action cam 6 footage` (36 GB, 79 clips) — IA upload ~93/95 files done; LLM tagging phase next (~2h)
+- Session 7 (`2026-03-02 - Gab phone`, 10 GB) — queued
 
 ### Batch Session Status
 | Session | Size | Status | D1 |
@@ -41,7 +41,7 @@
 | 2026-05-09 Action cam, Paris | 20 GB | done (10 clips, all portrait) | ✓ seeded (from prev run) |
 | 2026-05-03 - Action cam Paris | 22 GB | done (3 clips) | ✓ reseeded locally |
 | 2026-04-30 - Square action cam 6 | 29 GB | done (21 clips; only 8 uploaded to IA due to connection error) | ✓ reseeded locally (8 clips) |
-| 2026-05-01 - Square action cam 6 | 36 GB | **processing** (IA upload in progress) | pending reseed |
+| 2026-05-01 - Square action cam 6 | 36 GB | **processing** (IA upload ~done; LLM tagging next) | pending reseed |
 | 2026-03-02 - Gab phone | 10 GB | queued | pending reseed |
 | 2026-04-27 - DJI Gab | 140 GB | skipped (need 150 GB free) | — |
 | 2026-05-01 - Action cam wide | 115 GB | skipped (need 125 GB free) | — |
@@ -60,7 +60,7 @@
 - Account ID: `f8a9c8de1fcedb10d25b24325a6f8727`
 - D1 DB ID: `4e23e386-b430-4ffc-bf84-246a4e7bcdd1` (gab-ae-prod)
 - Worker deployed, all routes live on gab.ae
-- **D1 videos: 29 rows** (sessions 1-5 seeded; sessions 6-7 pending reseed after batch completes)
+- **D1 videos: 29 rows** (series: action-cam-apr30×8, action-cam-paris-may3×3, action-cam-paris-may9×10, seine-april2026×5, paris-2026×1, vault×2)
 
 ## Internet Archive
 
@@ -73,8 +73,11 @@
 ## CF API Token Situation
 
 - **wrangler OAuth token** — lives at `~/Library/Preferences/.wrangler/config/default.toml`, expires hourly
-- **Auto-refresh cron** — runs every 45 min on local Mac: `/tmp/refresh_vps_token.sh`; pushes fresh token to VPS `/tmp/cf_token.txt`
-- **batch_process.py patched** — now reads token from `/tmp/cf_token.txt` at each session start (not just at startup)
+- **Auto-refresh cron** — runs every 45 min on local Mac: `footage/refresh_vps_token.sh`; pushes fresh token to VPS `/tmp/cf_token.txt`
+  - Uses `npx wrangler d1 list --remote` to trigger auto-refresh when token is expired
+  - After expiry there's a ~15-25 min gap until next cron fires; D1 calls during this window will fail
+- **batch_process.py patched** — calls `get_cf_token()` at each session start (reads from /tmp/cf_token.txt)
+- **process_session.py patched** — re-reads `/tmp/cf_token.txt` on EVERY D1 seed call (survives token rotation mid-session)
 - **reseed_d1.py** — reads wrangler toml directly and auto-refreshes; use this after batch completes
 
 ---
@@ -105,9 +108,10 @@
 
 - `src/worker.js` — main CF worker (vault, videos, cron, routing)
 - `src/templates/site-layout.js` — layout shell (supports `extraHead` param)
-- `footage/process_session.py` — single session pipeline
-- `footage/batch_process.py` — batch runner (patched: reads CF token from /tmp/cf_token.txt per-session)
+- `footage/process_session.py` — single session pipeline (patched: re-reads /tmp/cf_token.txt on each D1 call)
+- `footage/batch_process.py` — batch runner (patched: calls get_cf_token() per-session)
 - `footage/find_best_clips.py` — clip scorer
 - `footage/reseed_d1.py` — LOCAL D1 re-seeder (run after batch to fix failed D1 seeds)
+- `footage/refresh_vps_token.sh` — cron script to push fresh CF token to VPS
 - `schema.sql` — D1 schema (includes `pipeline_state` table)
 - `wrangler.toml` — CF worker config
