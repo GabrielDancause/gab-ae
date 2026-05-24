@@ -9,6 +9,15 @@ shorts-uploader/credentials.json
 shorts-uploader/token.json
 shorts-uploader/.env
 
+# YouTube upload credentials
+client_secrets.json
+token_youtube.json
+stream.log
+stream_test.log
+stream_list.txt
+output/
+music/
+
 # Footage pipeline secrets & generated files
 footage/config.py
 footage/token.json
