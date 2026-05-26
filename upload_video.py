@@ -28,7 +28,7 @@ from googleapiclient.discovery import build
 from googleapiclient.errors import HttpError
 from googleapiclient.http import MediaFileUpload
 
-SCOPES = ["https://www.googleapis.com/auth/youtube.upload"]
+SCOPES = ["https://www.googleapis.com/auth/youtube"]
 SECRETS_FILE = Path(__file__).parent / "client_secrets.json"
 TOKEN_FILE = Path(__file__).parent / "token_youtube.json"
 

@@ -24,3 +24,20 @@ footage/token.json
 footage/token_uc59_full.json
 footage/library.db
 footage/__pycache__/
+
+# Stream working dirs -- large binary/generated content
+hot/
+stream_tmp/
+comp_tmp/
+encoded/
+work/
+
+# Generated lists
+hot_queue.txt
+compilation_list.txt
+
+# Logs
+*.log
+hot_feed.log
+daily_upload.log
+ffmpeg.log
