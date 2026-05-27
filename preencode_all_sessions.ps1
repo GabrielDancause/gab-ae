@@ -16,6 +16,13 @@ param(
     [int]   $BitrateK   = 20000
 )
 
+$Python = if (Get-Command python -ErrorAction SilentlyContinue) {
+    (Get-Command python).Source
+} else {
+    "C:\Users\gabri\AppData\Local\Programs\Python\Python312\python.exe"
+}
+$DbHelper = Join-Path $PSScriptRoot "db_stream_done.py"
+
 $FFmpeg  = "C:\ffmpeg\bin\ffmpeg.exe"
 $FFprobe = "C:\ffmpeg\bin\ffprobe.exe"
 
@@ -38,6 +45,11 @@ function Encode-Session {
     # Skip if already fully encoded
     if ((Test-Path $Playlist) -and (Get-Item $Playlist).Length -gt 0) {
         Log "SKIP (done): $SessionName"
+        # Backfill DB for sessions encoded before the DB existed
+        if ((Test-Path $Python) -and (Test-Path $DbHelper)) {
+            $result = & $Python $DbHelper $SessionName $SessionOut 2>&1
+            if ($result -notmatch 'already|ready') { Log "  DB: $result" }
+        }
         return
     }
 
@@ -121,6 +133,11 @@ function Encode-Session {
 
     [System.IO.File]::WriteAllLines($Playlist, $lines, [System.Text.UTF8Encoding]::new($false))
     Log "Done: $SessionName — $encoded encoded, $failed failed"
+
+    # Update shared DB so the streaming computer knows this session is ready
+    if ($encoded -gt 0 -and (Test-Path $Python) -and (Test-Path $DbHelper)) {
+        & $Python $DbHelper $SessionName $SessionOut 2>&1 | ForEach-Object { Log "  DB: $_" }
+    }
 }
 
 # ── Main loop ──────────────────────────────────────────────────────────────────
