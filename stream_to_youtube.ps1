@@ -36,11 +36,14 @@
 # ============================================================
 
 param(
-    [string]$SourceDir  = "Z:\gab-ae-hot",
-    [string]$MusicFile  = "C:\gab-ae\music\background.mp3",
-    [string]$StateFile  = "C:\gab-ae\broadcast_state.json",
-    [string]$TmpDir     = "C:\gab-ae\stream_tmp",
-    [string]$ConcatFile = "C:\gab-ae\stream_list.txt"
+    [string]$SourceDir   = "Z:\gab-ae-hot",
+    [string]$MusicFile   = "C:\gab-ae\music\background.mp3",
+    [string]$StateFile   = "C:\gab-ae\broadcast_state.json",
+    [string]$TmpDir      = "C:\gab-ae\stream_tmp",
+    [string]$ConcatFile  = "C:\gab-ae\stream_list.txt",
+    # Sessions mode: point at a pre-encoded session folder (Z:\gab-ae-sessions\<name>).
+    # Skips all pre-encoding -- files are already 4K H.264, streamed with -c:v copy directly.
+    [string]$SessionsDir = ""
 )
 
 # --- Config ---
@@ -67,8 +70,22 @@ function Log($msg) {
 # --- Preflight ---
 if (-not (Test-Path $FFmpeg))    { Log "ERROR: ffmpeg not found at $FFmpeg"; exit 1 }
 if (-not (Test-Path $MusicFile)) { Log "ERROR: Music not found at $MusicFile"; exit 1 }
-if (-not (Test-Path $SourceDir)) { Log "ERROR: Source dir not found: $SourceDir"; exit 1 }
 if (-not (Test-Path $StateFile)) { Log "ERROR: broadcast_state.json not found at $StateFile"; exit 1 }
+if ($SessionsDir) {
+    if (-not (Test-Path $SessionsDir)) { Log "ERROR: SessionsDir not found: $SessionsDir"; exit 1 }
+    Log "Sessions mode: reading pre-encoded files from $SessionsDir"
+} else {
+    if (-not (Test-Path $SourceDir)) { Log "ERROR: Source dir not found: $SourceDir"; exit 1 }
+}
+
+# --- Sessions mode: build concat list directly from pre-encoded files ---
+function Build-Sessions-Playlist {
+    $files = Get-ChildItem $SessionsDir -Filter "*.mp4" | Sort-Object Name
+    if ($files.Count -eq 0) { Log "ERROR: No .mp4 files in $SessionsDir"; exit 1 }
+    $lines = $files | ForEach-Object { "file '$($_.FullName.Replace('\','/'))'" }
+    [System.IO.File]::WriteAllLines($ConcatFile, $lines, [System.Text.UTF8Encoding]::new($false))
+    Log "Sessions playlist: $($files.Count) pre-encoded files -> $ConcatFile"
+}
 
 # --- Get stream key: call ensure_broadcast.py (recreates broadcast if ended) ---
 function Get-StreamKey {
@@ -209,6 +226,43 @@ function Swap-Playlist {
 # Main
 # ============================================================
 Log "Toujours en Route -- La vie de tous les jours et musique ambiante -- starting"
+
+if ($SessionsDir) {
+    # ── Sessions mode: pre-encoded files on NAS, no local pre-encoding ──────────
+    Build-Sessions-Playlist
+
+    while ($true) {
+        $StreamKey  = Get-StreamKey
+        $YoutubeUrl = "rtmps://a.rtmps.youtube.com/live2/$StreamKey"
+        Log "Going live (sessions) -> $StreamKey (RTMPS)"
+
+        $startedAt = Get-Date
+        & $FFmpeg `
+            -loglevel warning `
+            -re `
+            -f concat -safe 0 -stream_loop -1 `
+            -i $ConcatFile `
+            -stream_loop -1 -i $MusicFile `
+            -map "0:v:0" `
+            -map "1:a:0" `
+            -c:v copy `
+            -c:a aac -b:a 192k -ar 44100 `
+            -f flv `
+            $YoutubeUrl 2>> "C:\gab-ae\ffmpeg.log"
+
+        $code   = $LASTEXITCODE
+        $ranFor = (Get-Date) - $startedAt
+        if ($ranFor.TotalSeconds -lt 10) {
+            Log "Fast exit ($([int]$ranFor.TotalSeconds)s, code $code) -- rebuilding playlist and reconnecting"
+            Build-Sessions-Playlist
+        } else {
+            Log "Stream dropped (exit $code) -- reconnecting in $RestartDelay s"
+            Start-Sleep -Seconds $RestartDelay
+        }
+    }
+}
+
+# ── Clip mode (default): random clips from hot\, pre-encoded locally ─────────
 
 # First playlist: sync build
 Build-Playlist-To $TmpDir $ConcatFile

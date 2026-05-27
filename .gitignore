@@ -34,6 +34,9 @@ comp_tmp/
 encoded/
 work/
 
+# Sessions output (large pre-encoded 4K files, stored on NAS not in repo)
+sessions/
+
 # Generated lists
 hot_queue.txt
 compilation_list.txt
