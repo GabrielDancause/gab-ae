@@ -21,16 +21,18 @@ python -m pip install -r "$PSScriptRoot\requirements.txt"
 # Uncomment and set your NAS path:
 # net use Z: \\YOUR-NAS-IP\share /persistent:yes
 
-# 5. Copy secrets from the encoding computer (gitignored, must be copied manually):
-#   - client_secrets.json   -> C:\gab-ae\client_secrets.json
-#   - token_youtube.json    -> C:\gab-ae\token_youtube.json
-#   - music\background.mp3  -> C:\gab-ae\music\background.mp3
+# 5. Copy secrets and music from the NAS (put there by the encoding computer)
+Write-Host "Copying secrets and music from NAS..."
+if (Test-Path "Z:\gab-ae-setup") {
+    Copy-Item "Z:\gab-ae-setup\client_secrets.json" "$PSScriptRoot\client_secrets.json" -Force
+    Copy-Item "Z:\gab-ae-setup\token_youtube.json"  "$PSScriptRoot\token_youtube.json"  -Force
+    New-Item -ItemType Directory -Path "$PSScriptRoot\music" -Force | Out-Null
+    Copy-Item "Z:\gab-ae-setup\background.mp3"      "$PSScriptRoot\music\background.mp3" -Force
+    Write-Host "Secrets and music copied."
+} else {
+    Write-Host "WARNING: Z:\gab-ae-setup not found -- make sure Z: is mapped to the NAS first."
+}
 
 Write-Host ""
-Write-Host "Setup complete. Manual steps remaining:"
-Write-Host "  1. Copy client_secrets.json and token_youtube.json from the encoding computer"
-Write-Host "  2. Copy music\background.mp3"
-Write-Host "  3. Make sure Z: is mapped to the NAS"
-Write-Host ""
-Write-Host "Then start streaming with:"
+Write-Host "Setup complete. Start streaming with:"
 Write-Host "  Start-Process powershell -ArgumentList '-NonInteractive -WindowStyle Normal -ExecutionPolicy Bypass -File C:\gab-ae\stream_to_youtube.ps1 -StateFile C:\gab-ae\broadcast_state2.json'"
