@@ -29,7 +29,7 @@ def summary():
         total = conn.execute("SELECT COUNT(*) FROM sessions").fetchone()[0]
 
         print(f"\n  {'PIPELINE':<20}  {'STATUS':<12}  {'COUNT':>6}")
-        print('  ' + '─' * 44)
+        print('  ' + '-' * 44)
 
         for label, col, statuses in [
             ('VOD',    'vod_status',    [db.VOD_PENDING, db.VOD_STITCHING, db.VOD_MIXING,
@@ -78,7 +78,7 @@ def summary():
         if errors:
             print(f"\n  VOD errors ({len(errors)}):")
             for e in errors:
-                print(f"    ✗ {e['location'][:35]:<35}  {e['date']}  {(e['vod_error'] or '')[:60]}")
+                print(f"    X {e['location'][:35]:<35}  {e['date']}  {(e['vod_error'] or '')[:60]}")
         print()
 
 
@@ -98,7 +98,7 @@ def detail_stream():
     pending = db.get_sessions(stream_status=db.STREAM_PENDING)
     print(f"\n  Stream ready ({len(ready)}):")
     for r in ready:
-        print(f"    ✓ {r['location'][:35]:<35}  {r['date']}  {r['stream_folder']}")
+        print(f"    + {r['location'][:35]:<35}  {r['date']}  {r['stream_folder']}")
     print(f"\n  Stream pending: {len(pending)} sessions")
     print()
 
