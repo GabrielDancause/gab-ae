@@ -27,6 +27,7 @@ import random
 import re
 import subprocess
 import sys
+import threading
 import time
 from datetime import datetime
 from pathlib import Path
@@ -46,6 +47,7 @@ VOD_DIR     = Path(r"Z:\gab-ae-vod")          # default encode-only output on NA
 STATE_FILE  = BASE_DIR / "sessions_state.json"
 MUSIC_LIST  = BASE_DIR / "music" / "music_list.txt"
 MUSIC_BG    = BASE_DIR / "music" / "background.mp3"
+MUSIC_BG_NAS = Path(r"Z:\gab-ae-setup\background.mp3")
 FFMPEG      = r"C:\ffmpeg\bin\ffmpeg.exe"
 FFPROBE     = r"C:\ffmpeg\bin\ffprobe.exe"
 TOKEN_FILE  = BASE_DIR / "token_youtube.json"
@@ -99,19 +101,28 @@ def bar(pct, width=25):
 # ── Music library ──────────────────────────────────────────────────────────────
 
 def load_music_paths():
-    """Parse music_list.txt (ffmpeg concat format) → list of existing file paths."""
+    """Parse music_list.txt (ffmpeg concat format) → list of readable file paths."""
+    def readable(p):
+        try:
+            return p.is_file() and os.access(p, os.R_OK)
+        except OSError:
+            return False
+
     if not MUSIC_LIST.exists():
-        return [str(MUSIC_BG)] if MUSIC_BG.exists() else []
+        return [str(MUSIC_BG)] if readable(MUSIC_BG) else []
     paths = []
     for line in MUSIC_LIST.read_text(encoding='utf-8').splitlines():
         line = line.strip()
         m = re.match(r"^file\s+'(.+)'$", line)
         if m:
             p = Path(m.group(1))
-            if p.exists():
+            if readable(p):
                 paths.append(str(p))
-    if not paths and MUSIC_BG.exists():
-        paths.append(str(MUSIC_BG))
+    if not paths:
+        for fallback in (MUSIC_BG, MUSIC_BG_NAS):
+            if readable(fallback):
+                paths.append(str(fallback))
+                break
     return paths
 
 
@@ -145,7 +156,6 @@ def get_video_codec(path):
 
 def run_ffmpeg(cmd, label='', total_secs=None):
     """Run ffmpeg and show live progress. Returns True on success."""
-    # Add progress pipe so we can read real-time stats
     progress_cmd = cmd + ['-progress', 'pipe:1', '-nostats']
     proc = subprocess.Popen(
         progress_cmd,
@@ -154,6 +164,14 @@ def run_ffmpeg(cmd, label='', total_secs=None):
         text=True,
         bufsize=1,
     )
+
+    # Drain stderr in background so it never fills the pipe buffer and deadlocks
+    stderr_lines = []
+    def drain_stderr():
+        for line in proc.stderr:
+            stderr_lines.append(line)
+    t = threading.Thread(target=drain_stderr, daemon=True)
+    t.start()
 
     out_time = 0.0
     last_print = ''
@@ -178,9 +196,10 @@ def run_ffmpeg(cmd, label='', total_secs=None):
                 last_print = msg
 
     proc.wait()
+    t.join()
     print()
     if proc.returncode != 0:
-        err = proc.stderr.read() if proc.stderr else ''
+        err = ''.join(stderr_lines[-20:])
         raise RuntimeError(err[-400:].strip())
     return True
 
