@@ -42,6 +42,7 @@ BASE_DIR    = Path(r"C:\gab-ae")
 SOURCE_ROOT = Path(r"Z:\01- Media files")
 OUTPUT_DIR  = BASE_DIR / "output" / "sessions"
 WORK_DIR    = BASE_DIR / "work" / "sessions"
+VOD_DIR     = Path(r"Z:\gab-ae-vod")          # default encode-only output on NAS
 STATE_FILE  = BASE_DIR / "sessions_state.json"
 MUSIC_LIST  = BASE_DIR / "music" / "music_list.txt"
 MUSIC_BG    = BASE_DIR / "music" / "background.mp3"
@@ -322,7 +323,7 @@ def cmd_status():
     print()
     print(f'  {"STATUS":<14}  {"COUNT":>6}')
     print('  ' + '─' * 25)
-    for st in ('pending', 'stitching', 'mixing', 'uploading', 'done', 'error'):
+    for st in ('pending', 'stitching', 'mixing', 'uploading', 'encoded', 'done', 'error'):
         items = by_status.get(st, [])
         if items:
             print(f'  {st:<14}  {len(items):>6}')
@@ -510,25 +511,33 @@ def upload_youtube(file_path, title, description, private=False):
 
 # ── Process one session ────────────────────────────────────────────────────────
 
-def process_one(sid, s, state, dry_run=False, private=False):
+def process_one(sid, s, state, dry_run=False, private=False,
+                encode_only=False, vod_dir=None):
     print(f'\n{"=" * 65}')
     print(f'  Location : {s["location"]}')
     print(f'  Date     : {s["date_label"]}')
     print(f'  Folder   : {s["folder"]}')
     print(f'  Clips    : {s["file_count"]}  ({human_size(s["total_bytes"])})')
+    print(f'  Mode     : {"encode-only -> " + str(vod_dir or VOD_DIR) if encode_only else "stitch + upload"}')
     print(f'{"=" * 65}')
 
     if dry_run:
-        privacy_label = 'private' if private else 'public'
-        print(f'  [dry-run] would stitch -> mix music -> upload ({privacy_label})')
+        if encode_only:
+            print(f'  [dry-run] would stitch -> mix music -> save to {vod_dir or VOD_DIR}')
+        else:
+            privacy_label = 'private' if private else 'public'
+            print(f'  [dry-run] would stitch -> mix music -> upload ({privacy_label})')
         return True
 
+    dest_dir = Path(vod_dir) if vod_dir else VOD_DIR
     OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
     WORK_DIR.mkdir(parents=True, exist_ok=True)
+    if encode_only:
+        dest_dir.mkdir(parents=True, exist_ok=True)
 
     safe = re.sub(r'[^\w\-]', '_', f'{s["date"]}_{s["location"]}')[:80]
     stitched_path = WORK_DIR / f'{safe}__stitched.mp4'
-    final_path    = OUTPUT_DIR / f'{safe}.mp4'
+    final_path    = (dest_dir if encode_only else OUTPUT_DIR) / f'{safe}.mp4'
 
     # Filter to actually existing files
     existing = [p for p in s['files'] if Path(p).exists()]
@@ -577,7 +586,18 @@ def process_one(sid, s, state, dry_run=False, private=False):
         print(f'\n  MIX ERROR: {e}')
         return False
 
-    # ── 3. Upload ─────────────────────────────────────────────────────────────
+    if encode_only:
+        # ── 3a. Encode-only: keep file on disk, no upload ─────────────────────
+        s['status']      = 'encoded'
+        s['output_file'] = str(final_path)
+        s['ts_done']     = ts()
+        s['error']       = None
+        save_state(state)
+        print(f'\n  Saved : {final_path}  ({human_size(final_path.stat().st_size)})')
+        print(f'  Done!')
+        return True
+
+    # ── 3b. Upload ────────────────────────────────────────────────────────────
     s['status']      = 'uploading'
     s['output_file'] = str(final_path)
     save_state(state)
@@ -619,14 +639,16 @@ def main():
         formatter_class=argparse.RawDescriptionHelpFormatter,
         epilog=__doc__.strip(),
     )
-    ap.add_argument('--scan',    action='store_true', help='Scan Z: drive for sessions')
-    ap.add_argument('--status',  action='store_true', help='Show status table')
-    ap.add_argument('--process', action='store_true', help='Stitch + upload next pending session')
-    ap.add_argument('--all',     action='store_true', help='Process ALL pending sessions')
-    ap.add_argument('--count',   type=int, default=1, help='How many sessions to process (default 1)')
-    ap.add_argument('--session', default=None,        help='Process a specific session by ID')
-    ap.add_argument('--private', action='store_true', help='Upload as private (default: public)')
-    ap.add_argument('--dry-run', action='store_true', help='Simulate without writing/uploading')
+    ap.add_argument('--scan',        action='store_true', help='Scan Z: drive for sessions')
+    ap.add_argument('--status',      action='store_true', help='Show status table')
+    ap.add_argument('--process',     action='store_true', help='Stitch + mix + save/upload next pending session')
+    ap.add_argument('--all',         action='store_true', help='Process ALL pending sessions')
+    ap.add_argument('--count',       type=int, default=1, help='How many sessions to process (default 1)')
+    ap.add_argument('--session',     default=None,        help='Process a specific session by ID')
+    ap.add_argument('--private',     action='store_true', help='Upload as private (default: public)')
+    ap.add_argument('--encode-only', action='store_true', help='Stitch + mix music, save to --vod-dir, skip upload')
+    ap.add_argument('--vod-dir',     default=None,        help=f'Output folder for --encode-only (default: {VOD_DIR})')
+    ap.add_argument('--dry-run',     action='store_true', help='Simulate without writing/uploading')
     args = ap.parse_args()
 
     if args.scan:
@@ -647,9 +669,15 @@ def main():
             sys.exit(1)
         to_process = [(args.session, state['sessions'][args.session])]
     else:
+        # 'encoded' sessions are done for encode-only mode; skip them.
+        # 'done' sessions are fully uploaded; skip them in both modes.
+        skip_statuses = {'done'}
+        if args.encode_only:
+            skip_statuses.add('encoded')
+
         pending = [
             (sid, s) for sid, s in state['sessions'].items()
-            if s['status'] in ('pending', 'stitching', 'mixing')  # resume partial too
+            if s['status'] not in skip_statuses
         ]
         pending.sort(key=lambda x: x[1]['date'])
         if not pending:
@@ -660,7 +688,8 @@ def main():
 
     ok_count = err_count = 0
     for sid, s in to_process:
-        ok = process_one(sid, s, state, dry_run=args.dry_run, private=args.private)
+        ok = process_one(sid, s, state, dry_run=args.dry_run, private=args.private,
+                         encode_only=args.encode_only, vod_dir=args.vod_dir)
         if ok:
             ok_count += 1
         else:

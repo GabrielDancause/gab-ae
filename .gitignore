@@ -45,6 +45,3 @@ stream_list_next.txt
 
 # Logs
 *.log
-hot_feed.log
-daily_upload.log
-ffmpeg.log
