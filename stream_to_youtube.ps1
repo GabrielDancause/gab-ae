@@ -20,7 +20,11 @@
 #      re-encoding), layers ambient music on top, pushes via RTMPS port 443.
 #      Using RTMPS (not RTMP) bypasses ISP throttling on port 1935.
 #
-#   3. ensure_broadcast.py is called before each connect to auto-recreate
+#   3. Zero-gap reshuffle: while playlist A is streaming, playlist B is
+#      pre-built in a background job. When A finishes, B swaps in instantly.
+#      Only on stream drops (non-zero exit) does it reconnect without reshuffling.
+#
+#   4. ensure_broadcast.py is called before each connect to auto-recreate
 #      the YouTube broadcast if YouTube ended it (needs Python + Google API).
 #
 # WHAT DIDN'T WORK (for reference):
@@ -28,25 +32,30 @@
 #   - outpoint in concat list -- leaves encoder in dirty state at boundaries
 #   - -c:v copy without setpts -- non-monotonic DTS from source clips
 #   - RTMP on port 1935 -- ISP throttling caused WSAECONNABORTED (-10053)
+#   - Rebuilding playlist on every reconnect -- causes 2.5 min gap every 12 min
 # ============================================================
 
 param(
-    [string]$SourceDir = "C:\gab-ae\hot",
-    [string]$MusicFile = "C:\gab-ae\music\background.mp3"
+    [string]$SourceDir  = "Z:\gab-ae-hot",
+    [string]$MusicFile  = "C:\gab-ae\music\background.mp3",
+    [string]$StateFile  = "C:\gab-ae\broadcast_state.json",
+    [string]$TmpDir     = "C:\gab-ae\stream_tmp",
+    [string]$ConcatFile = "C:\gab-ae\stream_list.txt"
 )
 
 # --- Config ---
 $FFmpeg       = "C:\ffmpeg\bin\ffmpeg.exe"
 $FFprobe      = "C:\ffmpeg\bin\ffprobe.exe"
-$Python       = "C:\Users\gabri\AppData\Local\Programs\Python\Python312\python.exe"
-$StateFile    = "C:\gab-ae\broadcast_state.json"
-$ConcatFile   = "C:\gab-ae\stream_list.txt"
-$TmpDir       = "C:\gab-ae\stream_tmp"
+$Python       = (Get-Command python -ErrorAction SilentlyContinue)?.Source ?? "python"
 $LogFile      = "C:\gab-ae\stream.log"
 $MinSizeMB    = 5        # skip files smaller than this (test clips, thumbnails)
 $ClipDuration = 15       # seconds per clip
-$ClipsPerList = 50       # clips per playlist before reshuffling (~25 min)
+$ClipsPerList = 300      # clips per playlist -- random sample from full hot\ pool
 $RestartDelay = 10       # seconds to wait before reconnecting after a drop
+
+# Derived paths for the background (ping-pong) pre-build
+$TmpDirNext   = $TmpDir + "_next"
+$ConcatNext   = $ConcatFile -replace '\.txt$', '_next.txt'
 
 # --- Logging ---
 function Log($msg) {
@@ -63,9 +72,8 @@ if (-not (Test-Path $StateFile)) { Log "ERROR: broadcast_state.json not found at
 
 # --- Get stream key: call ensure_broadcast.py (recreates broadcast if ended) ---
 function Get-StreamKey {
-    $key = & $Python "C:\gab-ae\ensure_broadcast.py" 2>$null
+    $key = & $Python "C:\gab-ae\ensure_broadcast.py" --state-file $StateFile 2>$null
     if (-not $key) {
-        # Fallback: read directly from state file
         $state = Get-Content $StateFile -Raw | ConvertFrom-Json
         $key   = $state.stream_key
     }
@@ -73,22 +81,20 @@ function Get-StreamKey {
     return $key.Trim()
 }
 
-# --- Build playlist: pre-cut each clip to exactly $ClipDuration seconds ---
-# Pre-cutting creates clean standalone files with proper timestamps.
-# No outpoint in the concat list = no encoder gaps at transitions.
-function Build-Playlist {
-    Log "Scanning $SourceDir for clips..."
+# --- Build playlist synchronously into a given TmpDir/ConcatFile ---
+function Build-Playlist-To {
+    param([string]$TargetTmpDir, [string]$TargetConcatFile)
+
+    Log "Scanning $SourceDir for clips -> $TargetTmpDir"
     $candidates = Get-ChildItem $SourceDir -Filter "*.mp4" |
         Where-Object { $_.Length -gt ($MinSizeMB * 1MB) } |
-        Sort-Object Length |
-        Select-Object -First $ClipsPerList |
-        Sort-Object { Get-Random }
+        Sort-Object { Get-Random } |
+        Select-Object -First $ClipsPerList
 
     if ($candidates.Count -eq 0) { Log "ERROR: No clips found in $SourceDir"; exit 1 }
 
-    # Wipe and recreate tmp dir (these are working copies, not originals)
-    if (Test-Path $TmpDir) { Remove-Item "$TmpDir\*.mp4" -Force -ErrorAction SilentlyContinue }
-    else { New-Item -ItemType Directory -Path $TmpDir | Out-Null }
+    if (Test-Path $TargetTmpDir) { Remove-Item "$TargetTmpDir\*.mp4" -Force -ErrorAction SilentlyContinue }
+    else { New-Item -ItemType Directory -Path $TargetTmpDir | Out-Null }
 
     $lines = [System.Collections.Generic.List[string]]::new()
     $built = 0; $skipped = 0; $i = 0
@@ -98,34 +104,126 @@ function Build-Playlist {
         if (-not ($dur -match '^\d') -or [double]$dur -lt 3) {
             Log "SKIP (bad): $($f.Name)"; $skipped++; continue
         }
-        $out = "$TmpDir\clip_$($i.ToString('000')).mp4"
+        $out = "$TargetTmpDir\clip_$($i.ToString('000')).mp4"
         & $FFmpeg -y -i $f.FullName -t $ClipDuration `
             -vf "setpts=PTS-STARTPTS,scale=1920:1080:force_original_aspect_ratio=decrease,pad=1920:1080:(ow-iw)/2:(oh-ih)/2,format=yuv420p" `
             -c:v h264_nvenc -preset p1 -rc cbr -b:v 4500k -maxrate 5000k -bufsize 9000k `
             -bf 0 -g 30 -keyint_min 30 -sc_threshold 0 `
             -video_track_timescale 90000 `
             -an -avoid_negative_ts make_zero $out 2>$null
-        if (Test-Path $out) {
+        if ($LASTEXITCODE -eq 0 -and (Test-Path $out)) {
             $lines.Add("file '$($out.Replace('\','/'))'")
             $built++
+        } else {
+            Remove-Item $out -ErrorAction SilentlyContinue
         }
         $i++
     }
 
     if ($built -eq 0) { Log "ERROR: No clips pre-cut successfully"; exit 1 }
-    [System.IO.File]::WriteAllLines($ConcatFile, $lines, [System.Text.UTF8Encoding]::new($false))
-    Log "$built clips pre-cut to ${ClipDuration}s ($skipped skipped) -- clean transitions"
+    [System.IO.File]::WriteAllLines($TargetConcatFile, $lines, [System.Text.UTF8Encoding]::new($false))
+    Log "$built clips pre-cut to ${ClipDuration}s ($skipped skipped) -> $TargetTmpDir"
 }
 
-Log "Toujours en Route -- La vie de tous les jours et musique ambiante -- starting"
-Build-Playlist
+# --- Start background pre-build job (runs in parallel while streaming) ---
+function Start-BackgroundBuild {
+    param([string]$TargetTmpDir, [string]$TargetConcatFile)
 
-# --- Stream loop (runs forever, restarts on any failure) ---
+    $job = Start-Job -ScriptBlock {
+        param($ffmpeg, $ffprobe, $srcDir, $tmpDir, $concatFile, $minSizeMB, $clipDur, $clipsPerList)
+
+        $candidates = Get-ChildItem $srcDir -Filter "*.mp4" |
+            Where-Object { $_.Length -gt ($minSizeMB * 1MB) } |
+            Sort-Object { Get-Random } |
+            Select-Object -First $clipsPerList
+
+        if (Test-Path $tmpDir) { Remove-Item "$tmpDir\*.mp4" -Force -ErrorAction SilentlyContinue }
+        else { New-Item -ItemType Directory -Path $tmpDir | Out-Null }
+
+        $lines = [System.Collections.Generic.List[string]]::new()
+        $built = 0; $i = 0
+        foreach ($f in $candidates) {
+            $dur = & $ffprobe -v error -show_entries format=duration `
+                -of default=noprint_wrappers=1:nokey=1 $f.FullName 2>$null
+            if (-not ($dur -match '^\d') -or [double]$dur -lt 3) { $i++; continue }
+            $out = "$tmpDir\clip_$($i.ToString('000')).mp4"
+            & $ffmpeg -y -i $f.FullName -t $clipDur `
+                -vf "setpts=PTS-STARTPTS,scale=1920:1080:force_original_aspect_ratio=decrease,pad=1920:1080:(ow-iw)/2:(oh-ih)/2,format=yuv420p" `
+                -c:v h264_nvenc -preset p1 -rc cbr -b:v 4500k -maxrate 5000k -bufsize 9000k `
+                -bf 0 -g 30 -keyint_min 30 -sc_threshold 0 `
+                -video_track_timescale 90000 `
+                -an -avoid_negative_ts make_zero $out 2>$null
+            if ($LASTEXITCODE -eq 0 -and (Test-Path $out)) {
+                $lines.Add("file '$($out.Replace('\','/'))'")
+                $built++
+            } else {
+                Remove-Item $out -ErrorAction SilentlyContinue
+            }
+            $i++
+        }
+        [System.IO.File]::WriteAllLines($concatFile, $lines, [System.Text.UTF8Encoding]::new($false))
+        Write-Output $built
+    } -ArgumentList $FFmpeg, $FFprobe, $SourceDir, $TargetTmpDir, $TargetConcatFile, $MinSizeMB, $ClipDuration, $ClipsPerList
+
+    return $job
+}
+
+# --- Swap pre-built next playlist into current slot ---
+# Moves clips from TmpDirNext -> TmpDir, rewrites ConcatFile with corrected paths.
+function Swap-Playlist {
+    param($job)
+
+    # Wait up to 5 min if somehow still building
+    if ($job.State -ne 'Completed') {
+        Log "Waiting for background pre-build..."
+        Wait-Job $job -Timeout 300 | Out-Null
+    }
+
+    $built = Receive-Job $job 2>$null
+    Remove-Job $job
+
+    if (-not (Test-Path $ConcatNext) -or $built -lt 1) {
+        Log "WARNING: pre-build failed or empty -- doing sync build"
+        Build-Playlist-To $TmpDir $ConcatFile
+        return
+    }
+
+    # Move clips across (TmpDir is safe to clear -- ffmpeg just finished with it)
+    Remove-Item "$TmpDir\*.mp4" -Force -ErrorAction SilentlyContinue
+    Get-ChildItem $TmpDirNext -Filter "*.mp4" | ForEach-Object {
+        Move-Item $_.FullName "$TmpDir\$($_.Name)" -Force
+    }
+
+    # Rewrite concat file with corrected paths (TmpDirNext -> TmpDir)
+    # Use WriteAllLines (no BOM) -- Set-Content -Encoding UTF8 in PS 5.1 adds a BOM
+    # that breaks ffmpeg's concat demuxer parser.
+    $nextSlash    = $TmpDirNext.Replace('\', '/')
+    $currentSlash = $TmpDir.Replace('\', '/')
+    $fixedLines   = (Get-Content $ConcatNext) -replace [regex]::Escape($nextSlash), $currentSlash
+    [System.IO.File]::WriteAllLines($ConcatFile, $fixedLines, [System.Text.UTF8Encoding]::new($false))
+
+    Log "Swapped pre-built playlist ($built clips) -- zero gap"
+}
+
+# ============================================================
+# Main
+# ============================================================
+Log "Toujours en Route -- La vie de tous les jours et musique ambiante -- starting"
+
+# First playlist: sync build
+Build-Playlist-To $TmpDir $ConcatFile
+
+# Immediately kick off background pre-build for next cycle
+$nextJob = Start-BackgroundBuild $TmpDirNext $ConcatNext
+Log "Background pre-build started for next playlist"
+
+# --- Stream loop (runs forever) ---
 while ($true) {
     $StreamKey  = Get-StreamKey
     $YoutubeUrl = "rtmps://a.rtmps.youtube.com/live2/$StreamKey"
     Log "Going live -> $StreamKey (RTMPS)"
 
+    $startedAt = Get-Date
     & $FFmpeg `
         -loglevel warning `
         -re `
@@ -139,12 +237,25 @@ while ($true) {
         -f flv `
         $YoutubeUrl 2>> "C:\gab-ae\ffmpeg.log"
 
-    $code = $LASTEXITCODE
-    if ($code -eq 0) {
-        Log "Playlist finished -- reshuffling"
+    $code     = $LASTEXITCODE
+    $ranFor   = (Get-Date) - $startedAt
+    $fastExit = $ranFor.TotalSeconds -lt 10
+
+    if ($fastExit) {
+        # Exited in under 10s -- broken concat file or bad state. Force a clean rebuild.
+        Log "Fast exit ($([int]$ranFor.TotalSeconds)s, code $code) -- forcing sync rebuild"
+        Remove-Job $nextJob -Force -ErrorAction SilentlyContinue
+        Build-Playlist-To $TmpDir $ConcatFile
+        $nextJob = Start-BackgroundBuild $TmpDirNext $ConcatNext
+        Log "Background pre-build started for next playlist"
+    } elseif ($code -eq 0) {
+        Log "Playlist finished -- swapping to pre-built"
+        Swap-Playlist $nextJob
+        $nextJob = Start-BackgroundBuild $TmpDirNext $ConcatNext
+        Log "Background pre-build started for next playlist"
     } else {
         Log "Stream dropped (exit $code) -- reconnecting in $RestartDelay s"
         Start-Sleep -Seconds $RestartDelay
+        # Don't reshuffle on drops -- reconnect with same playlist immediately
     }
-    Build-Playlist
 }

@@ -28,6 +28,8 @@ footage/__pycache__/
 # Stream working dirs -- large binary/generated content
 hot/
 stream_tmp/
+stream_tmp2/
+stream_tmp_next/
 comp_tmp/
 encoded/
 work/
@@ -35,6 +37,8 @@ work/
 # Generated lists
 hot_queue.txt
 compilation_list.txt
+stream_list2.txt
+stream_list_next.txt
 
 # Logs
 *.log

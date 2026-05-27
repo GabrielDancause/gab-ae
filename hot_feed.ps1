@@ -9,11 +9,11 @@
 
 param(
     [string]$SourceDir   = "Z:\01- Media files",
-    [string]$HotDir      = "C:\gab-ae\hot",
+    [string]$HotDir      = "Z:\gab-ae-hot",
     [string]$QueueFile   = "C:\gab-ae\hot_queue.txt",
     [string]$MusicFile   = "C:\gab-ae\music\background.mp3",
-    [int]$TargetClips    = 100,   # keep this many clips ready in hot\
-    [int]$AddPerRun      = 4      # encode this many new clips per hourly run
+    [int]$TargetClips    = 1000,  # keep this many clips ready in hot\
+    [int]$AddPerRun      = 10     # encode this many new clips per run
 )
 
 $FFmpeg  = "C:\ffmpeg\bin\ffmpeg.exe"

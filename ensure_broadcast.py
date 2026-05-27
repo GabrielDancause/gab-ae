@@ -10,6 +10,7 @@ Output: qdbm-aa2m-8e5c-qq1j-814g
 
 import sys
 import json
+import argparse
 from datetime import datetime, timezone, timedelta
 from pathlib import Path
 
@@ -22,7 +23,11 @@ from googleapiclient.errors import HttpError
 SCOPES       = ["https://www.googleapis.com/auth/youtube"]
 SECRETS_FILE = Path(__file__).parent / "client_secrets.json"
 TOKEN_FILE   = Path(__file__).parent / "token_youtube.json"
-STATE_FILE   = Path(__file__).parent / "broadcast_state.json"
+
+_ap = argparse.ArgumentParser(add_help=False)
+_ap.add_argument("--state-file", default=str(Path(__file__).parent / "broadcast_state.json"))
+_args, _ = _ap.parse_known_args()
+STATE_FILE = Path(_args.state_file)
 
 DEAD_STATES  = {"complete", "revoked", "completeStarting"}
 
