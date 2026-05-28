@@ -1,4 +1,4 @@
-# ============================================================
+﻿# ============================================================
 # preencode_all_sessions.ps1 -- encode every session on the NAS
 # to Z:\gab-ae-sessions\ for direct -c:v copy streaming.
 #
@@ -16,11 +16,8 @@ param(
     [int]   $BitrateK   = 20000
 )
 
-$Python = if (Get-Command python -ErrorAction SilentlyContinue) {
-    (Get-Command python).Source
-} else {
-    "C:\Users\gabri\AppData\Local\Programs\Python\Python312\python.exe"
-}
+$pythonCmd = Get-Command python -ErrorAction SilentlyContinue
+if ($pythonCmd) { $Python = $pythonCmd.Source } else { $Python = "C:\Users\gabri\AppData\Local\Programs\Python\Python312\python.exe" }
 $DbHelper = Join-Path $PSScriptRoot "db_stream_done.py"
 
 $FFmpeg  = "C:\ffmpeg\bin\ffmpeg.exe"
@@ -47,7 +44,7 @@ function Encode-Session {
         Log "SKIP (done): $SessionName"
         # Backfill DB for sessions encoded before the DB existed
         if ((Test-Path $Python) -and (Test-Path $DbHelper)) {
-            $result = & $Python $DbHelper $SessionName $SessionOut 2>&1
+            $result = & $Python $DbHelper $SessionName $SessionOut
             if ($result -notmatch 'already|ready') { Log "  DB: $result" }
         }
         return
@@ -132,16 +129,16 @@ function Encode-Session {
     }
 
     [System.IO.File]::WriteAllLines($Playlist, $lines, [System.Text.UTF8Encoding]::new($false))
-    Log "Done: $SessionName — $encoded encoded, $failed failed"
+    Log "Done: $SessionName  -  $encoded encoded, $failed failed"
 
     # Update shared DB so the streaming computer knows this session is ready
     if ($encoded -gt 0 -and (Test-Path $Python) -and (Test-Path $DbHelper)) {
-        & $Python $DbHelper $SessionName $SessionOut 2>&1 | ForEach-Object { Log "  DB: $_" }
+        & $Python $DbHelper $SessionName $SessionOut | ForEach-Object { Log "  DB: $_" }
     }
 }
 
-# ── Main loop ──────────────────────────────────────────────────────────────────
-Log "preencode_all_sessions starting — source: $SourceRoot"
+# -- Main loop ------------------------------------------------------------------
+Log "preencode_all_sessions starting  -  source: $SourceRoot"
 
 while ($true) {
     $sessionFolders = Get-ChildItem $SourceRoot -Directory |
