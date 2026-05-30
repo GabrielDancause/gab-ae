@@ -385,6 +385,64 @@ def upload_youtube(file_path, title, description, private=False):
     return response['id']
 
 
+# ── Upload already-encoded sessions ───────────────────────────────────────────
+
+def upload_encoded(private=False, dry_run=False):
+    """Upload sessions that are already encoded (vod_status=encoded, no youtube_url)."""
+    with db.get_conn() as conn:
+        rows = conn.execute(
+            "SELECT * FROM sessions WHERE vod_status=? AND youtube_url IS NULL ORDER BY date",
+            (db.VOD_ENCODED,)
+        ).fetchall()
+
+    print(f'\n  {len(rows)} session(s) to upload.')
+
+    ok = err = 0
+    for row in rows:
+        sid  = row['id']
+        path = Path(row['vod_file']) if row['vod_file'] else None
+
+        print(f'\n{"=" * 65}')
+        print(f'  Location : {row["location"]}')
+        print(f'  Date     : {row["date_label"]}')
+        print(f'  File     : {path}')
+
+        if not path or not path.exists():
+            print(f'  SKIP: file missing — {path}')
+            err += 1
+            continue
+
+        title = make_title(row['location'], row['date_label'])
+        desc  = make_description(title)
+        print(f'  Uploading ({"private" if private else "public"}): {title}')
+
+        if dry_run:
+            print('  [dry-run] would upload'); ok += 1; continue
+
+        try:
+            vid_id = upload_youtube(path, title, desc, private=private)
+            url    = f'https://www.youtube.com/watch?v={vid_id}'
+        except Exception as e:
+            db.vod_set_status(sid, db.VOD_ERROR, error=f'Upload: {str(e)[:250]}')
+            print(f'  UPLOAD ERROR: {e}')
+            err += 1
+            continue
+
+        db.vod_set_uploaded(sid, url, vid_id)
+
+        # Move to Uploaded subfolder
+        uploaded_dir = path.parent / 'Uploaded'
+        uploaded_dir.mkdir(exist_ok=True)
+        dest = uploaded_dir / path.name
+        path.rename(dest)
+        db.upsert_session(sid, vod_file=str(dest))
+        print(f'  YouTube: {url}')
+        print(f'  Moved  : {dest}')
+        ok += 1
+
+    print(f'\nDone: {ok} uploaded, {err} errors.')
+
+
 # ── Process one session ────────────────────────────────────────────────────────
 
 def process_one(sid, encode_only=False, vod_dir=None, dry_run=False, private=False):
@@ -470,8 +528,15 @@ def process_one(sid, encode_only=False, vod_dir=None, dry_run=False, private=Fal
         return False
 
     db.vod_set_uploaded(sid, url, vid_id)
-    final_path.unlink(missing_ok=True)
+
+    # Move to Uploaded subfolder
+    uploaded_dir = final_path.parent / 'Uploaded'
+    uploaded_dir.mkdir(exist_ok=True)
+    dest = uploaded_dir / final_path.name
+    final_path.rename(dest)
+    db.upsert_session(sid, vod_file=str(dest))
     print(f'\n  YouTube: {url}')
+    print(f'  Moved  : {dest}')
     print('  Done!')
     return True
 
@@ -487,15 +552,19 @@ def main():
     ap.add_argument('--count',       type=int, default=1)
     ap.add_argument('--session',     default=None)
     ap.add_argument('--private',     action='store_true')
-    ap.add_argument('--encode-only', action='store_true')
-    ap.add_argument('--vod-dir',     default=None)
-    ap.add_argument('--dry-run',     action='store_true')
+    ap.add_argument('--encode-only',  action='store_true')
+    ap.add_argument('--upload-only',  action='store_true', help='Upload already-encoded VOD files')
+    ap.add_argument('--vod-dir',      default=None)
+    ap.add_argument('--dry-run',      action='store_true')
     args = ap.parse_args()
 
     db.init_db()
 
     if args.scan:
         cmd_scan(dry_run=args.dry_run); return
+
+    if args.upload_only:
+        upload_encoded(private=args.private, dry_run=args.dry_run); return
 
     if args.status or not any([args.process, args.session]):
         cmd_status(); return
