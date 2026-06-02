@@ -11,6 +11,18 @@
       "drive_letter": "D",
       "status": "active",
       "notes": "First portable drive — Takeout files 001 through ~049 + partial batch 3"
+    },
+    {
+      "id": "sabrent-8tb-01",
+      "label": "cold_storage_2",
+      "model": "SABRENT",
+      "serial": "",
+      "capacity_gb": 7452,
+      "free_gb": 7059,
+      "bus": "USB",
+      "drive_letter": "H",
+      "status": "active",
+      "notes": "8TB SABRENT — second drive, continues Takeout copy after WD Passport fills up"
     }
   ]
 }
