@@ -1,0 +1,16 @@
+{
+  "drives": [
+    {
+      "id": "wd-passport-01",
+      "label": "My Passport",
+      "model": "WD My Passport 2626",
+      "serial": "WXB2D74DDH8C",
+      "capacity_gb": 4657,
+      "free_gb": 2522,
+      "bus": "USB",
+      "drive_letter": "D",
+      "status": "active",
+      "notes": "First portable drive — Takeout files 001 through ~049 + partial batch 3"
+    }
+  ]
+}
