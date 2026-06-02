@@ -13,6 +13,18 @@
       "notes": "First portable drive — Takeout files 001 through ~049 + partial batch 3"
     },
     {
+      "id": "20tb-01",
+      "label": "TBD",
+      "model": "TBD",
+      "serial": "",
+      "capacity_gb": 20000,
+      "free_gb": 20000,
+      "bus": "USB",
+      "drive_letter": "?",
+      "status": "not-connected",
+      "notes": "20TB drive not yet connected — will hold Takeout files ~091-189 (~4.9TB) + GAB productions overflow (~777GB) + old folder (2087GB)"
+    },
+    {
       "id": "sabrent-8tb-01",
       "label": "cold_storage_2",
       "model": "SABRENT",
