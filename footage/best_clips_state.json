@@ -1,0 +1,929 @@
+{
+  "processed": [
+    "1LwxnICAi986Db2VsLYPpJVMmIYXaj-hQ",
+    "190eZ5okMyl743_CRRK5w9SGa3kCJ7pKR",
+    "1DNk-Tg848-124v5e9MTQGePSuzTQd0WY",
+    "1oCOlgEn4eipKG8XpX9dEvbfxxNQPNLoI",
+    "1mf60eY_1NUNVbT5eDcrkwkmMhpHg7bMZ",
+    "1wRqtrDK1Yo-V8ztNRkn17wJU_PEkLz5Z",
+    "1PIjk1QJK-ADeXXu8-ywgzJswj-Vq7zpe",
+    "1QSZtmgC6u8Jl-NWknOUY_7ldvBKWR-tL",
+    "104a8YIZMRn01dfTkzig8TTmryVeciSE7",
+    "1kBWZd-4BxHQ6sMIVfrlLUYnbZEZiREDC",
+    "1B3xchU6Aa1lT8hNgrucOV9nNanplBSzc",
+    "12CY4i5k0SjNxbj6H2guMsLtWUegBBwq1",
+    "1JQEp0hO3THE3D5hxQrjGYbAcpstc03nR",
+    "1JtXp0wOKavK8Vfo2_zKJziORHD1ZP7AZ",
+    "1ueWM1Wi1NREvhEsqIhJXeFV0B-SjZ6b4",
+    "1hgN0GCPdNUrfuvaB9pXmbYugHgsxtpZM",
+    "159QGhaZdwm8O6ExBZ72JMPE2J9-h8Fhj",
+    "1luBWLA7mQ67_Fd9M26XzhHAEC-4-Rxq2",
+    "1UZCFpm8Tx_zS2JI-IZoWQ0JbbyaP5_wf",
+    "1JsOyvzBSAAmd_VThrVngd7MHWgNdcFei",
+    "1nVlSCIcQPVHjWZY68yU7iDAvjoks9t45",
+    "1U2IBJEveKfEKmFt1QrMVtC3yIdGDLvY0",
+    "1TZJvYQPzweHJT9SIp5_ggLLmzdT6tM49",
+    "1s_Bzhjuez6cEOaYdRLoDEHZxrU9qAzgP",
+    "14xEzjPqqhpgnbrUcsG9Lfq_P9bcX9IhT",
+    "1yo_w2mZWkbDuHYrG5JHzFJZqm7MiN8ZJ",
+    "1I0QZ-nPHQ75jJhA3MuSFYycr_uHS88m8",
+    "1jzXljtmUhhc6Al-jHvhR9cNKoUnv6lsB",
+    "1MYAWeE59bvNCI17sClIOdMuIYU3tGpUm",
+    "1m-reqIfBiI0D53gdVQlHY7M4w6fNAtyL",
+    "1udAfmrs7Bv8UrWbwq145lCY4b_H8S8Ry",
+    "1XDitZWav0iiXKnC-qYcMet5q56iFNRjE",
+    "1pd2BpcwWbmJCTun_4XQ1OcC224-UL9Vu",
+    "15vRzKmRyvTF1fbAMixWe-6SeLr1NB-gX",
+    "14hKpgC08IN5SsIIHt1Ng4hFDyQWZI2Fg",
+    "1caThtQRt3YEvzSnePSDS2e4IQpAaFhLN",
+    "1LasCk9SI9urqs93AHOBGemaPvD-FQG29",
+    "1zB-O4m0i2sTGE6AEAqCWMaK_lBVXE9TL",
+    "1cGChq3FC-KaOGNYtuzvkRy18fq2tFQi4",
+    "1txOtoxsd9WTW8rGj5G7xbC42kPsC8KdB",
+    "1BJW1jnF4bdWiuzvsK3w_xq0qtE9JK6Cv",
+    "1UzpEac4FhjuOs9LpMZFg_DaRgFcaaxSi",
+    "1129WqT4HdZb2B70hcBHRt8SVSrv4A3u_",
+    "1W_qpMeolOwm68l1XCt_wjt978UfXnrqb",
+    "1K8pZOtq4V0YQeB8U4wbo976mssxCoZt4",
+    "1_AGZHWiAIom9Rm3OxWDnmr6U3DVLsKmI",
+    "1TxX9yjsN30vylqCO4ClNG85dsGyOQM4C",
+    "1YNLwBIN-ajMOJPsZQ7R0TiYKn-sDnFpW",
+    "1daJb5P4lHGEbQ7PTlzoUXOAxwERt4EN6",
+    "1-g8n8E5fNzdu_WGlyufamS1C12x1KAeo",
+    "1RjNAJotV9qztUJFtnfFOR0W4FhI36A_m",
+    "16aA5sv7eHv6WjRvblYxmvUcO_7oVDK3m",
+    "1_S7poBofUlBVQLm2qA-I5vp4pC1KeANY",
+    "1dVufXx0Cb0_UmTJfzKyRfbiWCT5tx8rG",
+    "19D8KIijBniFCmNy3wqakbcdoycH9mFvC",
+    "1y-WcFQJWDoqF5EiuH7wbatNsn5kvQjbU",
+    "1Lv9KoClFo0a6s6N6IbrFRvVypmKo6XtG",
+    "1N_u8BAI4GS2PilEy1-HuXfnE7zKKYrOg",
+    "1SCnyR0YWML4_BbGzGMRprJYFzDs2p7Md",
+    "17Dc7IIgZ7jVRuwcdMM3zGGcXPXxyOyW8",
+    "1w83MetA2VdJfH2NgyclcI0B7NhysF_74",
+    "1xnKIxN12aqX0s-ZLRKekbqsg3Q4IHDZa",
+    "1_30hREeDrCH31elJKsRKoJevAWOtDdfX",
+    "1vfB2T0UOwmNRmFqfU8jPgx_pMd5MFSqw",
+    "1aION619_ElJaf6iBYW610thzGTfhPjFt",
+    "1puuhFoTWWw42HWu0PBOEfKGZOKvzLoAs",
+    "1spXo96uiA6eyMJXpw7nOzEltpepsybHZ",
+    "1ySs73QnjLzc2NCik61JhegtfoikoE1yL",
+    "1G7YobDF1bc0FqzSvcyl7dMa1UfZGBoGU",
+    "1OFmXJDQY-mw-8x3c2QJTPxakck-8A8AS",
+    "1X6mORq6Vi8owx-O4JgNaLfudDFghgqCX",
+    "1MUsXupdqslQ--tmy51VW3clQqN8DXsoJ",
+    "1bld8GXN0rcl_C8ahYkI0Vs7LPqPJLZiG",
+    "1qYQVvjf1A4lIM8ATYq0uO3TLS7Vp3vSr",
+    "1BdXrXrrN8UmKzY_QsfM8hxcc-CPvJswk",
+    "1QoLuz724gs_j7m8VotDZ3ZJCl26iQnT0",
+    "1Xin5hQAJJEsVB7-aKEUa4jHhW21mBiq6",
+    "1ki4kSNOYB0y3QqrKBYNMo2aiCEko-ih9",
+    "14KoELMDDm16lYkbMwnf1hBg7r-0xc9vC",
+    "1Mn2aiOULx0TWfcrdP4T6eEaudHQMFcNa",
+    "11Gv2B3PbbqmtOz9AfYJLR2d8GOyZppUu",
+    "1AMGCHkjqcw6G1pHq6vGVu_UXLzuzTczY",
+    "14VXmO3M4eQDHo7oCwL98MCSP2q6ZxET3",
+    "17XHlF3fsee_XYD3sZY0ba0rmoM0hWkfj",
+    "19ItLxt_1d9Wy70nBKk84lfYZBrmAHlPJ",
+    "1-NvFyN_gqh0vd8y1dDXLSlOUmanclyKt",
+    "1jTl_hagddMjXpyTvYUzmJZzpetDFnAuB",
+    "1OS7RyKH293Woq_quxoH4rF8EWfGy2cYP",
+    "1PkT4qVnW2Zffx2VSRcPGIf8cczGCzC2u",
+    "1cyXCisYs4BIOXKb2l5y56QzZ85Hf5td9",
+    "1gsq28mHihl9desID5p3JHXbJmkVTutvj",
+    "1iebRFFcXOHsonq-rNTUcwY1c9kmgm-3o",
+    "1ig_6E1PkyGmxsJqep-S_Ge_2cD332JHz",
+    "18gvJvI8c4FeyLy4E_A8s0wVvXdLXcOzM",
+    "1XLGdVHzHaDICRWF2RSR1g8ltfGJvjNJq",
+    "13VBB3b9q4q80edoa0YDLdGOV5sEdNb__",
+    "1gbLAgHgEscmFi_-iZyddi-GU0KnrEhdk",
+    "1IFSufVJweI7jy5KhCTb-xdck-MPE5bbr",
+    "1-LLCvfDg2Ey9ObfznD7aKKKBUqQ2EbBG",
+    "107pwcVWEjPexGymNXZWG0WeU2qSNpOhQ",
+    "1KbprMsaDgz6cqw6rCb4XRR1JyA8MiqRJ",
+    "1jjbu8uYRx7g5q-ux2pLQVLaeIIF_dpVw",
+    "1Gn3-K8mHZtuRlxzONLMbO2t3_gj0eUas",
+    "1SZNMUAMg8nlBhtK2rkM1vUxgISjb7k8y",
+    "1kvZCx4T7fuaENbIwdUKjo9zee1dtIPZy",
+    "1Re-e32OeViX2Qj7KaL6k5Bln-k9BmKaU",
+    "1du4HYWN8C23UUpOZI-9MgS92fT2jaoBQ",
+    "1oy8t_7oMLm0kb4z3vLx3a4LudsPh3ajt",
+    "1X7w_IlwW0qF0iNtMH3cqHNfNFiDIpGeR",
+    "14l4jZN1nSTx52sQy9Fhwumg95CPwEsZv",
+    "16LB1yWuCa4pnE1FW6npSvybLoMqu8lPb",
+    "1FwYnsH4AUENXtUOgC1SklQYAJkv_a4br",
+    "1VOOfgheHD00LvGwakhQOLXhnhqvJiu4-",
+    "11m8UunmghkJPoWzHU6W0fcvhbb8hQ1mG",
+    "1A4brhK9lHcUFviqAF-KujuRd42DJW4b2",
+    "1na4HYUXeQ076E3BvREX6y3d3gO9IekKd",
+    "1pKWBLFSIvvRPujncu62QztLHK98utkAT",
+    "1AsAjC5BEOhSZebgHqzFYKQeE-MLD5Apo",
+    "1yk4v0nlkG6vLJ85PALWOfNaXqdJEYhqb",
+    "1AQhbu8SleTv7AF4qQxGtFYPaMyxDXSOa",
+    "1qS_eSQRaYazLSpFivcfUd1x4fVaPBX3t",
+    "1_PxWyRQVIcj0Afuwi_6Ps5GE1kXcZ6n7",
+    "1eyEmc5soAi9fTDgXPC2-Y9a50DZfYR4j",
+    "1l4IpIYq0wiVMveRnw4hFOaCKBT5aG3mH",
+    "123sBcOy-j68FZ2ieu_a5ANTm6ykLvxee"
+  ],
+  "extracted": [
+    {
+      "id": "1129WqT4HdZb2B70hcBHRt8SVSrv4A3u_",
+      "name": "IMG_5556.MOV",
+      "output": "/Users/gab/Desktop/gab-ae/footage/mac_ready/best_1778320320_IMG_5556.mp4",
+      "gpt_score": 6,
+      "ts": "2026-05-09T09:52:08Z"
+    },
+    {
+      "id": "1UZCFpm8Tx_zS2JI-IZoWQ0JbbyaP5_wf",
+      "name": "IMG_5561.MOV",
+      "output": "/Users/gab/Desktop/gab-ae/footage/mac_ready/best_1778320355_IMG_5561.mp4",
+      "gpt_score": 6,
+      "ts": "2026-05-09T09:52:42Z"
+    },
+    {
+      "id": "1udAfmrs7Bv8UrWbwq145lCY4b_H8S8Ry",
+      "name": "IMG_5564.MOV",
+      "output": "/Users/gab/Desktop/gab-ae/footage/mac_ready/best_1778320391_IMG_5564.mp4",
+      "gpt_score": 6,
+      "ts": "2026-05-09T09:53:18Z"
+    },
+    {
+      "id": "1JsOyvzBSAAmd_VThrVngd7MHWgNdcFei",
+      "name": "IMG_5566.MOV",
+      "output": "/Users/gab/Desktop/gab-ae/footage/mac_ready/best_1778320409_IMG_5566.mp4",
+      "gpt_score": 6,
+      "ts": "2026-05-09T09:53:36Z"
+    },
+    {
+      "id": "1JQEp0hO3THE3D5hxQrjGYbAcpstc03nR",
+      "name": "IMG_5573.MOV",
+      "output": "/Users/gab/Desktop/gab-ae/footage/mac_ready/best_1778320435_IMG_5573.mp4",
+      "gpt_score": 6,
+      "ts": "2026-05-09T09:54:03Z"
+    },
+    {
+      "id": "1gbLAgHgEscmFi_-iZyddi-GU0KnrEhdk",
+      "name": "IMG_5620.MOV",
+      "output": "/Users/gab/Desktop/gab-ae/footage/mac_ready/best_1778320473_IMG_5620.mp4",
+      "gpt_score": 6,
+      "ts": "2026-05-09T09:54:39Z"
+    },
+    {
+      "id": "13VBB3b9q4q80edoa0YDLdGOV5sEdNb__",
+      "name": "IMG_5742.MOV",
+      "output": "/Users/gab/Desktop/gab-ae/footage/mac_ready/best_1778320491_IMG_5742.mp4",
+      "gpt_score": 6,
+      "ts": "2026-05-09T09:54:57Z"
+    },
+    {
+      "id": "1ueWM1Wi1NREvhEsqIhJXeFV0B-SjZ6b4",
+      "name": "IMG_5742.MOV",
+      "output": "/Users/gab/Desktop/gab-ae/footage/mac_ready/best_1778320508_IMG_5742.mp4",
+      "gpt_score": 6,
+      "ts": "2026-05-09T09:55:14Z"
+    },
+    {
+      "id": "1Xin5hQAJJEsVB7-aKEUa4jHhW21mBiq6",
+      "name": "IMG_5744.MOV",
+      "output": "/Users/gab/Desktop/gab-ae/footage/mac_ready/best_1778320536_IMG_5744.mp4",
+      "gpt_score": 6,
+      "ts": "2026-05-09T09:55:42Z"
+    },
+    {
+      "id": "1du4HYWN8C23UUpOZI-9MgS92fT2jaoBQ",
+      "name": "IMG_5746.MOV",
+      "output": "/Users/gab/Desktop/gab-ae/footage/mac_ready/best_1778320561_IMG_5746.mp4",
+      "gpt_score": 6,
+      "ts": "2026-05-09T09:56:07Z"
+    },
+    {
+      "id": "1zB-O4m0i2sTGE6AEAqCWMaK_lBVXE9TL",
+      "name": "IMG_5748.MOV",
+      "output": "/Users/gab/Desktop/gab-ae/footage/mac_ready/best_1778320578_IMG_5748.mp4",
+      "gpt_score": 6,
+      "ts": "2026-05-09T09:56:25Z"
+    },
+    {
+      "id": "159QGhaZdwm8O6ExBZ72JMPE2J9-h8Fhj",
+      "name": "IMG_5749.MOV",
+      "output": "/Users/gab/Desktop/gab-ae/footage/mac_ready/best_1778320602_IMG_5749.mp4",
+      "gpt_score": 6,
+      "ts": "2026-05-09T09:56:48Z"
+    },
+    {
+      "id": "1BdXrXrrN8UmKzY_QsfM8hxcc-CPvJswk",
+      "name": "IMG_5753.MOV",
+      "output": "/Users/gab/Desktop/gab-ae/footage/mac_ready/best_1778320627_IMG_5753.mp4",
+      "gpt_score": 6,
+      "ts": "2026-05-09T09:57:13Z"
+    },
+    {
+      "id": "1cGChq3FC-KaOGNYtuzvkRy18fq2tFQi4",
+      "name": "IMG_5755.MOV",
+      "output": "/Users/gab/Desktop/gab-ae/footage/mac_ready/best_1778320654_IMG_5755.mp4",
+      "gpt_score": 6,
+      "ts": "2026-05-09T09:57:40Z"
+    },
+    {
+      "id": "1_S7poBofUlBVQLm2qA-I5vp4pC1KeANY",
+      "name": "IMG_5757.MOV",
+      "output": "/Users/gab/Desktop/gab-ae/footage/mac_ready/best_1778320672_IMG_5757.mp4",
+      "gpt_score": 6,
+      "ts": "2026-05-09T09:57:57Z"
+    },
+    {
+      "id": "1jTl_hagddMjXpyTvYUzmJZzpetDFnAuB",
+      "name": "IMG_5758.MOV",
+      "output": "/Users/gab/Desktop/gab-ae/footage/mac_ready/best_1778320695_IMG_5758.mp4",
+      "gpt_score": 6,
+      "ts": "2026-05-09T09:58:22Z"
+    },
+    {
+      "id": "1DNk-Tg848-124v5e9MTQGePSuzTQd0WY",
+      "name": "od_video-30403_singular_display.mov",
+      "output": "/Users/gab/Desktop/gab-ae/footage/mac_ready/best_1778320747_od_video_30403_singular_displa.mp4",
+      "gpt_score": 6,
+      "ts": "2026-05-09T09:59:09Z"
+    },
+    {
+      "id": "1PIjk1QJK-ADeXXu8-ywgzJswj-Vq7zpe",
+      "name": "od_video-30409_singular_display.mov",
+      "output": "/Users/gab/Desktop/gab-ae/footage/mac_ready/best_1778320772_od_video_30409_singular_displa.mp4",
+      "gpt_score": 6,
+      "ts": "2026-05-09T09:59:35Z"
+    },
+    {
+      "id": "1mf60eY_1NUNVbT5eDcrkwkmMhpHg7bMZ",
+      "name": "od_video-30412_singular_display.mov",
+      "output": "/Users/gab/Desktop/gab-ae/footage/mac_ready/best_1778320795_od_video_30412_singular_displa.mp4",
+      "gpt_score": 6,
+      "ts": "2026-05-09T09:59:58Z"
+    },
+    {
+      "id": "1yo_w2mZWkbDuHYrG5JHzFJZqm7MiN8ZJ",
+      "name": "od_video-30831_singular_display.mov",
+      "output": "/Users/gab/Desktop/gab-ae/footage/mac_ready/best_1778320805_od_video_30831_singular_displa.mp4",
+      "gpt_score": 6,
+      "ts": "2026-05-09T10:00:08Z"
+    },
+    {
+      "id": "1X6mORq6Vi8owx-O4JgNaLfudDFghgqCX",
+      "name": "od_video-30838_singular_display.mov",
+      "output": "/Users/gab/Desktop/gab-ae/footage/mac_ready/best_1778320815_od_video_30838_singular_displa.mp4",
+      "gpt_score": 6,
+      "ts": "2026-05-09T10:00:17Z"
+    },
+    {
+      "id": "1OS7RyKH293Woq_quxoH4rF8EWfGy2cYP",
+      "name": "od_video-30849_singular_display.mov",
+      "output": "/Users/gab/Desktop/gab-ae/footage/mac_ready/best_1778320832_od_video_30849_singular_displa.mp4",
+      "gpt_score": 6,
+      "ts": "2026-05-09T10:00:35Z"
+    },
+    {
+      "id": "190eZ5okMyl743_CRRK5w9SGa3kCJ7pKR",
+      "name": "od_video-30877_singular_display.mov",
+      "output": "/Users/gab/Desktop/gab-ae/footage/mac_ready/best_1778320856_od_video_30877_singular_displa.mp4",
+      "gpt_score": 6,
+      "ts": "2026-05-09T10:00:59Z"
+    },
+    {
+      "id": "14VXmO3M4eQDHo7oCwL98MCSP2q6ZxET3",
+      "name": "od_video-30888_singular_display.mov",
+      "output": "/Users/gab/Desktop/gab-ae/footage/mac_ready/best_1778320880_od_video_30888_singular_displa.mp4",
+      "gpt_score": 6,
+      "ts": "2026-05-09T10:01:23Z"
+    },
+    {
+      "id": "14KoELMDDm16lYkbMwnf1hBg7r-0xc9vC",
+      "name": "video-30414_singular_display.mov",
+      "output": "/Users/gab/Desktop/gab-ae/footage/mac_ready/best_1778320886_video_30414_singular_display.mp4",
+      "gpt_score": 6,
+      "ts": "2026-05-09T10:01:28Z"
+    },
+    {
+      "id": "1QSZtmgC6u8Jl-NWknOUY_7ldvBKWR-tL",
+      "name": "video-30427_singular_display.mov",
+      "output": "/Users/gab/Desktop/gab-ae/footage/mac_ready/best_1778320898_video_30427_singular_display.mp4",
+      "gpt_score": 6,
+      "ts": "2026-05-09T10:01:40Z"
+    },
+    {
+      "id": "1eyEmc5soAi9fTDgXPC2-Y9a50DZfYR4j",
+      "name": "video-30728_singular_display.mov",
+      "output": "/Users/gab/Desktop/gab-ae/footage/mac_ready/best_1778320902_video_30728_singular_display.mp4",
+      "gpt_score": 6,
+      "ts": "2026-05-09T10:01:45Z"
+    },
+    {
+      "id": "1yk4v0nlkG6vLJ85PALWOfNaXqdJEYhqb",
+      "name": "video-30743_singular_display.mov",
+      "output": "/Users/gab/Desktop/gab-ae/footage/mac_ready/best_1778320907_video_30743_singular_display.mp4",
+      "gpt_score": 6,
+      "ts": "2026-05-09T10:01:49Z"
+    },
+    {
+      "id": "1wRqtrDK1Yo-V8ztNRkn17wJU_PEkLz5Z",
+      "name": "video-30754_singular_display.mov",
+      "output": "/Users/gab/Desktop/gab-ae/footage/mac_ready/best_1778320914_video_30754_singular_display.mp4",
+      "gpt_score": 6,
+      "ts": "2026-05-09T10:01:56Z"
+    },
+    {
+      "id": "1B3xchU6Aa1lT8hNgrucOV9nNanplBSzc",
+      "name": "video-30761_singular_display.mov",
+      "output": "/Users/gab/Desktop/gab-ae/footage/mac_ready/best_1778320919_video_30761_singular_display.mp4",
+      "gpt_score": 6,
+      "ts": "2026-05-09T10:02:01Z"
+    },
+    {
+      "id": "1Mn2aiOULx0TWfcrdP4T6eEaudHQMFcNa",
+      "name": "video-30777_singular_display.mov",
+      "output": "/Users/gab/Desktop/gab-ae/footage/mac_ready/best_1778320928_video_30777_singular_display.mp4",
+      "gpt_score": 6,
+      "ts": "2026-05-09T10:02:10Z"
+    },
+    {
+      "id": "1MUsXupdqslQ--tmy51VW3clQqN8DXsoJ",
+      "name": "video-30785_singular_display.mov",
+      "output": "/Users/gab/Desktop/gab-ae/footage/mac_ready/best_1778320935_video_30785_singular_display.mp4",
+      "gpt_score": 6,
+      "ts": "2026-05-09T10:02:17Z"
+    },
+    {
+      "id": "17XHlF3fsee_XYD3sZY0ba0rmoM0hWkfj",
+      "name": "video-30792_singular_display.mov",
+      "output": "/Users/gab/Desktop/gab-ae/footage/mac_ready/best_1778320943_video_30792_singular_display.mp4",
+      "gpt_score": 6,
+      "ts": "2026-05-09T10:02:25Z"
+    },
+    {
+      "id": "1oCOlgEn4eipKG8XpX9dEvbfxxNQPNLoI",
+      "name": "video-30800_singular_display.mov",
+      "output": "/Users/gab/Desktop/gab-ae/footage/mac_ready/best_1778320951_video_30800_singular_display.mp4",
+      "gpt_score": 6,
+      "ts": "2026-05-09T10:02:32Z"
+    },
+    {
+      "id": "1caThtQRt3YEvzSnePSDS2e4IQpAaFhLN",
+      "name": "video-30814_singular_display.mov",
+      "output": "/Users/gab/Desktop/gab-ae/footage/mac_ready/best_1778320960_video_30814_singular_display.mp4",
+      "gpt_score": 6,
+      "ts": "2026-05-09T10:02:42Z"
+    },
+    {
+      "id": "1vfB2T0UOwmNRmFqfU8jPgx_pMd5MFSqw",
+      "name": "video-30818_singular_display.mov",
+      "output": "/Users/gab/Desktop/gab-ae/footage/mac_ready/best_1778320972_video_30818_singular_display.mp4",
+      "gpt_score": 6,
+      "ts": "2026-05-09T10:02:54Z"
+    },
+    {
+      "id": "1qYQVvjf1A4lIM8ATYq0uO3TLS7Vp3vSr",
+      "name": "video-30822_singular_display.mov",
+      "output": "/Users/gab/Desktop/gab-ae/footage/mac_ready/best_1778320984_video_30822_singular_display.mp4",
+      "gpt_score": 6,
+      "ts": "2026-05-09T10:03:06Z"
+    },
+    {
+      "id": "1_30hREeDrCH31elJKsRKoJevAWOtDdfX",
+      "name": "video-30826_singular_display.mov",
+      "output": "/Users/gab/Desktop/gab-ae/footage/mac_ready/best_1778320999_video_30826_singular_display.mp4",
+      "gpt_score": 6,
+      "ts": "2026-05-09T10:03:21Z"
+    },
+    {
+      "id": "19D8KIijBniFCmNy3wqakbcdoycH9mFvC",
+      "name": "video-30833_singular_display.mov",
+      "output": "/Users/gab/Desktop/gab-ae/footage/mac_ready/best_1778321012_video_30833_singular_display.mp4",
+      "gpt_score": 6,
+      "ts": "2026-05-09T10:03:34Z"
+    },
+    {
+      "id": "123sBcOy-j68FZ2ieu_a5ANTm6ykLvxee",
+      "name": "video-30840_singular_display.mov",
+      "output": "/Users/gab/Desktop/gab-ae/footage/mac_ready/best_1778321025_video_30840_singular_display.mp4",
+      "gpt_score": 6,
+      "ts": "2026-05-09T10:03:47Z"
+    },
+    {
+      "id": "1pKWBLFSIvvRPujncu62QztLHK98utkAT",
+      "name": "video-30844_singular_display.mov",
+      "output": "/Users/gab/Desktop/gab-ae/footage/mac_ready/best_1778321037_video_30844_singular_display.mp4",
+      "gpt_score": 6,
+      "ts": "2026-05-09T10:03:59Z"
+    },
+    {
+      "id": "1KbprMsaDgz6cqw6rCb4XRR1JyA8MiqRJ",
+      "name": "video-30851_singular_display.mov",
+      "output": "/Users/gab/Desktop/gab-ae/footage/mac_ready/best_1778321051_video_30851_singular_display.mp4",
+      "gpt_score": 6,
+      "ts": "2026-05-09T10:04:13Z"
+    },
+    {
+      "id": "1LwxnICAi986Db2VsLYPpJVMmIYXaj-hQ",
+      "name": "video-30855_singular_display.mov",
+      "output": "/Users/gab/Desktop/gab-ae/footage/mac_ready/best_1778321066_video_30855_singular_display.mp4",
+      "gpt_score": 6,
+      "ts": "2026-05-09T10:04:28Z"
+    },
+    {
+      "id": "1VOOfgheHD00LvGwakhQOLXhnhqvJiu4-",
+      "name": "video-30859_singular_display.mov",
+      "output": "/Users/gab/Desktop/gab-ae/footage/mac_ready/best_1778321080_video_30859_singular_display.mp4",
+      "gpt_score": 6,
+      "ts": "2026-05-09T10:04:42Z"
+    },
+    {
+      "id": "1daJb5P4lHGEbQ7PTlzoUXOAxwERt4EN6",
+      "name": "video-30863_singular_display.mov",
+      "output": "/Users/gab/Desktop/gab-ae/footage/mac_ready/best_1778321092_video_30863_singular_display.mp4",
+      "gpt_score": 6,
+      "ts": "2026-05-09T10:04:54Z"
+    },
+    {
+      "id": "1Gn3-K8mHZtuRlxzONLMbO2t3_gj0eUas",
+      "name": "video-30868_singular_display.mov",
+      "output": "/Users/gab/Desktop/gab-ae/footage/mac_ready/best_1778321111_video_30868_singular_display.mp4",
+      "gpt_score": 6,
+      "ts": "2026-05-09T10:05:12Z"
+    },
+    {
+      "id": "14hKpgC08IN5SsIIHt1Ng4hFDyQWZI2Fg",
+      "name": "video-30872_singular_display.mov",
+      "output": "/Users/gab/Desktop/gab-ae/footage/mac_ready/best_1778321129_video_30872_singular_display.mp4",
+      "gpt_score": 6,
+      "ts": "2026-05-09T10:05:31Z"
+    },
+    {
+      "id": "1l4IpIYq0wiVMveRnw4hFOaCKBT5aG3mH",
+      "name": "video-30879_singular_display.mov",
+      "output": "/Users/gab/Desktop/gab-ae/footage/mac_ready/best_1778321149_video_30879_singular_display.mp4",
+      "gpt_score": 6,
+      "ts": "2026-05-09T10:05:51Z"
+    },
+    {
+      "id": "1aION619_ElJaf6iBYW610thzGTfhPjFt",
+      "name": "video-30883_singular_display.mov",
+      "output": "/Users/gab/Desktop/gab-ae/footage/mac_ready/best_1778321171_video_30883_singular_display.mp4",
+      "gpt_score": 6,
+      "ts": "2026-05-09T10:06:13Z"
+    },
+    {
+      "id": "1TZJvYQPzweHJT9SIp5_ggLLmzdT6tM49",
+      "name": "video-30890_singular_display.mov",
+      "output": "/Users/gab/Desktop/gab-ae/footage/mac_ready/best_1778321193_video_30890_singular_display.mp4",
+      "gpt_score": 6,
+      "ts": "2026-05-09T10:06:36Z"
+    },
+    {
+      "id": "1I0QZ-nPHQ75jJhA3MuSFYycr_uHS88m8",
+      "name": "video-30902_singular_display.mov",
+      "output": "/Users/gab/Desktop/gab-ae/footage/mac_ready/best_1778321212_video_30902_singular_display.mp4",
+      "gpt_score": 6,
+      "ts": "2026-05-09T10:06:55Z"
+    },
+    {
+      "id": "18gvJvI8c4FeyLy4E_A8s0wVvXdLXcOzM",
+      "name": "video-30906_singular_display.mov",
+      "output": "/Users/gab/Desktop/gab-ae/footage/mac_ready/best_1778321231_video_30906_singular_display.mp4",
+      "gpt_score": 6,
+      "ts": "2026-05-09T10:07:14Z"
+    },
+    {
+      "id": "17Dc7IIgZ7jVRuwcdMM3zGGcXPXxyOyW8",
+      "name": "video-30908_singular_display.mov",
+      "output": "/Users/gab/Desktop/gab-ae/footage/mac_ready/best_1778321251_video_30908_singular_display.mp4",
+      "gpt_score": 6,
+      "ts": "2026-05-09T10:07:33Z"
+    },
+    {
+      "id": "14xEzjPqqhpgnbrUcsG9Lfq_P9bcX9IhT",
+      "name": "video-30912_singular_display.mov",
+      "output": "/Users/gab/Desktop/gab-ae/footage/mac_ready/best_1778321273_video_30912_singular_display.mp4",
+      "gpt_score": 6,
+      "ts": "2026-05-09T10:07:56Z"
+    },
+    {
+      "id": "1txOtoxsd9WTW8rGj5G7xbC42kPsC8KdB",
+      "name": "video-30916_singular_display.mov",
+      "output": "/Users/gab/Desktop/gab-ae/footage/mac_ready/best_1778321302_video_30916_singular_display.mp4",
+      "gpt_score": 6,
+      "ts": "2026-05-09T10:08:24Z"
+    },
+    {
+      "id": "16aA5sv7eHv6WjRvblYxmvUcO_7oVDK3m",
+      "name": "video-30920_singular_display.mov",
+      "output": "/Users/gab/Desktop/gab-ae/footage/mac_ready/best_1778321326_video_30920_singular_display.mp4",
+      "gpt_score": 6,
+      "ts": "2026-05-09T10:08:48Z"
+    },
+    {
+      "id": "19ItLxt_1d9Wy70nBKk84lfYZBrmAHlPJ",
+      "name": "video-30922_singular_display.mov",
+      "output": "/Users/gab/Desktop/gab-ae/footage/mac_ready/best_1778321352_video_30922_singular_display.mp4",
+      "gpt_score": 6,
+      "ts": "2026-05-09T10:09:15Z"
+    },
+    {
+      "id": "1AsAjC5BEOhSZebgHqzFYKQeE-MLD5Apo",
+      "name": "video-30924_singular_display.mov",
+      "output": "/Users/gab/Desktop/gab-ae/footage/mac_ready/best_1778321380_video_30924_singular_display.mp4",
+      "gpt_score": 6,
+      "ts": "2026-05-09T10:09:43Z"
+    },
+    {
+      "id": "1luBWLA7mQ67_Fd9M26XzhHAEC-4-Rxq2",
+      "name": "video-30928_singular_display.mov",
+      "output": "/Users/gab/Desktop/gab-ae/footage/mac_ready/best_1778321408_video_30928_singular_display.mp4",
+      "gpt_score": 6,
+      "ts": "2026-05-09T10:10:11Z"
+    },
+    {
+      "id": "1IFSufVJweI7jy5KhCTb-xdck-MPE5bbr",
+      "name": "video-30930_singular_display.mov",
+      "output": "/Users/gab/Desktop/gab-ae/footage/mac_ready/best_1778321428_video_30930_singular_display.mp4",
+      "gpt_score": 6,
+      "ts": "2026-05-09T10:10:30Z"
+    },
+    {
+      "id": "1OFmXJDQY-mw-8x3c2QJTPxakck-8A8AS",
+      "name": "video-30932_singular_display.mov",
+      "output": "/Users/gab/Desktop/gab-ae/footage/mac_ready/best_1778321447_video_30932_singular_display.mp4",
+      "gpt_score": 6,
+      "ts": "2026-05-09T10:10:49Z"
+    },
+    {
+      "id": "11m8UunmghkJPoWzHU6W0fcvhbb8hQ1mG",
+      "name": "video-30936_singular_display.mov",
+      "output": "/Users/gab/Desktop/gab-ae/footage/mac_ready/best_1778321468_video_30936_singular_display.mp4",
+      "gpt_score": 6,
+      "ts": "2026-05-09T10:11:11Z"
+    },
+    {
+      "id": "1w83MetA2VdJfH2NgyclcI0B7NhysF_74",
+      "name": "video-30940_singular_display.mov",
+      "output": "/Users/gab/Desktop/gab-ae/footage/mac_ready/best_1778321489_video_30940_singular_display.mp4",
+      "gpt_score": 6,
+      "ts": "2026-05-09T10:11:30Z"
+    },
+    {
+      "id": "1AMGCHkjqcw6G1pHq6vGVu_UXLzuzTczY",
+      "name": "video-30944_singular_display.mov",
+      "output": "/Users/gab/Desktop/gab-ae/footage/mac_ready/best_1778321516_video_30944_singular_display.mp4",
+      "gpt_score": 6,
+      "ts": "2026-05-09T10:11:59Z"
+    },
+    {
+      "id": "1SZNMUAMg8nlBhtK2rkM1vUxgISjb7k8y",
+      "name": "video-30948_singular_display.mov",
+      "output": "/Users/gab/Desktop/gab-ae/footage/mac_ready/best_1778321538_video_30948_singular_display.mp4",
+      "gpt_score": 6,
+      "ts": "2026-05-09T10:12:20Z"
+    },
+    {
+      "id": "1K8pZOtq4V0YQeB8U4wbo976mssxCoZt4",
+      "name": "video-30952_singular_display.mov",
+      "output": "/Users/gab/Desktop/gab-ae/footage/mac_ready/best_1778321560_video_30952_singular_display.mp4",
+      "gpt_score": 6,
+      "ts": "2026-05-09T10:12:42Z"
+    },
+    {
+      "id": "1y-WcFQJWDoqF5EiuH7wbatNsn5kvQjbU",
+      "name": "video-30956_singular_display.mov",
+      "output": "/Users/gab/Desktop/gab-ae/footage/mac_ready/best_1778321584_video_30956_singular_display.mp4",
+      "gpt_score": 6,
+      "ts": "2026-05-09T10:13:07Z"
+    },
+    {
+      "id": "1qS_eSQRaYazLSpFivcfUd1x4fVaPBX3t",
+      "name": "video-30960_singular_display.mov",
+      "output": "/Users/gab/Desktop/gab-ae/footage/mac_ready/best_1778321608_video_30960_singular_display.mp4",
+      "gpt_score": 6,
+      "ts": "2026-05-09T10:13:30Z"
+    },
+    {
+      "id": "11Gv2B3PbbqmtOz9AfYJLR2d8GOyZppUu",
+      "name": "video-30964_singular_display.mov",
+      "output": "/Users/gab/Desktop/gab-ae/footage/mac_ready/best_1778321632_video_30964_singular_display.mp4",
+      "gpt_score": 6,
+      "ts": "2026-05-09T10:13:54Z"
+    },
+    {
+      "id": "14l4jZN1nSTx52sQy9Fhwumg95CPwEsZv",
+      "name": "video-30968_singular_display.mov",
+      "output": "/Users/gab/Desktop/gab-ae/footage/mac_ready/best_1778321658_video_30968_singular_display.mp4",
+      "gpt_score": 6,
+      "ts": "2026-05-09T10:14:20Z"
+    },
+    {
+      "id": "1RjNAJotV9qztUJFtnfFOR0W4FhI36A_m",
+      "name": "video-30972_singular_display.mov",
+      "output": "/Users/gab/Desktop/gab-ae/footage/mac_ready/best_1778321683_video_30972_singular_display.mp4",
+      "gpt_score": 6,
+      "ts": "2026-05-09T10:14:45Z"
+    },
+    {
+      "id": "1YNLwBIN-ajMOJPsZQ7R0TiYKn-sDnFpW",
+      "name": "video-30976_singular_display.mov",
+      "output": "/Users/gab/Desktop/gab-ae/footage/mac_ready/best_1778321710_video_30976_singular_display.mp4",
+      "gpt_score": 6,
+      "ts": "2026-05-09T10:15:12Z"
+    },
+    {
+      "id": "1Lv9KoClFo0a6s6N6IbrFRvVypmKo6XtG",
+      "name": "video-30980_singular_display.mov",
+      "output": "/Users/gab/Desktop/gab-ae/footage/mac_ready/best_1778321737_video_30980_singular_display.mp4",
+      "gpt_score": 6,
+      "ts": "2026-05-09T10:15:40Z"
+    },
+    {
+      "id": "15vRzKmRyvTF1fbAMixWe-6SeLr1NB-gX",
+      "name": "video-30984_singular_display.mov",
+      "output": "/Users/gab/Desktop/gab-ae/footage/mac_ready/best_1778321767_video_30984_singular_display.mp4",
+      "gpt_score": 6,
+      "ts": "2026-05-09T10:16:09Z"
+    },
+    {
+      "id": "1MYAWeE59bvNCI17sClIOdMuIYU3tGpUm",
+      "name": "video-30988_singular_display.mov",
+      "output": "/Users/gab/Desktop/gab-ae/footage/mac_ready/best_1778321794_video_30988_singular_display.mp4",
+      "gpt_score": 6,
+      "ts": "2026-05-09T10:16:36Z"
+    },
+    {
+      "id": "1s_Bzhjuez6cEOaYdRLoDEHZxrU9qAzgP",
+      "name": "video-30992_singular_display.mov",
+      "output": "/Users/gab/Desktop/gab-ae/footage/mac_ready/best_1778321826_video_30992_singular_display.mp4",
+      "gpt_score": 6,
+      "ts": "2026-05-09T10:17:09Z"
+    },
+    {
+      "id": "1_AGZHWiAIom9Rm3OxWDnmr6U3DVLsKmI",
+      "name": "video-30996_singular_display.mov",
+      "output": "/Users/gab/Desktop/gab-ae/footage/mac_ready/best_1778321858_video_30996_singular_display.mp4",
+      "gpt_score": 6,
+      "ts": "2026-05-09T10:17:40Z"
+    },
+    {
+      "id": "1spXo96uiA6eyMJXpw7nOzEltpepsybHZ",
+      "name": "video-31000_singular_display.mov",
+      "output": "/Users/gab/Desktop/gab-ae/footage/mac_ready/best_1778321906_video_31000_singular_display.mp4",
+      "gpt_score": 6,
+      "ts": "2026-05-09T10:18:28Z"
+    },
+    {
+      "id": "1U2IBJEveKfEKmFt1QrMVtC3yIdGDLvY0",
+      "name": "DJI_20260502152122_0406_D.LRF",
+      "output": "/Users/gab/Desktop/gab-ae/footage/mac_ready/best_1778321927_DJI_20260502152122_0406_D.mp4",
+      "gpt_score": 6,
+      "ts": "2026-05-09T10:18:49Z"
+    },
+    {
+      "id": "1XLGdVHzHaDICRWF2RSR1g8ltfGJvjNJq",
+      "name": "DJI_20260502153123_0408_D.LRF",
+      "output": "/Users/gab/Desktop/gab-ae/footage/mac_ready/best_1778321944_DJI_20260502153123_0408_D.mp4",
+      "gpt_score": 6,
+      "ts": "2026-05-09T10:19:05Z"
+    },
+    {
+      "id": "1X7w_IlwW0qF0iNtMH3cqHNfNFiDIpGeR",
+      "name": "DJI_20260502154252_0410_D.LRF",
+      "output": "/Users/gab/Desktop/gab-ae/footage/mac_ready/best_1778321959_DJI_20260502154252_0410_D.mp4",
+      "gpt_score": 6,
+      "ts": "2026-05-09T10:19:21Z"
+    },
+    {
+      "id": "1UzpEac4FhjuOs9LpMZFg_DaRgFcaaxSi",
+      "name": "DJI_20260502154459_0411_D.LRF",
+      "output": "/Users/gab/Desktop/gab-ae/footage/mac_ready/best_1778321968_DJI_20260502154459_0411_D.mp4",
+      "gpt_score": 6,
+      "ts": "2026-05-09T10:19:30Z"
+    },
+    {
+      "id": "1SCnyR0YWML4_BbGzGMRprJYFzDs2p7Md",
+      "name": "DJI_20260502154618_0413_D.LRF",
+      "output": "/Users/gab/Desktop/gab-ae/footage/mac_ready/best_1778321984_DJI_20260502154618_0413_D.mp4",
+      "gpt_score": 6,
+      "ts": "2026-05-09T10:19:45Z"
+    },
+    {
+      "id": "1puuhFoTWWw42HWu0PBOEfKGZOKvzLoAs",
+      "name": "DJI_20260502154927_0414_D.LRF",
+      "output": "/Users/gab/Desktop/gab-ae/footage/mac_ready/best_1778321994_DJI_20260502154927_0414_D.mp4",
+      "gpt_score": 6,
+      "ts": "2026-05-09T10:19:55Z"
+    },
+    {
+      "id": "1W_qpMeolOwm68l1XCt_wjt978UfXnrqb",
+      "name": "DJI_20260502155102_0416_D.LRF",
+      "output": "/Users/gab/Desktop/gab-ae/footage/mac_ready/best_1778322009_DJI_20260502155102_0416_D.mp4",
+      "gpt_score": 6,
+      "ts": "2026-05-09T10:20:11Z"
+    },
+    {
+      "id": "1XDitZWav0iiXKnC-qYcMet5q56iFNRjE",
+      "name": "DJI_20260502155346_0417_D.LRF",
+      "output": "/Users/gab/Desktop/gab-ae/footage/mac_ready/best_1778322013_DJI_20260502155346_0417_D.mp4",
+      "gpt_score": 6,
+      "ts": "2026-05-09T10:20:14Z"
+    },
+    {
+      "id": "1nVlSCIcQPVHjWZY68yU7iDAvjoks9t45",
+      "name": "DJI_20260502155403_0418_D.LRF",
+      "output": "/Users/gab/Desktop/gab-ae/footage/mac_ready/best_1778322016_DJI_20260502155403_0418_D.mp4",
+      "gpt_score": 6,
+      "ts": "2026-05-09T10:20:18Z"
+    },
+    {
+      "id": "1Re-e32OeViX2Qj7KaL6k5Bln-k9BmKaU",
+      "name": "DJI_20260502155424_0419_D.LRF",
+      "output": "/Users/gab/Desktop/gab-ae/footage/mac_ready/best_1778322022_DJI_20260502155424_0419_D.mp4",
+      "gpt_score": 6,
+      "ts": "2026-05-09T10:20:24Z"
+    },
+    {
+      "id": "1oy8t_7oMLm0kb4z3vLx3a4LudsPh3ajt",
+      "name": "DJI_20260502155517_0421_D.LRF",
+      "output": "/Users/gab/Desktop/gab-ae/footage/mac_ready/best_1778322034_DJI_20260502155517_0421_D.mp4",
+      "gpt_score": 6,
+      "ts": "2026-05-09T10:20:36Z"
+    },
+    {
+      "id": "1cyXCisYs4BIOXKb2l5y56QzZ85Hf5td9",
+      "name": "DJI_20260502155658_0423_D.LRF",
+      "output": "/Users/gab/Desktop/gab-ae/footage/mac_ready/best_1778322046_DJI_20260502155658_0423_D.mp4",
+      "gpt_score": 6,
+      "ts": "2026-05-09T10:20:47Z"
+    },
+    {
+      "id": "1N_u8BAI4GS2PilEy1-HuXfnE7zKKYrOg",
+      "name": "DJI_20260502155841_0425_D.LRF",
+      "output": "/Users/gab/Desktop/gab-ae/footage/mac_ready/best_1778322065_DJI_20260502155841_0425_D.mp4",
+      "gpt_score": 6,
+      "ts": "2026-05-09T10:21:06Z"
+    },
+    {
+      "id": "1BJW1jnF4bdWiuzvsK3w_xq0qtE9JK6Cv",
+      "name": "DJI_20260502185515_0453_D.LRF",
+      "output": "/Users/gab/Desktop/gab-ae/footage/mac_ready/best_1778322081_DJI_20260502185515_0453_D.mp4",
+      "gpt_score": 6,
+      "ts": "2026-05-09T10:21:23Z"
+    },
+    {
+      "id": "12CY4i5k0SjNxbj6H2guMsLtWUegBBwq1",
+      "name": "DJI_20260502185823_0455_D.LRF",
+      "output": "/Users/gab/Desktop/gab-ae/footage/mac_ready/best_1778322097_DJI_20260502185823_0455_D.mp4",
+      "gpt_score": 6,
+      "ts": "2026-05-09T10:21:39Z"
+    },
+    {
+      "id": "1-g8n8E5fNzdu_WGlyufamS1C12x1KAeo",
+      "name": "DJI_20260502190210_0457_D.LRF",
+      "output": "/Users/gab/Desktop/gab-ae/footage/mac_ready/best_1778322113_DJI_20260502190210_0457_D.mp4",
+      "gpt_score": 6,
+      "ts": "2026-05-09T10:21:55Z"
+    },
+    {
+      "id": "1QoLuz724gs_j7m8VotDZ3ZJCl26iQnT0",
+      "name": "DJI_20260502190405_0458_D.LRF",
+      "output": "/Users/gab/Desktop/gab-ae/footage/mac_ready/best_1778322129_DJI_20260502190405_0458_D.mp4",
+      "gpt_score": 6,
+      "ts": "2026-05-09T10:22:10Z"
+    },
+    {
+      "id": "1gsq28mHihl9desID5p3JHXbJmkVTutvj",
+      "name": "DJI_20260502190927_0459_D.LRF",
+      "output": "/Users/gab/Desktop/gab-ae/footage/mac_ready/best_1778322132_DJI_20260502190927_0459_D.mp4",
+      "gpt_score": 6,
+      "ts": "2026-05-09T10:22:13Z"
+    },
+    {
+      "id": "1iebRFFcXOHsonq-rNTUcwY1c9kmgm-3o",
+      "name": "DJI_20260502191957_0460_D.LRF",
+      "output": "/Users/gab/Desktop/gab-ae/footage/mac_ready/best_1778322150_DJI_20260502191957_0460_D.mp4",
+      "gpt_score": 6,
+      "ts": "2026-05-09T10:22:31Z"
+    },
+    {
+      "id": "1_PxWyRQVIcj0Afuwi_6Ps5GE1kXcZ6n7",
+      "name": "DJI_20260502193741_0461_D.LRF",
+      "output": "/Users/gab/Desktop/gab-ae/footage/mac_ready/best_1778322166_DJI_20260502193741_0461_D.mp4",
+      "gpt_score": 6,
+      "ts": "2026-05-09T10:22:48Z"
+    },
+    {
+      "id": "1A4brhK9lHcUFviqAF-KujuRd42DJW4b2",
+      "name": "DJI_20260502194835_0463_D.LRF",
+      "output": "/Users/gab/Desktop/gab-ae/footage/mac_ready/best_1778322186_DJI_20260502194835_0463_D.mp4",
+      "gpt_score": 6,
+      "ts": "2026-05-09T10:23:08Z"
+    },
+    {
+      "id": "1jzXljtmUhhc6Al-jHvhR9cNKoUnv6lsB",
+      "name": "DJI_20260502195629_0478_D.LRF",
+      "output": "/Users/gab/Desktop/gab-ae/footage/mac_ready/best_1778322191_DJI_20260502195629_0478_D.mp4",
+      "gpt_score": 6,
+      "ts": "2026-05-09T10:23:13Z"
+    },
+    {
+      "id": "107pwcVWEjPexGymNXZWG0WeU2qSNpOhQ",
+      "name": "DJI_20260502195717_0479_D.LRF",
+      "output": "/Users/gab/Desktop/gab-ae/footage/mac_ready/best_1778322197_DJI_20260502195717_0479_D.mp4",
+      "gpt_score": 6,
+      "ts": "2026-05-09T10:23:19Z"
+    },
+    {
+      "id": "1jjbu8uYRx7g5q-ux2pLQVLaeIIF_dpVw",
+      "name": "DJI_20260502195809_0481_D.LRF",
+      "output": "/Users/gab/Desktop/gab-ae/footage/mac_ready/best_1778322219_DJI_20260502195809_0481_D.mp4",
+      "gpt_score": 6,
+      "ts": "2026-05-09T10:23:40Z"
+    },
+    {
+      "id": "1m-reqIfBiI0D53gdVQlHY7M4w6fNAtyL",
+      "name": "DJI_20260502200056_0482_D.LRF",
+      "output": "/Users/gab/Desktop/gab-ae/footage/mac_ready/best_1778322236_DJI_20260502200056_0482_D.mp4",
+      "gpt_score": 6,
+      "ts": "2026-05-09T10:23:57Z"
+    },
+    {
+      "id": "1-NvFyN_gqh0vd8y1dDXLSlOUmanclyKt",
+      "name": "DJI_20260502201136_0467_D.LRF",
+      "output": "/Users/gab/Desktop/gab-ae/footage/mac_ready/best_1778322252_DJI_20260502201136_0467_D.mp4",
+      "gpt_score": 6,
+      "ts": "2026-05-09T10:24:14Z"
+    },
+    {
+      "id": "1PkT4qVnW2Zffx2VSRcPGIf8cczGCzC2u",
+      "name": "DJI_20260502201457_0468_D.LRF",
+      "output": "/Users/gab/Desktop/gab-ae/footage/mac_ready/best_1778322273_DJI_20260502201457_0468_D.mp4",
+      "gpt_score": 6,
+      "ts": "2026-05-09T10:24:34Z"
+    },
+    {
+      "id": "1LasCk9SI9urqs93AHOBGemaPvD-FQG29",
+      "name": "DJI_20260502201846_0470_D.LRF",
+      "output": "/Users/gab/Desktop/gab-ae/footage/mac_ready/best_1778322288_DJI_20260502201846_0470_D.mp4",
+      "gpt_score": 6,
+      "ts": "2026-05-09T10:24:50Z"
+    },
+    {
+      "id": "1ki4kSNOYB0y3QqrKBYNMo2aiCEko-ih9",
+      "name": "DJI_20260502202006_0485_D.LRF",
+      "output": "/Users/gab/Desktop/gab-ae/footage/mac_ready/best_1778322292_DJI_20260502202006_0485_D.mp4",
+      "gpt_score": 6,
+      "ts": "2026-05-09T10:24:53Z"
+    },
+    {
+      "id": "16LB1yWuCa4pnE1FW6npSvybLoMqu8lPb",
+      "name": "DJI_20260502202043_0471_D.LRF",
+      "output": "/Users/gab/Desktop/gab-ae/footage/mac_ready/best_1778322307_DJI_20260502202043_0471_D.mp4",
+      "gpt_score": 6,
+      "ts": "2026-05-09T10:25:09Z"
+    },
+    {
+      "id": "1FwYnsH4AUENXtUOgC1SklQYAJkv_a4br",
+      "name": "DJI_20260502203425_0474_D.LRF",
+      "output": "/Users/gab/Desktop/gab-ae/footage/mac_ready/best_1778322324_DJI_20260502203425_0474_D.mp4",
+      "gpt_score": 6,
+      "ts": "2026-05-09T10:25:25Z"
+    },
+    {
+      "id": "1ySs73QnjLzc2NCik61JhegtfoikoE1yL",
+      "name": "DJI_20260502203903_0489_D.LRF",
+      "output": "/Users/gab/Desktop/gab-ae/footage/mac_ready/best_1778322340_DJI_20260502203903_0489_D.mp4",
+      "gpt_score": 6,
+      "ts": "2026-05-09T10:25:42Z"
+    },
+    {
+      "id": "1dVufXx0Cb0_UmTJfzKyRfbiWCT5tx8rG",
+      "name": "DJI_20260502204340_0476_D.LRF",
+      "output": "/Users/gab/Desktop/gab-ae/footage/mac_ready/best_1778322347_DJI_20260502204340_0476_D.mp4",
+      "gpt_score": 6,
+      "ts": "2026-05-09T10:25:48Z"
+    },
+    {
+      "id": "1bld8GXN0rcl_C8ahYkI0Vs7LPqPJLZiG",
+      "name": "DJI_20260502214116_0493_D.LRF",
+      "output": "/Users/gab/Desktop/gab-ae/footage/mac_ready/best_1778322359_DJI_20260502214116_0493_D.mp4",
+      "gpt_score": 6,
+      "ts": "2026-05-09T10:26:01Z"
+    },
+    {
+      "id": "1G7YobDF1bc0FqzSvcyl7dMa1UfZGBoGU",
+      "name": "DJI_20260502214204_0494_D.LRF",
+      "output": "/Users/gab/Desktop/gab-ae/footage/mac_ready/best_1778322370_DJI_20260502214204_0494_D.mp4",
+      "gpt_score": 6,
+      "ts": "2026-05-09T10:26:12Z"
+    },
+    {
+      "id": "1kBWZd-4BxHQ6sMIVfrlLUYnbZEZiREDC",
+      "name": "DJI_20260502215000_0497_D.LRF",
+      "output": "/Users/gab/Desktop/gab-ae/footage/mac_ready/best_1778322395_DJI_20260502215000_0497_D.mp4",
+      "gpt_score": 6,
+      "ts": "2026-05-09T10:26:37Z"
+    }
+  ]
+}

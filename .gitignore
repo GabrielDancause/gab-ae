@@ -45,3 +45,4 @@ stream_list_next.txt
 
 # Logs
 *.log
+footage/live_token.json

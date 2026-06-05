@@ -15,6 +15,7 @@ Manual:
   python3 upload_scheduler.py --status  # show full state summary
 """
 
+import calendar
 import json
 import os
 import sys
@@ -76,7 +77,7 @@ def next_publish_time(state):
     last = state.get('next_publish_at')
     now  = time.time()
     if last:
-        last_epoch = time.mktime(time.strptime(last, '%Y-%m-%dT%H:%M:%S.000Z'))
+        last_epoch = calendar.timegm(time.strptime(last, '%Y-%m-%dT%H:%M:%S.000Z'))
         base = max(last_epoch, now)
     else:
         base = now

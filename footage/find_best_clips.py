@@ -52,9 +52,9 @@ from googleapiclient.http import MediaIoBaseDownload
 # ── Config ─────────────────────────────────────────────────────────────────────
 CLIP_DURATION   = 5.0      # seconds per output clip
 GPT_MIN_SCORE   = 6        # minimum GPT-4o-mini score to keep (1-10)
-SHARP_MIN       = 80.0     # minimum Laplacian variance (reject blurry)
-EXPOSURE_MIN    = 30       # min mean pixel value
-EXPOSURE_MAX    = 220      # max mean pixel value
+SHARP_MIN       = 30.0     # minimum Laplacian variance (reject blurry) — GPT does the real cut
+EXPOSURE_MIN    = 20       # min mean pixel value
+EXPOSURE_MAX    = 235      # max mean pixel value
 MAX_PHONE_MB    = 600      # skip phone files larger than this (likely long video)
 MIN_LRF_MB      = 8
 MAX_LRF_MB      = 150
@@ -114,7 +114,12 @@ def probe_video(path):
         if not vs:
             return None
         dur = float(d.get('format', {}).get('duration', vs.get('duration', 0)))
-        return dur, int(vs['width']), int(vs['height'])
+        w, h = int(vs['width']), int(vs['height'])
+        # iPhone stores portrait video as landscape with rotation metadata
+        rotation = int(vs.get('tags', {}).get('rotate', 0))
+        if rotation in (90, 270):
+            w, h = h, w   # swap to reflect actual displayed orientation
+        return dur, w, h
     except Exception:
         return None
 
@@ -219,8 +224,13 @@ def find_best_window(frame_scores, window=5):
             best_start = i
     return best_start, best_score
 
+def gpt_available():
+    return bool(os.environ.get('OPENAI_API_KEY'))
+
 def gpt_score_frame(frame_path):
-    """Send JPEG to GPT-4o-mini. Returns score 1-10 (or None on error)."""
+    """Send JPEG to GPT-4o-mini. Returns (score, reason) or (None, '') on error/unavailable."""
+    if not gpt_available():
+        return None, 'no key'
     try:
         from openai import OpenAI
         client = OpenAI()
@@ -248,7 +258,6 @@ def gpt_score_frame(frame_path):
             max_tokens=80,
         )
         text = resp.choices[0].message.content.strip()
-        # Strip markdown code fences if present
         text = re.sub(r'^```[a-z]*\n?', '', text)
         text = re.sub(r'\n?```$', '', text)
         data = json.loads(text)
@@ -333,15 +342,18 @@ def process_file(video_path, file_type, file_name, dry_run=False):
             key=lambda f: score_frame(f)[0]
         )
 
-        # ── Phase 2: GPT score ──
-        gpt_s, gpt_reason = gpt_score_frame(best_frame_in_window)
-        if gpt_s is None:
-            gpt_s = 5  # neutral if GPT fails
-        log(f"  GPT score: {gpt_s}/10 — {gpt_reason}")
-
-        if gpt_s < GPT_MIN_SCORE:
-            log(f"  GPT rejected ({gpt_s} < {GPT_MIN_SCORE}) — skip")
-            return None
+        # ── Phase 2: GPT score (optional) ──
+        gpt_reason = ''
+        if gpt_available():
+            gpt_s, gpt_reason = gpt_score_frame(best_frame_in_window)
+            if gpt_s is None:
+                gpt_s = GPT_MIN_SCORE
+            log(f"  GPT score: {gpt_s}/10 — {gpt_reason}")
+            if gpt_s < GPT_MIN_SCORE:
+                log(f"  GPT rejected ({gpt_s} < {GPT_MIN_SCORE}) — skip")
+                return None
+        else:
+            gpt_s = GPT_MIN_SCORE  # pass through; sharpness filter is the gate
 
         # ── Extract the clip ──
         READY_DIR.mkdir(exist_ok=True)
@@ -419,13 +431,17 @@ def main():
     ap.add_argument('--no-upload', action='store_true', help='Skip upload at end')
     args = ap.parse_args()
 
-    # Load .env for OpenAI key
-    env_path = Path(__file__).parent.parent / '.env'
-    if env_path.exists():
-        for line in env_path.read_text().splitlines():
-            if '=' in line and not line.startswith('#'):
-                k, _, v = line.partition('=')
-                os.environ.setdefault(k.strip(), v.strip().strip('"').strip("'"))
+    # Load .env for OpenAI key — check several locations
+    for env_path in [
+        Path(__file__).parent.parent / '.env',
+        Path(__file__).parent.parent / 'shorts-uploader' / '.env',
+        Path.home() / '.env',
+    ]:
+        if env_path.exists():
+            for line in env_path.read_text().splitlines():
+                if '=' in line and not line.startswith('#'):
+                    k, _, v = line.partition('=')
+                    os.environ.setdefault(k.strip(), v.strip().strip('"').strip("'"))
 
     state = load_json(STATE_FILE, {'processed': [], 'extracted': []})
     processed_ids = set(state.get('processed', []))

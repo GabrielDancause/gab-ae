@@ -32,6 +32,7 @@ Usage:
 """
 
 import argparse, base64, io, json, os, subprocess, sys, tempfile, time, urllib.request, urllib.error
+from datetime import datetime, timezone
 from pathlib import Path
 
 import numpy as np
@@ -46,6 +47,7 @@ CF_ACCOUNT_ID = 'f8a9c8de1fcedb10d25b24325a6f8727'
 CF_DB_ID      = '4e23e386-b430-4ffc-bf84-246a4e7bcdd1'
 OR_MODEL     = 'nvidia/nemotron-nano-12b-v2-vl:free'
 VIDEO_EXTS   = {'.mov', '.mp4', '.MP4', '.MOV', '.MTS', '.m2ts'}
+PHOTO_EXTS   = {'.heic', '.HEIC', '.jpg', '.JPG', '.jpeg', '.JPEG', '.png', '.PNG'}
 GRADE        = (
     "curves=r='0/0.01 0.25/0.25 0.5/0.53 0.75/0.78 1/0.98'"
     ":g='0/0.01 0.25/0.24 0.5/0.50 0.75/0.75 1/0.96'"
@@ -60,7 +62,7 @@ SATIE_TRACKS = [
 ]
 XFADE_DUR    = 1.5
 SEG_DUR      = 75       # seconds per clip in long-form
-MIN_CLIP_DUR = 10       # skip clips shorter than this
+MIN_CLIP_DUR = 0        # backup everything regardless of length
 
 
 def log(msg):
@@ -202,6 +204,85 @@ Return ONLY valid JSON (no markdown):
         return {}
 
 
+# ── Photo tagging ─────────────────────────────────────────────────────────────
+
+def tag_photo(jpeg_path, api_key, context="Paris, France"):
+    img_b64 = base64.b64encode(Path(jpeg_path).read_bytes()).decode()
+    content = [
+        {"type": "image_url", "image_url": {"url": f"data:image/jpeg;base64,{img_b64}"}},
+        {"type": "text", "text": f"""Photo taken in {context}.
+Return ONLY valid JSON (no markdown):
+{{
+  "tags": ["tag1","tag2",...10+ specific tags],
+  "location": "specific place if identifiable",
+  "time_of_day": "night/day/golden hour/etc",
+  "mood": "short mood phrase",
+  "subjects": ["subjects visible"],
+  "description": "1-2 sentence description",
+  "media_type": "photo"
+}}"""}
+    ]
+    payload = json.dumps({
+        "model": OR_MODEL,
+        "messages": [{"role": "user", "content": content}],
+        "max_tokens": 400, "temperature": 0.2,
+    }).encode()
+    req = urllib.request.Request(
+        "https://openrouter.ai/api/v1/chat/completions", data=payload,
+        headers={"Authorization": f"Bearer {api_key}",
+                 "Content-Type": "application/json",
+                 "HTTP-Referer": "https://gab.ae"}
+    )
+    try:
+        with urllib.request.urlopen(req, timeout=60) as resp:
+            result = json.loads(resp.read())
+        raw = (result["choices"][0]["message"].get("content") or "").strip()
+        if "```" in raw:
+            raw = raw.split("```")[1]
+            if raw.startswith("json"): raw = raw[4:]
+        return json.loads(raw.strip())
+    except Exception as e:
+        log(f"  photo tag error: {e}")
+        return {"media_type": "photo"}
+
+
+# ── Progress tracking ─────────────────────────────────────────────────────────
+
+STATE_FILE = Path('/tmp/pipeline_state.json')
+
+def push_progress(series, files_done, files_total, phase, cf_api_token=None, current_file=None):
+    """Update files_done/files_total/phase/current_file in /tmp/pipeline_state.json and push to D1."""
+    try:
+        state = json.loads(STATE_FILE.read_text()) if STATE_FILE.exists() else {}
+        for s in state.get('sessions', []):
+            if s.get('series') == series:
+                s['files_done'] = files_done
+                s['files_total'] = files_total
+                s['phase'] = phase
+                if current_file is not None:
+                    s['current_file'] = current_file
+                break
+        state['updated'] = datetime.now(timezone.utc).strftime('%Y-%m-%dT%H:%M:%SZ')
+        STATE_FILE.write_text(json.dumps(state, indent=2))
+        _tok_file = Path('/tmp/cf_token.txt')
+        token = (_tok_file.read_text().strip() if _tok_file.exists() else '') or cf_api_token or ''
+        if token:
+            val = json.dumps(state).replace("'", "''")
+            sql = f"INSERT OR REPLACE INTO pipeline_state (key, value, updated_at) VALUES ('current', '{val}', datetime('now'));"
+            url = f"https://api.cloudflare.com/client/v4/accounts/{CF_ACCOUNT_ID}/d1/database/{CF_DB_ID}/query"
+            body = json.dumps({"sql": sql}).encode()
+            req = urllib.request.Request(url, data=body,
+                  headers={"Authorization": f"Bearer {token}", "Content-Type": "application/json"},
+                  method="POST")
+            try:
+                with urllib.request.urlopen(req, timeout=15) as resp:
+                    json.loads(resp.read())
+            except Exception:
+                pass
+    except Exception as e:
+        log(f"  progress error: {e}")
+
+
 # ── D1 seeding ────────────────────────────────────────────────────────────────
 
 def seed_d1(slug, title, series, thumb_path, embed_url, status, tags_dict, cf_api_token=None):
@@ -337,22 +418,27 @@ def main():
     if not api_key:
         print("ERROR: --openrouter-key or OPENROUTER_API_KEY env var required"); sys.exit(1)
 
-    # ── Scan clips ──────────────────────────────────────────────────────────
+    # ── Scan clips + photos ──────────────────────────────────────────────────
     log(f"Scanning {src_dir.name}...")
-    clips = []
+    clips, photo_files = [], []
     for f in sorted(src_dir.rglob('*')):
-        if f.suffix not in VIDEO_EXTS or f.name.startswith('.'): continue
-        try:
-            dur, w, h, rot = probe(f)
-            if dur < MIN_CLIP_DUR: continue
-            horiz = is_horizontal(w, h, rot)
-            clips.append({'path': str(f), 'dur': dur, 'w': w, 'h': h, 'horizontal': horiz})
-            log(f"  {f.name}  {dur:.0f}s  {w}x{h}{'  [portrait]' if not horiz else ''}")
-        except Exception as e:
-            log(f"  SKIP {f.name} — {e}")
+        if f.name.startswith('.'): continue
+        if f.suffix in VIDEO_EXTS:
+            try:
+                dur, w, h, rot = probe(f)
+                if dur < MIN_CLIP_DUR: continue
+                horiz = is_horizontal(w, h, rot)
+                clips.append({'path': str(f), 'dur': dur, 'w': w, 'h': h, 'horizontal': horiz})
+                log(f"  {f.name}  {dur:.0f}s  {w}x{h}{'  [portrait]' if not horiz else ''}")
+            except Exception as e:
+                log(f"  SKIP {f.name} — {e}")
+        elif f.suffix in PHOTO_EXTS:
+            photo_files.append(f)
+            log(f"  {f.name}  [photo]")
 
-    if not clips:
-        print("No video clips found."); sys.exit(1)
+    if not clips and not photo_files:
+        print("No video clips or photos found."); sys.exit(1)
+    log(f"{len(clips)} video(s), {len(photo_files)} photo(s) found")
     h_clips = [c for c in clips if c['horizontal']]
     log(f"{len(clips)} clip(s) found ({len(h_clips)} horizontal, {len(clips)-len(h_clips)} portrait)")
 
@@ -365,7 +451,8 @@ def main():
             print("ERROR: --vault-ia-id required (or use --no-vault)"); sys.exit(1)
 
         log(f"\n── Vault upload → {args.vault_ia_id} ──")
-        ia_upload(args.vault_ia_id, [c['path'] for c in clips],
+        all_files = [c['path'] for c in clips] + [str(p) for p in photo_files]
+        ia_upload(args.vault_ia_id, all_files,
                   title=src_dir.name + ' — Raw',
                   public=False)
         log("  IA upload complete")
@@ -374,6 +461,7 @@ def main():
             path = Path(clip['path'])
             slug = f"{args.series}-raw-{i:02d}"
             log(f"\n[{i}/{len(clips)}] {path.name}")
+            push_progress(args.series, i - 1, len(clips), 'tagging', args.cf_api_token, current_file=path.name)
 
             best_t, _ = best_frame(path, clip['dur'])
             thumb_path = tmp / f"thumb_{i:02d}.jpg"
@@ -390,10 +478,40 @@ def main():
             title   = meta.get('location', path.stem)[:60] if meta else path.stem
             ok = seed_d1(slug, title, args.series, thumb_path, embed, 'vault', meta, args.cf_api_token)
             log(f"  D1: {'OK' if ok else 'FAILED'}")
+            push_progress(args.series, i, len(clips), 'tagging', args.cf_api_token, current_file=path.name)
 
             if clip['horizontal']:
                 seg_start, seg_dur = best_segment_start(path, clip['dur'], args.seg_dur)
                 segments.append({'path': str(path), 'start': seg_start, 'dur': seg_dur})
+
+        # ── Photos ──────────────────────────────────────────────────────────
+        if photo_files:
+            log(f"\n── Photos: {len(photo_files)} files ──")
+            for i, photo_path in enumerate(photo_files, 1):
+                slug = f"{args.series}-photo-{i:02d}"
+                log(f"\n[photo {i}/{len(photo_files)}] {photo_path.name}")
+                push_progress(args.series, i - 1, len(photo_files), 'photos', args.cf_api_token, current_file=photo_path.name)
+
+                thumb_path = tmp / f"photo_thumb_{i:02d}.jpg"
+                r = subprocess.run([
+                    'ffmpeg', '-y', '-i', str(photo_path),
+                    '-vf', 'scale=800:-1', '-q:v', '4', str(thumb_path)
+                ], capture_output=True)
+                if r.returncode != 0 or not thumb_path.exists():
+                    log(f"  thumb failed — skipping")
+                    continue
+                log(f"  thumb {thumb_path.stat().st_size//1024}KB")
+
+                log("  tagging...")
+                meta = tag_photo(thumb_path, api_key, args.context)
+                if meta:
+                    log(f"  → {meta.get('location','?')} · {meta.get('mood','?')}")
+
+                ia_url = f"https://archive.org/download/{args.vault_ia_id}/{urllib.request.quote(photo_path.name)}"
+                title = meta.get('location', photo_path.stem)[:60] if meta else photo_path.stem
+                ok = seed_d1(slug, title, args.series, thumb_path, ia_url, 'vault', meta, args.cf_api_token)
+                log(f"  D1: {'OK' if ok else 'FAILED'}")
+                push_progress(args.series, i, len(photo_files), 'photos', args.cf_api_token, current_file=photo_path.name)
 
     else:
         # Still need segments for stitch even if skipping vault

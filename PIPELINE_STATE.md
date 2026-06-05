@@ -1,57 +1,76 @@
-# GAB.AE Pipeline — Current State (2026-05-10, updated ~13:05 UTC)
+# GAB.AE Pipeline — Current State (2026-05-10, updated ~17:30 UTC)
 
-## What We Built
+## What We Built This Session
 
-### 1. Footage Pipeline (VPS → Internet Archive → gab.ae/vault)
-- `footage/process_session.py` — core pipeline: ffmpeg grade → IA upload → D1 seed
-- `footage/batch_process.py` — batch runner: loops sessions, downloads from Drive, processes, moves to `_Done/` in Drive, deletes local
-- `footage/find_best_clips.py` — scores clips by sharpness (Laplacian variance), extracts best 5s clips
-- `footage/reseed_d1.py` — LOCAL re-seeder: uses IA thumbnails + LLM to seed D1 for sessions that failed D1 during batch
-- Pipeline writes state to `/tmp/pipeline_state.json` AND to D1 `pipeline_state` table (key='current') via CF REST API
+### 1. New Backup Architecture (Drive → IA → D1)
 
-### 2. Vault (`/vault`)
-- Password-protected (cookie `vk=<VAULT_KEY>`, env var `VAULT_KEY` in worker, default `gabvault2026`)
-- Shows all videos from D1 `videos` table with series filter pills (client-side JS)
-- `/vault/status` — dashboard reading from D1 `pipeline_state` table, auto-refreshes every 10s
-- Noindex meta on both vault pages, robots.txt `Disallow: /vault`
+**Phase 1 — `footage/backup_to_ia.py`** (runs locally or on VPS)
+- Streams directly from `gab-drive:_Todo/` → Internet Archive via rclone remote-to-remote
+- Zero VPS disk usage — no download needed
+- Creates D1 entry with `status='backed_up'` for each media file
+- Drive state machine: `_Todo` → `_Doing` → `_Done`
+- On startup: recovers stuck `_Doing` folders back to `_Todo`
 
-### 3. gab.ae Worker
-- Cron: Nookie Nook article gen re-enabled, gab.ae news gen disabled (pivoted to footage)
-- Shorts homepage at `/` (grid of shorts)
-- Videos page at `/videos`
-- Approve-video API at `/api/approve-video` (POST with `{slug}`)
-- Thumbnails served at `/vthumb/:slug`
+**Phase 2 — `footage/process_from_ia.py`** (runs on VPS)
+- Queries D1 for `status='backed_up'` entries (or `--reprocess` for vault entries with no thumb)
+- Fetches IA-generated thumbnail JPEGs (no full video download)
+- LLM tags via OpenRouter (nvidia/nemotron-nano-12b-v2-vl:free)
+- Updates D1 to `status='vault'` with title, tags, thumb_b64
+- HEICs skipped (IA doesn't generate thumbs for them)
+
+**`footage/reseed_d1.py`** (updated)
+- Now handles QuickTime, HEIF, and MPEG4 formats
+- Updated to support `media_type: video/photo` in tags
+- Added `2026-05-10-phone-paris-france` to SESSIONS list
+
+### 2. YouTube Pipeline (one-button schedule)
+
+**`footage/yt_processor.py`** (runs on VPS, cron every 5 min)
+- Polls D1 `yt_jobs` WHERE `status='queued'`
+- Downloads clip from IA
+- ffmpeg: 2x slow-mo + cinematic color grade + Gymnopedie No. 1 (no original audio)
+  - `setpts=2.0*PTS` + curves color grade + `eq=contrast=1.05:saturation=1.1`
+  - Music: `/opt/gab/gab-adventures/footage/music/gymnopedie_no1.mp3`
+  - Fade in 1.5s, fade out 2.5s
+- Uploads to YouTube as scheduled Short (private → scheduled publish)
+- Updates D1 `yt_jobs` with `status='scheduled'`, `yt_video_id`, `yt_url`, `yt_scheduled_at`
+
+**Vault Review Page** (`/vault/review/<series>`)
+- "Schedule on YouTube" button now active
+- Shows job status on button (Queued / Processing / Scheduled / Error) when clip already has a job
+- Refreshes status on page load
+
+**`/vault/status`** — YouTube Queue section at bottom, auto-refreshes every 10s
+
+**D1 `yt_jobs` table** (new):
+```sql
+id, video_slug, series, ia_url, effects, status, progress, yt_video_id, yt_url, yt_scheduled_at, error, created_at, updated_at
+```
+
+### 3. Previously Built (sessions)
+
+| Session | IA Item | D1 | Notes |
+|---|---|---|---|
+| 2026-04-28 - Seine | gab-raw-seine-2026-04-28 | ✓ | 4 clips |
+| 2026-05-03 - Action cam Paris | gab-raw-action-cam-paris-may3 | ✓ | 3 clips |
+| 2026-04-30 - Square action cam 6 | gab-raw-action-cam-apr30 | ✓ | 8 clips |
+| 2026-05-01 - Square action cam 6 | gab-raw-action-cam-may1-sq | ✓ | 37/79 clips seeded (token expired mid-run) |
+| 2026-05-09 Action cam, Paris | gab-raw-action-cam-paris-may9 | ✓ | 10 portrait clips |
+| 2026-05-10 - Phone, Paris | gab-raw-2026-05-10-phone-paris-france | ✓ | 11 videos + 4 HEICs, videos tagged |
+
+**D1 videos table: ~108 rows total** (as of this session)
 
 ---
 
-## VPS
+## VPS State
 
 - **SSH:** `ssh root@178.105.50.213`
-
-### Currently Running (as of 2026-05-10 ~13:05 UTC)
-- `batch_process.py` running in background (`/tmp/batch_process.log`)
-- Session 6: `2026-05-01 - Square action cam 6 footage` (36 GB, 79 clips) — IA upload ~93/95 files done; LLM tagging phase next (~2h)
-- Session 7 (`2026-03-02 - Gab phone`, 10 GB) — queued
-
-### Batch Session Status
-| Session | Size | Status | D1 |
-|---|---|---|---|
-| 2026-04-28 - Seine | 18 GB | done | ✓ seeded (4 clips) |
-| 2026-05-09 - Phone, Paris | 1.4 GB | done (no video clips) | n/a |
-| 2026-05-09 Action cam, Paris | 20 GB | done (10 clips, all portrait) | ✓ seeded (from prev run) |
-| 2026-05-03 - Action cam Paris | 22 GB | done (3 clips) | ✓ reseeded locally |
-| 2026-04-30 - Square action cam 6 | 29 GB | done (21 clips; only 8 uploaded to IA due to connection error) | ✓ reseeded locally (8 clips) |
-| 2026-05-01 - Square action cam 6 | 36 GB | **processing** (IA upload ~done; LLM tagging next) | pending reseed |
-| 2026-03-02 - Gab phone | 10 GB | queued | pending reseed |
-| 2026-04-27 - DJI Gab | 140 GB | skipped (need 150 GB free) | — |
-| 2026-05-01 - Action cam wide | 115 GB | skipped (need 125 GB free) | — |
-
-### Key Paths on VPS
-- Pipeline scripts: `/opt/gab/gab-adventures/footage/`
-- Footage download dir: `/opt/gab/footage/`
-- State file: `/tmp/pipeline_state.json`
-- Logs: `/tmp/batch_process.log`, `/tmp/process_session_*.log`
-- CF token file: `/tmp/cf_token.txt` (refreshed every 45 min by local Mac cron)
+- **Scripts:** `/opt/gab/gab-adventures/footage/`
+- **Cron jobs:**
+  - `*/5 * * * *` — `yt_processor.py` (YouTube upload queue)
+  - `*/45 * * * *` — CF token refresh (local Mac → VPS `/tmp/cf_token.txt`)
+- **No batch currently running** — VPS is idle
+- **Disk:** ~95 GB free
 
 ---
 
@@ -59,59 +78,46 @@
 
 - Account ID: `f8a9c8de1fcedb10d25b24325a6f8727`
 - D1 DB ID: `4e23e386-b430-4ffc-bf84-246a4e7bcdd1` (gab-ae-prod)
-- Worker deployed, all routes live on gab.ae
-- **D1 videos: 29 rows** (series: action-cam-apr30×8, action-cam-paris-may3×3, action-cam-paris-may9×10, seine-april2026×5, paris-2026×1, vault×2)
-
-## Internet Archive
-
-- IA S3 access: `xmKajI71PPwfRuAb` / secret: `PuQEQQLZYb1k5e3J`
-- Raw private backups: `gab-raw-*` items (access=private, noindex=true)
-- Public long-form: `gab-*` items (status='processed' in D1, not yet 'live')
+- Worker deployed — all routes live on gab.ae
+- YouTube token on VPS: `/opt/gab/gab-adventures/footage/token_yt_gab.json`
 
 ---
 
-## CF API Token Situation
+## Pending / Next Steps
 
-- **wrangler OAuth token** — lives at `~/Library/Preferences/.wrangler/config/default.toml`, expires hourly
-- **Auto-refresh cron** — runs every 45 min on local Mac: `footage/refresh_vps_token.sh`; pushes fresh token to VPS `/tmp/cf_token.txt`
-  - Uses `npx wrangler d1 list --remote` to trigger auto-refresh when token is expired
-  - After expiry there's a ~15-25 min gap until next cron fires; D1 calls during this window will fail
-- **batch_process.py patched** — calls `get_cf_token()` at each session start (reads from /tmp/cf_token.txt)
-- **process_session.py patched** — re-reads `/tmp/cf_token.txt` on EVERY D1 seed call (survives token rotation mid-session)
-- **reseed_d1.py** — reads wrangler toml directly and auto-refreshes; use this after batch completes
-
----
-
-## Pending Tasks
-
-### After Batch Completes (sessions 6 + 7 done)
-1. **Reseed D1 for sessions 6 and 7:**
+1. **Reseed action-cam-may1-sq clips 38–79** — token expired mid-run last time. Run:
    ```
-   cd /Users/gab/Desktop/gab-ae
-   python3 footage/reseed_d1.py --sessions action-cam-may1-sq gab-phone-mar2
+   npx wrangler d1 list --remote   # force token refresh
+   python3 footage/reseed_d1.py --sessions action-cam-may1-sq
    ```
-2. **Update pipeline_state in D1** — run reseed_d1.py or push manually via:
-   ```python
-   # In Python, after reading /tmp/pipeline_state.json from VPS
-   d1_query(f"INSERT OR REPLACE INTO pipeline_state ...", token)
-   ```
-3. **Re-upload apr30 missing 13 clips** — `gab-raw-action-cam-apr30` only has 8/21 clips due to connection error. Re-download from `gab-drive:_Done/2026-04-30 - Square action cam 6 footage` and re-run `ia upload`.
 
-### Nice to Have
-4. **Approve videos** — flip status from 'vault' → 'live' for best clips via `/api/approve-video`
-5. **Large sessions** — DJI Apr27 (140 GB) + Action cam wide May1 (115 GB) need VPS disk expansion
-6. **drive_to_ia.py** — direct Drive→IA streaming for 20TB archive (discussed, not built)
+2. **Queue up more folders to backup** — put into `gab-drive:_Todo/`, run `backup_to_ia.py` locally or on VPS. Candidates in Drive root:
+   - `2026-05-10 - Action cam, Paris, France`
+   - `2026-05-10 - Action cam, Old Wall, Paris, France`
+   - `2026-04-27 - DJI Gab` (140 GB — needs `backup_to_ia.py`, too big for old pipeline)
+   - `2026-05-01 - Action cam not squared` (115 GB — same)
+
+3. **Process backed_up videos** — after backup, run on VPS:
+   ```
+   python3 /opt/gab/gab-adventures/footage/process_from_ia.py
+   ```
+
+4. **HEIC thumbnails** — currently skipped (IA doesn't auto-generate). Would need download + ffmpeg/sips convert. Low priority.
+
+5. **gab-phone-mar2** — 0 files on IA (IA upload failed during old batch). Folder is in `gab-drive:_Done/`. Move back to `_Todo/` and run `backup_to_ia.py` to properly back it up.
 
 ---
 
 ## Key Files (local: /Users/gab/Desktop/gab-ae)
 
-- `src/worker.js` — main CF worker (vault, videos, cron, routing)
-- `src/templates/site-layout.js` — layout shell (supports `extraHead` param)
-- `footage/process_session.py` — single session pipeline (patched: re-reads /tmp/cf_token.txt on each D1 call)
-- `footage/batch_process.py` — batch runner (patched: calls get_cf_token() per-session)
-- `footage/find_best_clips.py` — clip scorer
-- `footage/reseed_d1.py` — LOCAL D1 re-seeder (run after batch to fix failed D1 seeds)
-- `footage/refresh_vps_token.sh` — cron script to push fresh CF token to VPS
-- `schema.sql` — D1 schema (includes `pipeline_state` table)
-- `wrangler.toml` — CF worker config
+| File | Purpose |
+|---|---|
+| `footage/backup_to_ia.py` | Phase 1: Drive→IA stream, seed D1 as `backed_up` |
+| `footage/process_from_ia.py` | Phase 2: IA thumbnails → LLM tag → D1 `vault` |
+| `footage/yt_processor.py` | YouTube: download IA → ffmpeg slow-mo+Satie → upload |
+| `footage/reseed_d1.py` | Re-seed D1 for sessions that failed (updated: handles QuickTime/HEIF) |
+| `footage/batch_process.py` | Old combined pipeline (Drive→VPS→IA→D1), still works for small sessions |
+| `footage/process_session.py` | Single session processor (called by batch_process.py) |
+| `footage/refresh_vps_token.sh` | Push fresh CF OAuth token to VPS |
+| `src/worker.js` | CF Worker: vault, review, status, YouTube queue API |
+| `schema.sql` | D1 schema (includes `yt_jobs` table) |

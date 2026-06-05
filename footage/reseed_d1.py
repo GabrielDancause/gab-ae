@@ -25,7 +25,7 @@ CF_DB_ID      = "4e23e386-b430-4ffc-bf84-246a4e7bcdd1"
 IA_ACCESS     = "xmKajI71PPwfRuAb"
 IA_SECRET     = "PuQEQQLZYb1k5e3J"
 OR_MODEL      = "nvidia/nemotron-nano-12b-v2-vl:free"
-OR_KEY        = os.environ.get("OPENROUTER_API_KEY", "${OPENROUTER_API_KEY}")
+OR_KEY        = os.environ.get("OPENROUTER_API_KEY", "")
 
 # Sessions that need re-seeding (add more as needed)
 SESSIONS = [
@@ -52,6 +52,12 @@ SESSIONS = [
         "series":    "gab-phone-mar2",
         "vault_ia_id": "gab-raw-phone-mar2",
         "context":   "Paris, France, March 2026",
+    },
+    {
+        "name": "2026-05-10 - Phone, Paris, France",
+        "series":    "2026-05-10-phone-paris-france",
+        "vault_ia_id": "gab-raw-2026-05-10-phone-paris-france",
+        "context":   "Paris, France, May 2026",
     },
 ]
 
@@ -133,13 +139,30 @@ def d1_query(sql, token, dry_run=False):
         return False
 
 
-def ia_list_video_files(vault_ia_id):
-    """Return list of (filename, size) for MP4 files in an IA item."""
+VIDEO_FORMATS = {"MPEG4", "h.264", "QuickTime", "AVI", "Matroska"}
+PHOTO_FORMATS = {"HEIF", "JPEG", "PNG"}
+VIDEO_EXTS    = {".mp4", ".mov", ".avi", ".mkv", ".m4v"}
+PHOTO_EXTS    = {".heic", ".heif", ".jpg", ".jpeg", ".png"}
+
+def ia_list_media_files(vault_ia_id):
+    """Return list of (filename, size, media_type) for all media in an IA item."""
     s = ia.get_session({"s3": {"access": IA_ACCESS, "secret": IA_SECRET}})
     item = s.get_item(vault_ia_id)
-    files = [(f.name, f.size) for f in item.get_files()
-             if f.format in ("MPEG4", "h.264") and ".MP4" in f.name.upper()]
+    files = []
+    for f in item.get_files():
+        # Skip IA-generated derivatives (.thumbs, _meta.xml, etc.)
+        if ".thumbs" in f.name or f.name.endswith(("_meta.xml", "_files.xml", ".sqlite", ".torrent")):
+            continue
+        ext = ("." + f.name.rsplit(".", 1)[-1]).lower() if "." in f.name else ""
+        if f.format in VIDEO_FORMATS or ext in VIDEO_EXTS:
+            files.append((f.name, f.size, "video"))
+        elif f.format in PHOTO_FORMATS or ext in PHOTO_EXTS:
+            files.append((f.name, f.size, "photo"))
     return sorted(files, key=lambda x: x[0])
+
+def ia_list_video_files(vault_ia_id):
+    """Return list of (filename, size) for video files in an IA item."""
+    return [(n, s) for n, s, t in ia_list_media_files(vault_ia_id) if t == "video"]
 
 
 def resize_thumb(raw_bytes, max_size=400):
@@ -268,19 +291,24 @@ def main():
         print(f"  series:      {sess['series']}")
 
         print(f"  Listing IA files...")
-        files = ia_list_video_files(sess["vault_ia_id"])
-        print(f"  Found {len(files)} video file(s)")
+        all_files = ia_list_media_files(sess["vault_ia_id"])
+        print(f"  Found {len(all_files)} file(s): {sum(1 for _,_,t in all_files if t=='video')} video, {sum(1 for _,_,t in all_files if t=='photo')} photo")
 
-        if not files:
+        if not all_files:
             print("  No files found — skipping")
             continue
 
-        for i, (fname, size_bytes) in enumerate(files, 1):
+        for i, (fname, size_bytes, media_type) in enumerate(all_files, 1):
             slug = f"{sess['series']}-raw-{i:02d}"
-            embed = f"https://archive.org/embed/{sess['vault_ia_id']}/{urllib.parse.quote(fname)}?autoplay=1"
             size_mb = int(size_bytes or 0) // 1024 // 1024
+            is_photo = media_type == "photo"
 
-            print(f"\n  [{i}/{len(files)}] {fname} ({size_mb}MB)")
+            if is_photo:
+                url = f"https://archive.org/download/{sess['vault_ia_id']}/{urllib.parse.quote(fname)}"
+            else:
+                url = f"https://archive.org/embed/{sess['vault_ia_id']}/{urllib.parse.quote(fname)}?autoplay=1"
+
+            print(f"\n  [{i}/{len(all_files)}] {fname} ({size_mb}MB) [{media_type}]")
             print(f"    slug: {slug}")
 
             # Get thumbnail
@@ -292,18 +320,20 @@ def main():
                 print(f"    thumb: NOT FOUND (will skip thumbnail)")
 
             # LLM tagging
+            base_meta = {"media_type": media_type, "location": sess["context"], "tags": ["Paris", "France", "travel"]}
             if args.skip_llm or not thumb:
-                meta = {"location": sess["context"], "tags": ["Paris", "France", "travel"]}
+                meta = base_meta
                 title = f"{sess['series']} — {i:02d}"
             else:
                 print(f"    LLM tagging...")
                 meta = tag_clip_from_thumb(thumb, sess["context"], dry_run=args.dry_run)
+                meta["media_type"] = media_type
                 title = meta.get("location", f"{sess['series']} — {i:02d}")[:60]
                 if meta:
                     print(f"    → {meta.get('location','?')} · {meta.get('time_of_day','?')} · {meta.get('mood','?')}")
 
             print(f"    Seeding D1...")
-            ok = seed_clip(slug, title, sess["series"], thumb, embed, "vault", meta, token, dry_run=args.dry_run)
+            ok = seed_clip(slug, title, sess["series"], thumb, url, "vault", meta, token, dry_run=args.dry_run)
             print(f"    D1: {'OK' if ok else 'FAILED'}")
             if ok:
                 total_seeded += 1
