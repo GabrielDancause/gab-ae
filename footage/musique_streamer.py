@@ -27,11 +27,13 @@ def watch_for_new_clips():
         try:
             result = subprocess.run(
                 ["inotifywait", "-e", "close_write", "-e", "moved_to",
-                 "--include", r"\.mp4$", FOOTAGE_DIR],
+                 "--include", r"(?<!wip)\.mp4$", FOOTAGE_DIR],
                 capture_output=True, text=True, timeout=3600
             )
             if result.returncode == 0:
                 filename = result.stdout.strip().split()[-1] if result.stdout.strip() else "?"
+                if "wip" in filename:
+                    continue   # ignore temp files
                 print(f"[watcher] New clip detected: {filename} — will reload after current segment", flush=True)
                 # Wait a few seconds to let rsync finish writing all files
                 time.sleep(8)
@@ -122,12 +124,14 @@ def run():
 
         cmd = [
             "ffmpeg", "-y", "-re",
-            "-stream_loop", "-1",
             "-f", "concat", "-safe", "0", "-i", PLAYLIST,
             "-stream_loop", "-1", "-i", music,
-            "-filter_complex", "[1:a]volume=0.8,aformat=sample_rates=48000:channel_layouts=stereo[aout]",
-            "-map", "0:v:0", "-map", "[aout]",
-            "-c:v", "copy",
+            "-filter_complex",
+            "[0:v]setpts=PTS-STARTPTS[vout];[1:a]volume=0.8,aformat=sample_rates=48000:channel_layouts=stereo[aout]",
+            "-map", "[vout]", "-map", "[aout]",
+            "-c:v", "libx264", "-preset", "ultrafast", "-crf", "23",
+            "-maxrate", "6800k", "-bufsize", "13600k",
+            "-pix_fmt", "yuv420p", "-r", "60", "-g", "120",
             "-c:a", "aac", "-b:a", "128k", "-ar", "48000", "-ac", "2",
             "-f", "flv", rtmp_url,
         ]
