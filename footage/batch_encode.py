@@ -26,7 +26,7 @@ import argparse, os, glob, random, subprocess, json, sys
 from concurrent.futures import ThreadPoolExecutor, as_completed
 
 DEFAULT_BASE    = os.environ.get("ENCODE_BASE", "/Volumes/obiwan/2026-06-03 - Multiple exports")
-DEFAULT_OUT_DIR = os.environ.get("ENCODE_OUT",  "/tmp/broadcast_batch")
+DEFAULT_OUT_DIR = os.environ.get("ENCODE_OUT",  "/Volumes/obiwan/broadcast_ready")
 SERVER          = "root@138.201.21.95"
 SERVER_DIR      = "/opt/broadcast"
 
