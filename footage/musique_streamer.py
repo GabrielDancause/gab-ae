@@ -127,7 +127,13 @@ def run():
             "-f", "concat", "-safe", "0", "-i", PLAYLIST,
             "-stream_loop", "-1", "-i", music,
             "-filter_complex",
-            "[0:v]setpts=PTS-STARTPTS[vout];[1:a]volume=0.8,aformat=sample_rates=48000:channel_layouts=stereo[aout]",
+            "[0:v]setpts=PTS-STARTPTS,"
+            "drawtext=text='Earlier this week':"
+            "fontfile=/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf:"
+            "fontsize=42:fontcolor=white:"
+            "shadowcolor=black@0.6:shadowx=2:shadowy=2:"
+            "x=60:y=H-80"
+            "[vout];[1:a]volume=0.8,aformat=sample_rates=48000:channel_layouts=stereo[aout]",
             "-map", "[vout]", "-map", "[aout]",
             "-c:v", "libx264", "-preset", "ultrafast", "-crf", "23",
             "-maxrate", "6800k", "-bufsize", "13600k",
