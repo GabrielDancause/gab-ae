@@ -284,13 +284,19 @@ export default {
       return videosPage(env);
     }
 
+    // Public footage pages — /footage/[slug]
+    if (path.startsWith('/footage/')) {
+      const slug = path.replace('/footage/', '').split('/')[0];
+      if (slug) return footagePage(env, slug);
+    }
+
     // Vault — hidden page for private/raw footage preview (not linked from nav)
-    if (path === '/vault' || path === '/vault/status') {
+    if (path === '/vault' || path === '/vault/status' || path === '/vault/approve' || path.startsWith('/vault/review')) {
       const VAULT_KEY = env.VAULT_KEY || 'gabvault2026';
       const cookie = request.headers.get('Cookie') || '';
       const authed = cookie.split(';').some(c => c.trim() === `vk=${VAULT_KEY}`);
       if (!authed) {
-        if (request.method === 'POST') {
+        if (request.method === 'POST' && path === '/vault') {
           const form = await request.formData().catch(() => null);
           const key = form ? form.get('key') : null;
           if (key === VAULT_KEY) {
@@ -304,10 +310,24 @@ export default {
         return vaultLoginPage(false);
       }
       if (path === '/vault/status') return vaultStatusPage(env);
+      if (path === '/vault/approve') return vaultApprovePage(env, request);
+      if (path.startsWith('/vault/review/')) {
+        const series = path.replace('/vault/review/', '').split('/')[0];
+        return vaultReviewPage(env, series);
+      }
       return vaultPage(env);
     }
 
     // Approve a processed clip → flip to live (appears on /videos)
+    if (path === '/api/queue-youtube' && request.method === 'POST') {
+      const { slug, ia_url, series } = await request.json().catch(() => ({}));
+      if (!slug || !ia_url) return new Response(JSON.stringify({ error: 'missing slug or ia_url' }), { status: 400, headers: { 'content-type': 'application/json' } });
+      await env.DB.prepare(
+        "INSERT INTO yt_jobs (video_slug, series, ia_url, status) VALUES (?, ?, ?, 'queued')"
+      ).bind(slug, series || '', ia_url).run();
+      return new Response(JSON.stringify({ ok: true, slug }), { headers: { 'content-type': 'application/json' } });
+    }
+
     if (path === '/api/approve-video' && request.method === 'POST') {
       const { slug } = await request.json().catch(() => ({}));
       if (!slug) return new Response('missing slug', { status: 400 });
@@ -1333,38 +1353,306 @@ async function searchPage(env, q) {
 }
 
 // ═══════════════════════════════════════════════════════════════
-async function vaultStatusPage(env) {
-  let state = null;
-  let fetchErr = null;
+async function vaultReviewPage(env, series) {
+  let clips = [];
+  let ytJobMap = {};
   try {
-    const row = await env.DB.prepare("SELECT value FROM pipeline_state WHERE key='current'").first();
-    if (row?.value) state = JSON.parse(row.value);
-  } catch(e) { fetchErr = e.message; }
+    const { results } = await env.DB.prepare(
+      "SELECT slug, title, series, status, video_url, thumb_b64, tags FROM videos WHERE series=? ORDER BY slug ASC"
+    ).bind(series).all();
+    clips = results;
+  } catch(e) {}
+  try {
+    const { results } = await env.DB.prepare(
+      "SELECT video_slug, status, yt_url, yt_scheduled_at FROM yt_jobs WHERE video_slug IN (SELECT slug FROM videos WHERE series=?) ORDER BY id DESC"
+    ).bind(series).all();
+    for (const j of results) {
+      if (!ytJobMap[j.video_slug]) ytJobMap[j.video_slug] = j;
+    }
+  } catch(e) {}
 
-  const statusIcon = s => ({ done:'✓', processing:'⏳', downloading:'⬇', moving:'→', queued:'·', skipped:'⏸', error:'✗' }[s] || '?');
-  const statusColor = s => ({ done:'#2e7d32', processing:'#1565c0', downloading:'#6a1b9a', moving:'#e65100', queued:'#555', skipped:'#888', error:'#c62828' }[s] || '#555');
+  if (!clips.length) {
+    return new Response(siteLayout({
+      site: gabAeSite, title: 'Review — Vault', description: '',
+      canonical: `https://gab.ae/vault/review/${esc(series)}`,
+      extraHead: '<meta name="robots" content="noindex,nofollow">',
+      body: `<div style="padding:60px 0;text-align:center;color:var(--ink-light)">No clips found for series <strong>${esc(series)}</strong>. <a href="/vault/status" style="color:var(--ink)">← Back to status</a></div>`,
+    }), { headers: { 'content-type': 'text/html;charset=UTF-8', 'cache-control': 'no-store' } });
+  }
+
+  const clipsJson = JSON.stringify(clips.map(c => ({
+    slug: c.slug,
+    title: c.title || c.slug,
+    status: c.status,
+    url: c.video_url || '',
+    tags: (() => { try { return JSON.parse(c.tags || '{}'); } catch(e) { return {}; } })(),
+    ytJob: ytJobMap[c.slug] || null,
+  })));
+
+  const body = `
+  <style>
+    .rv-wrap { display:grid; grid-template-columns:1fr 320px; gap:0; height:calc(100vh - 120px); min-height:500px; }
+    .rv-main { display:flex; flex-direction:column; gap:0; border-right:2px solid var(--border); padding-right:24px; }
+    .rv-header { padding:20px 0 12px; display:flex; align-items:center; gap:12px; flex-wrap:wrap; }
+    .rv-header h1 { font-family:'Playfair Display',Georgia,serif; font-size:clamp(16px,2.5vw,22px); font-weight:900; color:var(--ink); margin:0; flex:1; }
+    .rv-back { font-size:12px; color:var(--ink-light); text-decoration:none; }
+    .rv-back:hover { color:var(--ink); }
+    .rv-player { flex:1; background:#000; border-radius:4px; overflow:hidden; position:relative; min-height:300px; }
+    .rv-player iframe { width:100%; height:100%; border:0; display:block; }
+    .rv-player-empty { width:100%; height:100%; display:flex; align-items:center; justify-content:center; color:#666; font-size:14px; }
+    .rv-meta { padding:10px 0 4px; display:flex; gap:8px; flex-wrap:wrap; align-items:center; }
+    .rv-meta-title { font-weight:700; font-size:15px; color:var(--ink); flex:1; }
+    .rv-meta-tag { font-size:11px; background:var(--paper-mid); border:1px solid var(--border); border-radius:3px; padding:2px 7px; color:var(--ink-light); }
+    .rv-actions { display:flex; gap:10px; padding:10px 0 16px; flex-wrap:wrap; }
+    .rv-btn { display:inline-flex; align-items:center; gap:6px; padding:9px 18px; border-radius:4px; font-size:13px; font-weight:700; cursor:pointer; border:none; transition:opacity 0.15s; }
+    .rv-btn:hover { opacity:0.85; }
+    .rv-btn-yt  { background:#ff0000; color:#fff; }
+    .rv-btn-ok  { background:#2e7d32; color:#fff; }
+    .rv-btn-skip { background:var(--paper-mid); color:var(--ink-light); border:1px solid var(--border); }
+    .rv-btn-disabled { opacity:0.4; cursor:not-allowed; }
+    .rv-sidebar { padding:20px 0 0 20px; display:flex; flex-direction:column; gap:0; overflow:hidden; }
+    .rv-sidebar-title { font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:0.05em; color:var(--ink-light); padding-bottom:8px; border-bottom:2px solid var(--border); margin-bottom:8px; }
+    .rv-clips { overflow-y:auto; flex:1; }
+    .rv-clip { display:flex; align-items:center; gap:10px; padding:8px 10px; border-radius:4px; cursor:pointer; border:2px solid transparent; margin-bottom:4px; transition:background 0.1s; }
+    .rv-clip:hover { background:var(--paper-mid); }
+    .rv-clip.active { border-color:var(--ink); background:var(--paper-mid); }
+    .rv-clip-thumb { width:56px; height:36px; object-fit:cover; border-radius:2px; background:#111; flex-shrink:0; }
+    .rv-clip-thumb-placeholder { width:56px; height:36px; background:var(--border); border-radius:2px; flex-shrink:0; display:flex; align-items:center; justify-content:center; font-size:16px; }
+    .rv-clip-info { flex:1; min-width:0; }
+    .rv-clip-name { font-size:12px; font-weight:600; color:var(--ink); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+    .rv-clip-status { font-size:10px; font-weight:700; text-transform:uppercase; margin-top:2px; }
+    .rv-clip-idx { font-size:10px; color:var(--ink-light); flex-shrink:0; }
+    @media(max-width:700px) {
+      .rv-wrap { grid-template-columns:1fr; height:auto; }
+      .rv-main { padding-right:0; border-right:none; }
+      .rv-sidebar { padding-left:0; padding-top:16px; border-top:2px solid var(--border); max-height:340px; }
+    }
+  </style>
+
+  <div class="rv-header">
+    <a href="/vault/status" class="rv-back">← Status</a>
+    <h1 id="rv-series-title">Review: ${esc(series)}</h1>
+    <span id="rv-counter" style="font-size:12px;color:var(--ink-light)"></span>
+  </div>
+
+  <div class="rv-wrap">
+    <div class="rv-main">
+      <div class="rv-player" id="rv-player">
+        <div class="rv-player-empty">Select a clip</div>
+      </div>
+      <div class="rv-meta">
+        <span class="rv-meta-title" id="rv-title">—</span>
+        <span class="rv-meta-tag" id="rv-location" style="display:none"></span>
+        <span class="rv-meta-tag" id="rv-mood" style="display:none"></span>
+        <span class="rv-meta-tag" id="rv-time" style="display:none"></span>
+      </div>
+      <div class="rv-actions">
+        <button class="rv-btn rv-btn-yt" id="btn-yt" onclick="scheduleYouTube()">
+          ▶ Schedule on YouTube
+        </button>
+        <button class="rv-btn rv-btn-ok" id="btn-approve" onclick="approveClip()">
+          ✓ Approve
+        </button>
+        <button class="rv-btn rv-btn-skip" id="btn-skip" onclick="nextClip()">
+          → Skip
+        </button>
+      </div>
+    </div>
+
+    <div class="rv-sidebar">
+      <div class="rv-sidebar-title">${clips.length} clip${clips.length > 1 ? 's' : ''}</div>
+      <div class="rv-clips" id="rv-clips"></div>
+    </div>
+  </div>
+
+  <script>
+    const CLIPS = ${clipsJson};
+    let current = -1;
+
+    const statusColor = s => ({ vault:'#1565c0', live:'#2e7d32', processed:'#e65100' }[s] || '#888');
+
+    function renderSidebar() {
+      const el = document.getElementById('rv-clips');
+      el.innerHTML = CLIPS.map((c,i) => {
+        const sc = statusColor(c.status);
+        return \`<div class="rv-clip\${i===current?' active':''}" id="clip-item-\${i}" onclick="loadClip(\${i})">
+          <div class="rv-clip-thumb-placeholder">🎬</div>
+          <div class="rv-clip-info">
+            <div class="rv-clip-name" title="\${c.title}">\${c.title}</div>
+            <div class="rv-clip-status" style="color:\${sc}">\${c.status}</div>
+          </div>
+          <div class="rv-clip-idx">\${i+1}</div>
+        </div>\`;
+      }).join('');
+    }
+
+    function loadClip(i) {
+      current = i;
+      const c = CLIPS[i];
+      // update player
+      const player = document.getElementById('rv-player');
+      const isPhoto = c.tags && c.tags.media_type === 'photo';
+      player.innerHTML = !c.url
+        ? \`<div class="rv-player-empty">No URL</div>\`
+        : isPhoto
+        ? \`<img src="\${c.url}" alt="\${c.title}" style="width:100%;height:100%;object-fit:contain;background:#000">\`
+        : \`<iframe src="\${c.url}" allowfullscreen allow="autoplay"></iframe>\`;
+      // update meta
+      document.getElementById('rv-title').textContent = c.title;
+      const setTag = (id, val) => {
+        const el = document.getElementById(id);
+        el.style.display = val ? '' : 'none';
+        el.textContent = val || '';
+      };
+      setTag('rv-location', c.tags.location);
+      setTag('rv-mood', c.tags.mood);
+      setTag('rv-time', c.tags.time_of_day);
+      // update counter
+      document.getElementById('rv-counter').textContent = \`\${i+1} / \${CLIPS.length}\`;
+      // update youtube button
+      const btn = document.getElementById('btn-yt');
+      const job = c.ytJob;
+      if (!job) {
+        btn.textContent = '▶ Schedule on YouTube';
+        btn.disabled = false;
+        btn.style.background = '';
+        btn.onclick = scheduleYouTube;
+      } else if (job.status === 'scheduled' || job.status === 'done') {
+        const when = job.yt_scheduled_at ? new Date(job.yt_scheduled_at).toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'}) : '';
+        btn.textContent = \`📅 Scheduled\${when ? ' ' + when : ''}\`;
+        btn.disabled = true;
+        btn.style.background = '#2e7d32';
+        btn.onclick = null;
+      } else {
+        const labels = {queued:'⏳ Queued', downloading:'⬇ Downloading…', processing:'⚙ Processing…', uploading:'⬆ Uploading…', error:'✗ Error'};
+        btn.textContent = labels[job.status] || job.status;
+        btn.disabled = true;
+        btn.style.background = job.status === 'error' ? '#c62828' : '#e65100';
+        btn.onclick = null;
+      }
+      // re-render sidebar active state
+      document.querySelectorAll('.rv-clip').forEach((el,j) => {
+        el.classList.toggle('active', j===i);
+      });
+      // scroll into view
+      const item = document.getElementById(\`clip-item-\${i}\`);
+      if (item) item.scrollIntoView({ block:'nearest' });
+    }
+
+    function nextClip() {
+      if (current < CLIPS.length - 1) loadClip(current + 1);
+    }
+
+    function scheduleYouTube() {
+      if (current < 0) return;
+      const c = CLIPS[current];
+      const isPhoto = c.tags && c.tags.media_type === 'photo';
+      if (isPhoto) { alert('Photos cannot be scheduled on YouTube.'); return; }
+      if (!c.url) { alert('No source URL for this clip.'); return; }
+      if (!confirm('Schedule "' + c.title + '" on YouTube?\\n\\nThe VPS will download from IA, apply slow-mo + color grade, then upload as a scheduled Short.')) return;
+      const btn = document.getElementById('btn-yt');
+      btn.textContent = '⏳ Queueing…';
+      btn.disabled = true;
+      fetch('/api/queue-youtube', {
+        method: 'POST',
+        headers: { 'content-type': 'application/json' },
+        body: JSON.stringify({ slug: c.slug, ia_url: c.url, series: c.series }),
+      }).then(r => r.json()).then(d => {
+        if (d.ok) {
+          btn.textContent = '✓ Queued';
+          btn.style.background = '#2e7d32';
+        } else {
+          btn.textContent = '▶ Schedule on YouTube';
+          btn.disabled = false;
+          alert('Queue failed: ' + (d.error || 'unknown'));
+        }
+      }).catch(e => {
+        btn.textContent = '▶ Schedule on YouTube';
+        btn.disabled = false;
+        alert('Error: ' + e);
+      });
+    }
+
+    function approveClip() {
+      if (current < 0) return;
+      const c = CLIPS[current];
+      fetch('/api/approve-video', {
+        method: 'POST',
+        headers: { 'content-type': 'application/json' },
+        body: JSON.stringify({ slug: c.slug }),
+      }).then(r => r.json()).then(d => {
+        if (d.ok) {
+          CLIPS[current].status = 'live';
+          document.getElementById('rv-title').textContent = c.title + ' ✓';
+          renderSidebar();
+          loadClip(current); // re-highlight
+          setTimeout(nextClip, 600);
+        } else { alert('Approve failed: ' + (d.error || 'unknown')); }
+      }).catch(e => alert('Error: ' + e));
+    }
+
+    renderSidebar();
+    if (CLIPS.length) loadClip(0);
+  </script>
+  `;
+
+  return new Response(siteLayout({
+    site: gabAeSite,
+    title: `Review: ${series} — Vault`,
+    description: '',
+    canonical: `https://gab.ae/vault/review/${esc(series)}`,
+    extraHead: '<meta name="robots" content="noindex,nofollow">',
+    body,
+  }), { headers: { 'content-type': 'text/html;charset=UTF-8', 'cache-control': 'no-store' } });
+}
+
+async function vaultStatusPage(env) {
   const fmtTime = iso => iso ? iso.replace('T',' ').replace('Z','') : '—';
 
-  const rows = (state?.sessions || []).map(s => {
-    const icon  = statusIcon(s.status);
-    const color = statusColor(s.status);
-    const ia    = s.vault_ia_id ? `<a href="https://archive.org/details/${esc(s.vault_ia_id)}" target="_blank" style="color:#888;font-size:11px">${esc(s.vault_ia_id)}</a>` : '';
+  const [ytRow, seriesRow] = await Promise.all([
+    env.DB.prepare("SELECT id, video_slug, series, status, progress, yt_url, yt_scheduled_at, error, created_at FROM yt_jobs ORDER BY id DESC LIMIT 20").all().catch(() => ({results:[]})),
+    env.DB.prepare(`
+      SELECT series,
+        SUM(CASE WHEN status='vault' THEN 1 ELSE 0 END) as vault_count,
+        SUM(CASE WHEN status='backed_up' THEN 1 ELSE 0 END) as backed_up_count,
+        COUNT(*) as total
+      FROM videos
+      GROUP BY series
+      ORDER BY series DESC
+    `).all().catch(() => ({results:[]})),
+  ]);
+
+  const ytJobs = ytRow.results || [];
+  const seriesList = seriesRow.results || [];
+
+  const totalSeries   = seriesList.length;
+  const fullVault     = seriesList.filter(s => s.backed_up_count === 0 && s.vault_count > 0).length;
+  const awaitingTag   = seriesList.filter(s => s.backed_up_count > 0).length;
+  const totalFiles    = seriesList.reduce((a, s) => a + s.total, 0);
+  const taggedFiles   = seriesList.reduce((a, s) => a + s.vault_count, 0);
+  const pendingFiles  = seriesList.reduce((a, s) => a + s.backed_up_count, 0);
+
+  const seriesRows = seriesList.map(s => {
+    const allTagged  = s.backed_up_count === 0 && s.vault_count > 0;
+    const hasBackup  = s.backed_up_count > 0 || s.vault_count > 0;
+    const pct        = s.total > 0 ? Math.round(s.vault_count / s.total * 100) : 0;
+    const statusTxt  = allTagged ? 'tagged' : s.backed_up_count > 0 ? 'backed up' : 'backed up';
+    const statusClr  = allTagged ? '#2e7d32' : '#1565c0';
+    const statusIcon = allTagged ? '✓' : '⬆';
+    const bar = s.total > 0 ? `
+      <div style="height:3px;background:var(--border);border-radius:2px;margin-top:4px;width:120px">
+        <div style="height:3px;background:${statusClr};border-radius:2px;width:${pct}%"></div>
+      </div>` : '';
+    const counts = `<span style="color:#2e7d32">${s.vault_count} tagged</span>${s.backed_up_count > 0 ? ` · <span style="color:#1565c0">${s.backed_up_count} pending</span>` : ''}`;
+    const nameCell = `<a href="/vault/review/${esc(s.series)}" style="color:var(--ink);text-decoration:underline;text-decoration-style:dotted;font-weight:600">${esc(s.series.replace(/-/g,' '))}</a>`;
     return `<tr>
-      <td style="padding:10px 14px;font-weight:600;color:var(--ink)">${esc(s.name)}</td>
-      <td style="padding:10px 14px;text-align:center;font-size:18px;color:${color}">${icon}</td>
-      <td style="padding:10px 14px;color:${color};font-weight:700;font-size:12px;text-transform:uppercase">${esc(s.status)}</td>
-      <td style="padding:10px 14px;color:var(--ink-light);text-align:right">${s.clips != null ? s.clips : '—'}</td>
-      <td style="padding:10px 14px;color:var(--ink-light);text-align:right">${s.size_gb} GB</td>
-      <td style="padding:10px 14px;color:var(--ink-light);font-size:11px">${fmtTime(s.started)}</td>
-      <td style="padding:10px 14px;color:var(--ink-light);font-size:11px">${fmtTime(s.finished)}</td>
-      <td style="padding:10px 14px">${ia}</td>
+      <td style="padding:10px 14px">${nameCell}</td>
+      <td style="padding:10px 14px;text-align:center;color:${statusClr};font-size:16px">${statusIcon}</td>
+      <td style="padding:10px 14px;font-size:12px">${counts}${bar}</td>
+      <td style="padding:10px 14px;color:var(--ink-light);text-align:right;font-size:13px">${s.total}</td>
+      <td style="padding:10px 14px"><a href="https://archive.org/details/gab-raw-${esc(s.series)}" target="_blank" style="color:#888;font-size:11px">IA ↗</a></td>
     </tr>`;
   }).join('');
-
-  const done    = (state?.sessions || []).filter(s => s.status === 'done').length;
-  const total   = (state?.sessions || []).length;
-  const freeGb  = state?.vps_free_gb ?? '?';
-  const updated = state?.updated ? fmtTime(state.updated) : '—';
 
   const body = `
     <style>
@@ -1376,27 +1664,54 @@ async function vaultStatusPage(env) {
       .status-table th { padding:8px 14px; text-align:left; font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:0.05em; color:var(--ink-light); border-bottom:2px solid var(--border); }
       .status-table tr:nth-child(even) { background:var(--paper-mid); }
       .status-table tr:hover { background:var(--paper-dark); }
-      .status-err { padding:16px; background:#fff3cd; border:1px solid #ffc107; border-radius:8px; color:#856404; font-size:13px; margin-bottom:20px; }
+      .section-title { font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:0.05em; color:var(--ink-light); padding-bottom:10px; border-bottom:2px solid var(--border); margin-bottom:12px; }
       .status-back { display:inline-block; margin-bottom:20px; font-size:13px; color:var(--ink-light); text-decoration:none; }
       .status-back:hover { color:var(--ink); }
+      .pill { display:inline-block; padding:2px 8px; border-radius:10px; font-size:11px; font-weight:700; }
     </style>
     <div class="status-header">
       <a href="/vault" class="status-back">← Back to Vault</a>
       <h1>Pipeline Status</h1>
       <div class="status-meta">
-        <span>✓ ${done}/${total} sessions done</span>
-        <span>💾 ${freeGb} GB free on VPS</span>
-        <span>🕐 Updated ${updated}</span>
+        <span>📦 ${totalSeries} series in vault</span>
+        <span>✓ ${taggedFiles} tagged · ⬆ ${pendingFiles} awaiting tagging</span>
+        <span>🎞 ${totalFiles} total files</span>
+        <span style="color:var(--ink-light);font-size:11px">Auto-refreshes every 30s</span>
       </div>
     </div>
-    ${fetchErr ? `<div class="status-err">⚠ Could not read pipeline state from D1: ${esc(fetchErr)}</div>` : ''}
-    ${rows ? `<table class="status-table">
+
+    <div class="section-title">IA Backup — ${totalSeries} Series</div>
+    ${seriesList.length ? `<table class="status-table">
       <thead><tr>
-        <th>Session</th><th></th><th>Status</th><th>Files</th><th>Size</th><th>Started</th><th>Finished</th><th>IA Item</th>
+        <th>Series</th><th></th><th>Progress</th><th>Files</th><th>IA</th>
       </tr></thead>
-      <tbody>${rows}</tbody>
-    </table>` : '<p style="color:var(--ink-light);padding:40px 0;text-align:center">No state file yet — start the pipeline first.</p>'}
-    <script>setTimeout(()=>location.reload(), 10000);</script>
+      <tbody>${seriesRows}</tbody>
+    </table>` : '<p style="color:var(--ink-light);padding:40px 0;text-align:center">No series backed up yet.</p>'}
+
+    ${ytJobs.length ? `
+    <div style="margin-top:40px">
+      <div class="section-title">YouTube Queue</div>
+      <table class="status-table">
+        <thead><tr>
+          <th>Clip</th><th>Status</th><th>Progress</th><th>Scheduled</th><th>Link</th>
+        </tr></thead>
+        <tbody>${ytJobs.map(j => {
+          const ytColor = { queued:'#888', downloading:'#6a1b9a', processing:'#e65100', uploading:'#1565c0', scheduled:'#2e7d32', done:'#2e7d32', error:'#c62828' }[j.status] || '#888';
+          const ytIcon  = { queued:'·', downloading:'⬇', processing:'⚙', uploading:'⬆', scheduled:'📅', done:'✓', error:'✗' }[j.status] || '?';
+          return `<tr>
+            <td style="padding:10px 14px;font-weight:600;color:var(--ink)">${esc(j.video_slug)}</td>
+            <td style="padding:10px 14px;color:${ytColor};font-weight:700;font-size:12px;text-transform:uppercase">${ytIcon} ${esc(j.status)}</td>
+            <td style="padding:10px 14px;color:var(--ink-light);font-size:12px">${esc(j.progress || '—')}</td>
+            <td style="padding:10px 14px;color:var(--ink-light);font-size:12px">${j.yt_scheduled_at ? fmtTime(j.yt_scheduled_at) : '—'}</td>
+            <td style="padding:10px 14px">${j.yt_url ? `<a href="${esc(j.yt_url)}" target="_blank" style="color:#ff0000;font-size:12px">▶ YouTube</a>` : (j.error ? `<span style="color:#c62828;font-size:11px">${esc(j.error.slice(0,60))}</span>` : '—')}</td>
+          </tr>`;
+        }).join('')}</tbody>
+      </table>
+    </div>` : ''}
+
+    <script>
+      setTimeout(()=>location.reload(), 30000);
+    </script>
   `;
 
   return new Response(siteLayout({
@@ -1404,6 +1719,125 @@ async function vaultStatusPage(env) {
     title: 'Pipeline Status — Vault',
     description: '',
     canonical: 'https://gab.ae/vault/status',
+    extraHead: '<meta name="robots" content="noindex,nofollow">',
+    body,
+  }), { headers: { 'content-type': 'text/html;charset=UTF-8', 'cache-control': 'no-store' } });
+}
+
+async function vaultApprovePage(env, request) {
+  // POST — schedule a single clip
+  if (request.method === 'POST') {
+    const form = await request.formData().catch(() => null);
+    const slug = form?.get('slug');
+    if (!slug) return new Response(JSON.stringify({ ok: false, error: 'missing slug' }), { headers: { 'content-type': 'application/json' } });
+    const clip = await env.DB.prepare("SELECT slug, series, video_url FROM videos WHERE slug=?").bind(slug).first().catch(() => null);
+    if (!clip) return new Response(JSON.stringify({ ok: false, error: 'not found' }), { headers: { 'content-type': 'application/json' } });
+    await env.DB.prepare(
+      "INSERT OR IGNORE INTO yt_jobs (video_slug, series, ia_url, effects, status, created_at, updated_at) VALUES (?, ?, ?, 'slowmo,colorgrade', 'queued', datetime('now'), datetime('now'))"
+    ).bind(clip.slug, clip.series || '', clip.video_url || '').run();
+    return new Response(JSON.stringify({ ok: true }), { headers: { 'content-type': 'application/json' } });
+  }
+
+  // GET — approval grid
+  const [clipsRow, scheduledRow] = await Promise.all([
+    env.DB.prepare("SELECT slug, title, series, thumb_b64, tags FROM videos WHERE status='vault' ORDER BY series DESC, slug ASC").all().catch(() => ({ results: [] })),
+    env.DB.prepare("SELECT video_slug FROM yt_jobs").all().catch(() => ({ results: [] })),
+  ]);
+
+  const scheduled = new Set((scheduledRow.results || []).map(r => r.video_slug));
+  const allClips  = (clipsRow.results || []).filter(c => {
+    try { return JSON.parse(c.tags || '{}').media_type !== 'photo'; } catch { return true; }
+  });
+  const pending = allClips.filter(c => !scheduled.has(c.slug));
+  const doneCount = allClips.length - pending.length;
+
+  // Group by series
+  const bySeries = {};
+  for (const c of pending) {
+    if (!bySeries[c.series]) bySeries[c.series] = [];
+    bySeries[c.series].push(c);
+  }
+
+  const card = c => {
+    const thumb = c.thumb_b64
+      ? `<img src="data:image/jpeg;base64,${c.thumb_b64}" style="width:100%;height:100%;object-fit:cover;border-radius:6px">`
+      : `<div style="width:100%;height:100%;background:#1a1a1a;border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:22px">🎬</div>`;
+    let tags = {};
+    try { tags = JSON.parse(c.tags || '{}'); } catch {}
+    const sub = [tags.time_of_day, tags.mood].filter(Boolean).join(' · ');
+    return `<div class="card" id="card-${esc(c.slug)}" style="display:flex;align-items:center;gap:14px;padding:12px 0;border-bottom:1px solid #1c1c1c">
+      <div style="width:88px;height:56px;flex-shrink:0;overflow:hidden">${thumb}</div>
+      <div style="flex:1;min-width:0">
+        <div style="font-size:14px;font-weight:600;color:#f0f0f0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${esc(c.title || c.slug)}</div>
+        ${sub ? `<div style="font-size:11px;color:#666;margin-top:3px">${esc(sub)}</div>` : ''}
+      </div>
+      <button onclick="schedule('${esc(c.slug)}')" id="btn-${esc(c.slug)}"
+        style="flex-shrink:0;background:#2563eb;color:#fff;border:none;border-radius:8px;padding:10px 20px;font-size:13px;font-weight:700;cursor:pointer;transition:background 0.15s">
+        Schedule
+      </button>
+    </div>`;
+  };
+
+  const sections = Object.entries(bySeries).map(([series, clips]) => `
+    <div style="margin-bottom:36px">
+      <div style="display:flex;align-items:center;justify-content:space-between;padding-bottom:10px;border-bottom:2px solid #1c1c1c;margin-bottom:4px">
+        <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:#555">${esc(series.replace(/-/g,' '))}</div>
+        <button onclick="scheduleAll([${clips.map(c => `'${esc(c.slug)}'`).join(',')}])"
+          style="background:#111;color:#666;border:1px solid #2a2a2a;border-radius:6px;padding:5px 14px;font-size:11px;font-weight:700;cursor:pointer">
+          Schedule all ${clips.length}
+        </button>
+      </div>
+      ${clips.map(card).join('')}
+    </div>`).join('');
+
+  const body = `
+    <style>
+      body { background:#080808 !important; }
+      .ap-wrap { max-width:680px; margin:0 auto; padding:32px 20px 80px; }
+      h1 { font-family:'Playfair Display',Georgia,serif; font-size:28px; font-weight:900; color:#f0f0f0; margin-bottom:6px; }
+      .ap-meta { font-size:12px; color:#555; margin-bottom:36px; display:flex; gap:20px; }
+      button:hover { opacity:0.85; }
+    </style>
+    <div class="ap-wrap">
+      <a href="/vault/status" style="font-size:13px;color:#444;text-decoration:none;display:block;margin-bottom:24px">← Pipeline status</a>
+      <h1>Schedule for YouTube</h1>
+      <div class="ap-meta">
+        <span style="color:#f0f0f0;font-weight:700">${pending.length} clips to review</span>
+        <span>✓ ${doneCount} already scheduled</span>
+      </div>
+      ${pending.length === 0
+        ? '<p style="color:#444;text-align:center;padding:80px 0;font-size:16px">All clips scheduled 🎉</p>'
+        : sections}
+    </div>
+    <script>
+      async function schedule(slug) {
+        const btn = document.getElementById('btn-' + slug);
+        const card = document.getElementById('card-' + slug);
+        btn.textContent = '…'; btn.disabled = true;
+        const fd = new FormData();
+        fd.append('slug', slug);
+        const r = await fetch('/vault/approve', { method:'POST', body:fd });
+        const d = await r.json().catch(() => ({}));
+        if (d.ok) {
+          card.style.transition = 'opacity 0.3s';
+          card.style.opacity = '0.25';
+          btn.textContent = '✓';
+          btn.style.background = '#166534';
+        } else {
+          btn.textContent = 'Error'; btn.style.background = '#7f1d1d'; btn.disabled = false;
+        }
+      }
+      async function scheduleAll(slugs) {
+        for (const s of slugs) {
+          const btn = document.getElementById('btn-' + s);
+          if (btn && !btn.disabled) { await schedule(s); await new Promise(r => setTimeout(r, 150)); }
+        }
+      }
+    </script>`;
+
+  return new Response(siteLayout({
+    site: gabAeSite, title: 'Schedule — Vault', description: '',
+    canonical: 'https://gab.ae/vault/approve',
     extraHead: '<meta name="robots" content="noindex,nofollow">',
     body,
   }), { headers: { 'content-type': 'text/html;charset=UTF-8', 'cache-control': 'no-store' } });
@@ -1448,239 +1882,61 @@ function vaultLoginPage(wrongKey = false) {
 }
 
 async function vaultPage(env) {
-  let raw = [], processed = [], shorts = [], photos = [];
-  try {
-    const vr = await env.DB.prepare("SELECT slug, title, series, video_url, tags FROM videos WHERE status='vault' ORDER BY id DESC").all();
-    raw = vr.results || [];
-  } catch (e) {}
-  try {
-    const pr = await env.DB.prepare("SELECT slug, title, series, video_url, tags FROM videos WHERE status='processed' ORDER BY id DESC").all();
-    processed = pr.results || [];
-  } catch (e) {}
-  try {
-    const sr = await env.DB.prepare("SELECT slug, title, series, video_url FROM shorts WHERE status='vault' ORDER BY id DESC").all();
-    shorts = sr.results || [];
-  } catch (e) {}
+  let seriesSummary = [], shorts = [];
+  const [sumRow, srRow] = await Promise.all([
+    env.DB.prepare("SELECT series, status, COUNT(*) as count FROM videos GROUP BY series, status ORDER BY series DESC").all().catch(() => ({results:[]})),
+    env.DB.prepare("SELECT slug, title, series, video_url FROM shorts WHERE status='vault' ORDER BY id DESC LIMIT 50").all().catch(() => ({results:[]})),
+  ]);
+  shorts = srRow.results || [];
+  // Build series summary map
+  const seriesMap = {};
+  for (const r of sumRow.results || []) {
+    if (!seriesMap[r.series]) seriesMap[r.series] = { series: r.series, vault: 0, backed_up: 0, total: 0 };
+    if (r.status === 'vault') seriesMap[r.series].vault += r.count;
+    else if (r.status === 'backed_up') seriesMap[r.series].backed_up += r.count;
+    seriesMap[r.series].total += r.count;
+  }
+  seriesSummary = Object.values(seriesMap).sort((a,b) => b.series.localeCompare(a.series));
 
-  // Collect all unique series across all content
-  const allItems = [...raw, ...processed, ...shorts];
-  const seriesSet = [...new Set(allItems.map(v => v.series).filter(Boolean))];
+  const totalClips = seriesSummary.reduce((a, s) => a + s.total, 0);
+  const totalVault = seriesSummary.reduce((a, s) => a + s.vault, 0);
 
-  const metaCard = (v, showApprove = false) => {
-    let meta = null;
-    try { meta = v.tags ? JSON.parse(v.tags) : null; } catch(e) {}
-    const tagPills = meta?.tags?.slice(0,8).map(t => `<span class="vault-tag">${esc(t)}</span>`).join('') || '';
-    const metaLine = meta ? [meta.location, meta.time_of_day, meta.mood].filter(Boolean).map(x => esc(x)).join(' · ') : '';
-    return `
-    <div class="vault-card" ${v.video_url ? `data-embed="${esc(v.video_url)}"` : ''} data-slug="${esc(v.slug)}" data-series="${esc(v.series||'')}" role="button" tabindex="0">
-      <div class="vault-thumb" style="aspect-ratio:16/9">
-        <img src="/vthumb/${esc(v.slug)}" alt="${esc(v.title)}" loading="lazy" width="800" height="450">
-        <div class="vault-play">&#9654;</div>
-        <div class="vault-label">${esc(v.title)}</div>
+  const seriesCard = (s) => {
+    const pct = s.total > 0 ? Math.round(s.vault / s.total * 100) : 0;
+    const badge = s.vault > 0
+      ? `<span style="background:#1a5c30;color:#fff;font-size:10px;font-weight:700;padding:2px 7px;border-radius:10px;margin-left:6px">${s.vault} tagged</span>`
+      : s.backed_up > 0 ? `<span style="background:#555;color:#fff;font-size:10px;font-weight:700;padding:2px 7px;border-radius:10px;margin-left:6px">${s.backed_up} pending</span>` : '';
+    return `<a href="/vault/review/${esc(s.series)}" style="display:block;text-decoration:none">
+      <div style="background:var(--paper-mid);border:1px solid var(--border);border-radius:10px;padding:16px 18px;transition:border-color 0.15s" onmouseover="this.style.borderColor='var(--ink)'" onmouseout="this.style.borderColor='var(--border)'">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">
+          <div style="font-size:14px;font-weight:700;color:var(--ink)">${esc(s.series)}${badge}</div>
+          <div style="font-size:12px;color:var(--ink-light)">${s.total} clip${s.total!==1?'s':''}</div>
+        </div>
+        <div style="height:4px;background:var(--border);border-radius:2px">
+          <div style="height:4px;background:#1a5c30;border-radius:2px;width:${pct}%"></div>
+        </div>
       </div>
-      ${v.series ? `<div class="vault-series-badge">${esc(v.series)}</div>` : ''}
-      ${meta ? `<div class="vault-meta">
-        ${metaLine ? `<div class="vault-meta-line">${metaLine}</div>` : ''}
-        ${meta.description ? `<div class="vault-desc">${esc(meta.description)}</div>` : ''}
-        ${tagPills ? `<div class="vault-tags">${tagPills}</div>` : ''}
-      </div>` : ''}
-      ${showApprove ? `<div class="vault-approve-row"><button class="vault-approve-btn" data-slug="${esc(v.slug)}">Publish to /videos</button></div>` : ''}
-    </div>`;
+    </a>`;
   };
-
-  const shortCard = (s) => `
-    <div class="vault-card" ${s.video_url ? `data-embed="${esc(s.video_url)}"` : ''} data-series="${esc(s.series||'')}" role="button" tabindex="0">
-      <div class="vault-thumb" style="aspect-ratio:9/16">
-        <img src="/thumb/${esc(s.slug)}" alt="${esc(s.title)}" loading="lazy" width="270" height="480">
-        <div class="vault-play">&#9654;</div>
-        <div class="vault-label">${esc(s.title)}</div>
-      </div>
-    </div>`;
-
-  const empty = `<div class="vault-empty">Nothing here yet.</div>`;
-
-  const seriesFilterHtml = seriesSet.length > 1 ? `
-    <div class="vault-series-filter">
-      <button class="vault-series-btn active" data-series="">All <span class="vault-tab-count">${allItems.length}</span></button>
-      ${seriesSet.map(s => `<button class="vault-series-btn" data-series="${esc(s)}">${esc(s)}</button>`).join('')}
-    </div>` : '';
 
   const body = `
     <style>
-      .vault-header { padding: 28px 0 0; }
-      .vault-header h1 { font-family: 'Playfair Display', Georgia, serif; font-size: clamp(22px, 3vw, 32px); font-weight: 900; color: var(--ink); margin-bottom: 16px; }
-      .vault-series-filter { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 20px; }
-      .vault-series-btn { padding: 6px 14px; font-size: 12px; font-weight: 600; border: 1px solid var(--border); border-radius: 20px; background: transparent; color: var(--ink-light); cursor: pointer; transition: all 0.15s; display: flex; align-items: center; gap: 6px; }
-      .vault-series-btn:hover { border-color: var(--ink); color: var(--ink); }
-      .vault-series-btn.active { background: var(--ink); color: var(--paper); border-color: var(--ink); }
-      .vault-tabs { display: flex; gap: 0; border-bottom: 1px solid var(--border); margin-bottom: 24px; }
-      .vault-tab { padding: 10px 18px; font-size: 13px; font-weight: 600; color: var(--ink-light); cursor: pointer; border-bottom: 2px solid transparent; margin-bottom: -1px; transition: color 0.15s; user-select: none; display: flex; align-items: center; gap: 6px; }
-      .vault-tab:hover { color: var(--ink); }
-      .vault-tab.active { color: var(--ink); border-bottom-color: var(--ink); }
-      .vault-tab-count { font-size: 11px; background: var(--border); border-radius: 10px; padding: 1px 6px; font-weight: 700; }
-      .vault-panel { display: none; }
-      .vault-panel.active { display: block; }
-      .vault-grid-wide  { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px; padding-bottom: 48px; }
-      .vault-grid-tall  { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 16px; padding-bottom: 48px; }
-      @media (min-width: 640px) { .vault-grid-tall { grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); } }
-      .vault-card { border-radius: 10px; overflow: hidden; background: var(--paper-mid); cursor: pointer; transition: transform 0.2s ease, box-shadow 0.2s ease; }
-      .vault-card:hover { transform: translateY(-3px); box-shadow: 0 8px 28px rgba(0,0,0,0.15); }
-      .vault-card.hidden { display: none; }
-      .vault-thumb { position: relative; background: #111; overflow: hidden; }
-      .vault-thumb img { width: 100%; height: 100%; object-fit: cover; display: block; transition: transform 0.3s ease; }
-      .vault-card:hover .vault-thumb img { transform: scale(1.03); }
-      .vault-play { position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%); width: 52px; height: 52px; background: rgba(0,0,0,0.55); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: #fff; font-size: 20px; padding-left: 4px; opacity: 0; transition: opacity 0.2s; }
-      .vault-card:hover .vault-play { opacity: 1; }
-      .vault-label { position: absolute; bottom: 0; left: 0; right: 0; padding: 8px 12px; background: linear-gradient(transparent, rgba(0,0,0,0.72)); color: #fff; font-size: 12px; font-weight: 600; }
-      .vault-series-badge { padding: 5px 12px; font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; color: var(--ink-light); background: var(--paper-dark); }
+      .vault-header { padding: 28px 0 20px; }
+      .vault-header h1 { font-family: 'Playfair Display', Georgia, serif; font-size: clamp(22px, 3vw, 32px); font-weight: 900; color: var(--ink); margin-bottom: 6px; }
+      .vault-meta-bar { font-size: 12px; color: var(--ink-light); margin-bottom: 24px; display: flex; gap: 20px; }
+      .vault-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 12px; padding-bottom: 48px; }
       .vault-empty { text-align: center; padding: 80px 24px; color: var(--ink-light); font-size: 15px; }
-      .vault-meta { padding: 12px 14px 14px; }
-      .vault-meta-line { font-size: 11px; font-weight: 600; color: var(--ink-light); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 6px; }
-      .vault-desc { font-size: 12px; color: var(--ink); line-height: 1.5; margin-bottom: 8px; }
-      .vault-tags { display: flex; flex-wrap: wrap; gap: 5px; }
-      .vault-tag { font-size: 11px; background: var(--paper-mid); border: 1px solid var(--border); border-radius: 20px; padding: 2px 9px; color: var(--ink-light); white-space: nowrap; }
-      .vault-approve-row { padding: 0 14px 14px; }
-      .vault-approve-btn { width: 100%; padding: 9px; background: #1a5c30; color: #fff; border: none; border-radius: 6px; font-size: 13px; font-weight: 600; cursor: pointer; transition: background 0.15s; }
-      .vault-approve-btn:hover { background: #145025; }
-      .vault-approve-btn.done { background: #888; cursor: default; }
-      .vault-modal { display: none; position: fixed; inset: 0; z-index: 1000; background: rgba(0,0,0,0.92); align-items: center; justify-content: center; }
-      .vault-modal.open { display: flex; }
-      .vault-modal-inner { position: relative; background: #000; border-radius: 12px; overflow: hidden; box-shadow: 0 24px 80px rgba(0,0,0,0.6); }
-      .vault-modal-inner iframe { width: 100%; height: 100%; border: none; display: block; }
-      .vault-modal-close { position: absolute; top: -42px; right: 0; background: none; border: none; color: #fff; font-size: 30px; cursor: pointer; opacity: 0.8; line-height: 1; }
-      .vault-modal-close:hover { opacity: 1; }
     </style>
-
     <div class="vault-header">
       <h1>Vault</h1>
-      ${seriesFilterHtml}
-      <div class="vault-tabs">
-        <div class="vault-tab active" data-tab="raw">Raw <span class="vault-tab-count" id="count-raw">${raw.length}</span></div>
-        <div class="vault-tab" data-tab="processed">Processed <span class="vault-tab-count" id="count-processed">${processed.length}</span></div>
-        <div class="vault-tab" data-tab="photos">Photos <span class="vault-tab-count" id="count-photos">${photos.length}</span></div>
-        <div class="vault-tab" data-tab="shorts">Shorts <span class="vault-tab-count" id="count-shorts">${shorts.length}</span></div>
+      <div class="vault-meta-bar">
+        <span>${seriesSummary.length} series · ${totalClips} clips · ${totalVault} tagged</span>
+        <a href="/vault/status" style="color:var(--ink-light);text-decoration:none;margin-left:auto">Pipeline status →</a>
       </div>
     </div>
-
-    <div class="vault-panel active" id="vault-panel-raw">
-      ${raw.length ? `<div class="vault-grid-wide">${raw.map(v => metaCard(v, false)).join('')}</div>` : empty}
-    </div>
-    <div class="vault-panel" id="vault-panel-processed">
-      ${processed.length ? `<div class="vault-grid-wide">${processed.map(v => metaCard(v, true)).join('')}</div>` : `<div class="vault-empty">Nothing processed yet.</div>`}
-    </div>
-    <div class="vault-panel" id="vault-panel-photos">
-      ${photos.length ? `<div class="vault-grid-wide">${photos.join('')}</div>` : empty}
-    </div>
-    <div class="vault-panel" id="vault-panel-shorts">
-      ${shorts.length ? `<div class="vault-grid-tall">${shorts.map(shortCard).join('')}</div>` : empty}
-    </div>
-
-    <div class="vault-modal" id="vault-modal">
-      <div class="vault-modal-inner" id="vault-modal-inner">
-        <button class="vault-modal-close" id="vault-modal-close" aria-label="Close">&times;</button>
-        <iframe id="vault-modal-iframe" src="" allowfullscreen allow="autoplay; fullscreen"></iframe>
-      </div>
-    </div>
-
-    <script>
-    (function() {
-      var activeSeries = '';
-
-      // Series filter
-      document.querySelectorAll('.vault-series-btn').forEach(function(btn) {
-        btn.addEventListener('click', function() {
-          activeSeries = btn.dataset.series;
-          document.querySelectorAll('.vault-series-btn').forEach(function(b) { b.classList.toggle('active', b.dataset.series === activeSeries); });
-          applySeriesFilter();
-        });
-      });
-
-      function applySeriesFilter() {
-        var panels = { raw: 0, processed: 0, photos: 0, shorts: 0 };
-        document.querySelectorAll('.vault-card').forEach(function(c) {
-          var match = !activeSeries || c.dataset.series === activeSeries;
-          c.classList.toggle('hidden', !match);
-          if (match) {
-            var panel = c.closest('.vault-panel');
-            if (panel) {
-              var key = panel.id.replace('vault-panel-', '');
-              if (panels[key] !== undefined) panels[key]++;
-            }
-          }
-        });
-        if (activeSeries) {
-          var el;
-          if ((el = document.getElementById('count-raw')))       el.textContent = panels.raw;
-          if ((el = document.getElementById('count-processed'))) el.textContent = panels.processed;
-          if ((el = document.getElementById('count-photos')))    el.textContent = panels.photos;
-          if ((el = document.getElementById('count-shorts')))    el.textContent = panels.shorts;
-        } else {
-          var el;
-          if ((el = document.getElementById('count-raw')))       el.textContent = ${raw.length};
-          if ((el = document.getElementById('count-processed'))) el.textContent = ${processed.length};
-          if ((el = document.getElementById('count-photos')))    el.textContent = ${photos.length};
-          if ((el = document.getElementById('count-shorts')))    el.textContent = ${shorts.length};
-        }
-      }
-
-      // Tabs
-      var tabs   = document.querySelectorAll('.vault-tab');
-      var panels = document.querySelectorAll('.vault-panel');
-      function showTab(name) {
-        tabs.forEach(function(t)   { t.classList.toggle('active', t.dataset.tab === name); });
-        panels.forEach(function(p) { p.classList.toggle('active', p.id === 'vault-panel-' + name); });
-      }
-      tabs.forEach(function(t) { t.addEventListener('click', function() { showTab(t.dataset.tab); }); });
-
-      // Modal
-      var modal  = document.getElementById('vault-modal');
-      var inner  = document.getElementById('vault-modal-inner');
-      var iframe = document.getElementById('vault-modal-iframe');
-      function openVault(url, isShort) {
-        inner.style.width       = isShort ? 'min(360px, 95vw)' : 'min(900px, 95vw)';
-        inner.style.height      = isShort ? 'min(640px, 90vh)' : '';
-        inner.style.aspectRatio = isShort ? '9/16' : '16/9';
-        iframe.src = url;
-        modal.classList.add('open');
-        document.body.style.overflow = 'hidden';
-      }
-      function closeVault() { modal.classList.remove('open'); iframe.src = ''; document.body.style.overflow = ''; }
-
-      document.querySelectorAll('.vault-card[data-embed]').forEach(function(c) {
-        c.addEventListener('click', function(e) {
-          if (e.target.closest('.vault-approve-row')) return;
-          if (c.classList.contains('hidden')) return;
-          var isShort = c.closest('#vault-panel-shorts') !== null;
-          openVault(c.dataset.embed, isShort);
-        });
-      });
-      document.getElementById('vault-modal-close').addEventListener('click', closeVault);
-      modal.addEventListener('click', function(e) { if (e.target === modal) closeVault(); });
-      document.addEventListener('keydown', function(e) { if (e.key === 'Escape') closeVault(); });
-
-      // Approve buttons
-      document.querySelectorAll('.vault-approve-btn').forEach(function(btn) {
-        btn.addEventListener('click', function(e) {
-          e.stopPropagation();
-          var slug = btn.dataset.slug;
-          btn.textContent = 'Publishing...';
-          btn.classList.add('done');
-          fetch('/api/approve-video', {
-            method: 'POST',
-            headers: {'content-type': 'application/json'},
-            body: JSON.stringify({slug: slug})
-          }).then(function(r) { return r.json(); }).then(function(d) {
-            if (d.ok) {
-              btn.textContent = '✓ Live at /videos';
-            } else {
-              btn.textContent = 'Error — try again';
-              btn.classList.remove('done');
-            }
-          });
-        });
-      });
-    })();
-    </script>
+    ${seriesSummary.length
+      ? `<div class="vault-grid">${seriesSummary.map(seriesCard).join('')}</div>`
+      : `<div class="vault-empty">No footage backed up yet.</div>`}
   `;
 
   return new Response(siteLayout({
@@ -3248,3 +3504,83 @@ function nookieIndex(env, basePath, category, page) { return siteIndex(env, nook
 function nookieArticlePage(env, slug, basePath) { return siteArticlePage(env, nookieSite, slug, basePath); }
 function nookieSearchPage(env, q, basePath) { return siteSearchPage(env, nookieSite, q, basePath); }
 function nookieSitemap(env) { return siteSitemapXml(env, nookieSite); }
+
+
+// ── Public footage page (/footage/[slug]) ─────────────────────────────────────
+
+async function footagePage(env, slug) {
+  // Fetch from D1
+  const result = await env.DB.prepare(
+    `SELECT slug, title, video_url, tags FROM videos WHERE slug = ? AND status = 'vault' LIMIT 1`
+  ).bind(slug).first();
+
+  if (!result) {
+    const body = `<div style="text-align:center;padding:80px 20px;color:var(--ink-light)">
+      <h1 style="font-size:1.4rem;margin-bottom:12px">Not found</h1>
+      <p><a href="/" style="color:var(--ink)">← Back home</a></p>
+    </div>`;
+    return new Response(siteLayout({ site: gabAeSite, title: 'Not Found | gab.ae',
+      description: '', canonical: `https://gab.ae/footage/${esc(slug)}`, basePath: '', body }),
+      { status: 404, headers: { 'content-type': 'text/html;charset=UTF-8' } });
+  }
+
+  let tags = {};
+  try { tags = JSON.parse(result.tags || '{}'); } catch(e) {}
+
+  const ytId       = tags.yt_id || '';
+  const iaDownload = tags.ia_download || '';
+  const iaPage     = tags.ia_page || '';
+  const duration   = tags.duration_s ? `${Math.floor(tags.duration_s/60)}m ${tags.duration_s%60}s` : '';
+  const dims       = (tags.width && tags.height) ? `${tags.width}×${tags.height}` : '';
+  const codec      = (tags.codec || '').toUpperCase();
+  const orient     = tags.orientation || '';
+
+  const metaParts = [duration, dims, codec, orient].filter(Boolean).join(' · ');
+
+  const body = `
+<article style="max-width:720px;margin:0 auto;padding:40px 20px 80px">
+
+  <a href="/" style="display:inline-block;margin-bottom:28px;font-size:0.85rem;color:var(--ink-light);text-decoration:none">← gab.ae</a>
+
+  <h1 style="font-size:1.6rem;font-weight:700;line-height:1.2;margin-bottom:8px">${esc(result.title)}</h1>
+  ${metaParts ? `<p style="font-size:0.85rem;color:var(--ink-light);margin-bottom:28px;letter-spacing:.02em">${esc(metaParts)}</p>` : ''}
+
+  ${ytId ? `
+  <div style="position:relative;width:100%;padding-top:${orient==='vertical'?'177.78%':'56.25%'};background:#000;border-radius:4px;overflow:hidden;margin-bottom:28px">
+    <iframe
+      src="https://www.youtube.com/embed/${esc(ytId)}?autoplay=0&rel=0"
+      style="position:absolute;top:0;left:0;width:100%;height:100%;border:0"
+      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+      allowfullscreen></iframe>
+  </div>` : ''}
+
+  <div style="display:flex;gap:12px;flex-wrap:wrap;margin-bottom:40px">
+    ${ytId ? `<a href="https://www.youtube.com/watch?v=${esc(ytId)}" target="_blank" rel="noopener"
+        style="display:inline-flex;align-items:center;gap:6px;padding:10px 18px;background:#ff0000;color:#fff;border-radius:3px;font-size:0.9rem;font-weight:600;text-decoration:none">
+        ▶ Watch on YouTube</a>` : ''}
+    ${iaDownload ? `<a href="${esc(iaDownload)}" target="_blank" rel="noopener"
+        style="display:inline-flex;align-items:center;gap:6px;padding:10px 18px;background:var(--ink);color:#fff;border-radius:3px;font-size:0.9rem;font-weight:600;text-decoration:none">
+        ↓ Download original</a>` : ''}
+    ${iaPage ? `<a href="${esc(iaPage)}" target="_blank" rel="noopener"
+        style="display:inline-flex;align-items:center;gap:6px;padding:10px 18px;border:1px solid var(--border);color:var(--ink);border-radius:3px;font-size:0.9rem;text-decoration:none">
+        Archive.org page</a>` : ''}
+  </div>
+
+  <p style="font-size:0.8rem;color:var(--ink-light)">
+    Original footage by <strong>Gab Dancause</strong>.
+    ${iaDownload ? 'Original file available for download above.' : ''}
+  </p>
+
+</article>`;
+
+  const html = siteLayout({
+    site: gabAeSite,
+    title: `${result.title} | gab.ae`,
+    description: `${metaParts} — original footage by Gab Dancause.`,
+    canonical: `https://gab.ae/footage/${esc(slug)}`,
+    basePath: '',
+    body,
+  });
+
+  return new Response(html, { headers: { 'content-type': 'text/html;charset=UTF-8' } });
+}
