@@ -205,7 +205,8 @@ def seed_d1(slug, title, yt_id, ia_download_url, ia_page_url, info, token):
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--file",  required=True, help="Path to source video file")
-    parser.add_argument("--slug",  default="",    help="URL slug (auto-generated if omitted)")
+    parser.add_argument("--slug",      default="", help="URL slug (auto-generated if omitted)")
+    parser.add_argument("--keep-audio", action="store_true", help="Keep original audio (default: strip audio)")
     args = parser.parse_args()
 
     filepath = args.file
@@ -215,6 +216,15 @@ def main():
 
     log(f"=== publish_clip ===")
     log(f"File: {filepath}")
+
+    # Strip audio unless --keep-audio
+    if not args.keep_audio:
+        muted = filepath + ".muted.mov"
+        log("\n[audio] Stripping audio (use --keep-audio to retain)...")
+        subprocess.run(["ffmpeg", "-y", "-i", filepath, "-c:v", "copy", "-an", muted],
+                       capture_output=True, check=True)
+        filepath = muted
+        log(f"  ✓ Muted file: {muted}")
 
     # Probe
     log("\n[probe] Reading metadata...")
