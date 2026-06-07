@@ -9,10 +9,10 @@ Musique et scènes mondaines — YouTube 24/7 Live Streamer
 
 import os, sys, random, subprocess, signal, time, glob, threading
 
-FOOTAGE_DIR = "/opt/broadcast"
+FOOTAGE_DIR = "/opt/broadcast_vertical"
 MUSIC_DIR   = "/opt/music"
-RTMP_FILE   = "/opt/rtmp_url.txt"
-PLAYLIST    = "/tmp/musique_playlist.txt"
+RTMP_FILE   = "/opt/rtmp_url_vertical.txt"
+PLAYLIST    = "/tmp/musique_playlist_vertical.txt"
 
 # Set by the watcher thread when new clips are detected
 _reload_flag = threading.Event()
@@ -145,7 +145,7 @@ def run():
             "-f", "concat", "-safe", "0", "-i", PLAYLIST,
             "-stream_loop", "-1", "-i", music,
             "-filter_complex",
-            "[0:v]setpts=PTS-STARTPTS[vout];[1:a]volume=0.8,aformat=sample_rates=48000:channel_layouts=stereo[aout]",
+            "[0:v]setpts=PTS-STARTPTS,scale=1080:1920[vout];[1:a]volume=0.8,aformat=sample_rates=48000:channel_layouts=stereo[aout]",
             "-map", "[vout]", "-map", "[aout]",
             "-c:v", "libx264", "-preset", "ultrafast", "-crf", "23",
             "-maxrate", "6800k", "-bufsize", "13600k",

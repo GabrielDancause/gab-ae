@@ -284,6 +284,12 @@ export default {
       return videosPage(env);
     }
 
+    // Session management page — /footage/session/[series] (unlisted, not in nav)
+    if (path.startsWith('/footage/session/')) {
+      const series = path.replace('/footage/session/', '').split('/')[0];
+      if (series) return sessionPage(env, series);
+    }
+
     // Public footage pages — /footage/[slug]
     if (path.startsWith('/footage/')) {
       const slug = path.replace('/footage/', '').split('/')[0];
@@ -3507,6 +3513,102 @@ function nookieSitemap(env) { return siteSitemapXml(env, nookieSite); }
 
 
 // ── Public footage page (/footage/[slug]) ─────────────────────────────────────
+
+async function sessionPage(env, series) {
+  // Unlisted management page — lists all files in a session backed up to IA
+  const { results } = await env.DB.prepare(
+    `SELECT slug, title, tags FROM videos WHERE series = ? ORDER BY slug ASC`
+  ).bind(series).all();
+
+  const rows = results || [];
+
+  const rowsHtml = rows.map(r => {
+    let tags = {};
+    try { tags = JSON.parse(r.tags || '{}'); } catch(e) {}
+    const fname    = tags.filename    || r.slug;
+    const iaDown   = tags.ia_download || '';
+    const iaPage   = tags.ia_page     || '';
+    const size     = tags.size_mb     ? `${tags.size_mb} MB` : '';
+    const dur      = tags.duration_s  ? `${Math.floor(tags.duration_s/60)}m${String(tags.duration_s%60).padStart(2,'0')}s` : '';
+    const dims     = (tags.width && tags.height) ? `${tags.width}×${tags.height}` : '';
+    const mtype    = tags.media_type  || 'file';
+    const meta     = [dur, dims, size].filter(Boolean).join(' · ');
+    return `
+    <tr>
+      <td style="padding:10px 12px;font-size:0.85rem;font-family:monospace;word-break:break-all">${esc(fname)}</td>
+      <td style="padding:10px 12px;font-size:0.8rem;color:var(--ink-light);white-space:nowrap">${esc(meta)}</td>
+      <td style="padding:10px 12px;white-space:nowrap">
+        ${iaDown ? `<a href="${esc(iaDown)}" target="_blank" rel="noopener"
+            style="font-size:0.8rem;color:var(--ink);margin-right:10px;text-decoration:none">↓ download</a>` : ''}
+        ${iaPage ? `<a href="${esc(iaPage)}" target="_blank" rel="noopener"
+            style="font-size:0.8rem;color:var(--ink-light);text-decoration:none">archive.org</a>` : ''}
+      </td>
+    </tr>`;
+  }).join('');
+
+  const iaItem = rows.length > 0 ? (() => {
+    try { return JSON.parse(rows[0].tags || '{}').ia_page || ''; } catch(e){ return ''; }
+  })() : '';
+  // strip filename from ia_page to get item URL
+  const iaItemUrl = iaItem.replace(/\/download\/[^\/]+\/.*$/, '').replace('/download/', '/details/');
+
+  const body = `
+<article style="max-width:900px;margin:0 auto;padding:40px 20px 80px">
+
+  <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;margin-bottom:32px">
+    <div>
+      <p style="font-size:0.8rem;color:var(--ink-light);margin-bottom:6px;letter-spacing:.06em;text-transform:uppercase">Session backup</p>
+      <h1 style="font-size:1.5rem;font-weight:700;margin:0">${esc(series)}</h1>
+    </div>
+    <div style="display:flex;gap:10px;flex-wrap:wrap">
+      ${iaItemUrl ? `<a href="${esc(iaItemUrl)}" target="_blank" rel="noopener"
+          style="padding:8px 16px;border:1px solid var(--border);border-radius:3px;font-size:0.85rem;color:var(--ink);text-decoration:none">
+          View on Archive.org</a>` : ''}
+    </div>
+  </div>
+
+  <p style="font-size:0.85rem;color:var(--ink-light);margin-bottom:24px">
+    ${rows.length} file${rows.length !== 1 ? 's' : ''} · Raw originals · Private IA backup (noindex)
+  </p>
+
+  ${rows.length === 0 ? `<p style="color:var(--ink-light)">No files found for this session yet.</p>` : `
+  <div style="overflow-x:auto">
+    <table style="width:100%;border-collapse:collapse;font-size:0.9rem">
+      <thead>
+        <tr style="border-bottom:2px solid var(--border)">
+          <th style="text-align:left;padding:8px 12px;font-size:0.75rem;text-transform:uppercase;letter-spacing:.06em">File</th>
+          <th style="text-align:left;padding:8px 12px;font-size:0.75rem;text-transform:uppercase;letter-spacing:.06em">Info</th>
+          <th style="text-align:left;padding:8px 12px;font-size:0.75rem;text-transform:uppercase;letter-spacing:.06em">Links</th>
+        </tr>
+      </thead>
+      <tbody style="border-bottom:1px solid var(--border)">
+        ${rowsHtml}
+      </tbody>
+    </table>
+  </div>`}
+
+  <p style="font-size:0.75rem;color:var(--ink-light);margin-top:32px">
+    This page is unlisted. Files are stored on Internet Archive as private/noindex. Not linked from nav.
+  </p>
+
+</article>`;
+
+  const html = siteLayout({
+    site: gabAeSite,
+    title: `Session: ${series} | gab.ae`,
+    description: `Private session backup — ${rows.length} files`,
+    canonical: `https://gab.ae/footage/session/${esc(series)}`,
+    basePath: '',
+    body,
+  });
+
+  return new Response(html, {
+    headers: {
+      'content-type': 'text/html;charset=UTF-8',
+      'X-Robots-Tag': 'noindex, nofollow',
+    }
+  });
+}
 
 async function footagePage(env, slug) {
   // Fetch from D1

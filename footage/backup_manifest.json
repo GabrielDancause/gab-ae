@@ -1,0 +1,327 @@
+{
+  "sessions": {
+    "obiwan/2026-06-05 - export from iPhone": {
+      "folder": "/Volumes/obiwan/2026-06-05 - export from iPhone",
+      "ia_id": "gab-raw-obiwan-2026-06-05-export-from-iphone",
+      "label": "obiwan",
+      "status": "partial",
+      "files": {
+        "video-31830_singular_display.MOV": {
+          "status": "uploaded",
+          "note": "uploaded to gab-raw-meta-glasses-2026-05-29",
+          "uploaded_at": "2026-06-06T00:00:00+00:00"
+        },
+        "video-31835_singular_display.MOV": {
+          "status": "uploaded",
+          "note": "uploaded to gab-raw-meta-glasses-2026-05-29",
+          "uploaded_at": "2026-06-06T00:00:00+00:00"
+        },
+        "video-31842_singular_display.MOV": {
+          "status": "uploaded",
+          "note": "uploaded to gab-raw-meta-glasses-2026-05-29",
+          "uploaded_at": "2026-06-06T00:00:00+00:00"
+        },
+        "video-31848_singular_display.MOV": {
+          "status": "uploaded",
+          "note": "uploaded to gab-raw-meta-glasses-2026-05-29",
+          "uploaded_at": "2026-06-06T00:00:00+00:00"
+        },
+        "video-31855_singular_display.MOV": {
+          "status": "uploaded",
+          "note": "uploaded to gab-raw-meta-glasses-2026-05-29",
+          "uploaded_at": "2026-06-06T00:00:00+00:00"
+        },
+        "video-31862_singular_display.MOV": {
+          "status": "uploaded",
+          "note": "uploaded to gab-raw-meta-glasses-2026-05-29",
+          "uploaded_at": "2026-06-06T00:00:00+00:00"
+        },
+        "video-31867_singular_display.MOV": {
+          "status": "uploaded",
+          "note": "uploaded to gab-raw-meta-glasses-2026-05-29",
+          "uploaded_at": "2026-06-06T00:00:00+00:00"
+        },
+        "video-31872_singular_display.MOV": {
+          "status": "uploaded",
+          "note": "uploaded to gab-raw-meta-glasses-2026-05-29",
+          "uploaded_at": "2026-06-06T00:00:00+00:00"
+        },
+        "video-31877_singular_display.MOV": {
+          "status": "uploaded",
+          "note": "uploaded to gab-raw-meta-glasses-2026-05-29",
+          "uploaded_at": "2026-06-06T00:00:00+00:00"
+        },
+        "video-31974_singular_display.MOV": {
+          "status": "uploaded",
+          "note": "uploaded to gab-raw-meta-glasses-2026-05-29",
+          "uploaded_at": "2026-06-06T00:00:00+00:00"
+        },
+        "video-31979_singular_display.MOV": {
+          "status": "uploaded",
+          "note": "uploaded to gab-raw-meta-glasses-2026-05-29",
+          "uploaded_at": "2026-06-06T00:00:00+00:00"
+        },
+        "video-31984_singular_display.MOV": {
+          "status": "uploaded",
+          "note": "uploaded to gab-raw-meta-glasses-2026-05-29",
+          "uploaded_at": "2026-06-06T00:00:00+00:00"
+        },
+        "video-31989_singular_display.MOV": {
+          "status": "uploaded",
+          "note": "uploaded to gab-raw-meta-glasses-2026-05-29",
+          "uploaded_at": "2026-06-06T00:00:00+00:00"
+        },
+        "od_photo-31775_singular_display_fullPicture.HEIC": {
+          "status": "uploaded",
+          "note": "uploaded to gab-raw-meta-glasses-2026-05-29",
+          "uploaded_at": "2026-06-06T00:00:00+00:00"
+        },
+        "photo-31827_singular_display_fullPicture.HEIC": {
+          "status": "uploaded",
+          "note": "uploaded to gab-raw-meta-glasses-2026-05-29",
+          "uploaded_at": "2026-06-06T00:00:00+00:00"
+        },
+        "photo-31890_singular_display_fullPicture.HEIC": {
+          "status": "uploaded",
+          "note": "uploaded to gab-raw-meta-glasses-2026-05-29",
+          "uploaded_at": "2026-06-06T00:00:00+00:00"
+        },
+        "photo-31962_singular_display_fullPicture.HEIC": {
+          "status": "uploaded",
+          "note": "uploaded to gab-raw-meta-glasses-2026-05-29",
+          "uploaded_at": "2026-06-06T00:00:00+00:00"
+        },
+        "photo-31968_singular_display_fullPicture.HEIC": {
+          "status": "uploaded",
+          "note": "uploaded to gab-raw-meta-glasses-2026-05-29",
+          "uploaded_at": "2026-06-06T00:00:00+00:00"
+        }
+      },
+      "note": "18 singular_display files already at gab-raw-meta-glasses-2026-05-29",
+      "created_at": "2026-06-06T17:06:04.138724+00:00"
+    },
+    "obiwan/2026-06-06 - Ali new video": {
+      "folder": "/Volumes/obiwan/2026-06-06 - Ali new video",
+      "label": "ali-imperiale",
+      "ia_id": "gab-raw-ali-imperiale-2026-06-06-ali-new-video",
+      "status": "complete",
+      "files": {
+        "DCIM/100MSDCF/DSC02555.JPG": {
+          "status": "uploaded",
+          "size": 7973067,
+          "md5": "361bd17cc4c7551b0a2262d5f13c70ed",
+          "uploaded_at": "2026-06-06T17:35:48Z"
+        },
+        "DCIM/100MSDCF/DSC02556.JPG": {
+          "status": "uploaded",
+          "size": 7880774,
+          "md5": "b7a985916133dfcfd550a496439fa3a0",
+          "uploaded_at": "2026-06-06T17:35:57Z"
+        },
+        "DCIM/100MSDCF/DSC02557.JPG": {
+          "status": "uploaded",
+          "size": 7825065,
+          "md5": "7822dc8583451ad72fc0953ef1541761",
+          "uploaded_at": "2026-06-06T17:36:01Z"
+        },
+        "DCIM/100MSDCF/DSC02558.JPG": {
+          "status": "uploaded",
+          "size": 7895647,
+          "md5": "fbeb3f9bc6401512e0f4517787a9ae0c",
+          "uploaded_at": "2026-06-06T17:36:04Z"
+        },
+        "DCIM/100MSDCF/DSC02559.JPG": {
+          "status": "uploaded",
+          "size": 7942183,
+          "md5": "3b2dc0db543770120d25b7d8ff7c9709",
+          "uploaded_at": "2026-06-06T17:36:10Z"
+        },
+        "DCIM/100MSDCF/DSC02560.JPG": {
+          "status": "uploaded",
+          "size": 7865217,
+          "md5": "f18cd6a0d4129844bc00c47c4b13dc4c",
+          "uploaded_at": "2026-06-06T17:36:13Z"
+        },
+        "DCIM/100MSDCF/DSC02561.JPG": {
+          "status": "uploaded",
+          "size": 7936670,
+          "md5": "88503f05891a96165ddc38f52b080c4b",
+          "uploaded_at": "2026-06-06T17:36:21Z"
+        },
+        "DCIM/100MSDCF/DSC02562.JPG": {
+          "status": "uploaded",
+          "size": 7859287,
+          "md5": "0d7582584a0dec2f886dc07e0928b711",
+          "uploaded_at": "2026-06-06T17:36:23Z"
+        },
+        "DCIM/100MSDCF/DSC02563.JPG": {
+          "status": "uploaded",
+          "size": 8224056,
+          "md5": "652a88cced7bbbb51dc2622710b90d9a",
+          "uploaded_at": "2026-06-06T17:36:29Z"
+        },
+        "DCIM/100MSDCF/DSC02564.JPG": {
+          "status": "uploaded",
+          "size": 8154498,
+          "md5": "bd7cb1aa62e2e9a86c9a34a916f6f044",
+          "uploaded_at": "2026-06-06T17:36:33Z"
+        },
+        "DCIM/100MSDCF/DSC02565.JPG": {
+          "status": "uploaded",
+          "size": 8154617,
+          "md5": "716a63f9f9f00be45f0efb33e038d461",
+          "uploaded_at": "2026-06-06T17:36:36Z"
+        },
+        "DCIM/100MSDCF/DSC02566.JPG": {
+          "status": "uploaded",
+          "size": 7964358,
+          "md5": "89f73ca708102f9d8cdb54f7be5f424a",
+          "uploaded_at": "2026-06-06T17:36:52Z"
+        },
+        "DCIM/100MSDCF/DSC02567.JPG": {
+          "status": "uploaded",
+          "size": 7977362,
+          "md5": "d7d11c59598a52324cf282fa95e1d008",
+          "uploaded_at": "2026-06-06T17:36:55Z"
+        },
+        "DCIM/100MSDCF/DSC02568.JPG": {
+          "status": "uploaded",
+          "size": 8118767,
+          "md5": "9400898a1f2a9197c4ef45edbe009526",
+          "uploaded_at": "2026-06-06T17:37:11Z"
+        },
+        "DCIM/100MSDCF/DSC02569.JPG": {
+          "status": "uploaded",
+          "size": 8001759,
+          "md5": "b04f0f4969576fc5db521b256d2ffa2a",
+          "uploaded_at": "2026-06-06T17:37:14Z"
+        },
+        "DCIM/100MSDCF/DSC02570.JPG": {
+          "status": "uploaded",
+          "size": 7924294,
+          "md5": "1518f8772f15f058c7e225b7ffa58313",
+          "uploaded_at": "2026-06-06T17:37:25Z"
+        },
+        "DCIM/100MSDCF/DSC02571.JPG": {
+          "status": "uploaded",
+          "size": 8115798,
+          "md5": "156f700efd874ae0a1ea59505b9d7c11",
+          "uploaded_at": "2026-06-06T17:37:30Z"
+        },
+        "PRIVATE/M4ROOT/MEDIAPRO.XML": {
+          "status": "uploaded",
+          "size": 1150,
+          "md5": "402d84218d75d868805a0e45f1294edb",
+          "uploaded_at": "2026-06-06T17:37:32Z"
+        },
+        "PRIVATE/M4ROOT/STATUS.BIN": {
+          "status": "uploaded",
+          "size": 7,
+          "md5": "b8a06004e0a5b6f316f00300c633a7cb",
+          "uploaded_at": "2026-06-06T17:37:36Z"
+        },
+        "PRIVATE/M4ROOT/CLIP/C4095.MP4": {
+          "status": "uploaded",
+          "size": 14432992148,
+          "md5": "945c508baadb08f5bb3afa4e4e5aca13",
+          "uploaded_at": "2026-06-06T20:01:57Z"
+        },
+        "PRIVATE/M4ROOT/CLIP/C4095M01.XML": {
+          "status": "uploaded",
+          "size": 2139,
+          "md5": "f691748fa9fdd6aa36aa65ec80885947",
+          "uploaded_at": "2026-06-06T20:02:00Z"
+        },
+        "PRIVATE/M4ROOT/CLIP/C4098.MP4": {
+          "status": "uploaded",
+          "size": 16098176536,
+          "md5": "b5be797ed6264f8f86310e9524159208",
+          "uploaded_at": "2026-06-06T20:22:04Z"
+        },
+        "PRIVATE/M4ROOT/CLIP/C4098M01.XML": {
+          "status": "uploaded",
+          "size": 2139,
+          "md5": "d47b4063a91c8a20445510028e6dc004",
+          "uploaded_at": "2026-06-06T20:22:07Z"
+        },
+        "PRIVATE/M4ROOT/THMBNL/C4095T01.JPG": {
+          "status": "uploaded",
+          "size": 262463,
+          "md5": "09082297c1cea38b6cab1ffff4520041",
+          "uploaded_at": "2026-06-06T20:22:10Z"
+        },
+        "PRIVATE/M4ROOT/THMBNL/C4098T01.JPG": {
+          "status": "uploaded",
+          "size": 259170,
+          "md5": "5837e20c6b747d87d51397e23ae895a3",
+          "uploaded_at": "2026-06-06T20:22:14Z"
+        }
+      },
+      "created_at": "2026-06-06T17:35:17Z",
+      "last_run": "2026-06-06T20:22:14Z"
+    },
+    "obiwan/2026-06-03 - Multiple exports": {
+      "folder": "/Volumes/obiwan/2026-06-03 - Multiple exports",
+      "label": "obiwan",
+      "ia_id": "gab-raw-obiwan-2026-06-03-multiple-exports",
+      "status": "pending",
+      "files": {
+        "1/DCIM/DJI_001/DJI_20260530142155_0001_D.LRF": {
+          "status": "failed",
+          "size": 905322042,
+          "md5": "7b966c7824316379e2578dd5e7357c71"
+        },
+        "1/DCIM/DJI_001/DJI_20260530142155_0001_D.MP4": {
+          "status": "failed",
+          "size": 16753989928,
+          "md5": "868ae92537b58027afd47d8d2ed7e855"
+        },
+        "1/DCIM/DJI_001/DJI_20260530145158_0002_D.LRF": {
+          "status": "failed",
+          "size": 558117465,
+          "md5": "8e9911fc1522c2b0fce9272296ab0b9a"
+        },
+        "1/DCIM/DJI_001/DJI_20260530145158_0002_D.MP4": {
+          "status": "uploaded",
+          "size": 11177160316,
+          "md5": "6d07ffe82e9b54cf8a1b68b127bcc9c6",
+          "uploaded_at": "2026-06-07T01:17:50Z"
+        },
+        "1/DCIM/DJI_001/DJI_20260530150838_0003_D.LRF": {
+          "status": "failed",
+          "size": 866504306,
+          "md5": "4edb824a7217e86b329875279632714e"
+        }
+      },
+      "created_at": "2026-06-06T20:22:22Z"
+    },
+    "obiwan/2026-06-04 - North Hatley en bike": {
+      "folder": "/Volumes/obiwan/2026-06-04 - North Hatley en bike",
+      "label": "obiwan",
+      "ia_id": "gab-raw-obiwan-2026-06-04-north-hatley-en-bike",
+      "status": "pending",
+      "files": {
+        "1/DCIM/DJI_001/DJI_20260602130452_0003_D.MP4": {
+          "status": "uploaded",
+          "size": 11062800826,
+          "md5": "a0413122c4373b223ded27e3981b061d",
+          "uploaded_at": "2026-06-07T03:08:50Z"
+        },
+        "1/DCIM/DJI_001/DJI_20260602132539_0001_D.MP4": {
+          "status": "uploaded",
+          "size": 5255017727,
+          "md5": "8b56b24d58973e042aa8df0517b72746",
+          "uploaded_at": "2026-06-07T03:11:13Z"
+        },
+        "1/DCIM/DJI_001/DJI_20260602134225_0002_D.MP4": {
+          "status": "uploaded",
+          "size": 17193169259,
+          "md5": "e05b27dbd1671d5149b2d20b0903165a",
+          "uploaded_at": "2026-06-07T03:28:21Z"
+        }
+      },
+      "created_at": "2026-06-07T01:52:41Z"
+    }
+  },
+  "version": 1
+}
