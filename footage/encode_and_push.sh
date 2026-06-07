@@ -56,18 +56,15 @@ while true; do
   echo ""
   echo "Clips ready — horizontal: $H_NEW  vertical: $V_NEW"
 
-  # Tag + publish each new horizontal clip → YouTube + gab.ae homepage
-  if [ "$H_NEW" -gt 0 ]; then
-    echo "Tagging + publishing horizontal clips..."
-    for CLIP in "$OUT_H"/*.mp4; do
-      [[ "$CLIP" == *.wip.mp4 ]] && continue
-      LABEL=$(basename "$CLIP" | sed 's/-.*//')   # extract drive prefix (luke, padme, yoda)
-      echo "  → $CLIP"
-      python3 "$SCRIPT_DIR/tag_and_publish.py" \
-        --clip "$CLIP" --already-encoded --drive "$LABEL" \
-        2>&1 | grep -E "scene|activity|broadcast|✓|✗|YouTube|homepage|error" || true
-    done
-  fi
+  # Tagging disabled — YouTube publishing paused pending strategy
+  # To re-enable: uncomment the block below
+  # if [ "$H_NEW" -gt 0 ]; then
+  #   for CLIP in "$OUT_H"/*.mp4; do
+  #     [[ "$CLIP" == *.wip.mp4 ]] && continue
+  #     LABEL=$(basename "$CLIP" | sed 's/-.*//')
+  #     python3 "$SCRIPT_DIR/tag_and_publish.py" --clip "$CLIP" --already-encoded --drive "$LABEL"
+  #   done
+  # fi
 
   # Push horizontal
   if [ "$H_NEW" -gt 0 ]; then

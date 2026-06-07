@@ -57,14 +57,14 @@ Rules:
 # ── Frame extraction ──────────────────────────────────────────────────────────
 
 def extract_frames(clip_path, n=4):
-    """Extract n frames evenly spaced from clip. Returns list of base64 JPEG strings."""
-    # Get duration
+    """Extract n frames evenly spaced from clip. Returns (frames_b64_list, duration, thumb_b64)."""
     r = subprocess.run(
         ["ffprobe", "-v", "quiet", "-print_format", "json", "-show_format", clip_path],
         capture_output=True, text=True)
     duration = float(json.loads(r.stdout)["format"]["duration"])
 
     frames = []
+    thumb_b64 = ""
     with tempfile.TemporaryDirectory() as tmp:
         for i in range(n):
             t = duration * (i + 1) / (n + 1)   # evenly spaced, skip start/end
@@ -72,13 +72,16 @@ def extract_frames(clip_path, n=4):
             subprocess.run([
                 "ffmpeg", "-y", "-ss", str(t), "-i", clip_path,
                 "-vframes", "1", "-q:v", "3",
-                "-vf", "scale=640:-1",   # resize to 640px wide for API efficiency
+                "-vf", "scale=640:-1",
                 out
             ], capture_output=True)
             if os.path.exists(out):
                 with open(out, "rb") as f:
-                    frames.append(base64.b64encode(f.read()).decode())
-    return frames, duration
+                    b64 = base64.b64encode(f.read()).decode()
+                    frames.append(b64)
+                    if i == 1 and not thumb_b64:   # use 2nd frame as thumbnail
+                        thumb_b64 = b64
+    return frames, duration, thumb_b64
 
 
 # ── OpenRouter call ───────────────────────────────────────────────────────────
@@ -86,7 +89,7 @@ def extract_frames(clip_path, n=4):
 def tag_clip(clip_path, dry_run=False):
     """Extract frames, call vision model, return parsed tags dict."""
     print(f"  Extracting frames from {Path(clip_path).name}...")
-    frames, duration = extract_frames(clip_path)
+    frames, duration, thumb_b64 = extract_frames(clip_path)
     print(f"  {len(frames)} frames extracted ({duration:.1f}s clip)")
 
     # Build message with all frames
@@ -129,12 +132,16 @@ def tag_clip(clip_path, dry_run=False):
     tags = json.loads(raw)
     tags["duration_s"] = round(duration, 1)
     tags["clip"] = Path(clip_path).name
+    tags["_thumb"] = thumb_b64   # stored separately, not in tags JSON
     return tags
 
 
 # ── D1 ────────────────────────────────────────────────────────────────────────
 
 def get_cf_token():
+    # Env var takes priority — set CF_API_TOKEN on server
+    if os.environ.get("CF_API_TOKEN"):
+        return os.environ["CF_API_TOKEN"]
     p = Path.home() / "Library/Preferences/.wrangler/config/default.toml"
     with open(p, "rb") as f:
         return tomllib.load(f)["oauth_token"]
@@ -156,7 +163,8 @@ def d1_query(sql, token, params=None):
 def ensure_clips_table(token):
     d1_query("""
         CREATE TABLE IF NOT EXISTS clips (
-            id           TEXT PRIMARY KEY,
+            id           INTEGER PRIMARY KEY AUTOINCREMENT,
+            clip_name    TEXT UNIQUE NOT NULL,
             drive        TEXT,
             folder       TEXT,
             stream       TEXT,
@@ -170,18 +178,19 @@ def ensure_clips_table(token):
 
 def save_to_d1(clip_path, tags, drive, token):
     clip_id    = Path(clip_path).name
-    folder     = Path(clip_path).parent.name
+    folder     = Path(clip_path).parent.name or drive
     stream     = tags.get("stream_suggestion", "horizontal")
     broadcast_ok = 1 if tags.get("broadcast_ok", True) else 0
     scene_desc = tags.get("scene_desc", "")
+    thumb_b64  = tags.pop("_thumb", "")
     tags_json  = json.dumps(tags)
     now        = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
 
     d1_query("""
         INSERT OR REPLACE INTO clips
-        (id, drive, folder, stream, broadcast_ok, tags, scene_desc, tagged_at, created_at)
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
-    """, token, params=[clip_id, drive, folder, stream, broadcast_ok, tags_json, scene_desc, now, now])
+        (clip_name, drive, folder, stream, broadcast_ok, tags, scene_desc, tagged_at, created_at, thumb_b64)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+    """, token, params=[clip_id, drive, folder, stream, broadcast_ok, tags_json, scene_desc, now, now, thumb_b64])
 
 
 # ── Status ────────────────────────────────────────────────────────────────────

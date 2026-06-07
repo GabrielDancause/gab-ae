@@ -307,10 +307,9 @@ export default {
         const clip_name = clips[idx] || clips[0] || '';
         estimated = { clip_name, stream: p.stream, played_at: p.started_at, idx, total: clips.length, elapsed_s: Math.floor(elapsedS) };
         if (clip_name) {
-          const base = clip_name.replace(/\.[^.]+$/, '');
           const row = await env.DB.prepare(
-            "SELECT tags, thumb_b64 FROM shorts WHERE json_extract(tags, '$.clip_source') LIKE ? ORDER BY id DESC LIMIT 1"
-          ).bind('%' + base + '%').first();
+            "SELECT tags, thumb_b64 FROM clips WHERE clip_name = ? LIMIT 1"
+          ).bind(clip_name).first();
           if (row) { tags = row.tags ? JSON.parse(row.tags) : null; thumb = row.thumb_b64 || null; }
         }
       }
@@ -402,6 +401,16 @@ export default {
     if (thumbMatch) {
       const row = await env.DB.prepare("SELECT thumb_b64 FROM shorts WHERE slug = ?").bind(thumbMatch[1]).first();
       if (!row?.thumb_b64) return new Response('Not found', { status: 404 });
+      const bytes = Uint8Array.from(atob(row.thumb_b64), c => c.charCodeAt(0));
+      return new Response(bytes, { headers: { 'content-type': 'image/jpeg', 'cache-control': 'public, max-age=86400' } });
+    }
+
+    // Thumbnail for a tagged clip (by filename)
+    const clipThumbMatch = path.match(/^\/clip-thumb\/(.+)$/);
+    if (clipThumbMatch) {
+      const name = decodeURIComponent(clipThumbMatch[1]);
+      const row = await env.DB.prepare("SELECT thumb_b64 FROM clips WHERE clip_name = ?").bind(name).first();
+      if (!row?.thumb_b64) return new Response('', { status: 404 });
       const bytes = Uint8Array.from(atob(row.thumb_b64), c => c.charCodeAt(0));
       return new Response(bytes, { headers: { 'content-type': 'image/jpeg', 'cache-control': 'public, max-age=86400' } });
     }
@@ -2089,12 +2098,14 @@ async function videosPage(env) {
 }
 
 async function shortsHomepage(env) {
-  let shorts = [], landscapeId = 'u4y1ZSt3V5Q', verticalId = '';
+  let clips = [], landscapeId = 'u4y1ZSt3V5Q', verticalId = '', totalTagged = 0;
   try {
     const { results } = await env.DB.prepare(
-      "SELECT slug, title, tags, video_url FROM shorts WHERE status='live' ORDER BY id DESC LIMIT 40"
+      "SELECT clip_name, stream, scene_desc, thumb_b64, broadcast_ok, tags FROM clips WHERE broadcast_ok=1 ORDER BY tagged_at DESC LIMIT 80"
     ).all();
-    shorts = results || [];
+    clips = results || [];
+    const cnt = await env.DB.prepare("SELECT COUNT(*) as n FROM clips").first();
+    totalTagged = cnt?.n || 0;
     const lsRow = await env.DB.prepare("SELECT value FROM pipeline_state WHERE key='stream_landscape_id'").first();
     if (lsRow?.value) landscapeId = lsRow.value;
     const vsRow = await env.DB.prepare("SELECT value FROM pipeline_state WHERE key='stream_vertical_id'").first();
@@ -2105,14 +2116,21 @@ async function shortsHomepage(env) {
     const t = s.tags ? (typeof s.tags === 'string' ? JSON.parse(s.tags) : s.tags) : {};
     const activity = t.activity || '';
     const location = t.location ? t.location.split(',')[0].trim() : '';
-    const label = activity && location ? `${activity} · ${location}` : activity || location || esc(s.title || '');
-    const embedUrl = esc(s.video_url || '');
+    const label = activity && location ? `${activity} · ${location}` : activity || location || s.clip_name || '';
+    const camera = t.camera && t.camera !== 'unknown' ? t.camera : '';
+    const weather = t.weather && t.weather !== 'unknown' ? t.weather : '';
+    const hasThumb = !!s.thumb_b64;
+    const thumbSrc = hasThumb ? `/clip-thumb/${encodeURIComponent(s.clip_name)}` : '';
     return `
-      <div class="clip-card" ${s.video_url ? `data-embed="${embedUrl}"` : ''} role="button" tabindex="0" title="${esc(s.title || '')}">
+      <div class="clip-card" data-activity="${esc(activity)}" data-camera="${esc(camera)}" data-stream="${esc(s.stream||'')}" role="button" tabindex="0" title="${esc(s.scene_desc || label)}">
         <div class="clip-thumb">
-          <img src="/thumb/${esc(s.slug)}" alt="${esc(label)}" loading="lazy" width="200" height="356">
-          <div class="clip-play">&#9654;</div>
-          <div class="clip-overlay"><span class="clip-label">${esc(label)}</span></div>
+          ${hasThumb
+            ? `<img src="${thumbSrc}" alt="${esc(label)}" loading="lazy" width="200" height="356">`
+            : `<div class="clip-no-thumb">${esc(activity || '…')}</div>`}
+          <div class="clip-overlay">
+            <span class="clip-label">${esc(label)}</span>
+            ${camera ? `<span class="clip-meta">${esc(camera)}${weather ? ' · ' + esc(weather) : ''}</span>` : ''}
+          </div>
         </div>
       </div>`;
   };
@@ -2172,8 +2190,15 @@ async function shortsHomepage(env) {
       .clip-card:hover .clip-thumb img { transform: scale(1.05); }
       .clip-play { position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%); width: 40px; height: 40px; background: rgba(0,0,0,0.55); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: #fff; font-size: 14px; opacity: 0; transition: opacity 0.2s; padding-left: 3px; }
       .clip-card:hover .clip-play { opacity: 1; }
+      .clip-no-thumb { width:100%; height:100%; display:flex; align-items:center; justify-content:center; background:var(--paper-dark); color:var(--ink-light); font-size:11px; padding:8px; text-align:center; line-height:1.3; }
       .clip-overlay { position: absolute; bottom: 0; left: 0; right: 0; background: linear-gradient(transparent, rgba(0,0,0,0.75)); padding: 20px 8px 8px; }
       .clip-label { display: block; font-size: 11px; font-weight: 600; color: #fff; line-height: 1.3; }
+      .clip-meta { display: block; font-size: 10px; color: rgba(255,255,255,0.65); margin-top: 2px; }
+
+      /* ── Filters ── */
+      .filter-bar { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 14px; }
+      .filter-btn { font-size: 11px; padding: 4px 12px; border-radius: 20px; border: 1px solid var(--border); color: var(--ink-mid); background: none; cursor: pointer; transition: all 0.15s; }
+      .filter-btn:hover, .filter-btn.active { background: var(--accent); color: #fff; border-color: var(--accent); }
 
       /* ── Modal ── */
       .yt-modal { display: none; position: fixed; inset: 0; z-index: 1000; background: rgba(0,0,0,0.88); align-items: center; justify-content: center; }
@@ -2234,13 +2259,21 @@ async function shortsHomepage(env) {
     <!-- ── CLIPS LIBRARY ── -->
     <div class="hp-section" style="border-bottom:none">
       <div class="hp-section-head">
-        <span class="hp-label clips">Clips</span>
-        <span class="hp-title">Published Library</span>
-        <span class="hp-count">${shorts.length} clips</span>
+        <span class="hp-label clips">Library</span>
+        <span class="hp-title">Tagged Clips</span>
+        <span class="hp-count" id="clip-count">${clips.length} of ${totalTagged} shown</span>
       </div>
-      ${shorts.length
-        ? `<div class="clips-grid">${shorts.map(clipCard).join('')}</div>`
-        : `<div style="padding:40px 0;text-align:center;color:var(--ink-light)">No clips yet.</div>`}
+      ${clips.length ? `
+      <div class="filter-bar" id="filter-bar">
+        <button class="filter-btn active" data-filter="">All</button>
+        <button class="filter-btn" data-filter="stream:horizontal">Landscape</button>
+        <button class="filter-btn" data-filter="stream:vertical">Vertical</button>
+        <button class="filter-btn" data-filter="camera:drone">Drone</button>
+        <button class="filter-btn" data-filter="camera:gopro">GoPro</button>
+        <button class="filter-btn" data-filter="camera:iphone">iPhone</button>
+      </div>
+      <div class="clips-grid" id="clips-grid">${clips.map(clipCard).join('')}</div>`
+      : `<div style="padding:40px 0;text-align:center;color:var(--ink-light)">Tagging in progress… check back soon.</div>`}
     </div>
 
     <!-- ── Modal player ── -->
@@ -2265,6 +2298,31 @@ async function shortsHomepage(env) {
       document.getElementById('yt-modal-close').addEventListener('click', closeModal);
       modal.addEventListener('click', function(e) { if (e.target===modal) closeModal(); });
       document.addEventListener('keydown', function(e) { if (e.key==='Escape') closeModal(); });
+
+      // ── Clip filters ──
+      var filterBar = document.getElementById('filter-bar');
+      if (filterBar) {
+        filterBar.addEventListener('click', function(e) {
+          var btn = e.target.closest('.filter-btn');
+          if (!btn) return;
+          filterBar.querySelectorAll('.filter-btn').forEach(function(b) { b.classList.remove('active'); });
+          btn.classList.add('active');
+          var f = btn.dataset.filter || '';
+          var cards = document.querySelectorAll('#clips-grid .clip-card');
+          var shown = 0;
+          cards.forEach(function(c) {
+            var match = true;
+            if (f) {
+              var parts = f.split(':');
+              match = c.dataset[parts[0]] === parts[1];
+            }
+            c.style.display = match ? '' : 'none';
+            if (match) shown++;
+          });
+          var countEl = document.getElementById('clip-count');
+          if (countEl) countEl.textContent = shown + ' shown';
+        });
+      }
 
       // ── Now on air polling ──
       function timeAgo(iso) {
