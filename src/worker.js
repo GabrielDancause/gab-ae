@@ -2101,7 +2101,7 @@ async function shortsHomepage(env) {
   let clips = [], landscapeId = 'u4y1ZSt3V5Q', verticalId = '', totalTagged = 0;
   try {
     const { results } = await env.DB.prepare(
-      "SELECT clip_name, stream, scene_desc, thumb_b64, broadcast_ok, tags FROM clips WHERE broadcast_ok=1 ORDER BY tagged_at DESC LIMIT 80"
+      "SELECT clip_name, stream, scene_desc, thumb_b64, ia_url, broadcast_ok, tags FROM clips WHERE broadcast_ok=1 ORDER BY tagged_at DESC LIMIT 80"
     ).all();
     clips = results || [];
     const cnt = await env.DB.prepare("SELECT COUNT(*) as n FROM clips").first();
@@ -2121,8 +2121,9 @@ async function shortsHomepage(env) {
     const weather = t.weather && t.weather !== 'unknown' ? t.weather : '';
     const hasThumb = !!s.thumb_b64;
     const thumbSrc = hasThumb ? `/clip-thumb/${encodeURIComponent(s.clip_name)}` : '';
+    const iaUrl = esc(s.ia_url || '');
     return `
-      <div class="clip-card" data-activity="${esc(activity)}" data-camera="${esc(camera)}" data-stream="${esc(s.stream||'')}" role="button" tabindex="0" title="${esc(s.scene_desc || label)}">
+      <div class="clip-card" data-activity="${esc(activity)}" data-camera="${esc(camera)}" data-stream="${esc(s.stream||'')}" ${iaUrl ? `data-ia="${iaUrl}"` : ''} role="button" tabindex="0" title="${esc(s.scene_desc || label)}">
         <div class="clip-thumb">
           ${hasThumb
             ? `<img src="${thumbSrc}" alt="${esc(label)}" loading="lazy" width="200" height="356">`
@@ -2131,13 +2132,14 @@ async function shortsHomepage(env) {
             <span class="clip-label">${esc(label)}</span>
             ${camera ? `<span class="clip-meta">${esc(camera)}${weather ? ' · ' + esc(weather) : ''}</span>` : ''}
           </div>
+          ${!iaUrl ? `<div class="clip-pending" title="Uploading to IA…">⏳</div>` : ''}
         </div>
       </div>`;
   };
 
   const body = `
     <style>
-      /* ── Live section ── */
+      /* ── Sections ── */
       .hp-section { padding: 24px 0 20px; border-bottom: 1px solid var(--border); }
       .hp-section-head { display: flex; align-items: center; gap: 10px; margin-bottom: 16px; }
       .hp-label { font-size: 10px; font-weight: 700; letter-spacing: 0.18em; text-transform: uppercase; color: #fff; padding: 3px 9px; border-radius: 3px; }
@@ -2148,18 +2150,13 @@ async function shortsHomepage(env) {
       .hp-title { font-family: 'Playfair Display', Georgia, serif; font-size: 18px; font-weight: 700; color: var(--ink); }
       .hp-count { font-size: 12px; color: var(--ink-light); margin-left: auto; }
 
-      /* ── Stream embeds ── */
-      .live-grid { display: grid; grid-template-columns: 1fr 220px; gap: 14px; align-items: start; }
-      @media (max-width: 700px) { .live-grid { grid-template-columns: 1fr; } .live-vertical { display: none; } }
-      .live-embed { position: relative; background: #000; border-radius: 10px; overflow: hidden; }
-      .live-embed.landscape { aspect-ratio: 16/9; }
-      .live-embed.vertical  { aspect-ratio: 9/16; }
-      .live-embed iframe { width: 100%; height: 100%; border: none; display: block; position: absolute; inset: 0; }
-      .live-embed-placeholder { width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; background: var(--paper-mid); color: var(--ink-light); font-size: 13px; position: absolute; inset: 0; }
-      .live-badge { position: absolute; top: 10px; left: 10px; background: #e03; color: #fff; font-size: 10px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; padding: 3px 8px; border-radius: 3px; z-index: 2; }
-      .live-open-link { display: block; text-align: right; font-size: 11px; color: var(--ink-light); margin-top: 6px; }
-      .live-open-link a { color: var(--accent); }
-      .live-open-link a:hover { text-decoration: underline; }
+      /* ── Live links ── */
+      .live-links { display: flex; gap: 12px; flex-wrap: wrap; }
+      .live-link-card { display: flex; align-items: center; gap: 10px; background: var(--paper-mid); border: 1px solid var(--border); border-radius: 10px; padding: 14px 18px; text-decoration: none; transition: border-color 0.2s, background 0.2s; flex: 1; min-width: 200px; }
+      .live-link-card:hover { border-color: var(--accent); background: var(--paper-dark); }
+      .live-link-dot { color: #e03; font-size: 14px; animation: pulse-dot 2s infinite; flex-shrink: 0; }
+      .live-link-label { font-weight: 600; font-size: 14px; color: var(--ink); flex: 1; }
+      .live-link-arrow { font-size: 12px; color: var(--accent); white-space: nowrap; }
 
       /* ── Now on air ── */
       .onair-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
@@ -2191,6 +2188,7 @@ async function shortsHomepage(env) {
       .clip-play { position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%); width: 40px; height: 40px; background: rgba(0,0,0,0.55); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: #fff; font-size: 14px; opacity: 0; transition: opacity 0.2s; padding-left: 3px; }
       .clip-card:hover .clip-play { opacity: 1; }
       .clip-no-thumb { width:100%; height:100%; display:flex; align-items:center; justify-content:center; background:var(--paper-dark); color:var(--ink-light); font-size:11px; padding:8px; text-align:center; line-height:1.3; }
+      .clip-pending { position:absolute; top:6px; right:6px; font-size:12px; opacity:0.7; }
       .clip-overlay { position: absolute; bottom: 0; left: 0; right: 0; background: linear-gradient(transparent, rgba(0,0,0,0.75)); padding: 20px 8px 8px; }
       .clip-label { display: block; font-size: 11px; font-weight: 600; color: #fff; line-height: 1.3; }
       .clip-meta { display: block; font-size: 10px; color: rgba(255,255,255,0.65); margin-top: 2px; }
@@ -2203,7 +2201,7 @@ async function shortsHomepage(env) {
       /* ── Modal ── */
       .yt-modal { display: none; position: fixed; inset: 0; z-index: 1000; background: rgba(0,0,0,0.88); align-items: center; justify-content: center; }
       .yt-modal.open { display: flex; }
-      .yt-modal-inner { position: relative; width: min(360px, 90vw); aspect-ratio: 9/16; background: #000; border-radius: 12px; overflow: hidden; box-shadow: 0 24px 80px rgba(0,0,0,0.6); }
+      .yt-modal-inner { position: relative; width: min(780px, 95vw); aspect-ratio: 16/9; background: #000; border-radius: 12px; overflow: hidden; box-shadow: 0 24px 80px rgba(0,0,0,0.6); }
       .yt-modal-inner iframe { width: 100%; height: 100%; border: none; }
       .yt-modal-close { position: absolute; top: -40px; right: 0; background: none; border: none; color: #fff; font-size: 28px; cursor: pointer; opacity: 0.8; line-height: 1; }
       .yt-modal-close:hover { opacity: 1; }
@@ -2214,26 +2212,21 @@ async function shortsHomepage(env) {
       <div class="hp-section-head">
         <span class="hp-label live">Live</span>
         <span class="hp-title">24/7 Streams</span>
-        <span class="hp-count">Landscape &amp; Vertical</span>
       </div>
-      <div class="live-grid">
-        <div>
-          <div class="live-embed landscape">
-            <span class="live-badge">● Live</span>
-            ${landscapeId
-              ? `<iframe src="https://www.youtube.com/embed/${esc(landscapeId)}?autoplay=1&mute=1&rel=0" allowfullscreen allow="autoplay; fullscreen" loading="lazy"></iframe>`
-              : `<div class="live-embed-placeholder">Landscape stream</div>`}
-          </div>
-          ${landscapeId ? `<div class="live-open-link"><a href="https://www.youtube.com/watch?v=${esc(landscapeId)}" target="_blank" rel="noopener">Open on YouTube ↗</a></div>` : ''}
-        </div>
+      <div class="live-links">
+        ${landscapeId ? `
+        <a class="live-link-card" href="https://www.youtube.com/watch?v=${esc(landscapeId)}" target="_blank" rel="noopener">
+          <span class="live-link-dot">●</span>
+          <span class="live-link-label">Landscape stream</span>
+          <span class="live-link-arrow">Watch on YouTube ↗</span>
+        </a>` : ''}
         ${verticalId ? `
-        <div class="live-vertical">
-          <div class="live-embed vertical">
-            <span class="live-badge">● Live</span>
-            <iframe src="https://www.youtube.com/embed/${esc(verticalId)}?autoplay=1&mute=1&rel=0" allowfullscreen allow="autoplay; fullscreen" loading="lazy"></iframe>
-          </div>
-          <div class="live-open-link"><a href="https://www.youtube.com/watch?v=${esc(verticalId)}" target="_blank" rel="noopener">Open ↗</a></div>
-        </div>` : ''}
+        <a class="live-link-card" href="https://www.youtube.com/watch?v=${esc(verticalId)}" target="_blank" rel="noopener">
+          <span class="live-link-dot">●</span>
+          <span class="live-link-label">Vertical stream</span>
+          <span class="live-link-arrow">Watch on YouTube ↗</span>
+        </a>` : ''}
+        ${!landscapeId && !verticalId ? `<div style="color:var(--ink-light);font-size:13px">No streams configured.</div>` : ''}
       </div>
     </div>
 
@@ -2276,24 +2269,37 @@ async function shortsHomepage(env) {
       : `<div style="padding:40px 0;text-align:center;color:var(--ink-light)">Tagging in progress… check back soon.</div>`}
     </div>
 
-    <!-- ── Modal player ── -->
+    <!-- ── Video modal (IA player) ── -->
     <div class="yt-modal" id="yt-modal">
-      <div class="yt-modal-inner">
+      <div class="yt-modal-inner" id="yt-modal-inner">
         <button class="yt-modal-close" id="yt-modal-close">&times;</button>
-        <iframe id="yt-modal-iframe" src="" allowfullscreen allow="autoplay; fullscreen"></iframe>
+        <video id="yt-modal-video" controls autoplay playsinline style="width:100%;height:100%;display:block;background:#000;"></video>
+        <div id="yt-modal-info" style="position:absolute;bottom:0;left:0;right:0;padding:8px 12px;background:rgba(0,0,0,0.7);font-size:11px;color:#ccc;"></div>
       </div>
     </div>
 
     <script>
     (function() {
-      // ── Modal ──
-      var modal  = document.getElementById('yt-modal');
-      var iframe = document.getElementById('yt-modal-iframe');
-      function openModal(url) { iframe.src = url; modal.classList.add('open'); document.body.style.overflow = 'hidden'; }
-      function closeModal()   { modal.classList.remove('open'); iframe.src = ''; document.body.style.overflow = ''; }
-      document.querySelectorAll('.clip-card[data-embed]').forEach(function(c) {
-        c.addEventListener('click', function() { openModal(c.dataset.embed); });
-        c.addEventListener('keydown', function(e) { if (e.key==='Enter'||e.key===' ') openModal(c.dataset.embed); });
+      // ── Modal (IA video player) ──
+      var modal = document.getElementById('yt-modal');
+      var video = document.getElementById('yt-modal-video');
+      var info  = document.getElementById('yt-modal-info');
+      function openModal(iaUrl, label) {
+        video.src = iaUrl;
+        video.play().catch(function(){});
+        if (info) info.textContent = label || '';
+        modal.classList.add('open');
+        document.body.style.overflow = 'hidden';
+      }
+      function closeModal() {
+        modal.classList.remove('open');
+        video.pause();
+        video.src = '';
+        document.body.style.overflow = '';
+      }
+      document.querySelectorAll('.clip-card[data-ia]').forEach(function(c) {
+        c.addEventListener('click', function() { openModal(c.dataset.ia, c.title); });
+        c.addEventListener('keydown', function(e) { if (e.key==='Enter'||e.key===' ') openModal(c.dataset.ia, c.title); });
       });
       document.getElementById('yt-modal-close').addEventListener('click', closeModal);
       modal.addEventListener('click', function(e) { if (e.target===modal) closeModal(); });
