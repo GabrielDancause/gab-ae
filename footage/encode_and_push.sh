@@ -1,10 +1,12 @@
 #!/bin/bash
 # Encode small batches and push to server continuously.
+# Every encoded clip is tagged by AI and published to YouTube + gab.ae homepage if broadcast_ok.
 # Ctrl+C to stop cleanly.
 
 OUT_H="/tmp/broadcast_encode/horizontal"
 OUT_V="/tmp/broadcast_encode/vertical"
 SERVER="root@138.201.21.95"
+SCRIPT_DIR="/Users/gab/Desktop/gab-ae/footage"
 BATCH=0
 
 mkdir -p "$OUT_H" "$OUT_V"
@@ -53,6 +55,19 @@ while true; do
   V_NEW=$(find "$OUT_V" -name "*.mp4" ! -name "*.wip.mp4" | wc -l | tr -d ' ')
   echo ""
   echo "Clips ready — horizontal: $H_NEW  vertical: $V_NEW"
+
+  # Tag + publish each new horizontal clip → YouTube + gab.ae homepage
+  if [ "$H_NEW" -gt 0 ]; then
+    echo "Tagging + publishing horizontal clips..."
+    for CLIP in "$OUT_H"/*.mp4; do
+      [[ "$CLIP" == *.wip.mp4 ]] && continue
+      LABEL=$(basename "$CLIP" | sed 's/-.*//')   # extract drive prefix (luke, padme, yoda)
+      echo "  → $CLIP"
+      python3 "$SCRIPT_DIR/tag_and_publish.py" \
+        --clip "$CLIP" --already-encoded --drive "$LABEL" \
+        2>&1 | grep -E "scene|activity|broadcast|✓|✗|YouTube|homepage|error" || true
+    done
+  fi
 
   # Push horizontal
   if [ "$H_NEW" -gt 0 ]; then
