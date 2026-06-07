@@ -274,7 +274,52 @@ export default {
       });
     }
 
-    // Homepage — shorts grid
+    // Now-playing API — GET: current clip, POST: update from streamer
+    if (path === '/api/now-playing') {
+      if (request.method === 'POST') {
+        const secret = (await env.DB.prepare("SELECT value FROM pipeline_state WHERE key='now_playing_secret'").first())?.value;
+        const urlParams = new URL(request.url).searchParams;
+        const auth = request.headers.get('x-secret') || request.headers.get('X-secret') || urlParams.get('s') || '';
+        if (!secret || auth !== secret) return new Response('Forbidden', { status: 403 });
+        const body = await request.json().catch(() => ({}));
+        const clips = body.clips || [];   // array of filenames from streamer
+        const stream = body.stream || 'landscape';
+        const nowIso = new Date().toISOString().replace('T',' ').slice(0,19);
+        if (clips.length) {
+          const payload = JSON.stringify({ clips, started_at: nowIso, stream });
+          await env.DB.prepare("INSERT OR REPLACE INTO pipeline_state (key, value) VALUES (?, ?)").bind('now_playing_' + stream, payload).run();
+          // Also insert first clip into play_log for history
+          await env.DB.prepare("INSERT INTO play_log (clip_name, stream, played_at) VALUES (?, ?, ?)").bind(clips[0], stream, nowIso).run();
+        }
+        return new Response('ok', { headers: { 'content-type': 'text/plain' } });
+      }
+      // GET — calculate which clip is estimated to be playing right now
+      const state = await env.DB.prepare("SELECT value FROM pipeline_state WHERE key='now_playing_landscape'").first();
+      let estimated = null, tags = null, thumb = null;
+      if (state?.value) {
+        const p = JSON.parse(state.value);
+        const clips = p.clips || [];
+        const startedAt = new Date(p.started_at + 'Z');
+        const elapsedS = (Date.now() - startedAt.getTime()) / 1000;
+        const clipDurationS = 15;
+        const idx = Math.floor(elapsedS / clipDurationS) % Math.max(clips.length, 1);
+        const clip_name = clips[idx] || clips[0] || '';
+        estimated = { clip_name, stream: p.stream, played_at: p.started_at, idx, total: clips.length, elapsed_s: Math.floor(elapsedS) };
+        // Look up tags
+        if (clip_name) {
+          const base = clip_name.replace(/\.[^.]+$/, '');
+          const row = await env.DB.prepare(
+            "SELECT tags, thumb_b64 FROM shorts WHERE json_extract(tags, '$.clip_source') LIKE ? ORDER BY id DESC LIMIT 1"
+          ).bind('%' + base + '%').first();
+          if (row) { tags = row.tags ? JSON.parse(row.tags) : null; thumb = row.thumb_b64 || null; }
+        }
+      }
+      return new Response(JSON.stringify({ latest: estimated, tags, thumb }), {
+        headers: { 'content-type': 'application/json', 'cache-control': 'no-store', 'access-control-allow-origin': '*' }
+      });
+    }
+
+    // Homepage
     if (path === '/') {
       return shortsHomepage(env);
     }
@@ -2044,112 +2089,227 @@ async function videosPage(env) {
 }
 
 async function shortsHomepage(env) {
-  let shorts = [];
+  let shorts = [], landscapeId = 'u4y1ZSt3V5Q', verticalId = '';
   try {
     const { results } = await env.DB.prepare(
-      "SELECT slug, title, series, video_url FROM shorts WHERE status='live' ORDER BY id ASC"
+      "SELECT slug, title, tags, video_url FROM shorts WHERE status='live' ORDER BY id DESC LIMIT 40"
     ).all();
     shorts = results || [];
+    const lsRow = await env.DB.prepare("SELECT value FROM pipeline_state WHERE key='stream_landscape_id'").first();
+    if (lsRow?.value) landscapeId = lsRow.value;
+    const vsRow = await env.DB.prepare("SELECT value FROM pipeline_state WHERE key='stream_vertical_id'").first();
+    if (vsRow?.value) verticalId = vsRow.value;
   } catch (e) {}
 
-  const cardHtml = (s) => {
+  const clipCard = (s) => {
+    const t = s.tags ? (typeof s.tags === 'string' ? JSON.parse(s.tags) : s.tags) : {};
+    const activity = t.activity || '';
+    const location = t.location ? t.location.split(',')[0].trim() : '';
+    const label = activity && location ? `${activity} · ${location}` : activity || location || esc(s.title || '');
     const embedUrl = esc(s.video_url || '');
     return `
-      <div class="short-card" ${s.video_url ? `data-embed="${embedUrl}"` : ''} role="button" tabindex="0">
-        <div class="short-thumb">
-          <img src="/thumb/${esc(s.slug)}" alt="${esc(s.title)}" loading="lazy" width="270" height="480">
-          <div class="short-play-icon">&#9654;</div>
-          <div class="short-overlay"><span class="short-title">${esc(s.title)}</span></div>
+      <div class="clip-card" ${s.video_url ? `data-embed="${embedUrl}"` : ''} role="button" tabindex="0" title="${esc(s.title || '')}">
+        <div class="clip-thumb">
+          <img src="/thumb/${esc(s.slug)}" alt="${esc(label)}" loading="lazy" width="200" height="356">
+          <div class="clip-play">&#9654;</div>
+          <div class="clip-overlay"><span class="clip-label">${esc(label)}</span></div>
         </div>
       </div>`;
   };
 
   const body = `
     <style>
-      .shorts-header { padding: 28px 0 16px; border-bottom: 1px solid var(--border); margin-bottom: 24px; }
-      .shorts-header h1 { font-family: 'Playfair Display', Georgia, serif; font-size: clamp(22px, 3vw, 32px); font-weight: 900; color: var(--ink); letter-spacing: -0.02em; }
-      .shorts-header p { font-size: 13px; color: var(--ink-light); margin-top: 6px; }
-      .shorts-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 10px; padding-bottom: 48px; }
-      @media (min-width: 640px)  { .shorts-grid { grid-template-columns: repeat(auto-fill, minmax(170px, 1fr)); gap: 14px; } }
-      @media (min-width: 1024px) { .shorts-grid { grid-template-columns: repeat(auto-fill, minmax(185px, 1fr)); gap: 16px; } }
-      .short-card { display: block; border-radius: 10px; overflow: hidden; background: var(--paper-mid); cursor: pointer; transition: transform 0.2s ease, box-shadow 0.2s ease; }
-      .short-card:hover { transform: scale(1.03); box-shadow: 0 8px 28px rgba(0,0,0,0.25); }
-      .short-thumb { position: relative; aspect-ratio: 9/16; overflow: hidden; }
-      .short-thumb img { width: 100%; height: 100%; object-fit: cover; display: block; transition: transform 0.3s ease; }
-      .short-card:hover .short-thumb img { transform: scale(1.05); }
-      .short-play-icon { position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%); width: 44px; height: 44px; background: rgba(0,0,0,0.55); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: #fff; font-size: 16px; opacity: 0; transition: opacity 0.2s; padding-left: 3px; }
-      .short-card:hover .short-play-icon { opacity: 1; }
-      .short-overlay { position: absolute; bottom: 0; left: 0; right: 0; background: linear-gradient(transparent, rgba(0,0,0,0.72)); padding: 24px 10px 10px; }
-      .short-title { display: block; font-size: 12px; font-weight: 600; color: #fff; line-height: 1.3; }
-      .shorts-news-link { display: block; text-align: center; padding: 18px 0 36px; font-size: 13px; color: var(--ink-light); border-top: 1px solid var(--border); }
-      .shorts-news-link a { color: var(--accent); }
-      .shorts-news-link a:hover { text-decoration: underline; }
-      .shorts-empty { text-align: center; padding: 80px 24px; color: var(--ink-light); font-size: 15px; }
+      /* ── Live section ── */
+      .hp-section { padding: 24px 0 20px; border-bottom: 1px solid var(--border); }
+      .hp-section-head { display: flex; align-items: center; gap: 10px; margin-bottom: 16px; }
+      .hp-label { font-size: 10px; font-weight: 700; letter-spacing: 0.18em; text-transform: uppercase; color: #fff; padding: 3px 9px; border-radius: 3px; }
+      .hp-label.live { background: #e03; animation: pulse-dot 2s infinite; }
+      .hp-label.onair { background: #555; }
+      .hp-label.clips { background: var(--accent); }
+      @keyframes pulse-dot { 0%,100%{opacity:1} 50%{opacity:.5} }
+      .hp-title { font-family: 'Playfair Display', Georgia, serif; font-size: 18px; font-weight: 700; color: var(--ink); }
+      .hp-count { font-size: 12px; color: var(--ink-light); margin-left: auto; }
 
-      /* ── Modal player ── */
-      .shorts-modal { display: none; position: fixed; inset: 0; z-index: 1000; background: rgba(0,0,0,0.88); align-items: center; justify-content: center; }
-      .shorts-modal.open { display: flex; }
-      .shorts-modal-inner { position: relative; width: min(360px, 90vw); aspect-ratio: 9/16; background: #000; border-radius: 12px; overflow: hidden; box-shadow: 0 24px 80px rgba(0,0,0,0.6); }
-      .shorts-modal-inner iframe { width: 100%; height: 100%; border: none; display: block; }
-      .shorts-modal-close { position: absolute; top: -40px; right: 0; background: none; border: none; color: #fff; font-size: 28px; cursor: pointer; line-height: 1; opacity: 0.8; }
-      .shorts-modal-close:hover { opacity: 1; }
+      /* ── Stream embeds ── */
+      .live-grid { display: grid; grid-template-columns: 1fr 220px; gap: 14px; align-items: start; }
+      @media (max-width: 700px) { .live-grid { grid-template-columns: 1fr; } .live-vertical { display: none; } }
+      .live-embed { position: relative; background: #000; border-radius: 10px; overflow: hidden; }
+      .live-embed.landscape { aspect-ratio: 16/9; }
+      .live-embed.vertical  { aspect-ratio: 9/16; }
+      .live-embed iframe { width: 100%; height: 100%; border: none; display: block; position: absolute; inset: 0; }
+      .live-embed-placeholder { width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; background: var(--paper-mid); color: var(--ink-light); font-size: 13px; position: absolute; inset: 0; }
+      .live-badge { position: absolute; top: 10px; left: 10px; background: #e03; color: #fff; font-size: 10px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; padding: 3px 8px; border-radius: 3px; z-index: 2; }
+      .live-open-link { display: block; text-align: right; font-size: 11px; color: var(--ink-light); margin-top: 6px; }
+      .live-open-link a { color: var(--accent); }
+      .live-open-link a:hover { text-decoration: underline; }
+
+      /* ── Now on air ── */
+      .onair-card { display: flex; gap: 14px; background: var(--paper-mid); border-radius: 10px; padding: 14px; align-items: flex-start; min-height: 80px; }
+      .onair-thumb { width: 54px; height: 96px; border-radius: 6px; overflow: hidden; background: var(--paper-dark); flex-shrink: 0; }
+      .onair-thumb img { width: 100%; height: 100%; object-fit: cover; display: block; }
+      .onair-thumb-empty { width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; color: var(--ink-light); font-size: 20px; }
+      .onair-body { flex: 1; min-width: 0; }
+      .onair-scene { font-family: 'Source Serif 4', Georgia, serif; font-size: 15px; font-weight: 400; color: var(--ink); line-height: 1.45; margin-bottom: 8px; }
+      .onair-scene em { font-style: italic; color: var(--ink-mid); }
+      .onair-tags { display: flex; flex-wrap: wrap; gap: 5px; margin-bottom: 8px; }
+      .onair-tag { font-size: 11px; color: var(--ink-mid); background: var(--paper-dark); border-radius: 20px; padding: 2px 10px; }
+      .onair-meta { font-size: 11px; color: var(--ink-light); }
+      .onair-filename { font-family: monospace; font-size: 11px; color: var(--ink-light); background: var(--paper-dark); padding: 1px 6px; border-radius: 3px; display: inline-block; margin-top: 4px; cursor: text; user-select: all; }
+      .onair-empty { color: var(--ink-light); font-size: 14px; padding: 8px 0; }
+      .refresh-dot { display: inline-block; width: 7px; height: 7px; border-radius: 50%; background: #3c3; margin-right: 5px; vertical-align: middle; }
+
+      /* ── Clips grid ── */
+      .clips-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap: 8px; padding-bottom: 48px; }
+      @media (min-width: 640px)  { .clips-grid { grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 12px; } }
+      @media (min-width: 1024px) { .clips-grid { grid-template-columns: repeat(auto-fill, minmax(165px, 1fr)); gap: 14px; } }
+      .clip-card { display: block; border-radius: 8px; overflow: hidden; background: var(--paper-mid); cursor: pointer; transition: transform 0.2s, box-shadow 0.2s; }
+      .clip-card:hover { transform: scale(1.03); box-shadow: 0 8px 28px rgba(0,0,0,0.25); }
+      .clip-thumb { position: relative; aspect-ratio: 9/16; overflow: hidden; }
+      .clip-thumb img { width: 100%; height: 100%; object-fit: cover; display: block; transition: transform 0.3s; }
+      .clip-card:hover .clip-thumb img { transform: scale(1.05); }
+      .clip-play { position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%); width: 40px; height: 40px; background: rgba(0,0,0,0.55); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: #fff; font-size: 14px; opacity: 0; transition: opacity 0.2s; padding-left: 3px; }
+      .clip-card:hover .clip-play { opacity: 1; }
+      .clip-overlay { position: absolute; bottom: 0; left: 0; right: 0; background: linear-gradient(transparent, rgba(0,0,0,0.75)); padding: 20px 8px 8px; }
+      .clip-label { display: block; font-size: 11px; font-weight: 600; color: #fff; line-height: 1.3; }
+
+      /* ── Modal ── */
+      .yt-modal { display: none; position: fixed; inset: 0; z-index: 1000; background: rgba(0,0,0,0.88); align-items: center; justify-content: center; }
+      .yt-modal.open { display: flex; }
+      .yt-modal-inner { position: relative; width: min(360px, 90vw); aspect-ratio: 9/16; background: #000; border-radius: 12px; overflow: hidden; box-shadow: 0 24px 80px rgba(0,0,0,0.6); }
+      .yt-modal-inner iframe { width: 100%; height: 100%; border: none; }
+      .yt-modal-close { position: absolute; top: -40px; right: 0; background: none; border: none; color: #fff; font-size: 28px; cursor: pointer; opacity: 0.8; line-height: 1; }
+      .yt-modal-close:hover { opacity: 1; }
     </style>
 
-    <div class="shorts-header">
-      <h1>Home</h1>
-      ${shorts.length ? `<p>${shorts.length} clips</p>` : ''}
+    <!-- ── LIVE STREAMS ── -->
+    <div class="hp-section">
+      <div class="hp-section-head">
+        <span class="hp-label live">Live</span>
+        <span class="hp-title">24/7 Streams</span>
+        <span class="hp-count">Landscape &amp; Vertical</span>
+      </div>
+      <div class="live-grid">
+        <div>
+          <div class="live-embed landscape">
+            <span class="live-badge">● Live</span>
+            ${landscapeId
+              ? `<iframe src="https://www.youtube.com/embed/${esc(landscapeId)}?autoplay=1&mute=1&rel=0" allowfullscreen allow="autoplay; fullscreen" loading="lazy"></iframe>`
+              : `<div class="live-embed-placeholder">Landscape stream</div>`}
+          </div>
+          ${landscapeId ? `<div class="live-open-link"><a href="https://www.youtube.com/watch?v=${esc(landscapeId)}" target="_blank" rel="noopener">Open on YouTube ↗</a></div>` : ''}
+        </div>
+        ${verticalId ? `
+        <div class="live-vertical">
+          <div class="live-embed vertical">
+            <span class="live-badge">● Live</span>
+            <iframe src="https://www.youtube.com/embed/${esc(verticalId)}?autoplay=1&mute=1&rel=0" allowfullscreen allow="autoplay; fullscreen" loading="lazy"></iframe>
+          </div>
+          <div class="live-open-link"><a href="https://www.youtube.com/watch?v=${esc(verticalId)}" target="_blank" rel="noopener">Open ↗</a></div>
+        </div>` : ''}
+      </div>
     </div>
 
-    ${shorts.length
-      ? `<div class="shorts-grid">${shorts.map(cardHtml).join('')}</div>`
-      : `<div class="shorts-empty">No clips yet.</div>`
-    }
+    <!-- ── NOW ON AIR ── -->
+    <div class="hp-section">
+      <div class="hp-section-head">
+        <span class="hp-label onair">On Air</span>
+        <span class="hp-title">Now Playing</span>
+        <span class="hp-count" id="onair-refresh"><span class="refresh-dot"></span>live</span>
+      </div>
+      <div id="onair-card" class="onair-card">
+        <div class="onair-empty">Loading…</div>
+      </div>
+    </div>
 
-    <div class="shorts-news-link">Looking for news? <a href="/news">Visit the newsroom &rarr;</a></div>
+    <!-- ── CLIPS LIBRARY ── -->
+    <div class="hp-section" style="border-bottom:none">
+      <div class="hp-section-head">
+        <span class="hp-label clips">Clips</span>
+        <span class="hp-title">Published Library</span>
+        <span class="hp-count">${shorts.length} clips</span>
+      </div>
+      ${shorts.length
+        ? `<div class="clips-grid">${shorts.map(clipCard).join('')}</div>`
+        : `<div style="padding:40px 0;text-align:center;color:var(--ink-light)">No clips yet.</div>`}
+    </div>
 
-    <div class="shorts-modal" id="shorts-modal">
-      <div class="shorts-modal-inner" id="shorts-modal-inner">
-        <button class="shorts-modal-close" id="shorts-modal-close" aria-label="Close">&times;</button>
-        <iframe id="shorts-modal-iframe" src="" allowfullscreen allow="autoplay; fullscreen"></iframe>
+    <!-- ── Modal player ── -->
+    <div class="yt-modal" id="yt-modal">
+      <div class="yt-modal-inner">
+        <button class="yt-modal-close" id="yt-modal-close">&times;</button>
+        <iframe id="yt-modal-iframe" src="" allowfullscreen allow="autoplay; fullscreen"></iframe>
       </div>
     </div>
 
     <script>
     (function() {
-      var modal = document.getElementById('shorts-modal');
-      var iframe = document.getElementById('shorts-modal-iframe');
-      var inner = document.getElementById('shorts-modal-inner');
-
-      function openModal(url) {
-        iframe.src = url;
-        modal.classList.add('open');
-        document.body.style.overflow = 'hidden';
-      }
-      function closeModal() {
-        modal.classList.remove('open');
-        iframe.src = '';
-        document.body.style.overflow = '';
-      }
-
-      document.querySelectorAll('.short-card[data-embed]').forEach(function(card) {
-        card.addEventListener('click', function() { openModal(card.dataset.embed); });
-        card.addEventListener('keydown', function(e) { if (e.key === 'Enter' || e.key === ' ') openModal(card.dataset.embed); });
+      // ── Modal ──
+      var modal  = document.getElementById('yt-modal');
+      var iframe = document.getElementById('yt-modal-iframe');
+      function openModal(url) { iframe.src = url; modal.classList.add('open'); document.body.style.overflow = 'hidden'; }
+      function closeModal()   { modal.classList.remove('open'); iframe.src = ''; document.body.style.overflow = ''; }
+      document.querySelectorAll('.clip-card[data-embed]').forEach(function(c) {
+        c.addEventListener('click', function() { openModal(c.dataset.embed); });
+        c.addEventListener('keydown', function(e) { if (e.key==='Enter'||e.key===' ') openModal(c.dataset.embed); });
       });
+      document.getElementById('yt-modal-close').addEventListener('click', closeModal);
+      modal.addEventListener('click', function(e) { if (e.target===modal) closeModal(); });
+      document.addEventListener('keydown', function(e) { if (e.key==='Escape') closeModal(); });
 
-      document.getElementById('shorts-modal-close').addEventListener('click', closeModal);
-      modal.addEventListener('click', function(e) { if (e.target === modal) closeModal(); });
-      document.addEventListener('keydown', function(e) { if (e.key === 'Escape') closeModal(); });
+      // ── Now on air polling ──
+      function timeAgo(iso) {
+        if (!iso) return '';
+        var d = new Date(iso.replace(' ','T')+'Z');
+        var s = Math.round((Date.now() - d) / 1000);
+        if (s < 60)  return s + 's ago';
+        if (s < 3600) return Math.floor(s/60) + 'm ago';
+        return Math.floor(s/3600) + 'h ago';
+      }
+      function renderOnAir(data) {
+        var el = document.getElementById('onair-card');
+        if (!data || !data.latest) {
+          el.innerHTML = '<div class="onair-empty">Nothing logged yet — stream is running but no clips reported in.</div>';
+          return;
+        }
+        var clip = data.latest.clip_name || '';
+        var t = data.tags || {};
+        var thumb = data.thumb;
+        var thumbHtml = thumb
+          ? '<img src="data:image/jpeg;base64,' + thumb + '" alt="thumbnail">'
+          : '<div class="onair-thumb-empty">🎬</div>';
+        var scene = t.scene_desc || clip || 'Playing…';
+        var tags = [t.activity, t.location ? t.location.split(',')[0].trim() : '', t.camera, t.weather]
+          .filter(Boolean)
+          .map(function(x) { return '<span class="onair-tag">' + x + '</span>'; }).join('');
+        var ago = timeAgo(data.latest.played_at);
+        el.innerHTML =
+          '<div class="onair-thumb">' + thumbHtml + '</div>' +
+          '<div class="onair-body">' +
+            '<div class="onair-scene">' + scene + '</div>' +
+            (tags ? '<div class="onair-tags">' + tags + '</div>' : '') +
+            '<div class="onair-meta">' + (ago ? ago + ' · ' : '') + (data.latest.stream || 'landscape') + ' stream</div>' +
+            '<div class="onair-filename" title="Tell Gab this filename to identify the clip">' + clip + '</div>' +
+          '</div>';
+      }
+      function fetchOnAir() {
+        fetch('/api/now-playing')
+          .then(function(r) { return r.json(); })
+          .then(renderOnAir)
+          .catch(function() {});
+      }
+      fetchOnAir();
+      setInterval(fetchOnAir, 12000);
     })();
     </script>
   `;
 
   return new Response(siteLayout({
     site: gabAeSite,
-    title: 'gab.ae',
-    description: 'Short clips by Gab — Paris, slowmo, and more.',
+    title: 'gab.ae — Life in motion',
+    description: 'Live footage streams and clips by Gab.',
     canonical: 'https://gab.ae/',
     body,
-  }), { headers: { 'content-type': 'text/html;charset=UTF-8', 'cache-control': 'public, max-age=60' } });
+  }), { headers: { 'content-type': 'text/html;charset=UTF-8', 'cache-control': 'no-store' } });
 }
 
 async function homepage(env) {
