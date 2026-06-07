@@ -293,19 +293,19 @@ export default {
         }
         return new Response('ok', { headers: { 'content-type': 'text/plain' } });
       }
-      // GET — calculate which clip is estimated to be playing right now
-      const state = await env.DB.prepare("SELECT value FROM pipeline_state WHERE key='now_playing_landscape'").first();
+      // GET — calculate which clip is estimated to be playing right now (both streams)
+      const streamParam = new URL(request.url).searchParams.get('stream') || 'landscape';
+      const stateKey = 'now_playing_' + streamParam;
+      const state = await env.DB.prepare("SELECT value FROM pipeline_state WHERE key=?").bind(stateKey).first();
       let estimated = null, tags = null, thumb = null;
       if (state?.value) {
         const p = JSON.parse(state.value);
         const clips = p.clips || [];
         const startedAt = new Date(p.started_at + 'Z');
         const elapsedS = (Date.now() - startedAt.getTime()) / 1000;
-        const clipDurationS = 15;
-        const idx = Math.floor(elapsedS / clipDurationS) % Math.max(clips.length, 1);
+        const idx = Math.floor(elapsedS / 15) % Math.max(clips.length, 1);
         const clip_name = clips[idx] || clips[0] || '';
         estimated = { clip_name, stream: p.stream, played_at: p.started_at, idx, total: clips.length, elapsed_s: Math.floor(elapsedS) };
-        // Look up tags
         if (clip_name) {
           const base = clip_name.replace(/\.[^.]+$/, '');
           const row = await env.DB.prepare(
@@ -2144,6 +2144,9 @@ async function shortsHomepage(env) {
       .live-open-link a:hover { text-decoration: underline; }
 
       /* ── Now on air ── */
+      .onair-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+      @media (max-width: 600px) { .onair-grid { grid-template-columns: 1fr; } }
+      .onair-stream-label { font-size: 10px; font-weight: 700; letter-spacing: 0.15em; text-transform: uppercase; color: var(--ink-light); margin-bottom: 6px; }
       .onair-card { display: flex; gap: 14px; background: var(--paper-mid); border-radius: 10px; padding: 14px; align-items: flex-start; min-height: 80px; }
       .onair-thumb { width: 54px; height: 96px; border-radius: 6px; overflow: hidden; background: var(--paper-dark); flex-shrink: 0; }
       .onair-thumb img { width: 100%; height: 100%; object-fit: cover; display: block; }
@@ -2214,10 +2217,17 @@ async function shortsHomepage(env) {
       <div class="hp-section-head">
         <span class="hp-label onair">On Air</span>
         <span class="hp-title">Now Playing</span>
-        <span class="hp-count" id="onair-refresh"><span class="refresh-dot"></span>live</span>
+        <span class="hp-count"><span class="refresh-dot"></span>updates every 12s</span>
       </div>
-      <div id="onair-card" class="onair-card">
-        <div class="onair-empty">Loading…</div>
+      <div class="onair-grid">
+        <div>
+          <div class="onair-stream-label">Landscape</div>
+          <div id="onair-landscape" class="onair-card"><div class="onair-empty">Loading…</div></div>
+        </div>
+        <div>
+          <div class="onair-stream-label">Vertical</div>
+          <div id="onair-vertical" class="onair-card"><div class="onair-empty">Loading…</div></div>
+        </div>
       </div>
     </div>
 
@@ -2265,10 +2275,11 @@ async function shortsHomepage(env) {
         if (s < 3600) return Math.floor(s/60) + 'm ago';
         return Math.floor(s/3600) + 'h ago';
       }
-      function renderOnAir(data) {
-        var el = document.getElementById('onair-card');
+      function renderOnAir(elId, data) {
+        var el = document.getElementById(elId);
+        if (!el) return;
         if (!data || !data.latest) {
-          el.innerHTML = '<div class="onair-empty">Nothing logged yet — stream is running but no clips reported in.</div>';
+          el.innerHTML = '<div class="onair-empty">No data yet</div>';
           return;
         }
         var clip = data.latest.clip_name || '';
@@ -2278,7 +2289,7 @@ async function shortsHomepage(env) {
           ? '<img src="data:image/jpeg;base64,' + thumb + '" alt="thumbnail">'
           : '<div class="onair-thumb-empty">🎬</div>';
         var scene = t.scene_desc || clip || 'Playing…';
-        var tags = [t.activity, t.location ? t.location.split(',')[0].trim() : '', t.camera, t.weather]
+        var tagPills = [t.activity, t.location ? t.location.split(',')[0].trim() : '', t.camera, t.weather]
           .filter(Boolean)
           .map(function(x) { return '<span class="onair-tag">' + x + '</span>'; }).join('');
         var ago = timeAgo(data.latest.played_at);
@@ -2286,16 +2297,14 @@ async function shortsHomepage(env) {
           '<div class="onair-thumb">' + thumbHtml + '</div>' +
           '<div class="onair-body">' +
             '<div class="onair-scene">' + scene + '</div>' +
-            (tags ? '<div class="onair-tags">' + tags + '</div>' : '') +
-            '<div class="onair-meta">' + (ago ? ago + ' · ' : '') + (data.latest.stream || 'landscape') + ' stream</div>' +
-            '<div class="onair-filename" title="Tell Gab this filename to identify the clip">' + clip + '</div>' +
+            (tagPills ? '<div class="onair-tags">' + tagPills + '</div>' : '') +
+            '<div class="onair-meta">' + (ago ? 'batch started ' + ago : '') + '</div>' +
+            '<div class="onair-filename" title="Filename — tell this to Gab to identify the clip">' + clip + '</div>' +
           '</div>';
       }
       function fetchOnAir() {
-        fetch('/api/now-playing')
-          .then(function(r) { return r.json(); })
-          .then(renderOnAir)
-          .catch(function() {});
+        fetch('/api/now-playing?stream=landscape').then(function(r){return r.json();}).then(function(d){renderOnAir('onair-landscape',d);}).catch(function(){});
+        fetch('/api/now-playing?stream=vertical').then(function(r){return r.json();}).then(function(d){renderOnAir('onair-vertical',d);}).catch(function(){});
       }
       fetchOnAir();
       setInterval(fetchOnAir, 12000);
