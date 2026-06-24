@@ -156,6 +156,19 @@ export default {
       const nkArticleMatch = nkPath.match(/^\/article\/([a-z0-9-]+)$/);
       if (nkArticleMatch) return nookieArticlePage(env, nkArticleMatch[1], '');
       if (nkPath === '/search') return nookieSearchPage(env, url.searchParams.get('q')?.trim() || '', '');
+      if (nkPath === '/about') return nookieAboutPage(env);
+      if (nkPath === '/is-it-just-me') {
+        if (request.method === 'POST') return nookieConfessionSubmit(env, request);
+        return nookieIsItJustMePage(env, url.searchParams.get('tag') || '');
+      }
+      if (nkPath === '/admin/submissions') {
+        if (request.method === 'POST') return nookieAdminAction(env, request);
+        return nookieAdminPage(env, url);
+      }
+      if (nkPath === '/api/newsletter') return nookieNewsletterSignup(env, request);
+      if (nkPath === '/world-issue') return siteIndex(env, nookieSite, '', 'world-issue', Math.max(1, parseInt(url.searchParams.get('page') || '1', 10)));
+      if (nkPath === '/nook-edit') return siteIndex(env, nookieSite, '', 'nook-edit', Math.max(1, parseInt(url.searchParams.get('page') || '1', 10)));
+      if (nkPath === '/the-brief') return siteIndex(env, nookieSite, '', 'the-brief', Math.max(1, parseInt(url.searchParams.get('page') || '1', 10)));
       if (nkPath === '/robots.txt') {
         return new Response(`User-agent: *\nAllow: /\n\nSitemap: https://thenookienook.com/sitemap.xml\n`, { headers: { 'content-type': 'text/plain' } });
       }
@@ -2101,7 +2114,7 @@ async function shortsHomepage(env) {
   let clips = [], landscapeId = 'u4y1ZSt3V5Q', verticalId = '', totalTagged = 0;
   try {
     const { results } = await env.DB.prepare(
-      "SELECT clip_name, stream, scene_desc, thumb_b64, ia_url, broadcast_ok, tags FROM clips WHERE broadcast_ok=1 ORDER BY tagged_at DESC LIMIT 80"
+      "SELECT clip_name, stream, scene_desc, thumb_url, ia_url, broadcast_ok, tags FROM clips WHERE broadcast_ok=1 AND thumb_url IS NOT NULL AND thumb_url != '' AND ia_url IS NOT NULL AND ia_url != '' ORDER BY thumb_url DESC, tagged_at DESC LIMIT 1000"
     ).all();
     clips = results || [];
     const cnt = await env.DB.prepare("SELECT COUNT(*) as n FROM clips").first();
@@ -2119,20 +2132,18 @@ async function shortsHomepage(env) {
     const label = activity && location ? `${activity} · ${location}` : activity || location || s.clip_name || '';
     const camera = t.camera && t.camera !== 'unknown' ? t.camera : '';
     const weather = t.weather && t.weather !== 'unknown' ? t.weather : '';
-    const hasThumb = !!s.thumb_b64;
-    const thumbSrc = hasThumb ? `/clip-thumb/${encodeURIComponent(s.clip_name)}` : '';
-    const iaUrl = esc(s.ia_url || '');
+    const thumbSrc = esc(s.thumb_url);
+    const iaUrl = esc(s.ia_url);
+    const isVertical = (s.stream || 'horizontal') !== 'horizontal';
+    const thumbClass = isVertical ? 'is-vertical' : 'is-horizontal';
     return `
-      <div class="clip-card" data-activity="${esc(activity)}" data-camera="${esc(camera)}" data-stream="${esc(s.stream||'')}" ${iaUrl ? `data-ia="${iaUrl}"` : ''} role="button" tabindex="0" title="${esc(s.scene_desc || label)}">
-        <div class="clip-thumb">
-          ${hasThumb
-            ? `<img src="${thumbSrc}" alt="${esc(label)}" loading="lazy" width="200" height="356">`
-            : `<div class="clip-no-thumb">${esc(activity || '…')}</div>`}
+      <div class="clip-card" data-activity="${esc(activity)}" data-camera="${esc(camera)}" data-stream="${esc(s.stream||'')}" data-ia="${iaUrl}" data-vertical="${isVertical}" role="button" tabindex="0" title="${esc(s.scene_desc || label)}">
+        <div class="clip-thumb ${thumbClass}">
+          <img src="${thumbSrc}" alt="${esc(label)}" loading="lazy">
           <div class="clip-overlay">
             <span class="clip-label">${esc(label)}</span>
             ${camera ? `<span class="clip-meta">${esc(camera)}${weather ? ' · ' + esc(weather) : ''}</span>` : ''}
           </div>
-          ${!iaUrl ? `<div class="clip-pending" title="Uploading to IA…">⏳</div>` : ''}
         </div>
       </div>`;
   };
@@ -2144,7 +2155,6 @@ async function shortsHomepage(env) {
       .hp-section-head { display: flex; align-items: center; gap: 10px; margin-bottom: 16px; }
       .hp-label { font-size: 10px; font-weight: 700; letter-spacing: 0.18em; text-transform: uppercase; color: #fff; padding: 3px 9px; border-radius: 3px; }
       .hp-label.live { background: #e03; animation: pulse-dot 2s infinite; }
-      .hp-label.onair { background: #555; }
       .hp-label.clips { background: var(--accent); }
       @keyframes pulse-dot { 0%,100%{opacity:1} 50%{opacity:.5} }
       .hp-title { font-family: 'Playfair Display', Georgia, serif; font-size: 18px; font-weight: 700; color: var(--ink); }
@@ -2158,40 +2168,23 @@ async function shortsHomepage(env) {
       .live-link-label { font-weight: 600; font-size: 14px; color: var(--ink); flex: 1; }
       .live-link-arrow { font-size: 12px; color: var(--accent); white-space: nowrap; }
 
-      /* ── Now on air ── */
-      .onair-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
-      @media (max-width: 600px) { .onair-grid { grid-template-columns: 1fr; } }
-      .onair-stream-label { font-size: 10px; font-weight: 700; letter-spacing: 0.15em; text-transform: uppercase; color: var(--ink-light); margin-bottom: 6px; }
-      .onair-card { display: flex; gap: 14px; background: var(--paper-mid); border-radius: 10px; padding: 14px; align-items: flex-start; min-height: 80px; }
-      .onair-thumb { width: 54px; height: 96px; border-radius: 6px; overflow: hidden; background: var(--paper-dark); flex-shrink: 0; }
-      .onair-thumb img { width: 100%; height: 100%; object-fit: cover; display: block; }
-      .onair-thumb-empty { width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; color: var(--ink-light); font-size: 20px; }
-      .onair-body { flex: 1; min-width: 0; }
-      .onair-scene { font-family: 'Source Serif 4', Georgia, serif; font-size: 15px; font-weight: 400; color: var(--ink); line-height: 1.45; margin-bottom: 8px; }
-      .onair-scene em { font-style: italic; color: var(--ink-mid); }
-      .onair-tags { display: flex; flex-wrap: wrap; gap: 5px; margin-bottom: 8px; }
-      .onair-tag { font-size: 11px; color: var(--ink-mid); background: var(--paper-dark); border-radius: 20px; padding: 2px 10px; }
-      .onair-meta { font-size: 11px; color: var(--ink-light); }
-      .onair-filename { font-family: monospace; font-size: 11px; color: var(--ink-light); background: var(--paper-dark); padding: 1px 6px; border-radius: 3px; display: inline-block; margin-top: 4px; cursor: text; user-select: all; }
-      .onair-empty { color: var(--ink-light); font-size: 14px; padding: 8px 0; }
-      .refresh-dot { display: inline-block; width: 7px; height: 7px; border-radius: 50%; background: #3c3; margin-right: 5px; vertical-align: middle; }
-
-      /* ── Clips grid ── */
-      .clips-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap: 8px; padding-bottom: 48px; }
-      @media (min-width: 640px)  { .clips-grid { grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 12px; } }
-      @media (min-width: 1024px) { .clips-grid { grid-template-columns: repeat(auto-fill, minmax(165px, 1fr)); gap: 14px; } }
-      .clip-card { display: block; border-radius: 8px; overflow: hidden; background: var(--paper-mid); cursor: pointer; transition: transform 0.2s, box-shadow 0.2s; }
-      .clip-card:hover { transform: scale(1.03); box-shadow: 0 8px 28px rgba(0,0,0,0.25); }
-      .clip-thumb { position: relative; aspect-ratio: 9/16; overflow: hidden; }
+      /* ── Feed ── */
+      .feed { columns: 2; column-gap: 8px; padding-bottom: 48px; }
+      @media (min-width: 540px)  { .feed { columns: 3; column-gap: 10px; } }
+      @media (min-width: 800px)  { .feed { columns: 4; column-gap: 12px; } }
+      @media (min-width: 1100px) { .feed { columns: 5; column-gap: 14px; } }
+      .clip-card { break-inside: avoid; display: block; border-radius: 10px; overflow: hidden; background: var(--paper-mid); cursor: pointer; margin-bottom: 8px; transition: transform 0.2s, box-shadow 0.2s; }
+      @media (min-width: 540px) { .clip-card { margin-bottom: 10px; } }
+      @media (min-width: 800px) { .clip-card { margin-bottom: 12px; } }
+      .clip-card:hover { transform: scale(1.02); box-shadow: 0 8px 28px rgba(0,0,0,0.35); }
+      .clip-thumb { position: relative; overflow: hidden; }
+      .clip-thumb.is-vertical  { aspect-ratio: 9/16; }
+      .clip-thumb.is-horizontal { aspect-ratio: 16/9; }
       .clip-thumb img { width: 100%; height: 100%; object-fit: cover; display: block; transition: transform 0.3s; }
       .clip-card:hover .clip-thumb img { transform: scale(1.05); }
-      .clip-play { position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%); width: 40px; height: 40px; background: rgba(0,0,0,0.55); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: #fff; font-size: 14px; opacity: 0; transition: opacity 0.2s; padding-left: 3px; }
-      .clip-card:hover .clip-play { opacity: 1; }
-      .clip-no-thumb { width:100%; height:100%; display:flex; align-items:center; justify-content:center; background:var(--paper-dark); color:var(--ink-light); font-size:11px; padding:8px; text-align:center; line-height:1.3; }
-      .clip-pending { position:absolute; top:6px; right:6px; font-size:12px; opacity:0.7; }
-      .clip-overlay { position: absolute; bottom: 0; left: 0; right: 0; background: linear-gradient(transparent, rgba(0,0,0,0.75)); padding: 20px 8px 8px; }
+      .clip-overlay { position: absolute; bottom: 0; left: 0; right: 0; background: linear-gradient(transparent, rgba(0,0,0,0.8)); padding: 24px 10px 10px; }
       .clip-label { display: block; font-size: 11px; font-weight: 600; color: #fff; line-height: 1.3; }
-      .clip-meta { display: block; font-size: 10px; color: rgba(255,255,255,0.65); margin-top: 2px; }
+      .clip-meta { display: block; font-size: 10px; color: rgba(255,255,255,0.6); margin-top: 2px; }
 
       /* ── Filters ── */
       .filter-bar { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 14px; }
@@ -2199,10 +2192,11 @@ async function shortsHomepage(env) {
       .filter-btn:hover, .filter-btn.active { background: var(--accent); color: #fff; border-color: var(--accent); }
 
       /* ── Modal ── */
-      .yt-modal { display: none; position: fixed; inset: 0; z-index: 1000; background: rgba(0,0,0,0.88); align-items: center; justify-content: center; }
+      .yt-modal { display: none; position: fixed; inset: 0; z-index: 1000; background: rgba(0,0,0,0.92); align-items: center; justify-content: center; }
       .yt-modal.open { display: flex; }
-      .yt-modal-inner { position: relative; width: min(780px, 95vw); aspect-ratio: 16/9; background: #000; border-radius: 12px; overflow: hidden; box-shadow: 0 24px 80px rgba(0,0,0,0.6); }
-      .yt-modal-inner iframe { width: 100%; height: 100%; border: none; }
+      .yt-modal-inner { position: relative; background: #000; border-radius: 12px; overflow: hidden; box-shadow: 0 24px 80px rgba(0,0,0,0.6); max-width: 95vw; max-height: 92vh; }
+      .yt-modal-inner.is-vertical  { width: min(400px, 95vw); aspect-ratio: 9/16; }
+      .yt-modal-inner.is-horizontal { width: min(900px, 95vw); aspect-ratio: 16/9; }
       .yt-modal-close { position: absolute; top: -40px; right: 0; background: none; border: none; color: #fff; font-size: 28px; cursor: pointer; opacity: 0.8; line-height: 1; }
       .yt-modal-close:hover { opacity: 1; }
     </style>
@@ -2230,25 +2224,6 @@ async function shortsHomepage(env) {
       </div>
     </div>
 
-    <!-- ── NOW ON AIR ── -->
-    <div class="hp-section">
-      <div class="hp-section-head">
-        <span class="hp-label onair">On Air</span>
-        <span class="hp-title">Now Playing</span>
-        <span class="hp-count"><span class="refresh-dot"></span>updates every 12s</span>
-      </div>
-      <div class="onair-grid">
-        <div>
-          <div class="onair-stream-label">Landscape</div>
-          <div id="onair-landscape" class="onair-card"><div class="onair-empty">Loading…</div></div>
-        </div>
-        <div>
-          <div class="onair-stream-label">Vertical</div>
-          <div id="onair-vertical" class="onair-card"><div class="onair-empty">Loading…</div></div>
-        </div>
-      </div>
-    </div>
-
     <!-- ── CLIPS LIBRARY ── -->
     <div class="hp-section" style="border-bottom:none">
       <div class="hp-section-head">
@@ -2265,7 +2240,7 @@ async function shortsHomepage(env) {
         <button class="filter-btn" data-filter="camera:gopro">GoPro</button>
         <button class="filter-btn" data-filter="camera:iphone">iPhone</button>
       </div>
-      <div class="clips-grid" id="clips-grid">${clips.map(clipCard).join('')}</div>`
+      <div class="feed" id="clips-grid">${clips.map(clipCard).join('')}</div>`
       : `<div style="padding:40px 0;text-align:center;color:var(--ink-light)">Tagging in progress… check back soon.</div>`}
     </div>
 
@@ -2284,12 +2259,16 @@ async function shortsHomepage(env) {
       var modal = document.getElementById('yt-modal');
       var video = document.getElementById('yt-modal-video');
       var info  = document.getElementById('yt-modal-info');
-      function openModal(iaUrl, label) {
-        video.src = iaUrl;
-        video.play().catch(function(){});
+      var modalInner = document.getElementById('yt-modal-inner');
+      function openModal(iaUrl, label, isVertical) {
         if (info) info.textContent = label || '';
+        modalInner.className = isVertical ? 'yt-modal-inner is-vertical' : 'yt-modal-inner is-horizontal';
         modal.classList.add('open');
         document.body.style.overflow = 'hidden';
+        video.src = '';
+        video.load();
+        video.src = iaUrl;
+        video.play().catch(function(){});
       }
       function closeModal() {
         modal.classList.remove('open');
@@ -2298,8 +2277,8 @@ async function shortsHomepage(env) {
         document.body.style.overflow = '';
       }
       document.querySelectorAll('.clip-card[data-ia]').forEach(function(c) {
-        c.addEventListener('click', function() { openModal(c.dataset.ia, c.title); });
-        c.addEventListener('keydown', function(e) { if (e.key==='Enter'||e.key===' ') openModal(c.dataset.ia, c.title); });
+        c.addEventListener('click', function() { openModal(c.dataset.ia, c.title, c.dataset.vertical === 'true'); });
+        c.addEventListener('keydown', function(e) { if (e.key==='Enter'||e.key===' ') openModal(c.dataset.ia, c.title, c.dataset.vertical === 'true'); });
       });
       document.getElementById('yt-modal-close').addEventListener('click', closeModal);
       modal.addEventListener('click', function(e) { if (e.target===modal) closeModal(); });
@@ -2330,48 +2309,6 @@ async function shortsHomepage(env) {
         });
       }
 
-      // ── Now on air polling ──
-      function timeAgo(iso) {
-        if (!iso) return '';
-        var d = new Date(iso.replace(' ','T')+'Z');
-        var s = Math.round((Date.now() - d) / 1000);
-        if (s < 60)  return s + 's ago';
-        if (s < 3600) return Math.floor(s/60) + 'm ago';
-        return Math.floor(s/3600) + 'h ago';
-      }
-      function renderOnAir(elId, data) {
-        var el = document.getElementById(elId);
-        if (!el) return;
-        if (!data || !data.latest) {
-          el.innerHTML = '<div class="onair-empty">No data yet</div>';
-          return;
-        }
-        var clip = data.latest.clip_name || '';
-        var t = data.tags || {};
-        var thumb = data.thumb;
-        var thumbHtml = thumb
-          ? '<img src="data:image/jpeg;base64,' + thumb + '" alt="thumbnail">'
-          : '<div class="onair-thumb-empty">🎬</div>';
-        var scene = t.scene_desc || clip || 'Playing…';
-        var tagPills = [t.activity, t.location ? t.location.split(',')[0].trim() : '', t.camera, t.weather]
-          .filter(Boolean)
-          .map(function(x) { return '<span class="onair-tag">' + x + '</span>'; }).join('');
-        var ago = timeAgo(data.latest.played_at);
-        el.innerHTML =
-          '<div class="onair-thumb">' + thumbHtml + '</div>' +
-          '<div class="onair-body">' +
-            '<div class="onair-scene">' + scene + '</div>' +
-            (tagPills ? '<div class="onair-tags">' + tagPills + '</div>' : '') +
-            '<div class="onair-meta">' + (ago ? 'batch started ' + ago : '') + '</div>' +
-            '<div class="onair-filename" title="Filename — tell this to Gab to identify the clip">' + clip + '</div>' +
-          '</div>';
-      }
-      function fetchOnAir() {
-        fetch('/api/now-playing?stream=landscape').then(function(r){return r.json();}).then(function(d){renderOnAir('onair-landscape',d);}).catch(function(){});
-        fetch('/api/now-playing?stream=vertical').then(function(r){return r.json();}).then(function(d){renderOnAir('onair-vertical',d);}).catch(function(){});
-      }
-      fetchOnAir();
-      setInterval(fetchOnAir, 12000);
     })();
     </script>
   `;
@@ -3686,9 +3623,9 @@ async function siteSearchPage(env, site, q, basePath) {
     <div style="padding:32px 0 28px;border-bottom:3px double var(--nk-border)">
       <form method="GET" action="${basePath}/search" style="display:flex;gap:10px;max-width:680px;margin:0 auto">
         <input type="search" name="q" value="${esc(q)}" placeholder="Search ${esc(site.name)}…" autofocus
-          style="flex:1;font-family:'DM Sans',sans-serif;font-size:16px;padding:12px 16px;border:2px solid var(--nk-border);border-radius:4px;background:var(--nk-paper);color:var(--nk-ink);outline:none"
+          style="flex:1;font-family:var(--body-font);font-size:16px;padding:12px 16px;border:2px solid var(--nk-border);border-radius:4px;background:var(--nk-paper);color:var(--nk-ink);outline:none"
           onfocus="this.style.borderColor='var(--nk-accent)'" onblur="this.style.borderColor='var(--nk-border)'">
-        <button type="submit" style="font-family:'DM Sans',sans-serif;font-size:13px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;padding:12px 22px;background:var(--nk-ink);color:#fff;border:none;border-radius:4px;cursor:pointer">Search</button>
+        <button type="submit" style="font-family:var(--body-font);font-size:13px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;padding:12px 22px;background:var(--nk-ink);color:#fff;border:none;border-radius:4px;cursor:pointer">Search</button>
       </form>
     </div>`;
 
@@ -3703,7 +3640,7 @@ async function siteSearchPage(env, site, q, basePath) {
                ${a.image ? `<a href="${basePath}/article/${a.slug}" style="flex-shrink:0"><img src="${esc(a.image)}" alt="${esc(a.title)}" style="width:120px;height:68px;object-fit:cover;display:block" loading="lazy"></a>` : ''}
                <div style="flex:1;min-width:0">
                  <div style="margin-bottom:6px"><span style="font-size:9px;font-weight:700;letter-spacing:0.16em;text-transform:uppercase;color:#fff;background:${siteCatColor(site, a.category)};padding:2px 8px">${siteCatLabel(site, a.category)}</span></div>
-                 <a href="${basePath}/article/${a.slug}" style="font-family:'Playfair Display',Georgia,serif;font-size:18px;font-weight:700;line-height:1.3;color:var(--nk-ink);display:block;margin-bottom:5px">${esc(a.title)}</a>
+                 <a href="${basePath}/article/${a.slug}" style="font-family:var(--heading-font);font-size:18px;font-weight:700;line-height:1.3;color:var(--nk-ink);display:block;margin-bottom:5px">${esc(a.title)}</a>
                  ${(a.lede || a.description) ? `<p style="font-size:14px;color:var(--nk-ink-mid);line-height:1.5;margin-bottom:6px">${esc(a.lede || a.description)}</p>` : ''}
                  <span style="font-size:11px;color:var(--nk-ink-light)">${timeAgo(a.published_at)}</span>
                </div>
@@ -3739,10 +3676,436 @@ async function siteSitemapXml(env, site) {
 }
 
 // Thin nookie wrappers — kept so existing call sites in the router don't need changing
-function nookieIndex(env, basePath, category, page) { return siteIndex(env, nookieSite, basePath, category, page); }
+function nookieIndex(env, basePath, category, page) {
+  if (!category && (!page || page === 1)) return nookieHomepage(env);
+  return siteIndex(env, nookieSite, basePath, category, page);
+}
 function nookieArticlePage(env, slug, basePath) { return siteArticlePage(env, nookieSite, slug, basePath); }
 function nookieSearchPage(env, q, basePath) { return siteSearchPage(env, nookieSite, q, basePath); }
 function nookieSitemap(env) { return siteSitemapXml(env, nookieSite); }
+
+// ═══════════════════════════════════════════════════════════════
+// SECTION: Nookie Nook — Editorial Pages
+// ═══════════════════════════════════════════════════════════════
+
+async function nookieHomepage(env) {
+  const site = nookieSite;
+  const t = site.theme;
+
+  let spotlightArticle = null;
+  try {
+    spotlightArticle = await env.DB.prepare(
+      "SELECT slug,title,description,lede,category,published_at,image FROM news WHERE status='live' AND site='thenookienook' ORDER BY published_at DESC LIMIT 1"
+    ).first();
+  } catch (e) {}
+
+  let recentArticles = [];
+  try {
+    const r = await env.DB.prepare(
+      "SELECT slug,title,description,category,published_at,image FROM news WHERE status='live' AND site='thenookienook' ORDER BY published_at DESC LIMIT 6 OFFSET 1"
+    ).all();
+    recentArticles = r?.results || [];
+  } catch (e) {}
+
+  let confessionPreview = null;
+  try {
+    confessionPreview = await env.DB.prepare(
+      "SELECT submission_text FROM confessions WHERE status='published' ORDER BY RANDOM() LIMIT 1"
+    ).first();
+  } catch (e) {}
+
+  const heroSection = `
+    <section style="background:${t.accent};margin:0 -24px;padding:80px 24px;text-align:center">
+      <div style="max-width:720px;margin:0 auto">
+        <h1 style="font-family:var(--heading-font);font-size:clamp(32px,5vw,52px);font-weight:700;color:#fff;line-height:1.15;margin-bottom:20px">Question Everything.<br>Shame Nothing.</h1>
+        <p style="font-family:var(--serif-font);font-size:clamp(16px,2vw,20px);font-style:italic;color:${t.paper};line-height:1.6;margin-bottom:12px">The conversations we're not supposed to have.</p>
+        <p style="font-size:clamp(14px,1.5vw,17px);color:${t.inkLight};margin-bottom:32px;letter-spacing:0.02em">Your cozy corner for intimacy & exploration.</p>
+        <div style="display:flex;gap:16px;justify-content:center;flex-wrap:wrap">
+          <a href="#pillars" style="display:inline-block;background:${t.paper};color:${t.accent};font-family:var(--body-font);font-size:14px;font-weight:600;letter-spacing:0.06em;text-transform:uppercase;padding:14px 28px;border-radius:4px;transition:opacity 0.2s" onmouseover="this.style.opacity='0.9'" onmouseout="this.style.opacity='1'">Explore The Library &rarr;</a>
+          <a href="/is-it-just-me" style="display:inline-block;color:${t.paper};font-family:var(--body-font);font-size:14px;font-weight:500;padding:14px 20px;text-decoration:underline;text-underline-offset:4px">Submit anonymously &rarr;</a>
+        </div>
+      </div>
+    </section>`;
+
+  const pillarsSection = `
+    <section id="pillars" style="padding:48px 0;border-bottom:1px solid var(--border)">
+      <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:24px">
+        <a href="/world-issue" style="display:block;background:var(--paper-mid);border:1px solid var(--border);border-radius:8px;padding:28px 20px;text-align:center;transition:background 0.2s,color 0.2s" onmouseover="this.style.background='${t.accent}';this.style.color='#fff'" onmouseout="this.style.background='';this.style.color=''">
+          <div style="font-size:28px;margin-bottom:12px">&#9992;</div>
+          <div style="font-family:var(--body-font);font-size:11px;font-weight:700;letter-spacing:0.16em;text-transform:uppercase;color:${t.accent};margin-bottom:8px">The World Issue</div>
+          <p style="font-family:var(--serif-font);font-size:14px;line-height:1.6;color:var(--ink-mid)">Sex, dating, and intimacy around the world. Real stories from Ali's travels.</p>
+        </a>
+        <a href="/nook-edit" style="display:block;background:var(--paper-mid);border:1px solid var(--border);border-radius:8px;padding:28px 20px;text-align:center;transition:background 0.2s,color 0.2s" onmouseover="this.style.background='${t.accent}';this.style.color='#fff'" onmouseout="this.style.background='';this.style.color=''">
+          <div style="font-size:28px;margin-bottom:12px">&#9733;</div>
+          <div style="font-family:var(--body-font);font-size:11px;font-weight:700;letter-spacing:0.16em;text-transform:uppercase;color:${t.accent};margin-bottom:8px">The Nook Edit</div>
+          <p style="font-family:var(--serif-font);font-size:14px;line-height:1.6;color:var(--ink-mid)">Honest reviews and recommendations. Products, books, apps, hotels, podcasts, and more.</p>
+        </a>
+        <a href="/is-it-just-me" style="display:block;background:var(--paper-mid);border:1px solid var(--border);border-radius:8px;padding:28px 20px;text-align:center;transition:background 0.2s,color 0.2s" onmouseover="this.style.background='${t.accent}';this.style.color='#fff'" onmouseout="this.style.background='';this.style.color=''">
+          <div style="font-size:28px;margin-bottom:12px">&#128273;</div>
+          <div style="font-family:var(--body-font);font-size:11px;font-weight:700;letter-spacing:0.16em;text-transform:uppercase;color:${t.accent};margin-bottom:8px">Is It Just Me?</div>
+          <p style="font-family:var(--serif-font);font-size:14px;line-height:1.6;color:var(--ink-mid)">Anonymous confessions, questions, and real answers. Judgment-free and honest.</p>
+        </a>
+        <a href="/the-brief" style="display:block;background:var(--paper-mid);border:1px solid var(--border);border-radius:8px;padding:28px 20px;text-align:center;transition:background 0.2s,color 0.2s" onmouseover="this.style.background='${t.accent}';this.style.color='#fff'" onmouseout="this.style.background='';this.style.color=''">
+          <div style="font-size:28px;margin-bottom:12px">&#128214;</div>
+          <div style="font-family:var(--body-font);font-size:11px;font-weight:700;letter-spacing:0.16em;text-transform:uppercase;color:${t.accent};margin-bottom:8px">The Brief</div>
+          <p style="font-family:var(--serif-font);font-size:14px;line-height:1.6;color:var(--ink-mid)">Weekly sexual wellness news, research, and trends — curated and delivered.</p>
+        </a>
+      </div>
+    </section>`;
+
+  const spotlightSection = spotlightArticle ? `
+    <section style="padding:48px 0;border-bottom:1px solid var(--border)">
+      <div style="margin-bottom:20px">
+        <span style="font-family:var(--body-font);font-size:11px;font-weight:700;letter-spacing:0.16em;text-transform:uppercase;color:${t.accent}">Spotlight</span>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:32px;align-items:center">
+        ${spotlightArticle.image ? `<a href="/article/${spotlightArticle.slug}"><img src="${esc(spotlightArticle.image)}" alt="${esc(spotlightArticle.title)}" style="width:100%;aspect-ratio:16/9;object-fit:cover;display:block;border-radius:4px" loading="lazy"></a>` : '<div></div>'}
+        <div>
+          <span style="font-family:var(--body-font);font-size:10px;font-weight:700;letter-spacing:0.16em;text-transform:uppercase;color:#fff;background:${siteCatColor(site, spotlightArticle.category)};padding:3px 10px;display:inline-block;margin-bottom:14px">${siteCatLabel(site, spotlightArticle.category)}</span>
+          <a href="/article/${spotlightArticle.slug}" style="font-family:var(--heading-font);font-size:clamp(22px,2.5vw,32px);font-weight:700;line-height:1.25;color:var(--ink);display:block;margin-bottom:12px">${esc(spotlightArticle.title)}</a>
+          <p style="font-family:var(--serif-font);font-size:16px;font-style:italic;color:var(--ink-mid);line-height:1.6;margin-bottom:12px">${esc(spotlightArticle.lede || spotlightArticle.description || '')}</p>
+          <div style="font-family:var(--body-font);font-size:12px;color:var(--ink-light)">${timeAgo(spotlightArticle.published_at)}</div>
+          <a href="/article/${spotlightArticle.slug}" style="display:inline-block;margin-top:16px;font-family:var(--body-font);font-size:13px;font-weight:600;color:${t.accent}">Continue Reading &rarr;</a>
+        </div>
+      </div>
+    </section>` : '';
+
+  const latestSection = recentArticles.length ? `
+    <section style="padding:48px 0;border-bottom:1px solid var(--border)">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:24px">
+        <div>
+          <span style="font-family:var(--heading-font);font-size:22px;font-weight:700;color:var(--ink)">Latest</span>
+          <span style="font-family:var(--serif-font);font-size:14px;color:var(--ink-light);margin-left:12px">Recent stories</span>
+        </div>
+      </div>
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:24px">
+        ${recentArticles.map(a => `
+          <div>
+            ${a.image ? `<a href="/article/${a.slug}"><img src="${esc(a.image)}" alt="${esc(a.title)}" style="width:100%;aspect-ratio:16/9;object-fit:cover;display:block;border-radius:4px;margin-bottom:10px" loading="lazy"></a>` : ''}
+            <span style="font-size:10px;font-weight:700;letter-spacing:0.14em;text-transform:uppercase;color:#fff;background:${siteCatColor(site, a.category)};padding:2px 8px;display:inline-block;margin-bottom:8px">${siteCatLabel(site, a.category)}</span>
+            <a href="/article/${a.slug}" style="font-family:var(--heading-font);font-size:17px;font-weight:700;line-height:1.3;color:var(--ink);display:block;margin-bottom:6px">${esc(a.title)}</a>
+            <div style="font-size:11px;color:var(--ink-light)">${timeAgo(a.published_at)}</div>
+          </div>`).join('')}
+      </div>
+    </section>` : '';
+
+  const communitySection = `
+    <section style="background:${t.accent};margin:0 -24px;padding:60px 24px;text-align:center">
+      <div style="max-width:640px;margin:0 auto">
+        <p style="font-family:var(--serif-font);font-size:clamp(18px,2.5vw,24px);font-style:italic;color:${t.paper};line-height:1.5;margin-bottom:24px">${confessionPreview ? '"' + esc(confessionPreview.submission_text.slice(0, 120)) + (confessionPreview.submission_text.length > 120 ? '...' : '') + '"' : '"I\'ve been with my partner 8 years and I can\'t stop fantasising about..."'}</p>
+        <div style="font-family:var(--body-font);font-size:11px;font-weight:700;letter-spacing:0.16em;text-transform:uppercase;color:${t.paper};opacity:0.7;margin-bottom:10px">The Community</div>
+        <h2 style="font-family:var(--heading-font);font-size:clamp(22px,3vw,32px);font-weight:700;color:#fff;margin-bottom:12px">Anonymous "Is It Just Me?" Space.</h2>
+        <p style="font-family:var(--serif-font);font-size:16px;color:${t.paper};line-height:1.6;margin-bottom:28px">Read and be part of honest confessions from the community.</p>
+        <div style="display:flex;gap:16px;justify-content:center;flex-wrap:wrap">
+          <a href="/is-it-just-me" style="display:inline-block;background:${t.paper};color:${t.accent};font-family:var(--body-font);font-size:14px;font-weight:600;padding:12px 24px;border-radius:4px">Read More &rarr;</a>
+          <a href="/is-it-just-me#submit" style="color:${t.paper};font-family:var(--body-font);font-size:14px;padding:12px 16px;text-decoration:underline;text-underline-offset:4px">Submit yours anonymously &rarr;</a>
+        </div>
+      </div>
+    </section>`;
+
+  const newsletterSection = `
+    <section style="padding:60px 0;border-bottom:1px solid var(--border);text-align:center">
+      <div style="max-width:520px;margin:0 auto">
+        <div style="font-family:var(--body-font);font-size:11px;font-weight:700;letter-spacing:0.16em;text-transform:uppercase;color:${t.accent};margin-bottom:10px">The Brief</div>
+        <h2 style="font-family:var(--heading-font);font-size:clamp(22px,3vw,32px);font-weight:700;color:var(--ink);margin-bottom:12px">Want To Stay Curious?</h2>
+        <p style="font-family:var(--serif-font);font-size:15px;color:var(--ink-light);line-height:1.6;margin-bottom:24px">Get weekly updates on sexual wellness, new research, and the stories we're not supposed to be talking about.</p>
+        <form method="POST" action="/api/newsletter" style="display:flex;gap:10px;max-width:420px;margin:0 auto">
+          <input type="email" name="email" required placeholder="Your email" style="flex:1;font-family:var(--body-font);font-size:15px;padding:12px 16px;border:1px solid var(--border);border-radius:4px;background:var(--paper);color:var(--ink);outline:none" onfocus="this.style.borderColor='${t.accent}'" onblur="this.style.borderColor='var(--border)'">
+          <button type="submit" style="font-family:var(--body-font);font-size:13px;font-weight:700;letter-spacing:0.06em;text-transform:uppercase;padding:12px 22px;background:${t.accent};color:#fff;border:none;border-radius:4px;cursor:pointer">Subscribe</button>
+        </form>
+        <p style="font-family:var(--body-font);font-size:11px;color:var(--ink-light);margin-top:10px">No spam. Unsubscribe anytime.</p>
+      </div>
+    </section>`;
+
+  const aboutTeaser = `
+    <section style="padding:48px 0">
+      <div style="max-width:640px;margin:0 auto;text-align:center">
+        <h2 style="font-family:var(--heading-font);font-size:24px;font-weight:700;color:var(--ink);margin-bottom:14px">About The Nookie Nook</h2>
+        <p style="font-family:var(--serif-font);font-size:16px;color:var(--ink-mid);line-height:1.7;margin-bottom:20px">A shame-free, algorithm-free intimacy library. Built for curious people who want real conversations about sex, relationships, and desire — without the judgment.</p>
+        <p style="font-family:var(--serif-font);font-size:15px;font-style:italic;color:var(--ink-light);margin-bottom:20px">— Ali Imperiale, Founder</p>
+        <a href="/about" style="font-family:var(--body-font);font-size:13px;font-weight:600;color:${t.accent}">Read our story &rarr;</a>
+      </div>
+    </section>`;
+
+  const body = heroSection + pillarsSection + spotlightSection + latestSection + communitySection + newsletterSection + aboutTeaser;
+
+  return new Response(siteLayout({ site,
+    title: 'The Nookie Nook — Your shame-free intimacy library',
+    description: site.footerTagline,
+    canonical: 'https://thenookienook.com/',
+    activeNav: 'home',
+    basePath: '',
+    body,
+  }), { headers: { 'content-type': 'text/html;charset=UTF-8' } });
+}
+
+function nookieAboutPage(env) {
+  const site = nookieSite;
+  const t = site.theme;
+  const body = `
+    <article style="max-width:680px;margin:0 auto;padding:48px 24px 60px">
+      <h1 style="font-family:var(--heading-font);font-size:clamp(28px,4vw,42px);font-weight:700;color:var(--ink);margin-bottom:8px">About The Nookie Nook</h1>
+      <p style="font-family:var(--serif-font);font-size:18px;font-style:italic;color:var(--ink-light);margin-bottom:40px">A note from our founder</p>
+
+      <div style="font-family:var(--serif-font);font-size:17px;line-height:1.75;color:var(--ink-mid)">
+        <p style="margin-bottom:18px">Here's something that shouldn't still be true in 2025:</p>
+        <p style="margin-bottom:18px">Some of the most important conversations about human health, relationships, and intimacy are still being hidden. Shadowbanned. Flagged. Buried by algorithms that treat curiosity about sex like a violation.</p>
+        <p style="margin-bottom:18px">Meanwhile real people are building real products to help real people have better sex, deeper relationships, and healthier intimate lives — and nobody can find them.</p>
+        <p style="margin-bottom:18px"><strong style="color:var(--ink)">That's why The Nookie Nook exists.</strong></p>
+
+        <hr style="border:none;border-top:1px solid var(--border);margin:36px 0">
+
+        <p style="margin-bottom:18px">I'm Ali.</p>
+        <p style="margin-bottom:18px">I'm not a clinician. I'm not standing at a whiteboard with a pointer. I'm the curious friend who asks the question everyone in the room was already thinking but nobody wanted to say out loud. The one you call when you need an honest answer instead of a comfortable one. The one who will absolutely bring it up over drinks — or sparkling water, depending on the day.</p>
+        <p style="margin-bottom:18px">I've spent years exploring the world, studying sex education, and having the conversations most people quietly avoid. What I've learned — from research, from travel, from lived experience, from the thousands of questions people have trusted me with — is that almost everyone is carrying the same secret:</p>
+        <p style="margin-bottom:18px"><em>They wonder if they're the only one feeling what they're feeling.</em></p>
+        <p style="margin-bottom:18px">And the answer, almost every single time, is: you are so not alone. You're just missing a place where someone will actually tell you that.</p>
+
+        <hr style="border:none;border-top:1px solid var(--border);margin:36px 0">
+
+        <p style="margin-bottom:18px">Over the last decade an entire universe of sexual wellness information, products, services, and expertise has quietly flourished — and just as quietly been suppressed. Good information, hidden away. Brilliant creators, penalized for talking openly about human biology. Companies building genuinely life-changing products, unable to reach the people who need them most.</p>
+        <p style="margin-bottom:18px">It's absurd. And it needed to change.</p>
+        <p style="margin-bottom:18px"><strong style="color:var(--ink)">The Nookie Nook is a safe space — for everyone.</strong></p>
+        <p style="margin-bottom:18px">For the person Googling their most vulnerable question at midnight. For the sex therapist who can't run a straightforward Instagram ad without getting flagged. For the intimacy coach whose best content keeps disappearing. For the small brand that spent three years developing something that genuinely helps people, and can't find a platform willing to feature it honestly. For the boutique hotel designing entire experiences around connection and pleasure, with nowhere appropriate to talk about it.</p>
+        <p style="margin-bottom:18px">This is that platform.</p>
+
+        <hr style="border:none;border-top:1px solid var(--border);margin:36px 0">
+
+        <p style="margin-bottom:18px">We cover sexual wellness products, services, and companies with editorial honesty. We explore how cultures around the world approach pleasure and intimacy — because those perspectives are genuinely fascinating and wildly underreported. We publish the questions people are too afraid to ask out loud. We curate the research, the news, and the conversations happening in this space right now.</p>
+        <p style="margin-bottom:18px">And we do all of it without shame, without an algorithm deciding what we're allowed to say, and without ever talking down to you.</p>
+        <p style="margin-bottom:18px">I don't have all the answers. I'm exploring this alongside you — with curiosity, with compassion, and occasionally with a lot of humor — because some of this stuff is genuinely funny, and laughter is its own kind of relief.</p>
+
+        <hr style="border:none;border-top:1px solid var(--border);margin:36px 0">
+
+        <p style="margin-bottom:18px">A quick note on the name — because we love it and we want you to love it too.</p>
+        <p style="margin-bottom:18px">A nook is a cozy, tucked-away corner. The kind of place you go when you want to think, explore, or just feel safe for a minute. And nookie? Well. You know what nookie means.</p>
+        <p style="margin-bottom:18px">Put them together and you get a warm, curious, judgment-free space dedicated to one of the most human things there is — intimacy in all its forms.</p>
+        <p style="margin-bottom:18px">There's also something else. Think about a library. Floor-to-ceiling shelves. Quiet corners. All that accumulated human knowledge just waiting to be discovered. The Nookie Nook is that — a curated library of sexual wellness information, honest recommendations, and real conversations that are usually hidden, suppressed, or just impossible to find.</p>
+        <p style="margin-bottom:18px">And if we're being honest? Libraries have always had a little something extra going on in the back stacks. You know exactly what we mean.</p>
+
+        <hr style="border:none;border-top:1px solid var(--border);margin:36px 0">
+
+        <p style="margin-bottom:18px">You deserve honest information. You deserve to find the products and people doing real work in this space. And you deserve to ask your most vulnerable question without feeling like something is wrong with you for having it.</p>
+        <p style="margin-bottom:18px">Welcome to The Nookie Nook. Pull up a chair.</p>
+        <p style="font-family:var(--serif-font);font-size:18px;font-style:italic;color:var(--ink);margin-top:32px">— Ali</p>
+      </div>
+    </article>`;
+
+  return new Response(siteLayout({ site,
+    title: 'About | The Nookie Nook',
+    description: 'The Nookie Nook is a shame-free, algorithm-free intimacy library founded by Ali Imperiale.',
+    canonical: 'https://thenookienook.com/about',
+    activeNav: 'about',
+    basePath: '',
+    body,
+  }), { headers: { 'content-type': 'text/html;charset=UTF-8' } });
+}
+
+async function nookieIsItJustMePage(env, tagFilter) {
+  const site = nookieSite;
+  const t = site.theme;
+
+  let confessions = [];
+  try {
+    const q = tagFilter
+      ? env.DB.prepare("SELECT id,submission_text,response_text,tags,submitted_at FROM confessions WHERE status='published' AND tags LIKE ? ORDER BY submitted_at DESC LIMIT 50").bind(`%${tagFilter}%`)
+      : env.DB.prepare("SELECT id,submission_text,response_text,tags,submitted_at FROM confessions WHERE status='published' ORDER BY submitted_at DESC LIMIT 50");
+    const r = await q.all();
+    confessions = r?.results || [];
+  } catch (e) {}
+
+  const filterTags = ['All', 'Desire', 'Relationships', 'Body', 'Fantasy', 'Intimacy'];
+
+  const heroHtml = `
+    <section style="background:${t.accent};margin:0 -24px;padding:60px 24px;text-align:center">
+      <div style="max-width:640px;margin:0 auto">
+        <h1 style="font-family:var(--heading-font);font-size:clamp(28px,4vw,44px);font-weight:700;color:#fff;margin-bottom:14px">Is It Just Me?</h1>
+        <p style="font-family:var(--serif-font);font-size:clamp(15px,2vw,19px);font-style:italic;color:${t.paper};line-height:1.6">The questions you've been too afraid to ask out loud. Asked anonymously. Answered honestly.</p>
+        <p style="font-size:15px;font-style:italic;color:${t.inkLight};margin-top:12px">— Anonymous</p>
+      </div>
+    </section>`;
+
+  const formHtml = `
+    <section id="submit" style="padding:48px 0;border-bottom:1px solid var(--border)">
+      <div style="max-width:580px;margin:0 auto;text-align:center">
+        <p style="font-family:var(--serif-font);font-size:16px;color:var(--ink-mid);line-height:1.7;margin-bottom:24px">This is a safe place. No names. No judgment. No one will ever know it was you. Just say the thing you've been afraid to say.</p>
+        <form method="POST" action="/is-it-just-me">
+          <textarea name="confession" required rows="5" maxlength="2000" placeholder="Say the thing you've been afraid to say..." style="width:100%;font-family:var(--serif-font);font-size:16px;padding:16px;border:1px solid var(--border);border-radius:8px;background:var(--paper);color:var(--ink);resize:vertical;outline:none;line-height:1.6" onfocus="this.style.borderColor='${t.accent}'" onblur="this.style.borderColor='var(--border)'"></textarea>
+          <button type="submit" style="margin-top:14px;font-family:var(--body-font);font-size:14px;font-weight:600;padding:12px 28px;background:${t.accent};color:#fff;border:none;border-radius:4px;cursor:pointer">Leave it here &rarr;</button>
+        </form>
+      </div>
+    </section>`;
+
+  const filterHtml = `
+    <div style="display:flex;gap:8px;flex-wrap:wrap;padding:28px 0 0;justify-content:center">
+      ${filterTags.map(tag => {
+        const val = tag === 'All' ? '' : tag.toLowerCase();
+        const active = tagFilter === val;
+        return `<a href="/is-it-just-me${val ? '?tag=' + val : ''}" style="font-family:var(--body-font);font-size:12px;font-weight:600;padding:6px 16px;border-radius:20px;border:1px solid ${active ? t.accent : 'var(--border)'};background:${active ? t.accent : 'transparent'};color:${active ? '#fff' : 'var(--ink-mid)'};transition:all 0.15s">${tag}</a>`;
+      }).join('')}
+    </div>`;
+
+  const feedHtml = confessions.length ? `
+    <section style="padding:28px 0 48px">
+      ${filterHtml}
+      <div style="display:flex;flex-direction:column;gap:0;margin-top:24px">
+        ${confessions.map(c => {
+          const tags = c.tags ? JSON.parse(c.tags) : [];
+          return `
+          <div style="border-bottom:1px solid var(--border-light);padding:24px 0">
+            <p style="font-family:var(--serif-font);font-size:clamp(17px,2vw,20px);font-style:italic;color:var(--ink);line-height:1.6;margin-bottom:10px">"${esc(c.submission_text)}"</p>
+            <div style="font-family:var(--body-font);font-size:11px;color:var(--ink-light);margin-bottom:12px">Submitted anonymously</div>
+            ${c.response_text ? `<div style="background:var(--paper-mid);border-left:3px solid ${t.accent};border-radius:0 6px 6px 0;padding:14px 18px;margin-bottom:10px"><p style="font-family:var(--serif-font);font-size:15px;color:var(--ink-mid);line-height:1.6">${esc(c.response_text)}</p><div style="font-family:var(--body-font);font-size:11px;color:var(--ink-light);margin-top:8px">— Ali</div></div>` : ''}
+            ${tags.length ? `<div style="display:flex;gap:6px;flex-wrap:wrap">${tags.map(tag => `<span style="font-size:11px;color:var(--ink-light);border:1px solid var(--border);border-radius:12px;padding:2px 10px">${esc(tag)}</span>`).join('')}</div>` : ''}
+          </div>`;
+        }).join('')}
+      </div>
+    </section>` : `
+    <section style="padding:48px 0;text-align:center">
+      ${filterHtml}
+      <p style="font-family:var(--serif-font);font-size:16px;color:var(--ink-light);margin-top:32px">No published confessions yet. Be the first.</p>
+    </section>`;
+
+  const body = heroHtml + formHtml + feedHtml;
+  return new Response(siteLayout({ site,
+    title: 'Is It Just Me? — Anonymous Confessions | The Nookie Nook',
+    description: 'Anonymous confessions, questions, and real answers. Judgment-free and honest.',
+    canonical: 'https://thenookienook.com/is-it-just-me',
+    activeNav: 'is-it-just-me',
+    basePath: '',
+    body,
+  }), { headers: { 'content-type': 'text/html;charset=UTF-8' } });
+}
+
+async function nookieConfessionSubmit(env, request) {
+  const site = nookieSite;
+  try {
+    const formData = await request.formData();
+    const text = (formData.get('confession') || '').toString().trim();
+    if (!text || text.length < 5 || text.length > 2000) {
+      return new Response(siteLayout({ site,
+        title: 'Submission Error | The Nookie Nook',
+        description: 'Please try again.',
+        canonical: 'https://thenookienook.com/is-it-just-me',
+        basePath: '',
+        body: '<div style="max-width:580px;margin:0 auto;padding:60px 24px;text-align:center"><h1 style="font-family:var(--heading-font);font-size:24px;color:var(--ink);margin-bottom:14px">Hmm, that didn\'t work.</h1><p style="font-family:var(--serif-font);font-size:16px;color:var(--ink-mid);margin-bottom:20px">Your submission needs to be between 5 and 2000 characters.</p><a href="/is-it-just-me" style="color:var(--accent);font-size:14px">Try again &rarr;</a></div>',
+      }), { status: 400, headers: { 'content-type': 'text/html;charset=UTF-8' } });
+    }
+    await env.DB.prepare("INSERT INTO confessions (submission_text) VALUES (?)").bind(text).run();
+  } catch (e) {
+    console.log('Confession submit error:', e.message);
+  }
+
+  return new Response(siteLayout({ site,
+    title: 'Submitted | The Nookie Nook',
+    description: 'Thank you for your submission.',
+    canonical: 'https://thenookienook.com/is-it-just-me',
+    basePath: '',
+    body: `<div style="max-width:580px;margin:0 auto;padding:80px 24px;text-align:center">
+      <h1 style="font-family:var(--heading-font);font-size:clamp(24px,3vw,32px);color:var(--ink);margin-bottom:16px">We received it.</h1>
+      <p style="font-family:var(--serif-font);font-size:18px;color:var(--ink-mid);line-height:1.7;margin-bottom:24px">You are so not alone. And you are probably not as unusual as you think.</p>
+      <a href="/is-it-just-me" style="font-family:var(--body-font);font-size:14px;font-weight:600;color:${site.theme.accent}">Back to Is It Just Me? &rarr;</a>
+    </div>`,
+  }), { headers: { 'content-type': 'text/html;charset=UTF-8' } });
+}
+
+async function nookieAdminPage(env, url) {
+  const pw = url.searchParams.get('pw') || '';
+  const expectedPw = env.ADMIN_PASSWORD || 'nookieadmin2026';
+  if (pw !== expectedPw) {
+    return new Response('<html><body style="font-family:system-ui;padding:60px;text-align:center"><h1>Admin Login</h1><form><input name="pw" type="password" placeholder="Password" style="padding:10px;font-size:16px;border:1px solid #ccc;border-radius:4px"><button type="submit" style="padding:10px 20px;margin-left:8px;background:#470D0B;color:#fff;border:none;border-radius:4px;cursor:pointer">Login</button></form></body></html>', { status: 401, headers: { 'content-type': 'text/html;charset=UTF-8' } });
+  }
+
+  const statusFilter = url.searchParams.get('status') || 'pending';
+  let confessions = [];
+  try {
+    const r = await env.DB.prepare(
+      "SELECT id,submission_text,submitted_at,status,response_text,tags FROM confessions WHERE status=? ORDER BY submitted_at DESC LIMIT 100"
+    ).bind(statusFilter).all();
+    confessions = r?.results || [];
+  } catch (e) {}
+
+  const rows = confessions.map(c => `
+    <div style="border:1px solid #ddd;border-radius:8px;padding:16px;margin-bottom:12px;background:#fff">
+      <p style="font-style:italic;font-size:15px;line-height:1.6;margin-bottom:10px">"${esc(c.submission_text)}"</p>
+      <div style="font-size:12px;color:#888;margin-bottom:12px">Submitted ${c.submitted_at} · Status: <strong>${c.status}</strong></div>
+      <form method="POST" action="/admin/submissions?pw=${esc(pw)}" style="display:flex;flex-direction:column;gap:8px">
+        <input type="hidden" name="id" value="${c.id}">
+        <textarea name="response" rows="2" placeholder="Ali's response..." style="font-size:14px;padding:10px;border:1px solid #ddd;border-radius:4px;resize:vertical">${esc(c.response_text || '')}</textarea>
+        <input name="tags" placeholder="Tags (comma separated)" value="${esc(c.tags ? JSON.parse(c.tags).join(', ') : '')}" style="font-size:14px;padding:8px;border:1px solid #ddd;border-radius:4px">
+        <div style="display:flex;gap:8px">
+          <button name="action" value="publish" style="padding:8px 16px;background:#470D0B;color:#fff;border:none;border-radius:4px;cursor:pointer;font-size:13px">Publish</button>
+          <button name="action" value="save" style="padding:8px 16px;background:#927F6A;color:#fff;border:none;border-radius:4px;cursor:pointer;font-size:13px">Save Draft</button>
+          <button name="action" value="reject" style="padding:8px 16px;background:#ccc;color:#333;border:none;border-radius:4px;cursor:pointer;font-size:13px">Reject</button>
+        </div>
+      </form>
+    </div>`).join('');
+
+  const html = `<!DOCTYPE html><html><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Submissions Admin</title></head>
+  <body style="font-family:system-ui;max-width:800px;margin:0 auto;padding:24px;background:#f5f5f0">
+    <h1 style="font-size:24px;margin-bottom:8px">Is It Just Me? — Submissions</h1>
+    <div style="display:flex;gap:8px;margin-bottom:24px">
+      <a href="/admin/submissions?pw=${esc(pw)}&status=pending" style="padding:6px 14px;border-radius:4px;background:${statusFilter === 'pending' ? '#470D0B' : '#ddd'};color:${statusFilter === 'pending' ? '#fff' : '#333'};font-size:13px">Pending</a>
+      <a href="/admin/submissions?pw=${esc(pw)}&status=published" style="padding:6px 14px;border-radius:4px;background:${statusFilter === 'published' ? '#470D0B' : '#ddd'};color:${statusFilter === 'published' ? '#fff' : '#333'};font-size:13px">Published</a>
+      <a href="/admin/submissions?pw=${esc(pw)}&status=rejected" style="padding:6px 14px;border-radius:4px;background:${statusFilter === 'rejected' ? '#470D0B' : '#ddd'};color:${statusFilter === 'rejected' ? '#fff' : '#333'};font-size:13px">Rejected</a>
+    </div>
+    ${confessions.length ? rows : '<p style="color:#888;text-align:center;padding:40px">No submissions with status "' + esc(statusFilter) + '".</p>'}
+  </body></html>`;
+  return new Response(html, { headers: { 'content-type': 'text/html;charset=UTF-8' } });
+}
+
+async function nookieAdminAction(env, request) {
+  const url = new URL(request.url);
+  const pw = url.searchParams.get('pw') || '';
+  const expectedPw = env.ADMIN_PASSWORD || 'nookieadmin2026';
+  if (pw !== expectedPw) return new Response('Unauthorized', { status: 401 });
+
+  try {
+    const form = await request.formData();
+    const id = form.get('id');
+    const action = form.get('action');
+    const response = (form.get('response') || '').toString().trim();
+    const tagsRaw = (form.get('tags') || '').toString().trim();
+    const tags = tagsRaw ? JSON.stringify(tagsRaw.split(',').map(t => t.trim()).filter(Boolean)) : null;
+
+    if (action === 'publish') {
+      await env.DB.prepare("UPDATE confessions SET status='published', response_text=?, tags=? WHERE id=?").bind(response || null, tags, id).run();
+    } else if (action === 'save') {
+      await env.DB.prepare("UPDATE confessions SET response_text=?, tags=? WHERE id=?").bind(response || null, tags, id).run();
+    } else if (action === 'reject') {
+      await env.DB.prepare("UPDATE confessions SET status='rejected' WHERE id=?").bind(id).run();
+    }
+  } catch (e) {
+    console.log('Admin action error:', e.message);
+  }
+
+  return Response.redirect(`${url.origin}/admin/submissions?pw=${pw}&status=pending`, 303);
+}
+
+async function nookieNewsletterSignup(env, request) {
+  if (request.method !== 'POST') return new Response('Method not allowed', { status: 405 });
+  const site = nookieSite;
+  try {
+    const form = await request.formData();
+    const email = (form.get('email') || '').toString().trim().toLowerCase();
+    if (!email || !email.includes('@')) throw new Error('Invalid email');
+    await env.DB.prepare("INSERT OR IGNORE INTO newsletter_subscribers (email) VALUES (?)").bind(email).run();
+  } catch (e) {
+    console.log('Newsletter signup error:', e.message);
+  }
+
+  return new Response(siteLayout({ site,
+    title: 'Subscribed | The Nookie Nook',
+    description: 'You are subscribed to The Brief.',
+    canonical: 'https://thenookienook.com/',
+    basePath: '',
+    body: `<div style="max-width:520px;margin:0 auto;padding:80px 24px;text-align:center">
+      <h1 style="font-family:var(--heading-font);font-size:28px;color:var(--ink);margin-bottom:14px">You're in.</h1>
+      <p style="font-family:var(--serif-font);font-size:17px;color:var(--ink-mid);line-height:1.7;margin-bottom:24px">Welcome to The Brief. We'll keep it curious, honest, and never spammy.</p>
+      <a href="/" style="font-family:var(--body-font);font-size:14px;font-weight:600;color:${site.theme.accent}">Back to The Nookie Nook &rarr;</a>
+    </div>`,
+  }), { headers: { 'content-type': 'text/html;charset=UTF-8' } });
+}
 
 
 // ── Public footage page (/footage/[slug]) ─────────────────────────────────────

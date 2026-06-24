@@ -156,6 +156,10 @@ Rules:
       accentDark:  '#9a0d23',
       border:      '#d4cfc5',
       borderLight: '#e8e4db',
+      headingFont: "'Playfair Display', Georgia, serif",
+      bodyFont:    "'DM Sans', system-ui, sans-serif",
+      serifFont:   "'Source Serif 4', Georgia, serif",
+      googleFontsUrl: 'https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700;900&family=Source+Serif+4:ital,opsz,wght@0,8..60,300;0,8..60,400;0,8..60,600;1,8..60,400&family=DM+Sans:wght@300;400;500;600;700&display=swap',
     },
 
     categoryColors: {
@@ -192,9 +196,9 @@ Rules:
     id: 'thenookienook',
     dbSiteValue: 'thenookienook',
     name: 'The Nookie Nook',
-    eyebrow: 'Sex Education & Sexual Health',
-    tagline: 'Evidence-based sex ed for everyone',
-    footerTagline: 'Evidence-based sex education for curious adults.',
+    eyebrow: 'The Library of Intimacy',
+    tagline: 'Your shame-free intimacy library',
+    footerTagline: 'The Nookie Nook is a curated sexual wellness platform covering honest reviews, anonymous confessions, global sex culture, and the latest research. No judgment. No algorithm.',
     footerCredit: 'For adults 18+ · Part of the gab.ae network',
 
     // ── Routing ──
@@ -343,45 +347,44 @@ Rules:
     takeawaysLabel: 'Key Takeaways',
     disclaimer: '📚 Educational content for informational purposes. Consult a healthcare provider for medical advice.',
 
-    // ── Theme ──
+    // ── Theme (brand identity: burgundy / ivory / charcoal / taupe) ──
     theme: {
-      ink:         '#1e0a2e',
-      inkMid:      '#4a3568',
-      inkLight:    '#9080b5',
-      paper:       '#fdf8ff',
-      paperMid:    '#f5eeff',
-      paperDark:   '#ead9ff',
-      accent:      '#c44ad9',
-      accentDark:  '#9b35b5',
-      border:      '#d5c8e8',
-      borderLight: '#e8d9ff',
+      ink:         '#090909',
+      inkMid:      '#3a3530',
+      inkLight:    '#927F6A',
+      paper:       '#EDE9E5',
+      paperMid:    '#E3DED8',
+      paperDark:   '#D9D3CB',
+      accent:      '#470D0B',
+      accentDark:  '#350A08',
+      border:      '#C9C0B5',
+      borderLight: '#DDD7CF',
+      headingFont: "'Libre Baskerville', Georgia, serif",
+      bodyFont:    "'Plus Jakarta Sans', system-ui, sans-serif",
+      serifFont:   "'Plus Jakarta Sans', system-ui, sans-serif",
+      googleFontsUrl: 'https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap',
     },
 
     categoryColors: {
-      'sexual-health':      '#c44ad9',
-      'relationships':      '#e84393',
-      'lgbtq':              '#9b35b5',
-      'wellness':           '#7c3aed',
-      'education':          '#6366f1',
-      'research':           '#4f46e5',
-      'reproductive-health':'#d946a8',
-      'culture':            '#a855f7',
-      'mental-health':      '#8b5cf6',
-      'body-literacy':      '#c026d3',
+      'sexual-health':      '#470D0B',
+      'relationships':      '#8B3A3A',
+      'lgbtq':              '#6B4C3B',
+      'wellness':           '#5C6B4C',
+      'education':          '#3B4C6B',
+      'research':           '#4C3B6B',
+      'reproductive-health':'#8B4C3A',
+      'culture':            '#6B5C3B',
+      'mental-health':      '#3B5C6B',
+      'body-literacy':      '#6B3B4C',
     },
 
-    // ── Nav ──
+    // ── Nav (four pillars + about) ──
     navItems: [
-      { href: '/category/sexual-health',       label: 'Sexual Health' },
-      { href: '/category/relationships',        label: 'Relationships' },
-      { href: '/category/lgbtq',               label: 'LGBTQ+' },
-      { href: '/category/wellness',            label: 'Wellness' },
-      { href: '/category/education',           label: 'Education' },
-      { href: '/category/reproductive-health', label: 'Reproductive' },
-      { href: '/category/research',            label: 'Research' },
-      { href: '/category/culture',             label: 'Culture' },
-      { href: '/category/mental-health',       label: 'Mental Health' },
-      { href: '/category/body-literacy',       label: 'Body Literacy' },
+      { href: '/is-it-just-me', label: 'Is It Just Me?' },
+      { href: '/nook-edit',     label: 'The Nook Edit' },
+      { href: '/world-issue',   label: 'The World Issue' },
+      { href: '/the-brief',     label: 'The Brief' },
+      { href: '/about',         label: 'About' },
     ],
 
     // ── Meta ──
@@ -525,6 +528,10 @@ Rules:
       accentDark:  '#a07830',
       border:      '#cdc8b8',
       borderLight: '#e0ddd2',
+      headingFont: "'Playfair Display', Georgia, serif",
+      bodyFont:    "'DM Sans', system-ui, sans-serif",
+      serifFont:   "'Source Serif 4', Georgia, serif",
+      googleFontsUrl: 'https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700;900&family=Source+Serif+4:ital,opsz,wght@0,8..60,300;0,8..60,400;0,8..60,600;1,8..60,400&family=DM+Sans:wght@300;400;500;600;700&display=swap',
     },
 
     categoryColors: {
@@ -688,6 +695,10 @@ Rules:
       accentDark:  '#4f46e5',
       border:      '#c8c8da',
       borderLight: '#dcdcec',
+      headingFont: "'Playfair Display', Georgia, serif",
+      bodyFont:    "'DM Sans', system-ui, sans-serif",
+      serifFont:   "'Source Serif 4', Georgia, serif",
+      googleFontsUrl: 'https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700;900&family=Source+Serif+4:ital,opsz,wght@0,8..60,300;0,8..60,400;0,8..60,600;1,8..60,400&family=DM+Sans:wght@300;400;500;600;700&display=swap',
     },
 
     categoryColors: {
