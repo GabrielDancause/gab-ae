@@ -27,18 +27,22 @@ export async function upgradeTrigger(env) {
   const queued = [];
 
   for (const page of candidates) {
-    // 2. Check page_metrics for traffic
     let sessions = 0;
     try {
       const metric = await env.DB.prepare(
-        `SELECT ga_sessions FROM page_metrics
-         WHERE domain = 'gab.ae' AND path = ?`
+        `SELECT ga_sessions FROM page_metrics WHERE domain = 'gab.ae' AND path = ?`
       ).bind('/' + page.slug).first();
-
       sessions = metric?.ga_sessions || 0;
-    } catch (e) {
-      // page_metrics might not have this page yet — skip
-      continue;
+    } catch (e) { /* page_metrics table may not exist */ }
+
+    if (sessions === 0) {
+      try {
+        const vc = await env.DB.prepare(
+          `SELECT views_total FROM view_counts WHERE slug = ?`
+        ).bind(page.slug).first();
+        sessions = vc?.views_total || 0;
+        if (sessions > 0) console.log(`📊 Using view_counts fallback for ${page.slug}: ${sessions} views`);
+      } catch (e) { /* view_counts may not exist either */ }
     }
 
     // 3. If 2+ sessions, queue for upgrade

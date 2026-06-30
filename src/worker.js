@@ -669,7 +669,7 @@ Rules:
 
         let html;
         try {
-          html = await callLLM(apiKey, onDemandPrompt, { maxTokens: 8192, model: 'google/gemini-2.0-flash-001' });
+          html = await callLLM(apiKey, onDemandPrompt, { maxTokens: 8192 });
         } catch (e) {
           return new Response(JSON.stringify({ error: 'AI generation failed' }), { status: 500, headers: { 'content-type': 'application/json' } });
         }
