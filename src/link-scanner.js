@@ -31,7 +31,7 @@ export async function scanAndFixLinks(env) {
           let bestSlug=null,bestScore=0;
           for(const candidate of knownSlugs){const shared=brokenWords.filter(w=>candidate.split('-').includes(w)).length;if(shared>bestScore){bestScore=shared;bestSlug=candidate;}}
           if(bestScore>=2&&bestSlug){
-            newHtml=newHtml.replaceAll(`href="${rawHref}"`,`href="/${bestSlug}"`);
+            newHtml=newHtml.replace(new RegExp(`href="${rawHref.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')}"`, 'g'),`href="/${bestSlug}"`);
             pageModified=true;autoFixed++;
             if(existing){await db.prepare("UPDATE broken_links SET status='fixed',suggested_slug=?,fixed_at=datetime('now') WHERE id=?").bind(bestSlug,existing.id).run();}
             else{await db.prepare("INSERT INTO broken_links(source_slug,broken_href,suggested_slug,status,fixed_at)VALUES(?,?,?,'fixed',datetime('now'))").bind(page.slug,rawHref,bestSlug).run();}

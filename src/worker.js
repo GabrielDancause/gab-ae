@@ -2906,8 +2906,9 @@ async function healthPage(env, triggered = false) {
 }
 
 async function pruneOldViews(env) {
+  // 26h cutoff to guarantee full 24h rolling window with hour-bucket granularity
   try {
-    const cutoff = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString().slice(0, 13);
+    const cutoff = new Date(Date.now() - 26 * 60 * 60 * 1000).toISOString().slice(0, 13);
     await env.DB.prepare(`DELETE FROM view_events WHERE hour_bucket < ?`).bind(cutoff).run();
     console.log('🧹 Pruned old view events');
   } catch (e) {
