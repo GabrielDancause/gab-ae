@@ -122,7 +122,7 @@ export async function fixSeoIssues(env) {
 
   // ── 3. Fix descriptions missing (pages) ──
   const missingDescs = await env.DB.prepare(
-    `SELECT slug, title, html FROM pages WHERE status='live' AND (description IS NULL OR description='') LIMIT ?`
+    `SELECT slug, title, html, page_type FROM pages WHERE status='live' AND (description IS NULL OR description='') LIMIT ?`
   ).bind(BATCH_SIZE).all();
 
   for (const row of missingDescs?.results ?? []) {
@@ -131,9 +131,15 @@ export async function fixSeoIssues(env) {
       ? truncateAtWord(firstP, MAX_DESC)
       : '';
     if (!desc) {
-      // Fallback: use title + keyword-style description
       const baseTitle = (row.title || '').replace(/\s*\|\s*gab\.ae$/i, '');
-      desc = truncateAtWord(`${baseTitle}. Expert guide with practical tips, key insights, and answers to common questions.`, MAX_DESC);
+      const fallbacks = {
+        calculator: `Free online ${baseTitle} calculator. Get instant results with step-by-step breakdowns.`,
+        interactive_tool: `Free online ${baseTitle} tool. Fast, accurate, and easy to use.`,
+        comparison: `Side-by-side comparison of ${baseTitle}. See the key differences at a glance.`,
+        review: `Honest review of ${baseTitle}. Pros, cons, and who it's best for.`,
+        listicle: `Top picks for ${baseTitle}. Curated recommendations with key details.`,
+      };
+      desc = truncateAtWord(fallbacks[row.page_type] || `${baseTitle}. Expert guide with practical tips, key insights, and answers to common questions.`, MAX_DESC);
     }
     if (desc.length >= MIN_DESC) {
       await env.DB.prepare("UPDATE pages SET description = ?, updated_at = datetime('now') WHERE slug = ?")

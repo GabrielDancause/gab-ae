@@ -846,7 +846,8 @@ Rules:
 
     // /news — news index (moved off homepage)
     if (path === '/news') {
-      return newsIndex(env);
+      const page = Math.max(1, parseInt(url.searchParams.get('page') || '1', 10));
+      return newsIndex(env, null, page);
     }
 
     // News category
@@ -2637,10 +2638,17 @@ async function newsIndex(env, category = null, page = 1) {
     .map(([cat, arts]) => catSectionHtml(arts, cat))
     .join('');
 
-  const body = heroHtml + trendingHtml + categorySectionsHtml;
+  const newsPaginationHtml = totalPages > 1 ? `
+    <div style="display:flex;align-items:center;justify-content:center;gap:12px;padding:32px 0;border-top:1px solid var(--border-light);margin-top:20px">
+      ${page > 1 ? `<a href="/news?page=${page - 1}" style="padding:8px 16px;border:1px solid var(--border-light);border-radius:4px;color:var(--ink);text-decoration:none;font-size:14px">&larr; Newer</a>` : '<span style="padding:8px 16px;opacity:0.3;font-size:14px">&larr; Newer</span>'}
+      <span style="font-size:14px;color:var(--ink-light)">Page ${page} of ${totalPages}</span>
+      ${page < totalPages ? `<a href="/news?page=${page + 1}" style="padding:8px 16px;border:1px solid var(--border-light);border-radius:4px;color:var(--ink);text-decoration:none;font-size:14px">Older &rarr;</a>` : '<span style="padding:8px 16px;opacity:0.3;font-size:14px">Older &rarr;</span>'}
+    </div>` : '';
+
+  const body = heroHtml + trendingHtml + categorySectionsHtml + newsPaginationHtml;
 
   return new Response(siteLayout({ site: gabAeSite,
-    title: 'Latest News & Analysis | GAB.AE',
+    title: page > 1 ? `Latest News — Page ${page} | GAB.AE` : 'Latest News & Analysis | GAB.AE',
     description: 'US news and in-depth analysis across politics, business, tech, health, science, sports, and entertainment.',
     canonical: 'https://gab.ae/',
     activeNav: 'home',
