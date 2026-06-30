@@ -84,6 +84,25 @@ export function siteLayout({ site, title, description, canonical, schemaJson, bo
     .nav-logo { font-family: var(--heading-font); font-size: 17px; font-weight: 900; color: #fff; letter-spacing: -0.01em; padding: 14px 20px 14px 0; margin-right: 8px; border-right: 1px solid rgba(255,255,255,0.15); white-space: nowrap; flex-shrink: 0; }
     .nav-logo:hover { color: var(--accent); }
 
+    /* ── Nookie nav (#76) ── */
+    .nk-nav { background: var(--accent); position: sticky; top: 0; z-index: 100; height: 64px; transition: box-shadow 0.2s; }
+    .nk-nav.scrolled { box-shadow: 0 2px 12px rgba(0,0,0,0.3); }
+    .nk-nav-inner { max-width: 1280px; margin: 0 auto; padding: 0 24px; display: flex; align-items: center; justify-content: space-between; height: 100%; }
+    .nk-nav-logo { height: 32px; display: block; }
+    .nk-nav-logo img { height: 100%; width: auto; }
+    .nk-nav-links { display: flex; align-items: center; gap: 0; }
+    .nk-nav-link { font-family: var(--body-font); font-size: 13px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; color: rgba(255,255,255,0.75); padding: 20px 16px; white-space: nowrap; transition: color 0.2s; border-bottom: 2px solid transparent; }
+    .nk-nav-link:hover { color: #fff; }
+    .nk-nav-link.active { color: #fff; border-bottom-color: var(--ink-light); }
+    .nk-nav-social { display: flex; align-items: center; gap: 16px; }
+    .nk-nav-social a { color: rgba(255,255,255,0.6); transition: color 0.2s; }
+    .nk-nav-social a:hover { color: #fff; }
+    .nk-hamburger { display: none; background: none; border: none; cursor: pointer; padding: 8px; color: #fff; }
+    .nk-mobile-overlay { display: none; position: fixed; inset: 0; background: var(--accent); z-index: 200; flex-direction: column; align-items: center; justify-content: center; gap: 24px; }
+    .nk-mobile-overlay.open { display: flex; }
+    .nk-mobile-overlay a { font-family: var(--body-font); font-size: 28px; color: var(--paper); }
+    .nk-mobile-close { position: absolute; top: 20px; right: 20px; background: none; border: none; color: var(--paper); font-size: 32px; cursor: pointer; }
+
     /* ── Site container ── */
     .site-main { max-width: 1280px; margin: 0 auto; padding: 0 24px; }
 
@@ -259,6 +278,32 @@ export function siteLayout({ site, title, description, canonical, schemaJson, bo
     .footer-cat:hover { color: #fff; }
     .footer-bottom { border-top: 1px solid rgba(255,255,255,0.1); padding-top: 16px; font-size: 11.5px; color: rgba(255,255,255,0.25); }
 
+    /* ── Nookie footer (#83) ── */
+    .nk-footer { background: var(--ink); padding: 56px 24px 40px; margin-top: 0; }
+    .nk-footer-inner { max-width: 1100px; margin: 0 auto; display: grid; grid-template-columns: 1.2fr 1fr 1fr; gap: 48px; }
+    .nk-footer-brand img { height: 28px; margin-bottom: 14px; }
+    .nk-footer-brand p { font-family: var(--serif-font); font-size: 14px; color: rgba(255,255,255,0.5); line-height: 1.6; max-width: 320px; }
+    .nk-footer-col-title { font-family: var(--body-font); font-size: 11px; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; color: rgba(255,255,255,0.4); margin-bottom: 16px; }
+    .nk-footer-links { list-style: none; }
+    .nk-footer-links li { margin-bottom: 10px; }
+    .nk-footer-links a { font-family: var(--body-font); font-size: 14px; color: rgba(255,255,255,0.6); transition: color 0.2s; }
+    .nk-footer-links a:hover { color: #fff; }
+    .nk-footer-social { display: flex; gap: 16px; margin-top: 8px; }
+    .nk-footer-social a { color: rgba(255,255,255,0.4); font-size: 13px; transition: color 0.2s; }
+    .nk-footer-social a:hover { color: #fff; }
+    .nk-footer-bottom { max-width: 1100px; margin: 32px auto 0; padding: 20px 24px 0; border-top: 1px solid rgba(255,255,255,0.08); display: flex; justify-content: space-between; align-items: center; font-size: 12px; color: rgba(255,255,255,0.25); }
+    .nk-footer-bottom a { color: rgba(255,255,255,0.35); transition: color 0.2s; }
+    .nk-footer-bottom a:hover { color: rgba(255,255,255,0.7); }
+
+    /* ── Nookie section landing (#84) ── */
+    .nk-section-hero { position: relative; padding: 80px 24px 72px; text-align: center; overflow: hidden; }
+    .nk-section-hero::before { content: ''; position: absolute; inset: 0; background: linear-gradient(135deg, var(--accent) 0%, #2a0605 100%); opacity: 0.92; }
+    .nk-section-hero * { position: relative; z-index: 1; }
+    .nk-section-hero h1 { font-family: var(--heading-font); font-size: clamp(32px, 5vw, 52px); font-weight: 700; color: var(--paper); margin-bottom: 16px; }
+    .nk-section-hero p { font-family: var(--serif-font); font-size: 18px; color: rgba(255,255,255,0.7); max-width: 600px; margin: 0 auto; line-height: 1.6; }
+    .nk-section-accent { font-family: var(--script-font); font-size: clamp(24px, 4vw, 38px); color: var(--paper); opacity: 0.5; display: block; margin-bottom: 12px; }
+    .nk-section-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 28px; padding: 40px 0; }
+
     /* ── Seed/tool pages (gab.ae legacy) ── */
     .seed-page { max-width: 780px; margin: 0 auto; padding: 1.5rem 1rem; color: var(--ink); }
     .seed-page h1 { font-family: var(--heading-font); font-size: 1.75rem; font-weight: 800; color: var(--ink); margin-bottom: 0.5rem; line-height: 1.2; }
@@ -295,6 +340,9 @@ export function siteLayout({ site, title, description, canonical, schemaJson, bo
       .nk-article-wrapper { grid-template-columns: 1fr; }
       .nk-article-sidebar { display: none; }
       .nk-mobile-related { display: block; }
+      .nk-footer-inner { grid-template-columns: 1fr; gap: 32px; }
+      .nk-nav-links { display: none; }
+      .nk-hamburger { display: block; }
     }
     @media (max-width: 600px) {
       .three-col, .nk-three-col { grid-template-columns: 1fr; }
@@ -303,6 +351,7 @@ export function siteLayout({ site, title, description, canonical, schemaJson, bo
       .site-main { padding: 0 16px; }
       #pillars > div { grid-template-columns: 1fr !important; }
       .nk-read-next-grid { grid-template-columns: 1fr; }
+      .nk-section-grid { grid-template-columns: 1fr; }
     }
     @media print {
       .primary-nav, .site-footer { display: none; }
@@ -311,6 +360,29 @@ export function siteLayout({ site, title, description, canonical, schemaJson, bo
   </style>
 </head>
 <body>
+  ${site.id === 'thenookienook' ? `
+  <nav class="nk-nav" id="nk-nav">
+    <div class="nk-nav-inner">
+      <a href="${prefix}/" class="nk-nav-logo"><img src="/assets/logo-white.png" alt="${esc(site.name)}"></a>
+      <div class="nk-nav-links">
+        ${site.navItems.map(item => `<a href="${prefix + item.href}" class="nk-nav-link">${esc(item.label)}</a>`).join('\n        ')}
+      </div>
+      <div class="nk-nav-social">
+        <a href="https://www.instagram.com/thenookienook" target="_blank" rel="noopener" aria-label="Instagram">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="5"/><circle cx="17.5" cy="6.5" r="1.5" fill="currentColor" stroke="none"/></svg>
+        </a>
+        <button class="nk-hamburger" onclick="document.getElementById('nk-mobile-menu').classList.add('open')" aria-label="Menu">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+        </button>
+      </div>
+    </div>
+  </nav>
+  <div class="nk-mobile-overlay" id="nk-mobile-menu">
+    <button class="nk-mobile-close" onclick="document.getElementById('nk-mobile-menu').classList.remove('open')" aria-label="Close">&times;</button>
+    <a href="${prefix}/" onclick="document.getElementById('nk-mobile-menu').classList.remove('open')">Home</a>
+    ${site.navItems.map(item => `<a href="${prefix + item.href}" onclick="document.getElementById('nk-mobile-menu').classList.remove('open')">${esc(item.label)}</a>`).join('\n    ')}
+  </div>
+  ` : `
   <header class="masthead"${site.hideMasthead ? ' style="display:none"' : ''}>
     <div class="masthead-eyebrow">${esc(site.eyebrow)}</div>
     <a href="${prefix}/" class="masthead-logo">${esc(site.name)}</a>
@@ -323,11 +395,43 @@ export function siteLayout({ site, title, description, canonical, schemaJson, bo
       ${site.navItems.map(item => navItem(prefix + item.href, item.label)).join('\n      ')}
     </div>
   </nav>
+  `}
 
-  <main class="site-main">
+  <main class="${site.id === 'thenookienook' ? '' : 'site-main'}">
     ${body}
   </main>
 
+  ${site.id === 'thenookienook' ? `
+  <footer class="nk-footer">
+    <div class="nk-footer-inner">
+      <div class="nk-footer-brand">
+        <img src="/assets/logo-white.png" alt="${esc(site.name)}">
+        <p>Your shame-free intimacy library. Honest reviews, anonymous confessions, global sex culture, and the latest research.</p>
+        <div class="nk-footer-social" style="margin-top:16px">
+          <a href="https://www.instagram.com/thenookienook" target="_blank" rel="noopener">Instagram</a>
+        </div>
+      </div>
+      <div>
+        <div class="nk-footer-col-title">Explore</div>
+        <ul class="nk-footer-links">
+          ${site.navItems.map(item => `<li><a href="${prefix + item.href}">${esc(item.label)}</a></li>`).join('\n          ')}
+        </ul>
+      </div>
+      <div>
+        <div class="nk-footer-col-title">Company</div>
+        <ul class="nk-footer-links">
+          <li><a href="${prefix}/about">About</a></li>
+          <li><a href="mailto:hello@thenookienook.com">Contact</a></li>
+          <li><a href="${prefix}/privacy">Privacy</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="nk-footer-bottom">
+      <span>&copy; ${new Date().getFullYear()} ${esc(site.name)}</span>
+      <a href="https://gab.ae" style="color:rgba(255,255,255,0.3)">gab.ae network</a>
+    </div>
+  </footer>
+  ` : `
   <footer class="site-footer">
     <div class="footer-inner">
       <a href="${prefix}/" class="footer-logo">${esc(site.name)}</a>
@@ -338,6 +442,7 @@ export function siteLayout({ site, title, description, canonical, schemaJson, bo
       <div class="footer-bottom">&copy; ${new Date().getFullYear()} ${esc(site.name)} &middot; ${esc(site.footerCredit)}${site.adultContent ? ` &middot; <a href="https://gab.ae" style="color:rgba(255,255,255,0.4);text-decoration:underline">gab.ae network</a>` : ''}</div>
     </div>
   </footer>
+  `}
 </body>
 </html>`;
 }

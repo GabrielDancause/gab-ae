@@ -175,9 +175,9 @@ export default {
           return new Response(bytes, { headers: { 'content-type': asset.mime, 'cache-control': 'public, max-age=31536000, immutable' } });
         }
       }
-      if (nkPath === '/world-issue') return siteIndex(env, nookieSite, '', 'world-issue', Math.max(1, parseInt(url.searchParams.get('page') || '1', 10)));
-      if (nkPath === '/nook-edit') return siteIndex(env, nookieSite, '', 'nook-edit', Math.max(1, parseInt(url.searchParams.get('page') || '1', 10)));
-      if (nkPath === '/the-brief') return siteIndex(env, nookieSite, '', 'the-brief', Math.max(1, parseInt(url.searchParams.get('page') || '1', 10)));
+      if (nkPath === '/world-issue') return nookieSectionPage(env, 'world-issue', Math.max(1, parseInt(url.searchParams.get('page') || '1', 10)));
+      if (nkPath === '/nook-edit') return nookieSectionPage(env, 'nook-edit', Math.max(1, parseInt(url.searchParams.get('page') || '1', 10)));
+      if (nkPath === '/the-brief') return nookieSectionPage(env, 'the-brief', Math.max(1, parseInt(url.searchParams.get('page') || '1', 10)));
       if (nkPath === '/robots.txt') {
         return new Response(`User-agent: *\nAllow: /\n\nSitemap: https://thenookienook.com/sitemap.xml\n`, { headers: { 'content-type': 'text/plain' } });
       }
@@ -3703,6 +3703,89 @@ function nookieIndex(env, basePath, category, page) {
 function nookieArticlePage(env, slug, basePath) { return siteArticlePage(env, nookieSite, slug, basePath); }
 function nookieSearchPage(env, q, basePath) { return siteSearchPage(env, nookieSite, q, basePath); }
 function nookieSitemap(env) { return siteSitemapXml(env, nookieSite); }
+
+const NK_SECTIONS = {
+  'world-issue': {
+    title: 'The World Issue',
+    accent: 'explore',
+    tagline: 'Sex, culture, and identity around the globe.',
+    description: 'From Tokyo love hotels to Scandinavian sex-ed, exploring how the world experiences intimacy, desire, and everything in between.',
+  },
+  'nook-edit': {
+    title: 'The Nook Edit',
+    accent: 'curated',
+    tagline: 'Honest reviews. Real recommendations.',
+    description: 'Vibrators, lubes, apps, books — tested and reviewed without the corporate fluff. If it made it here, it earned its spot.',
+  },
+  'the-brief': {
+    title: 'The Brief',
+    accent: 'digest',
+    tagline: 'The latest in sexual wellness, summarized.',
+    description: 'New research, trending conversations, and industry news — distilled into quick reads so you stay informed without the scroll.',
+  },
+};
+
+async function nookieSectionPage(env, category, page = 1) {
+  const section = NK_SECTIONS[category];
+  if (!section) return siteIndex(env, nookieSite, '', category, page);
+
+  const perPage = 12;
+  const offset = (page - 1) * perPage;
+  const [articles, countResult] = await Promise.all([
+    env.DB.prepare("SELECT slug,title,description,image,category,published_at FROM news WHERE status='live' AND site=? AND category=? ORDER BY published_at DESC LIMIT ? OFFSET ?")
+      .bind(nookieSite.dbSiteValue, category, perPage, offset).all(),
+    env.DB.prepare("SELECT COUNT(*) as cnt FROM news WHERE status='live' AND site=? AND category=?")
+      .bind(nookieSite.dbSiteValue, category).first(),
+  ]);
+  const total = countResult?.cnt || 0;
+  const totalPages = Math.ceil(total / perPage);
+  const rows = articles?.results || [];
+
+  const cardsHtml = rows.length ? rows.map(a => {
+    const date = a.published_at ? new Date(a.published_at).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric', timeZone: 'UTC' }) : '';
+    return `<article style="background:var(--paper);border-radius:8px;overflow:hidden;box-shadow:0 1px 4px rgba(0,0,0,0.06);transition:transform 0.2s,box-shadow 0.2s">
+      ${a.image ? `<a href="/article/${a.slug}"><img src="${esc(a.image)}" alt="${esc(a.title)}" style="width:100%;aspect-ratio:16/9;object-fit:cover;display:block" loading="lazy"></a>` : ''}
+      <div style="padding:20px">
+        <a href="/article/${a.slug}" style="font-family:var(--body-font);font-size:18px;font-weight:600;color:var(--ink);display:block;margin-bottom:8px;line-height:1.3">${esc(a.title)}</a>
+        <p style="font-family:var(--serif-font);font-size:14px;color:var(--ink-light);line-height:1.5;margin-bottom:10px">${esc((a.description || '').slice(0, 120))}${(a.description || '').length > 120 ? '...' : ''}</p>
+        <span style="font-size:12px;color:var(--ink-light)">${date}</span>
+      </div>
+    </article>`;
+  }).join('') : `<div style="grid-column:1/-1;text-align:center;padding:60px 0">
+    <p style="font-family:var(--serif-font);font-size:18px;color:var(--ink-light);margin-bottom:8px">No articles published yet.</p>
+    <p style="font-size:14px;color:var(--ink-light)">Check back soon — new content is on the way.</p>
+  </div>`;
+
+  const paginationHtml = totalPages > 1 ? `<div style="display:flex;justify-content:center;gap:8px;padding:32px 0">
+    ${page > 1 ? `<a href="/${category}?page=${page - 1}" style="padding:8px 16px;border:1px solid var(--border);border-radius:4px;font-size:14px;color:var(--ink)">&larr; Previous</a>` : ''}
+    <span style="padding:8px 16px;font-size:14px;color:var(--ink-light)">Page ${page} of ${totalPages}</span>
+    ${page < totalPages ? `<a href="/${category}?page=${page + 1}" style="padding:8px 16px;border:1px solid var(--border);border-radius:4px;font-size:14px;color:var(--ink)">Next &rarr;</a>` : ''}
+  </div>` : '';
+
+  const body = `
+    <div class="nk-section-hero">
+      <span class="nk-section-accent">${esc(section.accent)}</span>
+      <h1>${esc(section.title)}</h1>
+      <p>${esc(section.tagline)}</p>
+    </div>
+    <div style="max-width:1100px;margin:0 auto;padding:0 24px">
+      <p style="font-family:var(--serif-font);font-size:16px;color:var(--ink-light);max-width:700px;margin:32px 0;line-height:1.6">${esc(section.description)}</p>
+      ${total > 0 ? `<p style="font-size:13px;color:var(--ink-light);margin-bottom:8px">${total} article${total !== 1 ? 's' : ''}</p>` : ''}
+      <div class="nk-section-grid">
+        ${cardsHtml}
+      </div>
+      ${paginationHtml}
+    </div>`;
+
+  return new Response(siteLayout({
+    site: nookieSite,
+    title: `${section.title} | The Nookie Nook`,
+    description: section.description,
+    canonical: `https://thenookienook.com/${category}`,
+    basePath: '',
+    body,
+  }), { headers: { 'content-type': 'text/html;charset=UTF-8' } });
+}
 
 // ═══════════════════════════════════════════════════════════════
 // SECTION: Nookie Nook — Editorial Pages
