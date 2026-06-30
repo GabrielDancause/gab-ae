@@ -3592,7 +3592,18 @@ async function siteArticlePage(env, site, slug, basePath) {
   try {
     const article = await env.DB.prepare("SELECT * FROM news WHERE slug = ? AND site = ? AND status = 'live'").bind(slug, site.dbSiteValue).first();
     if (article) {
-      const html = renderArticle(article, site, basePath);
+      let extras = {};
+      if (site.id === 'thenookienook') {
+        try {
+          const [related, readNext] = await Promise.all([
+            env.DB.prepare("SELECT slug,title,image FROM news WHERE status='live' AND site=? AND category=? AND slug!=? ORDER BY published_at DESC LIMIT 3").bind(site.dbSiteValue, article.category, slug).all(),
+            env.DB.prepare("SELECT slug,title,image FROM news WHERE status='live' AND site=? AND slug!=? ORDER BY published_at DESC LIMIT 2").bind(site.dbSiteValue, slug).all(),
+          ]);
+          extras.relatedArticles = related?.results || [];
+          extras.readNextArticles = readNext?.results || [];
+        } catch (e) {}
+      }
+      const html = renderArticle(article, site, basePath, extras);
       return new Response(html, { headers: { 'content-type': 'text/html;charset=UTF-8', 'cache-control': 'public, max-age=300' } });
     }
   } catch (e) { console.log(`❌ siteArticlePage [${site.id}] error:`, e.message); }
@@ -3692,151 +3703,57 @@ async function nookieHomepage(env) {
   const site = nookieSite;
   const t = site.theme;
 
-  let spotlightArticle = null;
-  try {
-    spotlightArticle = await env.DB.prepare(
-      "SELECT slug,title,description,lede,category,published_at,image FROM news WHERE status='live' AND site='thenookienook' ORDER BY published_at DESC LIMIT 1"
-    ).first();
-  } catch (e) {}
+  const html = `<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>The Nookie Nook — Coming Soon</title>
+  <meta name="description" content="The shame-free, algorithm-free intimacy library. Coming soon.">
+  <link rel="canonical" href="https://thenookienook.com/">
+  <meta property="og:title" content="The Nookie Nook — Coming Soon">
+  <meta property="og:description" content="The shame-free, algorithm-free intimacy library. Coming soon.">
+  <meta property="og:url" content="https://thenookienook.com/">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body { min-height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; background: ${t.accent}; color: ${t.paper}; font-family: 'Plus Jakarta Sans', system-ui, sans-serif; text-align: center; padding: 40px 24px; }
+    .logo { font-family: 'Libre Baskerville', Georgia, serif; font-size: clamp(36px, 6vw, 64px); font-weight: 700; color: #fff; line-height: 1.1; margin-bottom: 24px; }
+    .tagline { font-family: 'Libre Baskerville', Georgia, serif; font-size: clamp(16px, 2vw, 20px); font-style: italic; color: ${t.paper}; line-height: 1.6; margin-bottom: 8px; }
+    .sub { font-size: clamp(13px, 1.5vw, 16px); color: ${t.inkLight}; margin-bottom: 40px; letter-spacing: 0.02em; }
+    .coming { font-size: clamp(14px, 1.5vw, 17px); color: ${t.inkLight}; letter-spacing: 0.1em; margin-bottom: 40px; }
+    form { display: flex; gap: 10px; max-width: 400px; width: 100%; }
+    input[type="email"] { flex: 1; font-family: 'Plus Jakarta Sans', sans-serif; font-size: 15px; padding: 12px 16px; border: none; border-radius: 4px; background: ${t.paper}; color: ${t.accent}; outline: none; }
+    input[type="email"]::placeholder { color: ${t.inkLight}; }
+    button { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 13px; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; padding: 12px 22px; background: ${t.paper}; color: ${t.accent}; border: none; border-radius: 4px; cursor: pointer; transition: opacity 0.2s; }
+    button:hover { opacity: 0.9; }
+    .fine { font-size: 11px; color: ${t.paper}; opacity: 0.4; margin-top: 12px; }
+    .social { margin-top: 40px; }
+    .social a { color: ${t.paper}; opacity: 0.5; font-size: 14px; text-decoration: underline; text-underline-offset: 3px; }
+    .social a:hover { opacity: 1; }
+    .footer { position: absolute; bottom: 24px; font-size: 11px; color: ${t.paper}; opacity: 0.25; }
+  </style>
+</head>
+<body>
+  <div class="logo">The Nookie Nook</div>
+  <h1 class="tagline">The shame-free intimacy library.</h1>
+  <p class="sub">The conversations we're not supposed to have.</p>
+  <p class="coming">Something is coming.</p>
+  <form method="POST" action="/api/newsletter">
+    <input type="email" name="email" required placeholder="Your email">
+    <button type="submit">Notify Me</button>
+  </form>
+  <p class="fine">No spam. Just the good stuff.</p>
+  <div class="social">
+    <a href="https://instagram.com/thenookienook" target="_blank" rel="noopener">Instagram</a>
+  </div>
+  <div class="footer">&copy; 2026 The Nookie Nook</div>
+</body>
+</html>`;
 
-  let recentArticles = [];
-  try {
-    const r = await env.DB.prepare(
-      "SELECT slug,title,description,category,published_at,image FROM news WHERE status='live' AND site='thenookienook' ORDER BY published_at DESC LIMIT 6 OFFSET 1"
-    ).all();
-    recentArticles = r?.results || [];
-  } catch (e) {}
-
-  let confessionPreview = null;
-  try {
-    confessionPreview = await env.DB.prepare(
-      "SELECT submission_text FROM confessions WHERE status='published' ORDER BY RANDOM() LIMIT 1"
-    ).first();
-  } catch (e) {}
-
-  const heroSection = `
-    <section style="background:${t.accent};margin:0 -24px;padding:80px 24px;text-align:center">
-      <div style="max-width:720px;margin:0 auto">
-        <h1 style="font-family:var(--heading-font);font-size:clamp(32px,5vw,52px);font-weight:700;color:#fff;line-height:1.15;margin-bottom:20px">Question Everything.<br>Shame Nothing.</h1>
-        <p style="font-family:var(--serif-font);font-size:clamp(16px,2vw,20px);font-style:italic;color:${t.paper};line-height:1.6;margin-bottom:12px">The conversations we're not supposed to have.</p>
-        <p style="font-size:clamp(14px,1.5vw,17px);color:${t.inkLight};margin-bottom:32px;letter-spacing:0.02em">Your cozy corner for intimacy & exploration.</p>
-        <div style="display:flex;gap:16px;justify-content:center;flex-wrap:wrap">
-          <a href="#pillars" style="display:inline-block;background:${t.paper};color:${t.accent};font-family:var(--body-font);font-size:14px;font-weight:600;letter-spacing:0.06em;text-transform:uppercase;padding:14px 28px;border-radius:4px;transition:opacity 0.2s" onmouseover="this.style.opacity='0.9'" onmouseout="this.style.opacity='1'">Explore The Library &rarr;</a>
-          <a href="/is-it-just-me" style="display:inline-block;color:${t.paper};font-family:var(--body-font);font-size:14px;font-weight:500;padding:14px 20px;text-decoration:underline;text-underline-offset:4px">Submit anonymously &rarr;</a>
-        </div>
-      </div>
-    </section>`;
-
-  const pillarsSection = `
-    <section id="pillars" style="padding:48px 0;border-bottom:1px solid var(--border)">
-      <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:24px">
-        <a href="/world-issue" style="display:block;background:var(--paper-mid);border:1px solid var(--border);border-radius:8px;padding:28px 20px;text-align:center;transition:background 0.2s,color 0.2s" onmouseover="this.style.background='${t.accent}';this.style.color='#fff'" onmouseout="this.style.background='';this.style.color=''">
-          <div style="font-size:28px;margin-bottom:12px">&#9992;</div>
-          <div style="font-family:var(--body-font);font-size:11px;font-weight:700;letter-spacing:0.16em;text-transform:uppercase;color:${t.accent};margin-bottom:8px">The World Issue</div>
-          <p style="font-family:var(--serif-font);font-size:14px;line-height:1.6;color:var(--ink-mid)">Sex, dating, and intimacy around the world. Real stories from Ali's travels.</p>
-        </a>
-        <a href="/nook-edit" style="display:block;background:var(--paper-mid);border:1px solid var(--border);border-radius:8px;padding:28px 20px;text-align:center;transition:background 0.2s,color 0.2s" onmouseover="this.style.background='${t.accent}';this.style.color='#fff'" onmouseout="this.style.background='';this.style.color=''">
-          <div style="font-size:28px;margin-bottom:12px">&#9733;</div>
-          <div style="font-family:var(--body-font);font-size:11px;font-weight:700;letter-spacing:0.16em;text-transform:uppercase;color:${t.accent};margin-bottom:8px">The Nook Edit</div>
-          <p style="font-family:var(--serif-font);font-size:14px;line-height:1.6;color:var(--ink-mid)">Honest reviews and recommendations. Products, books, apps, hotels, podcasts, and more.</p>
-        </a>
-        <a href="/is-it-just-me" style="display:block;background:var(--paper-mid);border:1px solid var(--border);border-radius:8px;padding:28px 20px;text-align:center;transition:background 0.2s,color 0.2s" onmouseover="this.style.background='${t.accent}';this.style.color='#fff'" onmouseout="this.style.background='';this.style.color=''">
-          <div style="font-size:28px;margin-bottom:12px">&#128273;</div>
-          <div style="font-family:var(--body-font);font-size:11px;font-weight:700;letter-spacing:0.16em;text-transform:uppercase;color:${t.accent};margin-bottom:8px">Is It Just Me?</div>
-          <p style="font-family:var(--serif-font);font-size:14px;line-height:1.6;color:var(--ink-mid)">Anonymous confessions, questions, and real answers. Judgment-free and honest.</p>
-        </a>
-        <a href="/the-brief" style="display:block;background:var(--paper-mid);border:1px solid var(--border);border-radius:8px;padding:28px 20px;text-align:center;transition:background 0.2s,color 0.2s" onmouseover="this.style.background='${t.accent}';this.style.color='#fff'" onmouseout="this.style.background='';this.style.color=''">
-          <div style="font-size:28px;margin-bottom:12px">&#128214;</div>
-          <div style="font-family:var(--body-font);font-size:11px;font-weight:700;letter-spacing:0.16em;text-transform:uppercase;color:${t.accent};margin-bottom:8px">The Brief</div>
-          <p style="font-family:var(--serif-font);font-size:14px;line-height:1.6;color:var(--ink-mid)">Weekly sexual wellness news, research, and trends — curated and delivered.</p>
-        </a>
-      </div>
-    </section>`;
-
-  const spotlightSection = spotlightArticle ? `
-    <section style="padding:48px 0;border-bottom:1px solid var(--border)">
-      <div style="margin-bottom:20px">
-        <span style="font-family:var(--body-font);font-size:11px;font-weight:700;letter-spacing:0.16em;text-transform:uppercase;color:${t.accent}">Spotlight</span>
-      </div>
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:32px;align-items:center">
-        ${spotlightArticle.image ? `<a href="/article/${spotlightArticle.slug}"><img src="${esc(spotlightArticle.image)}" alt="${esc(spotlightArticle.title)}" style="width:100%;aspect-ratio:16/9;object-fit:cover;display:block;border-radius:4px" loading="lazy"></a>` : '<div></div>'}
-        <div>
-          <span style="font-family:var(--body-font);font-size:10px;font-weight:700;letter-spacing:0.16em;text-transform:uppercase;color:#fff;background:${siteCatColor(site, spotlightArticle.category)};padding:3px 10px;display:inline-block;margin-bottom:14px">${siteCatLabel(site, spotlightArticle.category)}</span>
-          <a href="/article/${spotlightArticle.slug}" style="font-family:var(--heading-font);font-size:clamp(22px,2.5vw,32px);font-weight:700;line-height:1.25;color:var(--ink);display:block;margin-bottom:12px">${esc(spotlightArticle.title)}</a>
-          <p style="font-family:var(--serif-font);font-size:16px;font-style:italic;color:var(--ink-mid);line-height:1.6;margin-bottom:12px">${esc(spotlightArticle.lede || spotlightArticle.description || '')}</p>
-          <div style="font-family:var(--body-font);font-size:12px;color:var(--ink-light)">${timeAgo(spotlightArticle.published_at)}</div>
-          <a href="/article/${spotlightArticle.slug}" style="display:inline-block;margin-top:16px;font-family:var(--body-font);font-size:13px;font-weight:600;color:${t.accent}">Continue Reading &rarr;</a>
-        </div>
-      </div>
-    </section>` : '';
-
-  const latestSection = recentArticles.length ? `
-    <section style="padding:48px 0;border-bottom:1px solid var(--border)">
-      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:24px">
-        <div>
-          <span style="font-family:var(--heading-font);font-size:22px;font-weight:700;color:var(--ink)">Latest</span>
-          <span style="font-family:var(--serif-font);font-size:14px;color:var(--ink-light);margin-left:12px">Recent stories</span>
-        </div>
-      </div>
-      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:24px">
-        ${recentArticles.map(a => `
-          <div>
-            ${a.image ? `<a href="/article/${a.slug}"><img src="${esc(a.image)}" alt="${esc(a.title)}" style="width:100%;aspect-ratio:16/9;object-fit:cover;display:block;border-radius:4px;margin-bottom:10px" loading="lazy"></a>` : ''}
-            <span style="font-size:10px;font-weight:700;letter-spacing:0.14em;text-transform:uppercase;color:#fff;background:${siteCatColor(site, a.category)};padding:2px 8px;display:inline-block;margin-bottom:8px">${siteCatLabel(site, a.category)}</span>
-            <a href="/article/${a.slug}" style="font-family:var(--heading-font);font-size:17px;font-weight:700;line-height:1.3;color:var(--ink);display:block;margin-bottom:6px">${esc(a.title)}</a>
-            <div style="font-size:11px;color:var(--ink-light)">${timeAgo(a.published_at)}</div>
-          </div>`).join('')}
-      </div>
-    </section>` : '';
-
-  const communitySection = `
-    <section style="background:${t.accent};margin:0 -24px;padding:60px 24px;text-align:center">
-      <div style="max-width:640px;margin:0 auto">
-        <p style="font-family:var(--serif-font);font-size:clamp(18px,2.5vw,24px);font-style:italic;color:${t.paper};line-height:1.5;margin-bottom:24px">${confessionPreview ? '"' + esc(confessionPreview.submission_text.slice(0, 120)) + (confessionPreview.submission_text.length > 120 ? '...' : '') + '"' : '"I\'ve been with my partner 8 years and I can\'t stop fantasising about..."'}</p>
-        <div style="font-family:var(--body-font);font-size:11px;font-weight:700;letter-spacing:0.16em;text-transform:uppercase;color:${t.paper};opacity:0.7;margin-bottom:10px">The Community</div>
-        <h2 style="font-family:var(--heading-font);font-size:clamp(22px,3vw,32px);font-weight:700;color:#fff;margin-bottom:12px">Anonymous "Is It Just Me?" Space.</h2>
-        <p style="font-family:var(--serif-font);font-size:16px;color:${t.paper};line-height:1.6;margin-bottom:28px">Read and be part of honest confessions from the community.</p>
-        <div style="display:flex;gap:16px;justify-content:center;flex-wrap:wrap">
-          <a href="/is-it-just-me" style="display:inline-block;background:${t.paper};color:${t.accent};font-family:var(--body-font);font-size:14px;font-weight:600;padding:12px 24px;border-radius:4px">Read More &rarr;</a>
-          <a href="/is-it-just-me#submit" style="color:${t.paper};font-family:var(--body-font);font-size:14px;padding:12px 16px;text-decoration:underline;text-underline-offset:4px">Submit yours anonymously &rarr;</a>
-        </div>
-      </div>
-    </section>`;
-
-  const newsletterSection = `
-    <section style="padding:60px 0;border-bottom:1px solid var(--border);text-align:center">
-      <div style="max-width:520px;margin:0 auto">
-        <div style="font-family:var(--body-font);font-size:11px;font-weight:700;letter-spacing:0.16em;text-transform:uppercase;color:${t.accent};margin-bottom:10px">The Brief</div>
-        <h2 style="font-family:var(--heading-font);font-size:clamp(22px,3vw,32px);font-weight:700;color:var(--ink);margin-bottom:12px">Want To Stay Curious?</h2>
-        <p style="font-family:var(--serif-font);font-size:15px;color:var(--ink-light);line-height:1.6;margin-bottom:24px">Get weekly updates on sexual wellness, new research, and the stories we're not supposed to be talking about.</p>
-        <form method="POST" action="/api/newsletter" style="display:flex;gap:10px;max-width:420px;margin:0 auto">
-          <input type="email" name="email" required placeholder="Your email" style="flex:1;font-family:var(--body-font);font-size:15px;padding:12px 16px;border:1px solid var(--border);border-radius:4px;background:var(--paper);color:var(--ink);outline:none" onfocus="this.style.borderColor='${t.accent}'" onblur="this.style.borderColor='var(--border)'">
-          <button type="submit" style="font-family:var(--body-font);font-size:13px;font-weight:700;letter-spacing:0.06em;text-transform:uppercase;padding:12px 22px;background:${t.accent};color:#fff;border:none;border-radius:4px;cursor:pointer">Subscribe</button>
-        </form>
-        <p style="font-family:var(--body-font);font-size:11px;color:var(--ink-light);margin-top:10px">No spam. Unsubscribe anytime.</p>
-      </div>
-    </section>`;
-
-  const aboutTeaser = `
-    <section style="padding:48px 0">
-      <div style="max-width:640px;margin:0 auto;text-align:center">
-        <h2 style="font-family:var(--heading-font);font-size:24px;font-weight:700;color:var(--ink);margin-bottom:14px">About The Nookie Nook</h2>
-        <p style="font-family:var(--serif-font);font-size:16px;color:var(--ink-mid);line-height:1.7;margin-bottom:20px">A shame-free, algorithm-free intimacy library. Built for curious people who want real conversations about sex, relationships, and desire — without the judgment.</p>
-        <p style="font-family:var(--serif-font);font-size:15px;font-style:italic;color:var(--ink-light);margin-bottom:20px">— Ali Imperiale, Founder</p>
-        <a href="/about" style="font-family:var(--body-font);font-size:13px;font-weight:600;color:${t.accent}">Read our story &rarr;</a>
-      </div>
-    </section>`;
-
-  const body = heroSection + pillarsSection + spotlightSection + latestSection + communitySection + newsletterSection + aboutTeaser;
-
-  return new Response(siteLayout({ site,
-    title: 'The Nookie Nook — Your shame-free intimacy library',
-    description: site.footerTagline,
-    canonical: 'https://thenookienook.com/',
-    activeNav: 'home',
-    basePath: '',
-    body,
-  }), { headers: { 'content-type': 'text/html;charset=UTF-8' } });
+  return new Response(html, { headers: { 'content-type': 'text/html;charset=UTF-8' } });
 }
 
 function nookieAboutPage(env) {
