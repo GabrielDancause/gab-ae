@@ -362,7 +362,8 @@ Rules:
       headingFont: "'Libre Baskerville', Georgia, serif",
       bodyFont:    "'Plus Jakarta Sans', system-ui, sans-serif",
       serifFont:   "'Plus Jakarta Sans', system-ui, sans-serif",
-      googleFontsUrl: 'https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap',
+      scriptFont: "'Pinyon Script', cursive",
+      googleFontsUrl: 'https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Pinyon+Script&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap',
     },
 
     categoryColors: {

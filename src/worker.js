@@ -166,6 +166,7 @@ export default {
         return nookieAdminPage(env, url);
       }
       if (nkPath === '/api/newsletter') return nookieNewsletterSignup(env, request);
+      if (nkPath === '/preview') return nookiePreviewHomepage(env);
       if (nkPath === '/world-issue') return siteIndex(env, nookieSite, '', 'world-issue', Math.max(1, parseInt(url.searchParams.get('page') || '1', 10)));
       if (nkPath === '/nook-edit') return siteIndex(env, nookieSite, '', 'nook-edit', Math.max(1, parseInt(url.searchParams.get('page') || '1', 10)));
       if (nkPath === '/the-brief') return siteIndex(env, nookieSite, '', 'the-brief', Math.max(1, parseInt(url.searchParams.get('page') || '1', 10)));
@@ -3754,6 +3755,195 @@ async function nookieHomepage(env) {
 </html>`;
 
   return new Response(html, { headers: { 'content-type': 'text/html;charset=UTF-8' } });
+}
+
+async function nookiePreviewHomepage(env) {
+  const site = nookieSite;
+  const t = site.theme;
+
+  const px = id => `https://images.pexels.com/photos/${id}/pexels-photo-${id}.jpeg?auto=compress&cs=tinysrgb&w=1200`;
+
+  let spotlightArticle = null;
+  try {
+    spotlightArticle = await env.DB.prepare(
+      "SELECT slug,title,description,lede,category,published_at,image FROM news WHERE status='live' AND site='thenookienook' ORDER BY published_at DESC LIMIT 1"
+    ).first();
+  } catch (e) {}
+
+  let top5Articles = [];
+  try {
+    const r = await env.DB.prepare(
+      "SELECT slug,title,category,published_at,image FROM news WHERE status='live' AND site='thenookienook' ORDER BY published_at DESC LIMIT 5 OFFSET 1"
+    ).all();
+    top5Articles = r?.results || [];
+  } catch (e) {}
+
+  let confessionPreview = null;
+  try {
+    confessionPreview = await env.DB.prepare(
+      "SELECT submission_text FROM confessions WHERE status='published' ORDER BY RANDOM() LIMIT 1"
+    ).first();
+  } catch (e) {}
+
+  // ── #77 Hero Banner ──
+  const heroSection = `
+    <section style="position:relative;margin:0 -24px;height:100vh;min-height:600px;max-height:1000px;display:flex;align-items:flex-end;overflow:hidden">
+      <img src="${px(11369679)}" alt="" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center" loading="eager">
+      <div style="position:absolute;inset:0;background:rgba(71,13,11,0.55)"></div>
+      <div style="position:absolute;right:60px;top:50%;transform:translateY(-50%);font-family:var(--script-font);font-size:clamp(80px,12vw,160px);color:${t.paper};opacity:0.08;white-space:nowrap;pointer-events:none" class="nk-hero-watermark">Wish You Were Here</div>
+      <div style="position:relative;padding:0 clamp(32px,5vw,80px) clamp(48px,6vh,80px);max-width:900px;width:100%">
+        <p style="font-family:var(--script-font);font-size:clamp(16px,2vw,20px);color:${t.paper};opacity:0.85;margin-bottom:16px">the conversations we're not supposed to have</p>
+        <h1 style="font-family:var(--body-font);font-size:clamp(42px,7vw,88px);font-weight:700;color:${t.paper};line-height:1.0;margin-bottom:28px;letter-spacing:-0.03em">Question<br>Everything.<br>Shame Nothing.</h1>
+        <div style="display:flex;gap:clamp(24px,4vw,48px);margin-bottom:32px">
+          <p style="font-family:var(--heading-font);font-style:italic;font-size:clamp(12px,1.2vw,14px);color:${t.paper};opacity:0.7;line-height:1.6;max-width:200px">the conversations we're not supposed to have</p>
+          <a href="#categories" style="font-family:var(--heading-font);font-style:italic;font-size:clamp(12px,1.2vw,14px);color:${t.paper};opacity:0.7;text-decoration:underline;text-underline-offset:3px;align-self:flex-end">find out more &rarr;</a>
+        </div>
+        <a href="#categories" style="display:inline-block;font-family:var(--body-font);font-size:14px;font-weight:500;letter-spacing:0.08em;text-transform:uppercase;color:${t.paper};border:1.5px solid ${t.paper};padding:14px 36px;transition:background 0.2s,color 0.2s" onmouseover="this.style.background='${t.accent}';this.style.borderColor='${t.accent}'" onmouseout="this.style.background='transparent';this.style.borderColor='${t.paper}'">Enter the Library</a>
+      </div>
+    </section>`;
+
+  // ── #78 Category Strip ──
+  const catCards = [
+    { label: 'Sex Education', href: '/category/education', img: px(20469563) },
+    { label: 'Relationships', href: '/category/relationships', img: px(8874406) },
+    { label: 'Love & Arousal', href: '/category/sexual-health', img: px(8733201) },
+    { label: 'Play & Pleasure', href: '/category/wellness', img: px(8746270) },
+    { label: 'Wellness & Health', href: '/category/reproductive-health', img: px(1330724) },
+  ];
+  const categoryStrip = `
+    <section id="categories" style="padding:56px 0;border-bottom:1px solid var(--border)">
+      <h2 style="font-family:var(--body-font);font-size:clamp(20px,2.5vw,24px);font-weight:500;color:var(--ink);text-align:center;margin-bottom:32px">What's On Your Mind Today?</h2>
+      <div style="display:flex;gap:16px;overflow-x:auto;scrollbar-width:none;-webkit-overflow-scrolling:touch;padding-bottom:4px" class="nk-cat-scroll">
+        ${catCards.map(c => `
+          <a href="${c.href}" style="flex:0 0 calc(20% - 13px);min-width:160px;position:relative;aspect-ratio:3/4;border-radius:4px;overflow:hidden;display:block;transition:transform 0.25s" onmouseover="this.style.transform='scale(1.03)'" onmouseout="this.style.transform='scale(1)'">
+            <img src="${c.img}" alt="${esc(c.label)}" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover" loading="lazy">
+            <div style="position:absolute;inset:0;background:rgba(71,13,11,0.5);transition:background 0.25s" onmouseover="this.style.background='rgba(71,13,11,0.7)'" onmouseout="this.style.background='rgba(71,13,11,0.5)'"></div>
+            <span style="position:absolute;bottom:16px;left:0;right:0;text-align:center;font-family:var(--body-font);font-size:12px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:#fff">${esc(c.label)}</span>
+          </a>`).join('')}
+      </div>
+    </section>`;
+
+  // ── #79 Spotlight Feature ──
+  const spotlightSection = spotlightArticle ? `
+    <section style="padding:56px 0;border-bottom:1px solid var(--border);position:relative">
+      <div style="font-family:var(--body-font);font-size:11px;font-weight:700;letter-spacing:0.14em;text-transform:uppercase;color:var(--ink-light);text-align:right;margin-bottom:24px">Spotlight Feature</div>
+      <div style="display:grid;grid-template-columns:58fr 42fr;gap:40px;align-items:center" class="nk-spotlight-grid">
+        <a href="/article/${spotlightArticle.slug}" style="display:block;border-radius:4px;overflow:hidden">
+          <img src="${esc(spotlightArticle.image || px(11369679))}" alt="${esc(spotlightArticle.title)}" style="width:100%;height:100%;min-height:320px;object-fit:cover;display:block" loading="lazy">
+        </a>
+        <div>
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:16px">
+            <span style="width:8px;height:8px;border-radius:50%;background:${t.accent};display:inline-block"></span>
+            <span style="font-family:var(--body-font);font-size:11px;font-weight:700;letter-spacing:0.14em;text-transform:uppercase;color:${t.accent}">${siteCatLabel(site, spotlightArticle.category)}</span>
+          </div>
+          <a href="/article/${spotlightArticle.slug}" style="font-family:var(--body-font);font-size:clamp(24px,2.5vw,36px);font-weight:500;line-height:1.2;color:var(--ink);display:block;margin-bottom:16px;letter-spacing:-0.01em">${esc(spotlightArticle.title)}</a>
+          <p style="font-family:var(--heading-font);font-size:15px;color:var(--ink);line-height:1.7;margin-bottom:16px">${esc(spotlightArticle.lede || spotlightArticle.description || '')}</p>
+          <div style="font-family:var(--heading-font);font-size:12px;color:var(--ink-light);margin-bottom:12px">&#9201; 5 min read</div>
+          ${(JSON.parse(spotlightArticle.tags || '[]')).slice(0, 3).map(tg => `<span style="font-family:var(--body-font);font-size:10px;color:var(--ink-light);background:var(--paper-mid);border:1px solid var(--border);border-radius:20px;padding:3px 10px;margin-right:6px">${esc(tg)}</span>`).join('')}
+          <div style="margin-top:20px">
+            <a href="/article/${spotlightArticle.slug}" style="font-family:var(--body-font);font-size:13px;font-weight:600;color:${t.accent};text-decoration:none" onmouseover="this.style.textDecoration='underline'" onmouseout="this.style.textDecoration='none'">Continue Reading &rarr;</a>
+          </div>
+        </div>
+      </div>
+    </section>` : '';
+
+  // ── #80 Top 5's This Month ──
+  const top5Section = top5Articles.length ? `
+    <section style="padding:56px 0;border-bottom:1px solid var(--border)">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:28px">
+        <h2 style="font-family:var(--body-font);font-size:18px;font-weight:500;color:var(--ink)">Top 5's This Month</h2>
+        <a href="/nook-edit" style="font-family:var(--body-font);font-size:13px;color:var(--ink-light);text-decoration:none" onmouseover="this.style.color='${t.accent}'" onmouseout="this.style.color='var(--ink-light)'">View all &rarr;</a>
+      </div>
+      <div style="display:flex;gap:20px;overflow-x:auto;scrollbar-width:none;-webkit-overflow-scrolling:touch;padding-bottom:4px" class="nk-top5-scroll">
+        ${top5Articles.map(a => `
+          <a href="/article/${a.slug}" style="flex:0 0 calc(20% - 16px);min-width:200px;display:block;text-decoration:none">
+            <img src="${esc(a.image || px(8733210))}" alt="${esc(a.title)}" style="width:100%;aspect-ratio:4/3;object-fit:cover;border-radius:4px;margin-bottom:10px" loading="lazy">
+            <div style="display:flex;align-items:center;gap:6px;margin-bottom:6px">
+              <span style="width:6px;height:6px;border-radius:50%;background:${t.accent};display:inline-block"></span>
+              <span style="font-family:var(--body-font);font-size:10px;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:${t.accent}">${siteCatLabel(site, a.category)}</span>
+            </div>
+            <div style="font-family:var(--body-font);font-size:16px;font-weight:500;line-height:1.3;color:var(--ink);display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;margin-bottom:6px">${esc(a.title)}</div>
+            <div style="font-family:var(--heading-font);font-size:11px;color:var(--ink-light)">Ali Imperiale · ${timeAgo(a.published_at)}</div>
+          </a>`).join('')}
+      </div>
+    </section>` : '';
+
+  // ── #81 Community Teaser ──
+  const confessionText = confessionPreview
+    ? confessionPreview.submission_text.slice(0, 140) + (confessionPreview.submission_text.length > 140 ? '...' : '')
+    : "I've been with my partner 8 years and I can't stop fantasizing about...";
+  const communitySection = `
+    <section style="padding:56px 0;border-bottom:1px solid var(--border)">
+      <h2 style="font-family:var(--body-font);font-size:18px;font-weight:500;color:var(--ink);margin-bottom:28px">The community</h2>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:40px;align-items:center" class="nk-community-grid">
+        <div>
+          <div style="background:var(--paper);border-left:3px solid ${t.accent};padding:28px 24px;margin-bottom:24px">
+            <p style="font-family:var(--script-font);font-size:22px;color:var(--ink);line-height:1.5;margin-bottom:12px">"${esc(confessionText)}"</p>
+            <p style="font-family:var(--heading-font);font-style:italic;font-size:13px;color:var(--ink-light)">— Anonymous</p>
+          </div>
+          <p style="font-family:var(--body-font);font-size:14px;font-weight:500;color:var(--ink);margin-bottom:6px">Anonymous "Is It Just Me?" Space.</p>
+          <p style="font-family:var(--heading-font);font-size:13px;color:var(--ink-light);line-height:1.6;margin-bottom:20px">Read and be part of honest confessions from the community.</p>
+          <div style="display:flex;gap:12px;flex-wrap:wrap">
+            <a href="/is-it-just-me" style="display:inline-block;background:${t.accent};color:${t.paper};font-family:var(--body-font);font-size:13px;font-weight:600;padding:10px 24px;border-radius:4px">Read More</a>
+            <a href="/is-it-just-me#submit" style="display:inline-block;color:${t.accent};font-family:var(--body-font);font-size:13px;font-weight:600;padding:10px 24px;border:1.5px solid ${t.accent};border-radius:4px">Submit Yours (anonymously)</a>
+          </div>
+        </div>
+        <div class="nk-community-photo" style="border-radius:4px;overflow:hidden">
+          <img src="${px(33690811)}" alt="" style="width:100%;height:100%;min-height:360px;object-fit:cover;display:block" loading="lazy">
+        </div>
+      </div>
+    </section>`;
+
+  // ── #82 Newsletter ──
+  const newsletterSection = `
+    <section style="background:${t.accent};margin:0 -24px;padding:72px 24px;text-align:center">
+      <div style="max-width:520px;margin:0 auto">
+        <p style="font-family:var(--script-font);font-size:clamp(28px,4vw,40px);color:${t.paper};margin-bottom:16px;line-height:1.2">Want to Stay Curious?</p>
+        <p style="font-family:var(--heading-font);font-size:14px;color:${t.paper};opacity:0.8;line-height:1.6;margin-bottom:28px">Get weekly updates on the latest in sexual wellness, research, and stories worth reading.</p>
+        <form method="POST" action="/api/newsletter" style="display:flex;gap:0;max-width:420px;margin:0 auto">
+          <input type="email" name="email" required placeholder="Your email address" style="flex:1;font-family:var(--body-font);font-size:15px;padding:13px 16px;border:none;background:${t.paper};color:var(--ink);outline:none">
+          <button type="submit" style="font-family:var(--body-font);font-size:13px;font-weight:600;padding:13px 24px;background:${t.paper};color:${t.accent};border:none;cursor:pointer;white-space:nowrap">Subscribe</button>
+        </form>
+      </div>
+    </section>`;
+
+  // ── About teaser ──
+  const aboutTeaser = `
+    <section style="padding:56px 0">
+      <div style="max-width:600px;margin:0 auto;text-align:center">
+        <h2 style="font-family:var(--body-font);font-size:24px;font-weight:500;color:var(--ink);margin-bottom:14px">About The Nookie Nook</h2>
+        <p style="font-family:var(--heading-font);font-size:16px;color:var(--ink-mid);line-height:1.7;margin-bottom:20px">A shame-free, algorithm-free intimacy library. Built for curious people who want real conversations about sex, relationships, and desire — without the judgment.</p>
+        <p style="font-family:var(--heading-font);font-size:15px;font-style:italic;color:var(--ink-light);margin-bottom:20px">— Ali Imperiale</p>
+        <a href="/about" style="font-family:var(--body-font);font-size:13px;font-weight:600;color:${t.accent};text-decoration:underline;text-underline-offset:3px">Read our story &rarr;</a>
+      </div>
+    </section>`;
+
+  const body = heroSection + categoryStrip + spotlightSection + top5Section + communitySection + newsletterSection + aboutTeaser;
+
+  const extraHead = `<style>
+    .nk-hero-watermark { display: block; }
+    .nk-cat-scroll::-webkit-scrollbar, .nk-top5-scroll::-webkit-scrollbar { display: none; }
+    @media (max-width: 900px) {
+      .nk-spotlight-grid { grid-template-columns: 1fr !important; }
+      .nk-community-grid { grid-template-columns: 1fr !important; }
+      .nk-community-photo { display: none !important; }
+      .nk-hero-watermark { display: none !important; }
+    }
+    @media (max-width: 600px) {
+      .nk-cat-scroll { gap: 12px !important; }
+      .nk-cat-scroll > a { flex: 0 0 45% !important; min-width: 140px !important; }
+    }
+  </style>`;
+
+  return new Response(siteLayout({ site,
+    title: 'The Nookie Nook — Your shame-free intimacy library',
+    description: site.footerTagline,
+    canonical: 'https://thenookienook.com/',
+    activeNav: 'home',
+    basePath: '',
+    body,
+    extraHead,
+  }), { headers: { 'content-type': 'text/html;charset=UTF-8' } });
 }
 
 function nookieAboutPage(env) {

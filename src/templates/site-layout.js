@@ -53,6 +53,7 @@ export function siteLayout({ site, title, description, canonical, schemaJson, bo
       --heading-font: ${t.headingFont};
       --body-font: ${t.bodyFont};
       --serif-font: ${t.serifFont};
+      --script-font: ${t.scriptFont || t.headingFont};
       /* nk-* aliases — backward compat with existing nookie engine HTML */
       --nk-ink: var(--ink); --nk-ink-mid: var(--ink-mid); --nk-ink-light: var(--ink-light);
       --nk-paper: var(--paper); --nk-paper-mid: var(--paper-mid); --nk-paper-dark: var(--paper-dark);
