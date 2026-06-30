@@ -35,6 +35,7 @@ export function siteLayout({ site, title, description, canonical, schemaJson, bo
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="${t.googleFontsUrl}" rel="stylesheet">
+  ${t.scriptFont?.includes('Amsterdam') ? `<style>@font-face { font-family: 'Amsterdam Four'; src: url('/assets/amsterdam-four.woff2') format('woff2'); font-weight: normal; font-style: normal; font-display: swap; }</style>` : ''}
   <script async src="https://www.googletagmanager.com/gtag/js?id=${site.ga4Id}"></script>
   <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','${site.ga4Id}');</script>
   <style>
@@ -183,7 +184,7 @@ export function siteLayout({ site, title, description, canonical, schemaJson, bo
 
     /* ── Article components ── */
     .article-pullquote { font-family: var(--heading-font); font-size: clamp(17px, 2.5vw, 21px); font-style: italic; font-weight: 600; color: var(--ink); border-top: 2px solid var(--ink); border-bottom: 2px solid var(--ink); padding: 20px 4px; margin: 32px 0; text-align: center; line-height: 1.45; }
-    .nk-article-pullquote { font-family: 'Amsterdam Four', cursive, var(--heading-font); font-size: clamp(22px, 3vw, 28px); font-weight: 400; color: var(--accent); border-top: 1px solid var(--ink-light); border-bottom: 1px solid var(--ink-light); padding: 32px 16px; margin: 40px 0; text-align: center; line-height: 1.45; }
+    .nk-article-pullquote { font-family: var(--script-font); font-size: clamp(22px, 3vw, 28px); font-weight: 400; color: var(--accent); border-top: 1px solid var(--ink-light); border-bottom: 1px solid var(--ink-light); padding: 32px 16px; margin: 40px 0; text-align: center; line-height: 1.45; }
     .article-takeaways, .nk-article-takeaways { background: var(--paper-mid); border: 1px solid var(--border); border-top: 3px solid var(--ink); border-radius: 0 0 6px 6px; padding: 18px 22px; margin: 0 0 28px; }
     .takeaways-label, .nk-takeaways-label { font-size: 10px; font-weight: 700; letter-spacing: 0.18em; text-transform: uppercase; color: var(--ink-light); margin-bottom: 10px; }
     .article-takeaways ul, .nk-article-takeaways ul { padding-left: 18px; }

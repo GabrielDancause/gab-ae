@@ -35,10 +35,10 @@
  */
 
 import { siteLayout, esc } from './templates/site-layout.js';
-// layout.js and nookie-layout.js replaced by site-layout.js (Phase 5)
 import { renderCalculator } from './engines/calculator.js';
 import { renderArticle } from './render-engine.js';
 import { getSiteById, SITES } from './sites.js';
+import { ASSETS } from './nookie-assets.js';
 import { renderChangelog } from './engines/changelog.js';
 import { upgradeTrigger } from './upgrade-trigger.js';
 import { generateArticle } from './llm-engine.js';
@@ -167,6 +167,14 @@ export default {
       }
       if (nkPath === '/api/newsletter') return nookieNewsletterSignup(env, request);
       if (nkPath === '/preview') return nookiePreviewHomepage(env);
+      if (nkPath.startsWith('/assets/')) {
+        const key = nkPath.slice(8);
+        const asset = ASSETS[key];
+        if (asset) {
+          const bytes = Uint8Array.from(atob(asset.data), c => c.charCodeAt(0));
+          return new Response(bytes, { headers: { 'content-type': asset.mime, 'cache-control': 'public, max-age=31536000, immutable' } });
+        }
+      }
       if (nkPath === '/world-issue') return siteIndex(env, nookieSite, '', 'world-issue', Math.max(1, parseInt(url.searchParams.get('page') || '1', 10)));
       if (nkPath === '/nook-edit') return siteIndex(env, nookieSite, '', 'nook-edit', Math.max(1, parseInt(url.searchParams.get('page') || '1', 10)));
       if (nkPath === '/the-brief') return siteIndex(env, nookieSite, '', 'the-brief', Math.max(1, parseInt(url.searchParams.get('page') || '1', 10)));
@@ -3788,7 +3796,7 @@ async function nookiePreviewHomepage(env) {
   // ── #77 Hero Banner ──
   const heroSection = `
     <section style="position:relative;margin:0 -24px;height:100vh;min-height:600px;max-height:1000px;display:flex;align-items:flex-end;overflow:hidden">
-      <img src="${px(11369679)}" alt="" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center" loading="eager">
+      <img src="/assets/hero.jpg" alt="" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center" loading="eager">
       <div style="position:absolute;inset:0;background:rgba(71,13,11,0.55)"></div>
       <div style="position:absolute;right:60px;top:50%;transform:translateY(-50%);font-family:var(--script-font);font-size:clamp(80px,12vw,160px);color:${t.paper};opacity:0.08;white-space:nowrap;pointer-events:none" class="nk-hero-watermark">Wish You Were Here</div>
       <div style="position:relative;padding:0 clamp(32px,5vw,80px) clamp(48px,6vh,80px);max-width:900px;width:100%">
