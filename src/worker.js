@@ -3592,7 +3592,18 @@ async function siteArticlePage(env, site, slug, basePath) {
   try {
     const article = await env.DB.prepare("SELECT * FROM news WHERE slug = ? AND site = ? AND status = 'live'").bind(slug, site.dbSiteValue).first();
     if (article) {
-      const html = renderArticle(article, site, basePath);
+      let extras = {};
+      if (site.id === 'thenookienook') {
+        try {
+          const [related, readNext] = await Promise.all([
+            env.DB.prepare("SELECT slug,title,image FROM news WHERE status='live' AND site=? AND category=? AND slug!=? ORDER BY published_at DESC LIMIT 3").bind(site.dbSiteValue, article.category, slug).all(),
+            env.DB.prepare("SELECT slug,title,image FROM news WHERE status='live' AND site=? AND slug!=? ORDER BY published_at DESC LIMIT 2").bind(site.dbSiteValue, slug).all(),
+          ]);
+          extras.relatedArticles = related?.results || [];
+          extras.readNextArticles = readNext?.results || [];
+        } catch (e) {}
+      }
+      const html = renderArticle(article, site, basePath, extras);
       return new Response(html, { headers: { 'content-type': 'text/html;charset=UTF-8', 'cache-control': 'public, max-age=300' } });
     }
   } catch (e) { console.log(`❌ siteArticlePage [${site.id}] error:`, e.message); }
